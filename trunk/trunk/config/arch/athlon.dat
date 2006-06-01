@@ -1,0 +1,3 @@
+TARGET=i686-cacko-linux-gnu
+GCC_EXTRA_CONFIG=--with-cpu=athlon --enable-cxx-flags=-mcpu=athlon
+GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time

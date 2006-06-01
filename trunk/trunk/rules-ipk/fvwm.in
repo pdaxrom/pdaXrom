@@ -1,0 +1,8 @@
+config FVWM
+	bool
+	prompt "FVWM"
+
+config FVWM_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on FVWM

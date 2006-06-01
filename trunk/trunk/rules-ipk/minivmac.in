@@ -1,0 +1,8 @@
+config MINIVMAC
+	bool
+	prompt "minivmac"
+
+config MINIVMAC_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on MINIVMAC

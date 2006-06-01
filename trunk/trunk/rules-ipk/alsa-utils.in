@@ -1,0 +1,8 @@
+config ALSA-UTILS
+	bool
+	prompt "ALSA Utils"
+
+config ALSA-UTILS_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on ALSA-UTILS

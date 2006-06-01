@@ -1,0 +1,8 @@
+config UFO2000
+	bool
+	prompt "ufo2000"
+
+config UFO2000_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on UFO2000

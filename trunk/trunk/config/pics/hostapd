@@ -1,0 +1,38 @@
+#!/bin/sh
+
+. /etc/rc.d/init.d/functions
+
+DAEMON=/usr/sbin/hostapd
+NAME=httpd
+DESC="HOSTAP Daemon"
+ARGS="/etc/hostapd.conf"
+
+test -f $DAEMON || exit 0
+
+set -e
+
+case "$1" in
+    start)
+        echo -n "starting $DESC: $NAME... "
+	daemon $DAEMON -- $ARGS
+	;;
+    stop)
+        echo -n "stopping $DESC: $NAME... "
+	killproc $DAEMON
+	;;
+    restart)
+        echo "restarting $DESC: $NAME... "
+ 	$0 stop
+	$0 start
+	;;
+    reload)
+    	echo -n "reloading $DESC: $NAME... "
+    	killall -HUP $(basename ${DAEMON})
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|reload}"
+	exit 1
+	;;
+esac
+
+exit 0

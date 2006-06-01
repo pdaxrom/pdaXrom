@@ -1,0 +1,8 @@
+config SUNBIRD
+	bool
+	prompt "sunbird"
+
+config SUNBIRD_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on SUNBIRD

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=GVim
+Comment=Vi IMproved - text editor
+Exec=gvim
+Terminal=0
+Type=Application
+Icon=vim_48x48.xpm
+Categories=Application;Office;WordProcessor;
+StartupNotify=True
+SingleInstance=False

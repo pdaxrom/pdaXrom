@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!--pdaXrom settings file-->
+<INPUTSETTINGS>
+	<Mods ALTMOD="97" CTRLMOD="96" MIDDLEMOUSEMOD="35" PRESSANDHOLD="False" RIGHTMOUSEMOD="38" SCROLLWHEELDIR="updown"/>
+	<Shortcuts ID="0" Program=""/>
+	<Shortcuts ID="1" Program=""/>
+	<Shortcuts ID="2" Program=""/>
+	<Shortcuts ID="3" Program=""/>
+	<Shortcuts ID="4" Program="dillo"/>
+	<Shortcuts ID="5" Program="sylpheed"/>
+	<Shortcuts ID="6" Program="kapi"/>
+	<Shortcuts ID="7" Program="kopi"/>
+	<Shortcuts ID="8" Program="xmms"/>
+</INPUTSETTINGS>
