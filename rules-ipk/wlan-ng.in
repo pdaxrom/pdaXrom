@@ -1,0 +1,28 @@
+config WLAN-NG
+	bool
+	prompt "wlan-ng"
+
+config WLAN-NG-PCI
+	bool
+	prompt "pci"
+	depends on WLAN-NG
+
+config WLAN-NG-PLX
+	bool
+	prompt "plx"
+	depends on WLAN-NG
+
+config WLAN-NG-PCMCIA
+	bool
+	prompt "pcmcia"
+	depends on WLAN-NG
+
+config WLAN-NG-USB
+	bool
+	prompt "usb"
+	depends on WLAN-NG
+
+config WLAN-NG_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on WLAN-NG

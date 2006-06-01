@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+    echo "$0 <username>"
+    exit 1
+fi
+
+adduser -G users $1 && sudo -u $1 tar --strip-components=2 -xf /root/.home_default.tar -C /home/$1 home/root/* >/dev/null 2>/dev/null

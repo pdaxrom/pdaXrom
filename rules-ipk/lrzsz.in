@@ -1,0 +1,7 @@
+config LRZSZ
+	bool "lrzsz"
+
+config LRZSZ_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on LRZSZ

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Comment=SQLite Browser
+Exec=sqlitebrowser
+Icon=database.png
+Name=SQLite Browser
+Type=Application
+Categories=Application;Office;WordProcessor;
+StartupNotify=False

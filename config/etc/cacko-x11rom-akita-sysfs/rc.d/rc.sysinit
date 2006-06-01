@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# Set the path
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+mount -n -t proc none /proc
+mount -n -t sysfs none /sys
+
+mount -t ramfs none /dev || mount -t tmpfs none /dev
+
+if [ -d /sys/block ]; then
+    #action "Starting udev:" 
+    /sbin/udevstart
+
+    if [ -e /etc/udev/links.conf ]; then
+	grep '^[^#]' /etc/udev/links.conf | \
+	while read type name arg1; do
+	    [ "$type" -a "$name" -a ! -e "/dev/$name" -a ! -L "/dev/$name" ] || continue
+	    case "$type" in
+    		L) ln -s $arg1 /dev/$name ;;
+    		D) mkdir -p /dev/$name ;;
+    		M) mknod -m 600 /dev/$name $arg1 ;;
+    		*) echo "links.conf: unparseable line ($type $name $arg1)" ;;
+	    esac
+	done
+    fi
+
+    action "Starting udev daemon:" /sbin/udevd --daemon
+    #echo "/sbin/udevsend" > /proc/sys/kernel/hotplug
+    #action "Synthesizing the initial hotplug events:" udevsynthesize
+fi
+
+# Disable kernel log to console
+echo "0 0 0 0" >/proc/sys/kernel/printk
+
+if [ ! -f /etc/rc.d/rc.rofilesys -o ! -x /etc/rc.d/rc.rofilesys ];then   
+    action "Mounting filesystem:" mount -o remount -w /
+    action "Mounting local FS:" mount -a -t nonfs,noproc
+    # add swap
+    for dev in `/sbin/fdisk -l | grep 'Linux swap' | cut -d ' ' -f 1`; do
+	action "Found swap on $dev, turn it on:" /sbin/swapon $dev
+	break
+    done
+
+    mkdir -p /dev/shm/tmp
+    mkdir -p /dev/shm/run
+    cp -a /var/run/* /dev/shm/run/
+    mount --bind /dev/shm/run /var/run
+else
+    mount /dev/pts
+    . /etc/rc.d/rc.rofilesys
+fi
+
+HOSTNAME=`/bin/hostname`
+
+# Read in config data.
+if [ -f /etc/sysconfig/network ]; then
+    . /etc/sysconfig/network
+else
+    NETWORKING=no
+fi
+
+if [ -z "$HOSTNAME" -o "$HOSTNAME" = "(none)" ]; then
+    HOSTNAME=cacko
+fi
+
+# Print a banner. ;)
+if [ -z "$SILENT" ] ; then
+    echo -en $"Welcome to "
+    [ "$BOOTUP" != "serial" ] && echo -en $"\\033[1;31m"
+    echo -en $"Zaurus"
+    [ "$BOOTUP" != "serial" ] && echo -en $"\\033[0;39m"
+    echo $" pdaXrom!"
+fi
+
+# rebuild cache for shared libraries, don't update links.
+if [ -x /sbin/ldconfig ]; then
+    /sbin/ldconfig -X
+fi
+
+# check /etc/HOSTNAME
+if [ -f /etc/HOSTNAME ]; then
+    HOSTNAME=`cat /etc/HOSTNAME`
+fi
+
+# setup for lo loopback device
+action "Set loopback device:" ifconfig lo 127.0.0.1 netmask 255.0.0.0
+
+# set hostname
+action $"Hostname: ${HOSTNAME}" /bin/hostname $HOSTNAME
+
+# module dependency
+if [ -x /sbin/depmod ]; then
+    action "Module dependencies:" depmod -a
+fi
+
+# Run all rc.* files apart rc.local in /etc/rc.d
+cd /etc/rc.d
+for I in rc.modules rc.serial;do
+  if [ -f ./$I ];then
+    if [ -x ./$I ];then
+      ./$I
+    fi
+  fi
+done
+
+#action "Mounting local FS:" mount -a -t nonfs
+#mount -a -t nonfs
+#action "Mounting remote FS:" mount -a -t nfs
+#mount -a -t nfs
+
+# Finish by running rc.local
+cd /etc/rc.d
+if [ -f "./rc.local" ];then
+  if [ -x "./rc.local" ];then
+    echo "*** Running rc.local"
+    ./rc.local
+  fi
+fi
+
+# /var clean up
+for f in /var/lock/* /var/run/*; do
+    if test -d "$f" ; then
+	rm -f $f/*
+    else
+	rm -f $f
+    fi
+done
+
+# utmp clean up
+>/var/run/utmp
+touch /var/log/wtmp
+chgrp utmp /var/run/utmp /var/log/wtmp
+chmod 0664 /var/run/utmp /var/log/wtmp
+chmod 1777 /var/tmp
+chmod 1777 /tmp
+
+# save dmesg
+dmesg > /var/log/dmesg
+rm -f /var/log/messages
+/sbin/syslogd -S
+
+# reconfiguring offline installed packages
+
+if [ ! -f /etc/.ipks_configured ]; then
+    printf "Configuring packages "
+    for FILE in /usr/lib/ipkg/info/*.postinst ; do
+	printf "`echo $FILE | sed 's/.*\///g' | sed 's/\..*$//'` "
+	$FILE configure 2>/dev/null 1>/dev/null
+	rm -f $FILE 2>/dev/null 1>/dev/null
+    done
+    echo " ... done"
+fi
+touch /etc/.ipks_configured
+
+if [ -f /usr/bin/lightnpower.py ]; then
+    HOME=/home/root /usr/bin/lightnpower.py --setbackonly
+fi
+
+if [ -f /home/root/zgcc-@GCC_VERSION@.img ]; then
+    if [ ! -d @PTXCONF_PREFIX@ ]; then
+	mkdir -p @PTXCONF_PREFIX@
+    fi
+    mount -o loop /home/root/zgcc-@GCC_VERSION@.img @PTXCONF_PREFIX@
+fi
+
+HARDWARE=`cat /proc/cpuinfo | grep 'Hardware' | cut -d':' -f2 | cut -d' ' -f3`
+#echo "pdaXrom [${HARDWARE}]"
+test -e /etc/sysconfig/keyboard/${HARDWARE}/keymap.map && loadkeys /etc/sysconfig/keyboard/${HARDWARE}/keymap.map 2>/dev/null >/dev/null
+
+grep "UTF-8" /etc/sysconfig/locale > /dev/null && echo -n -e '\033%G'
+if [ -e /usr/bin/consolechars -a -e /etc/sysconfig/locale ]; then
+    FONT=` . /etc/sysconfig/locale ; echo $CONSOLE_FONT`
+    if [ ! "x$FONT" = "x" ]; then
+	action "Setup console font:" consolechars --font /usr/share/kbd/consolefonts/$FONT
+    fi
+fi

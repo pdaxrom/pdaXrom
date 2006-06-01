@@ -1,0 +1,82 @@
+Configuraton for SHARP ZAURUS SL-C1000/C3100 pdaXrom
+    akita-rom
+    akita-xtools
+    akita-xtools_kernel
+
+Configuraton for SHARP ZAURUS SL-C1000/C3100 pdaXrom with glibc 2.3.5 (experemental)
+    akita-glibc-2.3.5-rom
+    akita-glibc-2.3.5-xtools
+    akita-glibc-2.3.5-xtools_kernel
+
+Configuraton for SHARP ZAURUS SL-C1000/C3100 pdaXrom with kernel 2.6 (experemental)
+    akita-kernel-2.6-boot
+    akita-kernel-2.6-xtools
+
+Configuraton for ARCHOS PMA-400 pdaXrom
+    archos-pma400-rom
+    archos-pma400-xtools
+
+Configuraton for ARCHOS PMA-400 native developer tools
+    archos-pma400-fpa-rom
+    archos-pma400-fpa-xtools
+
+Configuraton for SHARP ZAURUS SL-5500/5000D pdaXrom
+    collie-rom
+    collie-xtools
+    collie-xtools_kernel
+
+Configuraton for SHARP ZAURUS SL-C7x0/7500/860 pdaXrom
+    corgi-rom
+    corgi-xtools
+    corgi-xtools_kernel
+
+Configuraton for SHARP ZAURUS SL-C7x0/7500/860 pdaXrom (hardfloat configuration)
+    corgi-fpa-rom
+    corgi-fpa-xtools
+    corgi-fpa-xtools_kernel
+
+Configuraton for Cybiko H8300-HMS cross tools (newlib)
+    cybiko-newlib-xtools
+
+Configuraton for i686 PC pdaXrom
+    i686-livecd-rom
+    i686-livecd-xtools
+
+Configuraton for Integrator board bootstrap image (for qemu emulator)
+    integrator-qemu-rom
+    integrator-qemu-xtools
+
+Configuraton for HP IPAQ 36xx pdaXrom
+    ipaq-sa-3600-bootstrap
+    ipaq-sa-3600-rom
+    ipaq-sa-3600-xtools
+
+Configuraton for PHYCORE PCM022 pdaXrom
+    phycore-pcm022-rom
+    phycore-pcm022-xtools
+
+Configuraton for Sony Playstation2 pdaXrom
+    playstation2-rom
+    playstation2-xtools
+    playstation2-xtools_kernel
+
+Configuraton for PowerMac pdaXrom
+    powermac-rom
+    powermac-xtools
+
+Configuraton for IBM RS-6000 pdaXrom
+    rs-6000-bootstrap
+    rs-6000-xtools
+    rs-6000-xtools_2.95.3
+
+Configuraton for SEGA DREAMCAST KOS cross tools
+    segadc-kos-xtools
+
+Configuraton for SEGA DREAMCAST cross tools (newlib)
+    segadc-newlib-xtools
+
+Configuraton for SHARP ZAURUS SL-6000 pdaXrom
+    tosa-rom
+    tosa-xtools
+    tosa-xtools_kernel
+

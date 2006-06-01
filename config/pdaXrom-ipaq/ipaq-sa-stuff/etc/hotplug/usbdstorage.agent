@@ -1,0 +1,198 @@
+#!/bin/bash
+#
+# Network hotplug policy agent for Linux 2.4 kernels
+#
+# Kernel NET hotplug params include:
+#        
+#        ACTION=%s [register or unregister]
+#        INTERFACE=%s
+#
+# HISTORY:
+#
+# 25-Feb-2001        Special case ppp and similar (redhat)
+# 23-Jan-2001        Log invocation of "ifup" if debugging
+# 04-Jan-2001        Initial version of "new" hotplug agent.
+# 2001-Dec-19        Modified to work with ash, Sharp policy for usbd0 added
+#
+# $Id: usbdstorage.agent,v 1.1 2004/12/07 02:04:24 namikosi Exp $
+#
+
+DEVICE_CF=/dev/hda1
+DEVICE_CFA=/dev/hda1
+DEVICE_CFC=/dev/hdc1
+DEVICE_HDDA=/dev/hda3
+DEVICE_HDDC=/dev/hdc3
+DEVICE_SD=/dev/mmcda1
+#add 2004/10/19
+MOUNT_POINT=/hdd3
+
+STORAGE_PID_FILE=/var/run/usbdstorage.pid
+STORAGE_PID=""
+USB_STATUS=""
+STORAGE_DEV=""
+
+#add 2004/10/19
+
+wait_umount()
+{
+    count=1
+    while true
+    do
+	if [ -f /hdd3/NotAvailable ]; then
+	    return
+	fi
+        umount $MOUNT_POINT
+        if [ $? = 0 ]; then
+            #echo umount >> /tmp/hdd3
+            return
+        fi
+        echo count=$count > /tmp/hdd3
+        if [ `expr $count \>= 500` = 1 ]; then
+            #echo time out >> /tmp/hdd3
+            return
+        fi
+        count=`expr $count + 1`
+        usleep 200000
+    done
+}
+
+# add 2004/09/06
+if [ -r $STORAGE_PID_FILE ]; then
+        STORAGE_PID=`cat $STORAGE_PID_FILE`
+        USB_STATUS=`cat /proc/usb-storage | grep "USB status" | cut -d : -f 2`
+        STORAGE_DEV=`cat /etc/hotplug/usbdstorage.conf`
+fi
+
+#echo $ACTION >> /tmp/foo
+case ${ACTION} in
+active)
+    echo ${INTERFACE} > ${STORAGE_PID_FILE}
+    ;;
+inactive)
+    rm -f ${STORAGE_PID_FILE}
+    ;;
+mount)
+#    echo ${INTERFACE} >> /tmp/storage
+    case ${INTERFACE} in
+#    ${DEVICE_CF})
+#        /etc/pcmcia/ide start hda
+#        ;;
+    ${DEVICE_CFA})
+        /etc/pcmcia/ide start hda
+        ;;
+    ${DEVICE_CFC})
+        /etc/pcmcia/ide start hdc
+        ;;
+    ${DEVICE_HDDA})
+        # add 2004/09/06
+        if [ $USB_STATUS = USB_CONNECT ]; then
+            if [ $STORAGE_PID ]; then
+                kill -HUP "$STORAGE_PID"
+            fi
+        fi
+
+        mount -t vfat -o noatime,quiet,umask=000,iocharset=utf8 /dev/hda3 /hdd3
+	if [ -d /hdd3/Documents ]; then
+	else
+		mkdir /hdd3/Documents
+	fi
+        # add 2004/09/06
+        if [ $STORAGE_PID ]; then
+            kill -HUP "$STORAGE_PID"
+        fi
+        ;;
+
+    ${DEVICE_HDDC})
+        # add 2004/09/06
+        if [ $USB_STATUS = USB_CONNECT ]; then
+            if [ $STORAGE_PID ]; then
+                kill -HUP "$STORAGE_PID"
+            fi
+        fi
+        mount -t vfat -o noatime,quiet,umask=000,iocharset=utf8 /dev/hdc3 /hdd3
+	if [ -d /hdd3/Documents ]; then
+	else
+		mkdir /hdd3/Documents
+	fi
+        # add 2004/09/06
+        if [ $STORAGE_PID ]; then
+            kill -HUP "$STORAGE_PID"
+        fi
+        ;;
+    ${DEVICE_SD})
+        /etc/sdcard/sd_mem_ctrl insert
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+    ;;
+umount)
+#    echo ${INTERFACE} >> /tmp/storage
+    case ${INTERFACE} in
+    ${DEVICE_CF})
+        /etc/pcmcia/ide stop hda
+        ;;
+    ${DEVICE_CFA})
+        /etc/pcmcia/ide stop hda
+        ;;
+    ${DEVICE_CFC})
+        /etc/pcmcia/ide stop hdc
+        ;;
+    ${DEVICE_HDDA})
+        # add 2004/09/07
+#        target_pids=`fuser -m $DEVICE_HDDA | cut -d : -f2`
+#        echo $target_pids >> /tmp/hdd3
+#        kill -9 $target_pids
+        fuser -k -m $DEVICE_HDDA
+        # add 2004/09/06
+        if [ $USB_STATUS = USB_CONNECT ]; then
+            if [ $STORAGE_PID ]; then
+                kill -HUP "$STORAGE_PID"
+            fi
+        fi
+#2004/10/19change
+wait_umount
+#        sleep 1
+#        umount /hdd3
+        ;;
+    ${DEVICE_HDDC})
+        # add 2004/09/07
+#        target_pids=`fuser -m $DEVICE_HDDC | cut -d : -f2`
+#        echo $target_pids >> /tmp/hdd3
+#        kill -9 $target_pids
+        fuser -k -m $DEVICE_HDDC
+        # add 2004/09/06
+        if [ $USB_STATUS = USB_CONNECT ]; then
+            if [ $STORAGE_PID ]; then
+                kill -HUP "$STORAGE_PID"
+            fi
+        fi
+#2004/10/19change
+wait_umount
+#        sleep 1
+#        umount /hdd3
+        ;;
+    ${DEVICE_SD})
+        /etc/sdcard/sd_mem_ctrl compeject
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+    ;;
+connect)
+    ;;
+disconnect)
+    ;;
+insert)
+    ;;
+eject)
+    ;;
+*)
+    exit 1
+    ;;
+esac
+
+exit 0
+ 
