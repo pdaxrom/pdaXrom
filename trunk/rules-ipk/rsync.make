@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 RSYNC_VENDOR_VERSION	= 1
-RSYNC_VERSION		= 2.6.3
+RSYNC_VERSION		= 2.6.8
 RSYNC			= rsync-$(RSYNC_VERSION)
 RSYNC_SUFFIX		= tar.gz
 RSYNC_URL		= http://samba.anu.edu.au/ftp/rsync/$(RSYNC).$(RSYNC_SUFFIX)
@@ -98,9 +98,9 @@ endif
 $(STATEDIR)/rsync.prepare: $(rsync_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(RSYNC_DIR)/config.cache)
-	cd $(RSYNC_DIR) && $(RSYNC_PATH) aclocal
-	cd $(RSYNC_DIR) && $(RSYNC_PATH) automake --add-missing
-	cd $(RSYNC_DIR) && $(RSYNC_PATH) autoconf
+	#cd $(RSYNC_DIR) && $(RSYNC_PATH) aclocal
+	#cd $(RSYNC_DIR) && $(RSYNC_PATH) automake --add-missing
+	#cd $(RSYNC_DIR) && $(RSYNC_PATH) autoconf
 	cd $(RSYNC_DIR) && \
 		$(RSYNC_PATH) $(RSYNC_ENV) \
 		./configure $(RSYNC_AUTOCONF)
@@ -140,9 +140,11 @@ rsync_targetinstall_deps = $(STATEDIR)/rsync.compile
 $(STATEDIR)/rsync.targetinstall: $(rsync_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(RSYNC_PATH) $(MAKE) -C $(RSYNC_DIR) DESTDIR=$(RSYNC_IPKG_TMP) install
+	rm -rf $(RSYNC_IPKG_TMP)/usr/man
+	$(CROSSSTRIP) $(RSYNC_IPKG_TMP)/usr/bin/*
 	mkdir -p $(RSYNC_IPKG_TMP)/CONTROL
 	echo "Package: rsync" 											 >$(RSYNC_IPKG_TMP)/CONTROL/control
-	echo "Source: $(RSYNC_URL)"						>>$(RSYNC_IPKG_TMP)/CONTROL/control
+	echo "Source: $(RSYNC_URL)"										>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 										>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Section: Utilities" 										>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 							>>$(RSYNC_IPKG_TMP)/CONTROL/control
@@ -150,7 +152,6 @@ $(STATEDIR)/rsync.targetinstall: $(rsync_targetinstall_deps)
 	echo "Version: $(RSYNC_VERSION)-$(RSYNC_VENDOR_VERSION)" 						>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 											>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Description: rsync is an open source utility that provides fast incremental file transfer."	>>$(RSYNC_IPKG_TMP)/CONTROL/control
-	asdasd
 	cd $(FEEDDIR) && $(XMKIPKG) $(RSYNC_IPKG_TMP)
 	touch $@
 
