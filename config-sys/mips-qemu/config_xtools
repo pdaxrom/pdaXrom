@@ -26,8 +26,8 @@ PTXCONF_ARCH_MIPS=y
 # PTXCONF_ARCH_PARISC is not set
 # PTXCONF_ARCH_SH is not set
 # PTXCONF_ARCH_H8300 is not set
-# PTXCONF_MIPS_ARCH_BE is not set
-PTXCONF_MIPS_ARCH_LE=y
+PTXCONF_MIPS_ARCH_BE=y
+# PTXCONF_MIPS_ARCH_LE is not set
 # PTXCONF_OPT_ARM is not set
 # PTXCONF_OPT_ARM_NOMMU is not set
 # PTXCONF_OPT_I386 is not set
@@ -39,14 +39,13 @@ PTXCONF_MIPS_ARCH_LE=y
 # PTXCONF_OPT_PPC750 is not set
 # PTXCONF_OPT_PPC7450 is not set
 # PTXCONF_OPT_SPARC is not set
-# PTXCONF_OPT_MIPS is not set
-PTXCONF_OPT_MIPSEL=y
+PTXCONF_OPT_MIPS=y
+# PTXCONF_OPT_MIPSEL is not set
 # PTXCONF_OPT_CRIS is not set
 # PTXCONF_OPT_PARISC is not set
 # PTXCONF_OPT_SH3 is not set
 # PTXCONF_OPT_SH4 is not set
 # PTXCONF_OPT_H8300 is not set
-# PTXCONF_OPT_MIPSEL_R5900 is not set
 # PTXCONF_ARCH_TARGET_EQU_HOST is not set
 
 #
@@ -54,17 +53,17 @@ PTXCONF_OPT_MIPSEL=y
 #
 PTXCONF_TARGET_EXTRA_CFLAGS=""
 PTXCONF_TARGET_EXTRA_CXXFLAGS=""
-PTXCONF_TARGET_CONFIG_FILE="mipsel.dat"
+PTXCONF_TARGET_CONFIG_FILE="mips.dat"
 
 #
 # ---
 #
 PTXCONF_ARCH="mips"
 PTXCONF_ARCH_USERSPACE="mips"
-PTXCONF_GNU_TARGET="mipsel-cacko-linux-gnu"
-PTXCONF_PREFIX="/opt/cross/mipsel/3.4.6-mipsel-softfloat-mipsel-qemu"
-PTXCONF_NATIVE_PREFIX="/opt/native/mipsel/3.4.6-mipsel-softfloat"
-PTXCONF_ROOT="/tmp/roots/root-mipsel-qemu"
+PTXCONF_GNU_TARGET="mips-cacko-linux-gnu"
+PTXCONF_PREFIX="/opt/cross/mips/3.4.6-mips-softfloat-mips-qemu"
+PTXCONF_NATIVE_PREFIX="/opt/native/mips/3.4.6-mips-softfloat"
+PTXCONF_ROOT="/tmp/roots/root-mips-qemu"
 
 #
 # Cross Toolchain     
@@ -120,7 +119,7 @@ PTXCONF_OS_TYPE="linux"
 #
 # Kernel              
 #
-PTXCONF_KERNEL_CONFIG="kernel-2.4.32-decstation"
+PTXCONF_KERNEL_CONFIG="kernel-2.6.16-mips-qemu"
 # PTXCONF_KERNEL_2_2_26 is not set
 # PTXCONF_KERNEL_2_4_17 is not set
 # PTXCONF_KERNEL_2_4_18 is not set
@@ -132,14 +131,14 @@ PTXCONF_KERNEL_CONFIG="kernel-2.4.32-decstation"
 # PTXCONF_KERNEL_2_4_27 is not set
 # PTXCONF_KERNEL_2_4_28 is not set
 # PTXCONF_KERNEL_2_4_31 is not set
-PTXCONF_KERNEL_2_4_32=y
+# PTXCONF_KERNEL_2_4_32 is not set
 # PTXCONF_KERNEL_2_6_9 is not set
 # PTXCONF_KERNEL_2_6_10 is not set
 # PTXCONF_KERNEL_2_6_11 is not set
 # PTXCONF_KERNEL_2_6_12 is not set
 # PTXCONF_KERNEL_2_6_14 is not set
 # PTXCONF_KERNEL_2_6_15 is not set
-# PTXCONF_KERNEL_2_6_16 is not set
+PTXCONF_KERNEL_2_6_16=y
 # PTXCONF_KERNEL_SH_DC is not set
 # PTXCONF_KERNEL_RMK is not set
 # PTXCONF_KERNEL_RMK2_LINEO5 is not set
@@ -234,7 +233,7 @@ PTXCONF_LIBSTDCXX_SHARED=y
 # PTXCONF_ROOTFS_VAR is not set
 PTXCONF_ETC_NAME=""
 PTXCONF_VENDORTWEAKS=""
-PTXCONF_VENDORTWEAKS_USERCONFIG="mipsel-qemu"
+PTXCONF_VENDORTWEAKS_USERCONFIG="mips-qemu"
 
 #
 # Embedded linux target specific ---  
