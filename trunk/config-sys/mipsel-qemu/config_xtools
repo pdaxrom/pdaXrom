@@ -62,9 +62,9 @@ PTXCONF_TARGET_CONFIG_FILE="mipsel.dat"
 PTXCONF_ARCH="mips"
 PTXCONF_ARCH_USERSPACE="mips"
 PTXCONF_GNU_TARGET="mipsel-cacko-linux-gnu"
-PTXCONF_PREFIX="/opt/cross/mipsel/3.4.6-mipsel-softfloat-decstation"
+PTXCONF_PREFIX="/opt/cross/mipsel/3.4.6-mipsel-softfloat-mipsel-qemu"
 PTXCONF_NATIVE_PREFIX="/opt/native/mipsel/3.4.6-mipsel-softfloat"
-PTXCONF_ROOT="/tmp/roots/root-decstation"
+PTXCONF_ROOT="/tmp/roots/root-mipsel-qemu"
 
 #
 # Cross Toolchain     
@@ -234,7 +234,7 @@ PTXCONF_LIBSTDCXX_SHARED=y
 # PTXCONF_ROOTFS_VAR is not set
 PTXCONF_ETC_NAME=""
 PTXCONF_VENDORTWEAKS=""
-PTXCONF_VENDORTWEAKS_USERCONFIG="decstation"
+PTXCONF_VENDORTWEAKS_USERCONFIG="mipsel-qemu"
 
 #
 # Embedded linux target specific ---  
