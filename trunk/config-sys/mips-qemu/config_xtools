@@ -119,7 +119,7 @@ PTXCONF_OS_TYPE="linux"
 #
 # Kernel              
 #
-PTXCONF_KERNEL_CONFIG="kernel-2.6.16-mips-qemu"
+PTXCONF_KERNEL_CONFIG="kernel-2.4.32-sgiip22"
 # PTXCONF_KERNEL_2_2_26 is not set
 # PTXCONF_KERNEL_2_4_17 is not set
 # PTXCONF_KERNEL_2_4_18 is not set
@@ -131,14 +131,14 @@ PTXCONF_KERNEL_CONFIG="kernel-2.6.16-mips-qemu"
 # PTXCONF_KERNEL_2_4_27 is not set
 # PTXCONF_KERNEL_2_4_28 is not set
 # PTXCONF_KERNEL_2_4_31 is not set
-# PTXCONF_KERNEL_2_4_32 is not set
+PTXCONF_KERNEL_2_4_32=y
 # PTXCONF_KERNEL_2_6_9 is not set
 # PTXCONF_KERNEL_2_6_10 is not set
 # PTXCONF_KERNEL_2_6_11 is not set
 # PTXCONF_KERNEL_2_6_12 is not set
 # PTXCONF_KERNEL_2_6_14 is not set
 # PTXCONF_KERNEL_2_6_15 is not set
-PTXCONF_KERNEL_2_6_16=y
+# PTXCONF_KERNEL_2_6_16 is not set
 # PTXCONF_KERNEL_SH_DC is not set
 # PTXCONF_KERNEL_RMK is not set
 # PTXCONF_KERNEL_RMK2_LINEO5 is not set
