@@ -21,7 +21,6 @@ endif
 #
 XCHAIN_KDELIBS			= kdelibs-$(KDELIBS_VERSION)
 XCHAIN_KDELIBS_DIR		= $(XCHAIN_BUILDDIR)/$(XCHAIN_KDELIBS)
-
 # ----------------------------------------------------------------------------
 # Get
 # ----------------------------------------------------------------------------
@@ -30,8 +29,9 @@ xchain-kdelibs_get: $(STATEDIR)/xchain-kdelibs.get
 
 xchain-kdelibs_get_deps = $(XCHAIN_KDELIBS_SOURCE)
 
-$(STATEDIR)/xchain-kdelibs.get: $(xchain-kdelibs_get_deps)
+$(STATEDIR)/xchain-kdelibs.get: $(kdelibs_get_deps)
 	@$(call targetinfo, $@)
+	@$(call get, $(KDELIBS_URL))
 	@$(call get_patches, $(XCHAIN_KDELIBS))
 	touch $@
 
