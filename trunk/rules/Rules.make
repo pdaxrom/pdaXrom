@@ -408,27 +408,27 @@ CROSS_ENV := \
 #endif
 
 ifdef PTXCONF_ARCH_X86
-include rules/Conf_x86.dat
+include config/arch/Conf_x86.dat
 endif
 
 ifdef PTXCONF_ARCH_ARM
-include rules/Conf_arm.dat
+include config/arch/Conf_arm.dat
 endif
 
 ifdef PTXCONF_ARCH_PPC
-include rules/Conf_ppc.dat
+include config/arch/Conf_ppc.dat
 endif
 
 ifdef PTXCONF_ARCH_SH
-include rules/Conf_sh.dat
+include config/arch/Conf_sh.dat
 endif
 
 ifdef PTXCONF_OPT_MIPSEL
-include rules/Conf_mipsel.dat
+include config/arch/Conf_mipsel.dat
 endif
 
 ifdef PTXCONF_OPT_MIPS
-include rules/Conf_mips.dat
+include config/arch/Conf_mips.dat
 endif
 
 
