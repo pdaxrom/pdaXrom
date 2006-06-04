@@ -99,7 +99,7 @@ PTXCONF_OS_TYPE="linux"
 #
 # Kernel              
 #
-PTXCONF_KERNEL_CONFIG="kernel-2.6.16-mipsel-qemu"
+PTXCONF_KERNEL_CONFIG="kernel-2.6.16-mips-qemu"
 # PTXCONF_KERNEL_2_2_26 is not set
 # PTXCONF_KERNEL_2_4_17 is not set
 # PTXCONF_KERNEL_2_4_18 is not set
