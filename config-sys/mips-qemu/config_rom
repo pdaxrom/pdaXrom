@@ -26,17 +26,8 @@ PTXCONF_ARCH_MIPS=y
 # PTXCONF_ARCH_PARISC is not set
 # PTXCONF_ARCH_SH is not set
 # PTXCONF_ARCH_H8300 is not set
-# PTXCONF_ARM_ARCH_OMAP is not set
-# PTXCONF_ARM_ARCH_PXA is not set
-# PTXCONF_ARM_ARCH_EPXA is not set
-# PTXCONF_ARM_ARCH_SA1100 is not set
-# PTXCONF_ARM_ARCH_ARM7500FE is not set
-# PTXCONF_ARM_ARCH_LH79520 is not set
-# PTXCONF_ARM_ARCH_IXP2000 is not set
-# PTXCONF_ARM_ARCH_NETARM is not set
-# PTXCONF_ARM_ARCH_ATMEL is not set
-# PTXCONF_MIPS_ARCH_BE is not set
-PTXCONF_MIPS_ARCH_LE=y
+PTXCONF_MIPS_ARCH_BE=y
+# PTXCONF_MIPS_ARCH_LE is not set
 # PTXCONF_OPT_ARM is not set
 # PTXCONF_OPT_ARM_NOMMU is not set
 # PTXCONF_OPT_I386 is not set
@@ -48,14 +39,13 @@ PTXCONF_MIPS_ARCH_LE=y
 # PTXCONF_OPT_PPC750 is not set
 # PTXCONF_OPT_PPC7450 is not set
 # PTXCONF_OPT_SPARC is not set
-# PTXCONF_OPT_MIPS is not set
-PTXCONF_OPT_MIPSEL=y
+PTXCONF_OPT_MIPS=y
+# PTXCONF_OPT_MIPSEL is not set
 # PTXCONF_OPT_CRIS is not set
 # PTXCONF_OPT_PARISC is not set
 # PTXCONF_OPT_SH3 is not set
 # PTXCONF_OPT_SH4 is not set
 # PTXCONF_OPT_H8300 is not set
-# PTXCONF_OPT_MIPSEL_R5900 is not set
 # PTXCONF_ARCH_TARGET_EQU_HOST is not set
 
 #
@@ -63,17 +53,17 @@ PTXCONF_OPT_MIPSEL=y
 #
 PTXCONF_TARGET_EXTRA_CFLAGS=""
 PTXCONF_TARGET_EXTRA_CXXFLAGS=""
-PTXCONF_TARGET_CONFIG_FILE="mipsel.dat"
+PTXCONF_TARGET_CONFIG_FILE="mips.dat"
 
 #
 # ---
 #
 PTXCONF_ARCH="mips"
 PTXCONF_ARCH_USERSPACE="mips"
-PTXCONF_GNU_TARGET="mipsel-cacko-linux-gnu"
-PTXCONF_PREFIX="/opt/cross/mipsel/3.4.6-mipsel-softfloat-mipsel-qemu"
-PTXCONF_NATIVE_PREFIX="/opt/native/mipsel/3.4.6-mipsel-softfloat"
-PTXCONF_ROOT="/tmp/roots/root-mipsel-qemu"
+PTXCONF_GNU_TARGET="mips-cacko-linux-gnu"
+PTXCONF_PREFIX="/opt/cross/mips/3.4.6-mips-softfloat-mips-qemu"
+PTXCONF_NATIVE_PREFIX="/opt/native/mips/3.4.6-mips-softfloat"
+PTXCONF_ROOT="/tmp/roots/root-mips-qemu"
 
 #
 # Cross Toolchain     
