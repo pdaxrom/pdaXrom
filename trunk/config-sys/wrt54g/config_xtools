@@ -120,7 +120,7 @@ PTXCONF_OS_TYPE="linux"
 #
 # Kernel              
 #
-PTXCONF_KERNEL_CONFIG="kernel-2.4.32-db1500"
+PTXCONF_KERNEL_CONFIG="kernel-2.4.32-brcm"
 # PTXCONF_KERNEL_2_2_26 is not set
 # PTXCONF_KERNEL_2_4_17 is not set
 # PTXCONF_KERNEL_2_4_18 is not set
