@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.16
-# Sun Jun  4 21:31:00 2006
+# Sun Jun  4 21:34:49 2006
 #
 CONFIG_MIPS=y
 
@@ -173,7 +173,12 @@ CONFIG_BASE_SMALL=1
 #
 # Loadable module support
 #
-# CONFIG_MODULES is not set
+CONFIG_MODULES=y
+CONFIG_MODULE_UNLOAD=y
+CONFIG_OBSOLETE_MODPARM=y
+# CONFIG_MODVERSIONS is not set
+# CONFIG_MODULE_SRCVERSION_ALL is not set
+CONFIG_KMOD=y
 
 #
 # Block layer
