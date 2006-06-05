@@ -6,7 +6,8 @@ PTXCONF_PTXCONF=y
 #
 # Code maturity       
 #
-# PTXCONF_EXP is not set
+PTXCONF_EXP=y
+PTXCONF_EXP_M=y
 
 #
 # General Options ------------------    
@@ -15,28 +16,19 @@ PTXCONF_PTXCONF=y
 #
 # Target Architecture 
 #
-PTXCONF_ARCH_ARM=y
+# PTXCONF_ARCH_ARM is not set
 # PTXCONF_ARCH_ARM_NOMMU is not set
 # PTXCONF_ARCH_X86 is not set
 # PTXCONF_ARCH_PPC is not set
 # PTXCONF_ARCH_SPARC is not set
-# PTXCONF_ARCH_MIPS is not set
+PTXCONF_ARCH_MIPS=y
 # PTXCONF_ARCH_CRIS is not set
 # PTXCONF_ARCH_PARISC is not set
 # PTXCONF_ARCH_SH is not set
 # PTXCONF_ARCH_H8300 is not set
-# PTXCONF_ARM_ARCH_OMAP is not set
-PTXCONF_ARM_ARCH_PXA=y
-# PTXCONF_ARM_ARCH_EPXA is not set
-# PTXCONF_ARM_ARCH_SA1100 is not set
-# PTXCONF_ARM_ARCH_ARM7500FE is not set
-# PTXCONF_ARM_ARCH_LH79520 is not set
-# PTXCONF_ARM_ARCH_IXP2000 is not set
-# PTXCONF_ARM_ARCH_NETARM is not set
-# PTXCONF_ARM_ARCH_ATMEL is not set
-PTXCONF_ARM_ARCH="pxa"
-PTXCONF_ARM_ARCH_LE=y
-PTXCONF_OPT_ARM=y
+# PTXCONF_MIPS_ARCH_BE is not set
+PTXCONF_MIPS_ARCH_LE=y
+# PTXCONF_OPT_ARM is not set
 # PTXCONF_OPT_ARM_NOMMU is not set
 # PTXCONF_OPT_I386 is not set
 # PTXCONF_OPT_I486 is not set
@@ -48,12 +40,13 @@ PTXCONF_OPT_ARM=y
 # PTXCONF_OPT_PPC7450 is not set
 # PTXCONF_OPT_SPARC is not set
 # PTXCONF_OPT_MIPS is not set
-# PTXCONF_OPT_MIPSEL is not set
+PTXCONF_OPT_MIPSEL=y
 # PTXCONF_OPT_CRIS is not set
 # PTXCONF_OPT_PARISC is not set
 # PTXCONF_OPT_SH3 is not set
 # PTXCONF_OPT_SH4 is not set
 # PTXCONF_OPT_H8300 is not set
+# PTXCONF_OPT_MIPSEL_R5900 is not set
 # PTXCONF_ARCH_TARGET_EQU_HOST is not set
 
 #
@@ -61,18 +54,17 @@ PTXCONF_OPT_ARM=y
 #
 PTXCONF_TARGET_EXTRA_CFLAGS=""
 PTXCONF_TARGET_EXTRA_CXXFLAGS=""
-PTXCONF_TARGET_CONFIG_FILE="xscale.dat"
+PTXCONF_TARGET_CONFIG_FILE="mipsel.dat"
 
 #
 # ---
 #
-PTXCONF_ARCH="armv5tel"
-PTXCONF_ARCH_USERSPACE="arm"
-PTXCONF_ARM_PROC="armv"
-PTXCONF_GNU_TARGET="armv5tel-cacko-linux"
-PTXCONF_PREFIX="/opt/cross/arm/3.4.6-xscale-softvfp-akita"
-PTXCONF_NATIVE_PREFIX="/opt/native/arm/3.4.6-xscale-softvfp"
-PTXCONF_ROOT="/tmp/roots/root-akita"
+PTXCONF_ARCH="mips"
+PTXCONF_ARCH_USERSPACE="mips"
+PTXCONF_GNU_TARGET="mipsel-cacko-linux-gnu"
+PTXCONF_PREFIX="/opt/cross/mipsel/3.4.6-mipsel-softfloat-decstation"
+PTXCONF_NATIVE_PREFIX="/opt/native/mipsel/3.4.6-mipsel-softfloat"
+PTXCONF_ROOT="/tmp/roots/root-decstation"
 
 #
 # Cross Toolchain     
@@ -98,7 +90,7 @@ PTXCONF_GCC_3_4_6=y
 # PTXCONF_GCC_4_0_0 is not set
 # PTXCONF_GCC_4_1_0 is not set
 PTXCONF_GCC_3=y
-PTXCONF_GCC_F77=y
+# PTXCONF_GCC_F77 is not set
 PTXCONF_GCC_SHARED=y
 PTXCONF_GCC_SOFTFLOAT=y
 PTXCONF_FPU_TYPE="softfloat"
@@ -128,25 +120,26 @@ PTXCONF_OS_TYPE="linux"
 #
 # Kernel              
 #
-PTXCONF_KERNEL_CONFIG="kernel-2.4.20-akita-cacko"
+PTXCONF_KERNEL_CONFIG="kernel-2.4.32-decstation"
 # PTXCONF_KERNEL_2_2_26 is not set
 # PTXCONF_KERNEL_2_4_17 is not set
 # PTXCONF_KERNEL_2_4_18 is not set
 # PTXCONF_KERNEL_2_4_19 is not set
-PTXCONF_KERNEL_2_4_20=y
+# PTXCONF_KERNEL_2_4_20 is not set
 # PTXCONF_KERNEL_2_4_21 is not set
 # PTXCONF_KERNEL_2_4_22 is not set
 # PTXCONF_KERNEL_2_4_23 is not set
 # PTXCONF_KERNEL_2_4_27 is not set
 # PTXCONF_KERNEL_2_4_28 is not set
 # PTXCONF_KERNEL_2_4_31 is not set
-# PTXCONF_KERNEL_2_4_32 is not set
+PTXCONF_KERNEL_2_4_32=y
 # PTXCONF_KERNEL_2_6_9 is not set
 # PTXCONF_KERNEL_2_6_10 is not set
 # PTXCONF_KERNEL_2_6_11 is not set
 # PTXCONF_KERNEL_2_6_12 is not set
 # PTXCONF_KERNEL_2_6_14 is not set
 # PTXCONF_KERNEL_2_6_15 is not set
+# PTXCONF_KERNEL_2_6_16 is not set
 # PTXCONF_KERNEL_SH_DC is not set
 # PTXCONF_KERNEL_RMK is not set
 # PTXCONF_KERNEL_RMK2_LINEO5 is not set
@@ -157,16 +150,11 @@ PTXCONF_KERNEL_2_4_20=y
 # PTXCONF_KERNEL_RMK_PXA_EMBEDIX_SL5500 is not set
 # PTXCONF_KERNEL_RMK_PXA_EMBEDIX_SLC is not set
 # PTXCONF_KERNEL_RMK_PXA_EMBEDIX_C3000 is not set
-PTXCONF_KERNEL_RMK_PXA_EMBEDIX_C1000=y
-# PTXCONF_KERNEL_VANILLA is not set
-PTXCONF_XX_KERNEL="linux-c3100-20050602-rom1_01"
-PTXCONF_XX_KERNEL_URL="http://www.pdaXrom.org/src"
-PTXCONF_XX_KERNEL_DIR="linux"
-PTXCONF_XX_VENDOR_KERNEL=y
+# PTXCONF_KERNEL_RMK_PXA_EMBEDIX_C1000 is not set
+PTXCONF_KERNEL_VANILLA=y
 PTXCONF_DONT_COMPILE_KERNEL=y
-# PTXCONF_KERNEL_INTERNAL_GCC is not set
-PTXCONF_KERNEL_EXTERNAL_GCC=y
-PTXCONF_KERNEL_EXTERNAL_GCC_PATH="/usr/local/arm/2.95.3/bin"
+PTXCONF_KERNEL_INTERNAL_GCC=y
+# PTXCONF_KERNEL_EXTERNAL_GCC is not set
 
 #
 # C Library           
@@ -246,7 +234,7 @@ PTXCONF_LIBSTDCXX_SHARED=y
 # PTXCONF_ROOTFS_VAR is not set
 PTXCONF_ETC_NAME=""
 PTXCONF_VENDORTWEAKS=""
-PTXCONF_VENDORTWEAKS_USERCONFIG="sharp-akita"
+PTXCONF_VENDORTWEAKS_USERCONFIG="decstation"
 
 #
 # Embedded linux target specific ---  
@@ -297,7 +285,6 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_MTD_UTILS is not set
 # PTXCONF_NET-TOOLS is not set
 # PTXCONF_NETKIT-BASE is not set
-# PTXCONF_PCMCIA-CS is not set
 # PTXCONF_PPP is not set
 # PTXCONF_PPTP is not set
 # PTXCONF_PSMISC is not set
@@ -413,6 +400,7 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_XGDB is not set
 # PTXCONF_GDBSERVER is not set
 # PTXCONF_GDB is not set
+# PTXCONF_SUBVERSION is not set
 
 #
 # Emulators           
@@ -469,7 +457,6 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # termcap          
 #
 # PTXCONF_TERMCAP is not set
-# PTXCONF_ATICORE is not set
 # PTXCONF_GLIB1210 is not set
 # PTXCONF_GLIB22 is not set
 # PTXCONF_GTK22 is not set
@@ -510,7 +497,7 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 #
 # Drivers             
 #
-# PTXCONF_CFXGA is not set
+# PTXCONF_ALSA-UTILS is not set
 # PTXCONF_CAMSTREAM is not set
 # PTXCONF_ESOUND is not set
 # PTXCONF_FFMPEG is not set
@@ -523,12 +510,14 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_MPLAYER is not set
 # PTXCONF_MIXMOS is not set
 # PTXCONF_MOTION is not set
+# PTXCONF_SOX is not set
 # PTXCONF_TIMIDITY is not set
 # PTXCONF_TVTIME is not set
 # PTXCONF_VLC is not set
 # PTXCONF_XAWTV is not set
 # PTXCONF_XDTV is not set
 # PTXCONF_ZCAMERA is not set
+# PTXCONF_ZMIXER is not set
 
 #
 # Network             
@@ -567,6 +556,7 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_HOSTAP-UTILS is not set
 # PTXCONF_HOSTAPD is not set
 # PTXCONF_KISMET is not set
+# PTXCONF_MADWIFI-NG is not set
 # PTXCONF_WLAN-NG is not set
 # PTXCONF_WPA_SUPPLICANT is not set
 
@@ -663,7 +653,6 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 #
 # PTXCONF_HOTPLUG is not set
 # PTXCONF_MURASAKI-HOTPLUG is not set
-# PTXCONF_SDCARD is not set
 
 #
 # IrDA stuff          
@@ -686,9 +675,9 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_APMD is not set
 # PTXCONF_ATD is not set
 # PTXCONF_CONSOLE-TOOLS is not set
+# PTXCONF_DDCXINFO-KANOTIX is not set
 # PTXCONF_DIALOG is not set
 # PTXCONF_DIFFUTILS is not set
-# PTXCONF_DVFM is not set
 # PTXCONF_ED is not set
 # PTXCONF_EJECT is not set
 # PTXCONF_FILE is not set
@@ -706,6 +695,8 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_MTOOLS is not set
 # PTXCONF_MTR is not set
 # PTXCONF_NTP is not set
+# PTXCONF_PCMCIA-CS is not set
+# PTXCONF_PCMCIAUTILS is not set
 # PTXCONF_PCIUTILS is not set
 # PTXCONF_PORTMAP is not set
 # PTXCONF_RSYNC is not set
@@ -716,6 +707,7 @@ PTXCONF_BB_HAVE_DOT_CONFIG=y
 # PTXCONF_REISER4PROGS is not set
 # PTXCONF_REISERFSPROGS is not set
 # PTXCONF_USBUTILS is not set
+# PTXCONF_U-BOOT is not set
 
 #
 # XFree86             
