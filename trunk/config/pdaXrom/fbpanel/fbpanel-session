@@ -38,11 +38,11 @@ makefbmenu
 
 #openbox 2>/dev/null >/dev/null &
 
-xrandr -o left 2>/dev/null >/dev/null
-xrandr -o left 2>/dev/null >/dev/null
+test -f /etc/sysconfig/clamshell/portrait.sh && /etc/sysconfig/clamshell/portrait.sh
+test -f /etc/sysconfig/clamshell/portrait.sh && /etc/sysconfig/clamshell/portrait.sh
 eval "fbpanel" 2>/dev/null >/dev/null &
 sleep 3
-xrandr -o normal
+test -f /etc/sysconfig/clamshell/landscape.sh && /etc/sysconfig/clamshell/landscape.sh
     
 case $DESKTOP in
     rox)
