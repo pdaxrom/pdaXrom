@@ -99,6 +99,8 @@ esac
 
 pkg_dir=$1
 
+find $pkg_dir -name \.svn | xargs rm -rf
+
 if [ ! -d $pkg_dir ]; then
 	echo "ipkg-build: Error: Directory $pkg_dir does not exist"
 	exit 1
