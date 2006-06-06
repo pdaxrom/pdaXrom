@@ -11,7 +11,6 @@ unset W100FASTPLLCLK ADADJ COMADJ PHADADJ TOUCH BADCONFIG
 
 hw_init() {
     ${HARDWARE}_init 2>/dev/null >/dev/null
-    echo =$PHADADJ =$W100FASTPLLCLK
     test $W100FASTPLLCLK && echo $W100FASTPLLCLK > /sys/devices/platform/sharp-scoop/corgi-ssp/w100fb/fastpllclk
     test $ADADJ   && echo $ADADJ   > /sys/devices/platform/sharpsl-param/adadj
     test $COMADJ  && echo $COMADJ  > /sys/devices/platform/sharpsl-param/comadj
