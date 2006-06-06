@@ -19,12 +19,12 @@ endif
 #
 # Paths and names
 #
-SQUASHFS_VERSION	= 2.2
-SQUASHFS		= squashfs$(SQUASHFS_VERSION)-r2
+SQUASHFS_VERSION	= 3.0
+SQUASHFS		= squashfs$(SQUASHFS_VERSION)
 SQUASHFS_SUFFIX		= tar.gz
 SQUASHFS_URL		= http://mesh.dl.sourceforge.net/sourceforge/squashfs/$(SQUASHFS).$(SQUASHFS_SUFFIX)
 SQUASHFS_SOURCE		= $(SRCDIR)/$(SQUASHFS).$(SQUASHFS_SUFFIX)
-SQUASHFS_DIR		= $(BUILDDIR)/squashfs$(SQUASHFS_VERSION)-r2
+SQUASHFS_DIR		= $(BUILDDIR)/squashfs$(SQUASHFS_VERSION)
 SQUASHFS_IPKG_TMP	= $(SQUASHFS_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------

@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-XCHAIN_SQUASHFS			= squashfs$(SQUASHFS_VERSION)-r2
+XCHAIN_SQUASHFS			= squashfs$(SQUASHFS_VERSION)
 XCHAIN_SQUASHFS_DIR		= $(XCHAIN_BUILDDIR)/$(XCHAIN_SQUASHFS)
 
 # ----------------------------------------------------------------------------
