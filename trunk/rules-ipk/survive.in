@@ -50,4 +50,9 @@ config SURVIVE_SETHWCLOCK
 	prompt "sethwclock"
 	depends on SURVIVE
 
+config SURVIVE_NANDLOGICAL
+	bool
+	prompt "nandlogical"
+	depends on SURVIVE
+
 endmenu

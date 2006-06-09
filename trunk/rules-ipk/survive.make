@@ -120,6 +120,9 @@ endif
 ifdef PTXCONF_SURVIVE_SETHWCLOCK
 	$(SURVIVE_PATH) $(SURVIVE_ENV) $(MAKE) -C $(SURVIVE_DIR) sethwclock CFLAGS="-O2 -I$(KERNEL_DIR)/include"
 endif
+ifdef PTXCONF_SURVIVE_NANDLOGICAL
+	$(SURVIVE_PATH) $(SURVIVE_ENV) $(MAKE) -C $(SURVIVE_DIR) nandlogical CFLAGS="-O2 -I$(KERNEL_DIR)/include"
+endif
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -192,6 +195,10 @@ endif
 ifdef PTXCONF_SURVIVE_SETHWCLOCK
 	install $(SURVIVE_DIR)/sethwclock $(SURVIVE_DIR)/root_tmp/usr/bin/sethwclock
 	$(CROSSSTRIP) -R .note -R .comment $(SURVIVE_DIR)/root_tmp/usr/bin/sethwclock
+endif
+ifdef PTXCONF_SURVIVE_NANDLOGICAL
+	install $(SURVIVE_DIR)/nandlogical $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
+	$(CROSSSTRIP) -R .note -R .comment $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
 endif
 	mkdir -p $(SURVIVE_DIR)/root_tmp/CONTROL
 	echo "Package: embedix-utils" 						 >$(SURVIVE_DIR)/root_tmp/CONTROL/control
