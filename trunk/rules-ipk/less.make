@@ -87,7 +87,8 @@ LESS_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 LESS_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
-	--prefix=/usr
+	--prefix=/usr \
+	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
 LESS_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include

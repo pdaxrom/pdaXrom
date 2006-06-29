@@ -476,6 +476,7 @@ source "rules-ipk/NVIDIA_nvaudio.in"
 endmenu
 source "rules-ipk/apmd.in"
 source "rules-ipk/atd.in"
+source "rules-ipk/bc.in"
 source "rules-ipk/cdrtools.in"
 source "rules-ipk/console-tools.in"
 source "rules-ipk/ddcxinfo-kanotix.in"
