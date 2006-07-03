@@ -19,8 +19,8 @@ endif
 #
 # Paths and names
 #
-#MPLAYER_VERSION		= 1.0pre5
-MPLAYER_VERSION		= 1.0pre7try2
+#MPLAYER_VERSION		= 1.0pre7try2
+MPLAYER_VERSION		= 1.0pre8
 MPLAYER			= MPlayer-$(MPLAYER_VERSION)
 MPLAYER_SUFFIX		= tar.bz2
 MPLAYER_URL		= http://www1.mplayerhq.hu/MPlayer/releases/$(MPLAYER).$(MPLAYER_SUFFIX)
@@ -121,7 +121,11 @@ MPLAYER_AUTOCONF = \
 	--confdir=/usr/share/mplayer \
 	--disable-static \
 	--disable-libavcodec \
-	--disable-gl
+	--disable-libavformat \
+	--disable-libavutil \
+	--disable-libpostproc \
+	--disable-gl \
+	--disable-gif
 
 ifdef PTXCONF_ARCH_PPC
 MPLAYER_AUTOCONF += --enable-big-endian
@@ -145,9 +149,9 @@ endif
 ifdef PTXCONF_MPLAYER_IWMMXT
 MPLAYER_AUTOCONF += --enable-iwmmxt
 endif
-ifeq ("sharp-akita", $(PTXCONF_VENDORTWEAKS_USERCONFIG))
-MPLAYER_AUTOCONF += --enable-bvdd
-endif
+#ifeq ("sharp-akita", $(PTXCONF_VENDORTWEAKS_USERCONFIG))
+#MPLAYER_AUTOCONF += --enable-bvdd
+#endif
 
 MPLAYER_AUTOCONF += --disable-mp3lib
 MPLAYER_AUTOCONF += --disable-tv

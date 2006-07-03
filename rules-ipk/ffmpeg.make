@@ -111,7 +111,7 @@ endif
 
 ifdef PTXCONF_ARCH_X86
 FFMPEG_AUTOCONF	+= --cpu=x86
-FFMPEG_AUTOCONF	+= --enable-mmx
+#FFMPEG_AUTOCONF	+= --enable-mmx
 else
  ifdef PTXCONF_ARCH_PPC
     FFMPEG_AUTOCONF	+= --cpu=powerpc
@@ -169,15 +169,21 @@ ffmpeg_install: $(STATEDIR)/ffmpeg.install
 
 $(STATEDIR)/ffmpeg.install: $(STATEDIR)/ffmpeg.compile
 	@$(call targetinfo, $@)
-	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include install
-	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec  prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include install
-	cp -a $(FFMPEG_DIR)/libavcodec/dsputil.h 		$(CROSS_LIB_DIR)/include/ffmpeg/
-	cp -a $(FFMPEG_DIR)/libpostproc/postprocess.h 		$(CROSS_LIB_DIR)/include/ffmpeg/
-	cp -a $(FFMPEG_DIR)/libpostproc.pc			$(CROSS_LIB_DIR)/lib/pkgconfig/
-	perl -i -p -e "s,\"common.h\",<ffmpeg/common.h>,g"	$(CROSS_LIB_DIR)/include/ffmpeg/dsputil.h
-	perl -i -p -e "s,\"avcodec.h\",<ffmpeg/avcodec.h>,g"	$(CROSS_LIB_DIR)/include/ffmpeg/dsputil.h
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat  prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include/ffmpeg install
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec   prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include/ffmpeg install
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavutil    prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include/ffmpeg install
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libpostproc  prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include/ffmpeg install
+
+#	cp -a $(FFMPEG_DIR)/libavcodec/dsputil.h 		$(CROSS_LIB_DIR)/include/ffmpeg/
+#	cp -a $(FFMPEG_DIR)/libpostproc/postprocess.h 		$(CROSS_LIB_DIR)/include/ffmpeg/
+#	cp -a $(FFMPEG_DIR)/libpostproc.pc			$(CROSS_LIB_DIR)/lib/pkgconfig/
+#	cp -a $(FFMPEG_DIR)/libavproc.pc			$(CROSS_LIB_DIR)/lib/pkgconfig/
+#	perl -i -p -e "s,\"common.h\",<ffmpeg/common.h>,g"	$(CROSS_LIB_DIR)/include/ffmpeg/dsputil.h
+#	perl -i -p -e "s,\"avcodec.h\",<ffmpeg/avcodec.h>,g"	$(CROSS_LIB_DIR)/include/ffmpeg/dsputil.h
+
 	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libavcodec.pc
 	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libavformat.pc
+	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libavutil.pc
 	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libpostproc.pc
 	touch $@
 
@@ -200,6 +206,8 @@ $(STATEDIR)/ffmpeg.targetinstall: $(ffmpeg_targetinstall_deps)
 	rm -rf $(FFMPEG_IPKG_TMP)
 	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib incdir=$(FFMPEG_IPKG_TMP)/usr/include
 	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec  prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib incdir=$(FFMPEG_IPKG_TMP)/usr/include
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavutil   prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib incdir=$(FFMPEG_IPKG_TMP)/usr/include
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libpostproc prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib incdir=$(FFMPEG_IPKG_TMP)/usr/include
 	rm -rf $(FFMPEG_IPKG_TMP)/usr/lib/pkgconfig
 	$(CROSSSTRIP) $(FFMPEG_IPKG_TMP)/usr/lib/*
 	rm -rf $(FFMPEG_IPKG_TMP)/usr/include

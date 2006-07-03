@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 VLC_VENDOR_VERSION	= 1
-VLC_VERSION		= 0.8.4
+VLC_VERSION		= 0.8.5
 VLC			= vlc-$(VLC_VERSION)
 VLC_SUFFIX		= tar.bz2
 VLC_URL			= http://download.videolan.org/pub/vlc/0.8.4/$(VLC).$(VLC_SUFFIX)
