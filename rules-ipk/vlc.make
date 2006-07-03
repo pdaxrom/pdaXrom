@@ -23,7 +23,7 @@ VLC_VENDOR_VERSION	= 1
 VLC_VERSION		= 0.8.5
 VLC			= vlc-$(VLC_VERSION)
 VLC_SUFFIX		= tar.bz2
-VLC_URL			= http://download.videolan.org/pub/vlc/0.8.4/$(VLC).$(VLC_SUFFIX)
+VLC_URL			= http://download.videolan.org/pub/vlc/0.8.5/$(VLC).$(VLC_SUFFIX)
 VLC_SOURCE		= $(SRCDIR)/$(VLC).$(VLC_SUFFIX)
 VLC_DIR			= $(BUILDDIR)/$(VLC)
 VLC_IPKG_TMP		= $(VLC_DIR)/ipkg_tmp
@@ -114,6 +114,9 @@ VLC_AUTOCONF = \
 	--enable-optimizations \
 	--disable-glx \
 	--disable-opengl
+
+#	--disable-sockets
+#	--disable-dialupman
 
 ifdef PTXCONF_LIBICONV
 VLC_AUTOCONF +=	--with-libiconv-prefix=$(CROSS_LIB_DIR)
