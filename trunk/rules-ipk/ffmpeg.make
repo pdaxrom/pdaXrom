@@ -19,8 +19,8 @@ endif
 #
 # Paths and names
 #
-#FFMPEG_VERSION		= 20050127
-FFMPEG_VERSION		= 20050621
+#FFMPEG_VERSION		= 20050621
+FFMPEG_VERSION		= 20060703
 FFMPEG			= FFMpeg-$(FFMPEG_VERSION)
 FFMPEG_SUFFIX		= tar.bz2
 FFMPEG_URL		= http://mplayerhq.hu/MPlayer/cvs/$(FFMPEG).$(FFMPEG_SUFFIX)
@@ -93,8 +93,6 @@ FFMPEG_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/li
 # autoconf
 #
 FFMPEG_AUTOCONF = \
-	--build=$(GNU_HOST) \
-	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
 	--disable-debug \
 	--cross-prefix=$(PTXCONF_GNU_TARGET)- \
@@ -103,6 +101,9 @@ FFMPEG_AUTOCONF = \
 	--enable-pp \
 	--enable-gpl \
 	--enable-a52
+
+#	--build=$(GNU_HOST)
+#	--host=$(PTXCONF_GNU_TARGET)
 
 ifndef PTXCONF_ARCH_PPC
 FFMPEG_AUTOCONF	+= --enable-amr_nb --enable-amr_nb-fixed
@@ -124,16 +125,19 @@ FFMPEG_AUTOCONF	+= --enable-mp3lame
 endif
 
 ifdef PTXCONF_ARCH_ARM
+FFMPEG_AUTOCONF	+= --cpu=armv4l
 FFMPEG_AUTOCONF	+= --enable-ipp
 FFMPEG_AUTOCONF	+= --ipp-dir=$(LIBIPP_DIR)
-ifdef PTXCONF_FFMPEG_IWMMXT
-FFMPEG_AUTOCONF	+= --enable-iwmmxt
+ifndef PTXCONF_FFMPEG_IWMMXT
+FFMPEG_AUTOCONF	+= --disable-iwmmxt
+else
+FFMPEG_AUTOCONF	+= --extra-cflags="-mtune=iwmmxt -Wa,-mcpu=iwmmxt"
 endif
 endif
 
 ifdef PTXCONF_XFREE430
-FFMPEG_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
-FFMPEG_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
+#FFMPEG_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
+#FFMPEG_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
 endif
 
 $(STATEDIR)/ffmpeg.prepare: $(ffmpeg_prepare_deps)
@@ -165,14 +169,16 @@ ffmpeg_install: $(STATEDIR)/ffmpeg.install
 
 $(STATEDIR)/ffmpeg.install: $(STATEDIR)/ffmpeg.compile
 	@$(call targetinfo, $@)
-	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib install
-	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec  prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib install
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include install
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec  prefix=$(CROSS_LIB_DIR) libdir=$(CROSS_LIB_DIR)/lib incdir=$(CROSS_LIB_DIR)/include install
 	cp -a $(FFMPEG_DIR)/libavcodec/dsputil.h 		$(CROSS_LIB_DIR)/include/ffmpeg/
-	cp -a $(FFMPEG_DIR)/libavcodec/libpostproc/postprocess.h $(CROSS_LIB_DIR)/include/ffmpeg/
+	cp -a $(FFMPEG_DIR)/libpostproc/postprocess.h 		$(CROSS_LIB_DIR)/include/ffmpeg/
+	cp -a $(FFMPEG_DIR)/libpostproc.pc			$(CROSS_LIB_DIR)/lib/pkgconfig/
 	perl -i -p -e "s,\"common.h\",<ffmpeg/common.h>,g"	$(CROSS_LIB_DIR)/include/ffmpeg/dsputil.h
 	perl -i -p -e "s,\"avcodec.h\",<ffmpeg/avcodec.h>,g"	$(CROSS_LIB_DIR)/include/ffmpeg/dsputil.h
 	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libavcodec.pc
 	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libavformat.pc
+	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libpostproc.pc
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -192,8 +198,8 @@ $(STATEDIR)/ffmpeg.targetinstall: $(ffmpeg_targetinstall_deps)
 	@$(call targetinfo, $@)
 
 	rm -rf $(FFMPEG_IPKG_TMP)
-	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib
-	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec  prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavformat prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib incdir=$(FFMPEG_IPKG_TMP)/usr/include
+	$(FFMPEG_PATH) $(MAKE) -C $(FFMPEG_DIR)/libavcodec  prefix=$(FFMPEG_IPKG_TMP)/usr/ install libdir=$(FFMPEG_IPKG_TMP)/usr/lib incdir=$(FFMPEG_IPKG_TMP)/usr/include
 	rm -rf $(FFMPEG_IPKG_TMP)/usr/lib/pkgconfig
 	$(CROSSSTRIP) $(FFMPEG_IPKG_TMP)/usr/lib/*
 	rm -rf $(FFMPEG_IPKG_TMP)/usr/include
