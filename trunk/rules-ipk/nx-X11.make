@@ -19,11 +19,12 @@ endif
 #
 # Paths and names
 #
-NX-X11_VERSION		= 1.3.2-9
+NX-X11_VERSION		= 2.0.0-31
 NX-X11			= nx-X11-$(NX-X11_VERSION)
 NX-X11_SUFFIX		= tar.gz
-NX-X11_URL		= http://www.nomachine.com/source/$(NX-X11).$(NX-X11_SUFFIX)
-NX-X11_URL1		= http://www.nomachine.com/source/nxagent-1.3.2-23.$(NX-X11_SUFFIX)
+NX-X11_URL		= http://64.34.161.181/download/2.0.0/sources/$(NX-X11).$(NX-X11_SUFFIX)
+NX-X11_URL1		= http://64.34.161.181/download/2.0.0/sources/nxagent-2.0.0-85.$(NX-X11_SUFFIX)
+
 NX-X11_URL2		= http://www.nomachine.com/source/nxkdrive-1.3.2-1.$(NX-X11_SUFFIX)
 NX-X11_URL3		= http://www.nomachine.com/source/nxauth-1.3.2-1.$(NX-X11_SUFFIX)
 NX-X11_SOURCE		= $(SRCDIR)/$(NX-X11).$(NX-X11_SUFFIX)

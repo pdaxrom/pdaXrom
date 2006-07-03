@@ -19,10 +19,10 @@ endif
 #
 # Paths and names
 #
-NXCOMP_VERSION		= 1.3.2-4
+NXCOMP_VERSION		= 2.0.0-81
 NXCOMP			= nxcomp-$(NXCOMP_VERSION)
 NXCOMP_SUFFIX		= tar.gz
-NXCOMP_URL		= http://www.nomachine.com/source/$(NXCOMP).$(NXCOMP_SUFFIX)
+NXCOMP_URL		= http://64.34.161.181/download/2.0.0/sources/$(NXCOMP).$(NXCOMP_SUFFIX)
 NXCOMP_SOURCE		= $(SRCDIR)/$(NXCOMP).$(NXCOMP_SUFFIX)
 NXCOMP_DIR		= $(BUILDDIR)/nxcomp
 NXCOMP_IPKG_TMP		= $(NXCOMP_DIR)/ipkg_tmp
@@ -99,9 +99,9 @@ endif
 $(STATEDIR)/nxcomp.prepare: $(nxcomp_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(NXCOMP_DIR)/config.cache)
-	cd $(NXCOMP_DIR) && aclocal
+	#cd $(NXCOMP_DIR) && aclocal
 	#cd $(NXCOMP_DIR) && automake --add-missing
-	cd $(NXCOMP_DIR) && autoconf
+	#cd $(NXCOMP_DIR) && autoconf
 	cd $(NXCOMP_DIR) && \
 		$(NXCOMP_PATH) $(NXCOMP_ENV) \
 		./configure $(NXCOMP_AUTOCONF)

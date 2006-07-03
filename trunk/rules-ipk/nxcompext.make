@@ -19,10 +19,10 @@ endif
 #
 # Paths and names
 #
-NXCOMPEXT_VERSION	= 1.3.2-6
+NXCOMPEXT_VERSION	= 2.0.0-33
 NXCOMPEXT		= nxcompext-$(NXCOMPEXT_VERSION)
 NXCOMPEXT_SUFFIX	= tar.gz
-NXCOMPEXT_URL		= http://www.nomachine.com/source/$(NXCOMPEXT).$(NXCOMPEXT_SUFFIX)
+NXCOMPEXT_URL		= http://64.34.161.181/download/2.0.0/sources/$(NXCOMPEXT).$(NXCOMPEXT_SUFFIX)
 NXCOMPEXT_SOURCE	= $(SRCDIR)/$(NXCOMPEXT).$(NXCOMPEXT_SUFFIX)
 NXCOMPEXT_DIR		= $(BUILDDIR)/nxcompext
 NXCOMPEXT_IPKG_TMP	= $(NXCOMPEXT_DIR)/ipkg_tmp
@@ -96,9 +96,9 @@ endif
 $(STATEDIR)/nxcompext.prepare: $(nxcompext_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(NXCOMPEXT_DIR)/config.cache)
-	cd $(NXCOMPEXT_DIR) && aclocal
+	#cd $(NXCOMPEXT_DIR) && aclocal
 	#cd $(NXCOMPEXT_DIR) && automake --add-missing
-	cd $(NXCOMPEXT_DIR) && autoconf
+	#cd $(NXCOMPEXT_DIR) && autoconf
 	cd $(NXCOMPEXT_DIR) && \
 		$(NXCOMPEXT_PATH) $(NXCOMPEXT_ENV) \
 		./configure $(NXCOMPEXT_AUTOCONF)

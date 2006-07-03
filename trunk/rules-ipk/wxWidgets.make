@@ -20,8 +20,8 @@ endif
 # Paths and names
 #
 WXWIDGETS_VENDOR_VERSION	= 1
-###WXWIDGETS_VERSION		= 2.5.3
-WXWIDGETS_VERSION		= 2.6.1
+#WXWIDGETS_VERSION		= 2.6.1
+WXWIDGETS_VERSION		= 2.6.3
 WXWIDGETS			= wxWidgets-$(WXWIDGETS_VERSION)
 WXWIDGETS_SUFFIX		= tar.bz2
 WXWIDGETS_URL			= http://heanet.dl.sourceforge.net/sourceforge/wxwindows/$(WXWIDGETS).$(WXWIDGETS_SUFFIX)
@@ -92,7 +92,8 @@ WXWIDGETS_AUTOCONF = \
 	--prefix=/usr \
 	--enable-unicode \
 	--enable-gtk2 \
-	--enable-optimise
+	--enable-optimise \
+	--without-libtiff
 
 #	--enable-no_rtti
 #	--enable-no_exceptions
