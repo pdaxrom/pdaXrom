@@ -19,7 +19,8 @@ endif
 #
 # Paths and names
 #
-KISMET_VERSION		= 2005-08-R1
+#KISMET_VERSION		= 2005-08-R1
+KISMET_VERSION		= 2006-04-R1
 KISMET			= kismet-$(KISMET_VERSION)
 KISMET_SUFFIX		= tar.gz
 KISMET_URL		= http://www.kismetwireless.net/code/$(KISMET).$(KISMET_SUFFIX)
