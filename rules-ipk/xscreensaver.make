@@ -146,8 +146,8 @@ $(STATEDIR)/xscreensaver.targetinstall: $(xscreensaver_targetinstall_deps)
 	    fi;									\
 	done
 
-	cp -a $(XSCREENSAVER_IPKG_TMP)/$(CROSS_LIB_DIR)/share $(XSCREENSAVER_IPKG_TMP)/usr
-	rm -rf $(XSCREENSAVER_IPKG_TMP)/opt
+	#cp -a $(XSCREENSAVER_IPKG_TMP)/$(CROSS_LIB_DIR)/share $(XSCREENSAVER_IPKG_TMP)/usr
+	#rm -rf $(XSCREENSAVER_IPKG_TMP)/opt
 
 	PATH=$(CROSS_PATH) 						\
 	FEEDDIR=$(FEEDDIR) 						\
