@@ -55,9 +55,9 @@ lynx_extract_deps = $(STATEDIR)/lynx.get
 
 $(STATEDIR)/lynx.extract: $(lynx_extract_deps)
 	@$(call targetinfo, $@)
-	@$(call clean, $(LYNX_DIR))
+	@$(call clean,   $(LYNX_DIR))
 	@$(call extract, $(LYNX_SOURCE))
-	@$(call patchin, $(LYNX))
+	@$(call patchin, $(LYNX), $(LYNX_DIR))
 	touch $@
 
 # ----------------------------------------------------------------------------

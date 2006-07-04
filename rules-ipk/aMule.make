@@ -21,7 +21,7 @@ endif
 #
 AMULE_VENDOR_VERSION	= 1
 #AMULE_VERSION		= 2.0.0rc7
-AMULE_VERSION		= 2.1.0
+AMULE_VERSION		= 2.1.3
 AMULE			= aMule-$(AMULE_VERSION)
 AMULE_SUFFIX		= tar.bz2
 AMULE_URL		= http://download.berlios.de/amule/$(AMULE).$(AMULE_SUFFIX)

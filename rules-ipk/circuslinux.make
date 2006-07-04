@@ -103,6 +103,7 @@ $(STATEDIR)/circuslinux.prepare: $(circuslinux_prepare_deps)
 	#cd $(CIRCUSLINUX_DIR) && $(CIRCUSLINUX_PATH) automake --add-missing
 	#cd $(CIRCUSLINUX_DIR) && $(CIRCUSLINUX_PATH) autoconf
 	cd $(CIRCUSLINUX_DIR) && \
+		ac_cv_prog_cc_cross=yes \
 		$(CIRCUSLINUX_PATH) $(CIRCUSLINUX_ENV) \
 		./configure $(CIRCUSLINUX_AUTOCONF)
 	touch $@
