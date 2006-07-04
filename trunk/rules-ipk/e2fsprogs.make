@@ -102,8 +102,8 @@ $(STATEDIR)/e2fsprogs.compile: $(e2fsprogs_compile_deps)
 # it's not good to pass target CFLAGS to the host compiler :)
 # so override these
 #
-	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)/util
-	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)
+	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)/util BUILD_CC=gcc
+	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) BUILD_CC=gcc
 	touch $@
 
 # ----------------------------------------------------------------------------

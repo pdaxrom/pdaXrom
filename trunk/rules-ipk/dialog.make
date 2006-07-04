@@ -55,9 +55,9 @@ dialog_extract_deps = $(STATEDIR)/dialog.get
 
 $(STATEDIR)/dialog.extract: $(dialog_extract_deps)
 	@$(call targetinfo, $@)
-	@$(call clean, $(DIALOG_DIR))
+	@$(call clean,   $(DIALOG_DIR))
 	@$(call extract, $(DIALOG_SOURCE))
-	@$(call patchin, $(DIALOG))
+	@$(call patchin, $(DIALOG), $(DIALOG_DIR))
 	touch $@
 
 # ----------------------------------------------------------------------------

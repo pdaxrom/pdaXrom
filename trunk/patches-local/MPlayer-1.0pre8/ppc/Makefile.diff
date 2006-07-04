@@ -1,6 +1,6 @@
 diff -Nur MPlayer-1.0pre8.orig/Makefile MPlayer-1.0pre8/Makefile
 --- MPlayer-1.0pre8.orig/Makefile	2006-06-11 18:35:47.000000000 +0000
-+++ MPlayer-1.0pre8/Makefile	2006-07-03 12:40:39.000000000 +0000
++++ MPlayer-1.0pre8/Makefile	2006-07-04 09:36:52.000000000 +0000
 @@ -87,7 +87,7 @@
            $(SGIAUDIO_LIB) \
            $(POLYP_LIB) \
@@ -28,3 +28,12 @@ diff -Nur MPlayer-1.0pre8.orig/Makefile MPlayer-1.0pre8/Makefile
  endif
  
  codecs.conf.h: $(PRG_CFG) etc/codecs.conf
+@@ -439,7 +439,7 @@
+ 
+ $(PRG_CFG): codec-cfg.c codec-cfg.h help_mp.h
+ 	$(HOST_CC) $(HOST_CFLAGS) -I. codec-cfg.c -o $(PRG_CFG) \
+-	-DCODECS2HTML $(EXTRA_LIB) $(EXTRA_INC)
++	-DCODECS2HTML
+ 
+ install: $(ALL_PRG)
+ ifeq ($(VIDIX),yes)
