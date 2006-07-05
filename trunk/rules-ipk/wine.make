@@ -21,10 +21,10 @@ endif
 #
 WINE_VENDOR_VERSION	= 1
 #WINE_VERSION		= 0.9.7
-WINE_VERSION		= 0.9.13
+WINE_VERSION		= 0.9.16
 WINE			= wine-$(WINE_VERSION)
 WINE_SUFFIX		= tar.bz2
-WINE_URL		= http://www.pdaXrom.org/src/$(WINE).$(WINE_SUFFIX)
+WINE_URL		= http://ibiblio.org/pub/linux/system/emulators/wine/$(WINE).$(WINE_SUFFIX)
 WINE_SOURCE		= $(SRCDIR)/$(WINE).$(WINE_SUFFIX)
 WINE_DIR		= $(BUILDDIR)/$(WINE)
 WINE_IPKG_TMP		= $(WINE_DIR)/ipkg_tmp
@@ -105,6 +105,7 @@ $(STATEDIR)/wine.prepare: $(wine_prepare_deps)
 	@$(call clean, $(WINE_DIR)/config.cache)
 	cd $(WINE_DIR) && \
 		$(WINE_PATH) $(WINE_ENV) \
+		ac_cv_prog_FONTFORGE=yes \
 		./configure $(WINE_AUTOCONF)
 	touch $@
 
@@ -118,8 +119,8 @@ wine_compile_deps = $(STATEDIR)/wine.prepare
 
 $(STATEDIR)/wine.compile: $(wine_compile_deps)
 	@$(call targetinfo, $@)
-	$(WINE_PATH) $(MAKE) -C $(WINE_DIR) depend
-	$(WINE_PATH) $(MAKE) -C $(WINE_DIR)
+	$(WINE_PATH) $(MAKE) -C $(WINE_DIR) depend FONTFORGE=fontforge
+	$(WINE_PATH) $(MAKE) -C $(WINE_DIR) FONTFORGE=fontforge
 	touch $@
 
 # ----------------------------------------------------------------------------
