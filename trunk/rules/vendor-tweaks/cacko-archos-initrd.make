@@ -135,23 +135,24 @@ endif
 	cd $(ROOTDIR) && tar c var  > 			 $(ROOTDIR)/root/.var_default.tar
 
 	cp -a $(TOPDIR)/config/pdaXrom-archos/PMA400-bins-only/* $(ROOTDIR)/
+	find $(ROOTDIR)/lib/ -name \.svn | xargs rm -rf
 	$(XCHAIN_MODUTILS_DIR)/depmod/depmod -ae -F $(KERNEL_DIR)/System.map -b $(ROOTDIR) -r 2.4.19-rmk7-omap1
 	cp $(TOPDIR)/config/pdaXrom-archos/linuxrc-initrd	 $(ROOTDIR)/linuxrc
 
-#ifndef PTXCONF_DEVFSD
-#	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
-#	-b 131072 \
-#	-f -U -D $(TOPDIR)/config/bootdisk/device_table.txt \
-#	$(TOPDIR)/bootdisk/rootfs.img
-#	/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
-#else
-#	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
-#	-b 131072 \
-#	-f -U $(TOPDIR)/bootdisk/rootfs.img
-#	/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
-#endif
-#	md5sum $(TOPDIR)/bootdisk/rootfs.img >$(TOPDIR)/bootdisk/rootfs.img.md5sum
-#	md5sum $(TOPDIR)/bootdisk/zImage     >$(TOPDIR)/bootdisk/zImage.md5sum
+ifndef PTXCONF_DEVFSD
+	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
+	-b 131072 \
+	-f -U -D $(TOPDIR)/config/bootdisk/device_table.txt \
+	$(TOPDIR)/bootdisk/rootfs.img
+	/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
+else
+	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
+	-b 131072 \
+	-f -U $(TOPDIR)/bootdisk/rootfs.img
+	/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
+endif
+	md5sum $(TOPDIR)/bootdisk/rootfs.img >$(TOPDIR)/bootdisk/rootfs.img.md5sum
+	md5sum $(TOPDIR)/bootdisk/zImage     >$(TOPDIR)/bootdisk/zImage.md5sum
 	touch $@
 
 # vim: syntax=make
