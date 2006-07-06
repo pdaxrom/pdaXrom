@@ -551,11 +551,13 @@ ifdef PTXCONF_GLIBC_LOCALES
 	    ll=`echo $$l | sed -e "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/" | sed -e "s/\_/\-/" | sed -e "s/\./\-/" | sed -e "s/@/at/"` ;	\
 	    cd $(FEEDDIR) && $(XIPKG) install glibc-locale-$$ll	;								\
 	done
+ifndef PTXCONF_LIBICONV
 ifndef PTXCONF_ARCH_X86
 	for l in `echo $(PTXCONF_GLIBC_GCONV_INSTALL)`; do									\
 	    ll=`echo $$l | sed -e "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/" | sed -e "s/\_/\-/" | sed -e "s/\./\-/" | sed -e "s/@/at/"` ;	\
 	    cd $(FEEDDIR) && $(XIPKG) install glibc-gconv-$$ll	;								\
 	done
+endif
 endif
 endif
 	touch $@
