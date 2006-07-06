@@ -35,7 +35,9 @@ $(STATEDIR)/cacko.targetinstall:
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/proc
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/root
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/sbin
-	###install -m 755 -d $(ROOTFS_DIR)/ipkg/tmp
+
+	install -m 755 -d $(ROOTFS_DIR)/ipkg/tmp
+
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/usr/bin
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/usr/lib
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/usr/sbin
@@ -51,7 +53,7 @@ $(STATEDIR)/cacko.targetinstall:
 	install -m 775 -d $(ROOTFS_DIR)/ipkg/var/spool
 	install -m 775 -d $(ROOTFS_DIR)/ipkg/var/tmp
 	touch             $(ROOTFS_DIR)/ipkg/var/log/lastlog
-	ln -sf /dev/shm/tmp $(ROOTFS_DIR)/ipkg/tmp
+	###ln -sf /dev/shm/tmp $(ROOTFS_DIR)/ipkg/tmp
 	###chmod 777 $(ROOTFS_DIR)/ipkg/tmp
 	ln -sf /dev/shm/run $(ROOTFS_DIR)/ipkg/var/run
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/home/root
@@ -135,26 +137,29 @@ endif
 	cd $(ROOTDIR) && tar c home > 			 		$(ROOTDIR)/root/.home_default.tar
 	cd $(ROOTDIR) && tar c var  > 			 		$(ROOTDIR)/root/.var_default.tar
 
-	rm -f $(TOPDIR)/bootdisk/initrd.bin
-ifndef PTXCONF_DEVFSD
-	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
-	-b 16384 \
-	-f -U -D $(TOPDIR)/config/bootdisk/device_table_ps2.txt \
-	$(TOPDIR)/bootdisk/initrd.bin
-	#/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
-else
-	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
-	-b 16384 \
-	-f -U $(TOPDIR)/bootdisk/initrd.bin
-	#/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
-endif
+	cd $(ROOTDIR) && tar -zcf $(TOPDIR)/bootdisk/rootfs.tar.gz .
+	md5sum $(TOPDIR)/bootdisk/rootfs.tar.gz > $(TOPDIR)/bootdisk/rootfs.tar.gz.md5sum
+
+#	rm -f $(TOPDIR)/bootdisk/initrd.bin
+#ifndef PTXCONF_DEVFSD
+#	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
+#	-b 16384 \
+#	-f -U -D $(TOPDIR)/config/bootdisk/device_table_ps2.txt \
+#	$(TOPDIR)/bootdisk/initrd.bin
+#	#/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
+#else
+#	$(PTXCONF_PREFIX)/bin/genext2fs -d $(ROOTDIR) \
+#	-b 16384 \
+#	-f -U $(TOPDIR)/bootdisk/initrd.bin
+#	#/sbin/tune2fs -j $(TOPDIR)/bootdisk/rootfs.img
+#endif
 
 #	rm -f $(TOPDIR)/bootdisk/initrd.bin
 #	###$(PTXCONF_PREFIX)/bin/mksquashfs $(ROOTDIR) $(TOPDIR)/bootdisk/initrd.bin -all-root -le -info
 #	$(PTXCONF_PREFIX)/bin/mkcramfs -r -m suxxmeta $(ROOTDIR) $(TOPDIR)/bootdisk/initrd.bin
 #	###$(PTXCONF_PREFIX)/bin/mksquashfs $(ROOTDIR) $(TOPDIR)/bootdisk/initrd.bin -all-root -be -info
 
-	md5sum $(TOPDIR)/bootdisk/initrd.bin >$(TOPDIR)/bootdisk/initrd.bin.md5sum
+#	md5sum $(TOPDIR)/bootdisk/initrd.bin >$(TOPDIR)/bootdisk/initrd.bin.md5sum
 	md5sum $(TOPDIR)/bootdisk/vmlinux     >$(TOPDIR)/bootdisk/vmlinux.md5sum
 	touch $@
 
