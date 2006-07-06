@@ -116,7 +116,7 @@ $(STATEDIR)/libpng125.install: $(STATEDIR)/libpng125.compile
 	ln -sf libpng12.so.0.1.2.8 $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libpng.so.0
 	ln -sf libpng12.so.0.1.2.8 $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libpng.so
 	install $(LIBPNG125_DIR)/*.h $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/include/
-	cp -a $(LIBPNG125_DIR)/libpng.pc $(CROSS_LIB_DIR)/lib/pkgconfig/
+	install -D $(LIBPNG125_DIR)/libpng.pc $(CROSS_LIB_DIR)/lib/pkgconfig/libpng.pc
 	perl -i -p -e "s,/usr/local,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/libpng.pc
 	ln -sf libpng.pc $(CROSS_LIB_DIR)/lib/pkgconfig/libpng13.pc
 	touch $@
