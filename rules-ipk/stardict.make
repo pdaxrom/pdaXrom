@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 STARDICT_VENDOR_VERSION	= 1
-STARDICT_VERSION	= 2.4.7
+STARDICT_VERSION	= 2.4.5
 STARDICT		= stardict-$(STARDICT_VERSION)
 STARDICT_SUFFIX		= tar.bz2
 STARDICT_URL		= http://heanet.dl.sourceforge.net/sourceforge/stardict/$(STARDICT).$(STARDICT_SUFFIX)
