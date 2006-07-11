@@ -19,8 +19,8 @@ endif
 #
 # Paths and names
 #
-#ABIWORD_VERSION		= 2.4.0
-ABIWORD_VERSION		= 2.4.4
+#ABIWORD_VERSION		= 2.4.4
+ABIWORD_VERSION		= 2.4.5
 ABIWORD			= abiword-$(ABIWORD_VERSION)
 ABIWORD_SUFFIX		= tar.bz2
 #ABIWORD_URL		= http://mesh.dl.sourceforge.net/sourceforge/abiword/$(ABIWORD).$(ABIWORD_SUFFIX)
