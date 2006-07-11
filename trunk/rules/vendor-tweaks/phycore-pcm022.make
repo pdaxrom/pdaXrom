@@ -136,10 +136,10 @@ endif
 	#test -f $(ROOTDIR)/usr/lib/ipkg/info/bluez-utils.postinst && rm -f $(ROOTDIR)/usr/lib/ipkg/info/bluez-utils.postinst
 
 ifndef PTXCONF_DEVFSD
-	$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16k --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
+	$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16384 --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
 else
-	$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16k --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
-	#$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16k --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal-devfs.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
+	$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16384 --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
+	#$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16384 --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal-devfs.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
 endif
 	$(PTXCONF_PREFIX)/bin/mkimage -A arm -O linux -T kernel -C none -a 0xa0008000 -e 0xa0008000 -n "Linux 2.6" -d $(TOPDIR)/bootdisk/zImage $(TOPDIR)/bootdisk/zImage.bin
 
