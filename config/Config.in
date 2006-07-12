@@ -389,6 +389,7 @@ endmenu
 menu "Instant messenging  "
 source "rules-ipk/gaim.in"
 source "rules-ipk/licq.in"
+source "rules-ipk/linphone.in"
 source "rules-ipk/xchat.in"
 endmenu
 menu "WebServers          "
