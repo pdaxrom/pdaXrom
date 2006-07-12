@@ -143,12 +143,12 @@ $(STATEDIR)/kismet.targetinstall: $(kismet_targetinstall_deps)
 	$(CROSSSTRIP) $(KISMET_IPKG_TMP)/usr/bin/kismet_server
 	mkdir -p $(KISMET_IPKG_TMP)/CONTROL
 	echo "Package: kismet" 				>$(KISMET_IPKG_TMP)/CONTROL/control
-	echo "Source: $(KISMET_URL)"						>>$(KISMET_IPKG_TMP)/CONTROL/control
+	echo "Source: $(KISMET_URL)"			>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 			>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Section: extras"	 			>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Mike Kershaw <dragorn@nerv-un.net>" >>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 		>>$(KISMET_IPKG_TMP)/CONTROL/control
-	echo "Version: 2005.08.r1" 			>>$(KISMET_IPKG_TMP)/CONTROL/control
+	echo "Version: $(KISMET_VERSION)" 		>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Description:  802.11b network sniffer and analyser">>$(KISMET_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(KISMET_IPKG_TMP)
