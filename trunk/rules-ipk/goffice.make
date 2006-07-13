@@ -20,11 +20,11 @@ endif
 # Paths and names
 #
 GOFFICE_VENDOR_VERSION	= 1
-#GOFFICE_VERSION		= 0.1.0
-GOFFICE_VERSION		= 0.2.1
+#GOFFICE_VERSION		= 0.2.1
+GOFFICE_VERSION		= 0.3.0
 GOFFICE			= goffice-$(GOFFICE_VERSION)
 GOFFICE_SUFFIX		= tar.bz2
-GOFFICE_URL		= http://ftp.acc.umu.se/pub/GNOME/sources/goffice/0.2/$(GOFFICE).$(GOFFICE_SUFFIX)
+GOFFICE_URL		= http://ftp.acc.umu.se/pub/GNOME/sources/goffice/0.3/$(GOFFICE).$(GOFFICE_SUFFIX)
 GOFFICE_SOURCE		= $(SRCDIR)/$(GOFFICE).$(GOFFICE_SUFFIX)
 GOFFICE_DIR		= $(BUILDDIR)/$(GOFFICE)
 GOFFICE_IPKG_TMP	= $(GOFFICE_DIR)/ipkg_tmp
@@ -134,8 +134,8 @@ $(STATEDIR)/goffice.install: $(STATEDIR)/goffice.compile
 	cp -a $(GOFFICE_IPKG_TMP)/usr/include/*	$(CROSS_LIB_DIR)/include/
 	cp -a $(GOFFICE_IPKG_TMP)/usr/lib/*	$(CROSS_LIB_DIR)/lib/
 
-	perl -i -p -e "s,/usr/lib,$(CROSS_LIB_DIR)/lib,g" 	$(CROSS_LIB_DIR)/lib/libgoffice-1.la
-	perl -i -p -e "s,/usr,$(CROSS_LIB_DIR),g" 		$(CROSS_LIB_DIR)/lib/pkgconfig/libgoffice-1.pc
+	perl -i -p -e "s,/usr/lib,$(CROSS_LIB_DIR)/lib,g" 	$(CROSS_LIB_DIR)/lib/libgoffice-0.la
+	perl -i -p -e "s,/usr,$(CROSS_LIB_DIR),g" 		$(CROSS_LIB_DIR)/lib/pkgconfig/libgoffice-0.3.pc
 
 	rm -rf $(GOFFICE_IPKG_TMP)
 	touch $@
