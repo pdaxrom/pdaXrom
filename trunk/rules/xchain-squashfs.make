@@ -55,6 +55,7 @@ xchain-squashfs_prepare: $(STATEDIR)/xchain-squashfs.prepare
 # dependencies
 #
 xchain-squashfs_prepare_deps = \
+	$(STATEDIR)/xchain-lzma.compile \
 	$(STATEDIR)/xchain-squashfs.extract
 
 XCHAIN_SQUASHFS_PATH	=  PATH=$(CROSS_PATH)
@@ -88,7 +89,7 @@ xchain-squashfs_compile_deps = $(STATEDIR)/xchain-squashfs.prepare
 
 $(STATEDIR)/xchain-squashfs.compile: $(xchain-squashfs_compile_deps)
 	@$(call targetinfo, $@)
-	$(XCHAIN_SQUASHFS_PATH) $(MAKE) -C $(XCHAIN_SQUASHFS_DIR)/squashfs-tools
+	$(XCHAIN_SQUASHFS_PATH) $(MAKE) -C $(XCHAIN_SQUASHFS_DIR)/squashfs-tools LDFLAGS=-L$(XCHAIN_LZMA_DIR)/SRC/7zip/Compress/LZMA_Lib
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -100,6 +101,7 @@ xchain-squashfs_install: $(STATEDIR)/xchain-squashfs.install
 $(STATEDIR)/xchain-squashfs.install: $(STATEDIR)/xchain-squashfs.compile
 	@$(call targetinfo, $@)
 	$(INSTALL) -m 755 $(XCHAIN_SQUASHFS_DIR)/squashfs-tools/mksquashfs $(PTXCONF_PREFIX)/bin/
+	$(INSTALL) -m 755 $(XCHAIN_SQUASHFS_DIR)/squashfs-tools/mksquashfs-lzma $(PTXCONF_PREFIX)/bin/
 	touch $@
 
 # ----------------------------------------------------------------------------
