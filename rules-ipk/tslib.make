@@ -19,8 +19,8 @@ endif
 #
 # Paths and names
 #
-#TSLIB_VERSION		= 1.3
-TSLIB_VERSION		= 14042005
+#TSLIB_VERSION		= 14042005
+TSLIB_VERSION		= 07072006
 TSLIB			= tslib-$(TSLIB_VERSION)
 TSLIB_SUFFIX		= tar.bz2
 TSLIB_URL		= http://www.pdaXrom.org/src/$(TSLIB).$(TSLIB_SUFFIX)
