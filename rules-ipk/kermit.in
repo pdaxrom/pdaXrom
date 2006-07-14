@@ -1,0 +1,8 @@
+config KERMIT
+	bool
+	prompt "kermit"
+
+config KERMIT_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on KERMIT
