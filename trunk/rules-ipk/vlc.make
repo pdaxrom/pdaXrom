@@ -113,7 +113,8 @@ VLC_AUTOCONF = \
 	--disable-skins2 \
 	--enable-optimizations \
 	--disable-glx \
-	--disable-opengl
+	--disable-opengl \
+	--disable-speex
 
 #	--disable-sockets
 #	--disable-dialupman
