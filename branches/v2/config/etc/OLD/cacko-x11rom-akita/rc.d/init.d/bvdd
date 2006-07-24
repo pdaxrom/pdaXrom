@@ -1,0 +1,50 @@
+#!/bin/sh
+
+KERNEL=`/bin/uname -r`
+BVDD_MODULE=bvdd
+MODULE=/lib/modules/$KERNEL/kernel/drivers/video/bvdd.o
+DEVICE=/dev/bvdd
+VRAM_SIZE=2097152
+
+usage()
+{
+	echo "Usage: $0 {start|stop|status|restart|reload}"
+}
+
+
+if [ $# -lt 1 ] ; then usage ; break ; fi
+action=$1
+
+case "$action" in
+
+start)
+	if [ -f $MODULE ]; then
+		/sbin/insmod $MODULE vram_size=$VRAM_SIZE 2>/dev/null >/dev/null
+		/bin/mknod $DEVICE c 240 0
+		#/bin/chown zaurus:root $DEVICE
+		#/bin/chmod 600 $DEVICE
+	fi
+	;;
+
+stop)
+	if grep -q $BVDD_MODULE /proc/modules; then
+		/sbin/rmmod $BVDD_MODULE
+		/bin/rm -f $DEVICE
+	fi
+	;;
+
+status)
+	;;
+
+restart|reload)
+	$0 stop
+	$0 start
+	;;
+
+*)
+	usage
+	;;
+
+esac
+
+exit 0

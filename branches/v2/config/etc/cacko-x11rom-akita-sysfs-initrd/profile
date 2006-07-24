@@ -1,0 +1,10 @@
+# /etc/profile: system-wide .profile file for the Bourne shells
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+echo
+echo -n "Processing /etc/profile... "
+# no-op
+echo "Done"
+echo
+

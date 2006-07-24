@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Sunbird
+Comment=Calendar
+Exec=sunbird
+Terminal=0
+Type=Application
+Icon=sunbird.png
+Categories=Application;Office;WordProcessor;
+StartupNotify=True
+SingleInstance=False

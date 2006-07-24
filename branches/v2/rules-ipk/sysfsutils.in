@@ -1,0 +1,8 @@
+config SYSFSUTILS
+	bool
+	prompt "sysfsutils"
+
+config SYSFSUTILS_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on SYSFSUTILS

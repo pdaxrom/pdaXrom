@@ -1,0 +1,90 @@
+#!/bin/sh
+
+SPATH=`dirname $0`
+pushd $PWD > /dev/null
+cd $SPATH
+SPATH=$PWD
+popd > /dev/null
+
+#
+# no rev in pdaXrom host system ... :-(
+#
+_rev() {
+    local arg=$1
+    local ret=""
+    while [ ${arg:0:1} ]; do
+	ret=${arg:0:1}${ret}
+	arg=${arg:1}
+	
+    done
+    echo $ret
+}
+
+show_configs() {
+    for d in `ls $SPATH/config-sys/`; do
+	echo "Configuraton for `cat $SPATH/config-sys/${d}/description`"
+	for f in `ls $SPATH/config-sys/${d}/`; do
+	    if [ `echo ${f} | grep 'config_'` ]; then
+		c=${d}-`echo ${f} | sed 's/config_//'`
+		echo "    ${c}"
+	    fi
+	done
+	echo
+    done
+}
+
+if [ $# -lt 1 ]
+then
+    show_configs
+    exit 0
+fi
+
+CONFIG=$1
+
+TARGET=`_rev $CONFIG | cut -d'-' -f2-`
+TARGET=`_rev $TARGET`
+SUBTARGET=`_rev $CONFIG | cut -d'-' -f0`
+SUBTARGET=`_rev $SUBTARGET`
+
+if [ ! -e $SPATH/config-sys/${TARGET}/config_${SUBTARGET} ]; then
+    echo "Bad configuration!"
+    exit 1
+fi
+
+if [ $# -ge 2 ];
+then
+    DPATH=$2
+#    if [ ! -d $DPATH ]; then
+#	echo "No such directory $DPATH!"
+#	exit 1
+#    fi
+#    DPATH="$DPATH/$CONFIG"
+    mkdir -p $DPATH || exit 1
+    
+    ln -s $SPATH/config 	$DPATH/
+    ln -s $SPATH/config-sys 	$DPATH/
+    ln -s $SPATH/patches-local	$DPATH/
+    ln -s $SPATH/rules		$DPATH/
+    ln -s $SPATH/rules-ipk	$DPATH/
+
+    if [ $# -eq 3 ] 
+    then
+	touch $DPATH/.clone
+	echo "$3" > $DPATH/.sources_url
+	mkdir $DPATH/src
+    else
+	ln -s $SPATH/src	$DPATH/
+    fi
+
+    ln -s $SPATH/Makefile	$DPATH/
+    ln -s $SPATH/configure	$DPATH/
+    ln -s $SPATH/audit		$DPATH/
+    cp -a $SPATH/AUDIT		$DPATH/
+    cp -a $SPATH/scripts	$DPATH/
+    mkdir -p $DPATH/{build,patches,state,bootdisk/feed}
+else
+    DPATH=$PWD
+fi
+
+echo "Setup for `cat $SPATH/config-sys/${TARGET}/description`, target $SUBTARGET "
+cp $SPATH/config-sys/${TARGET}/config_${SUBTARGET} $DPATH/.config

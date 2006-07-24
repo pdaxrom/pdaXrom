@@ -1,0 +1,36 @@
+#! /bin/bash
+#
+# smbfs          Unmount smbfs on suspend
+#
+# description:   A mounted smbfs that remains mounted past a suspend is a
+#                pain as any reference to it hangs the system. This
+#                script just unmounts any that it can before a suspend.
+#
+
+
+
+# See how we were called.
+  
+suspend() {
+  umount -a -t smbfs
+  return 0
+}
+
+resume() {
+  return 0
+}	
+
+
+case "$1" in
+  suspend)
+  	suspend
+	;;
+  resume)
+  	resume
+	;;
+  *)
+	echo "Usage: $0 {suspend|resume}"
+	exit 1
+esac
+
+exit $?

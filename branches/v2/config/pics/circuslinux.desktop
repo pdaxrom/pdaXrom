@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Circus Linux
+Comment=Circus Linux is a clone of the Atari 2600 game Circus Atari produced by Atari Inc.
+Exec=circuslinux
+Icon=circuslinux.png
+Terminal=0
+Type=Application
+Categories=Games
+StartupNotify=False
+SingleInstance=False

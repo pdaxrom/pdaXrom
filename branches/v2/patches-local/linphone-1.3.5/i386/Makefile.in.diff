@@ -1,0 +1,15 @@
+--- linphone-1.3.5/console/Makefile.in~	2006-07-12 13:12:20.000000000 +0000
++++ linphone-1.3.5/console/Makefile.in	2006-07-12 13:13:02.000000000 +0000
+@@ -315,9 +315,9 @@
+ 
+ #in order to workaround a arm-linux cross-compilation libtool bug
+ #we need to explicit again the dependencies of the executables:
+-@ARMBUILD_TRUE@AM_LDFLAGS = $(top_builddir)/oRTP/src/libortp.la \
+-@ARMBUILD_TRUE@				$(SPEEX_LIBS) \
+-@ARMBUILD_TRUE@				$(OSIP_LIBS)
++AM_LDFLAGS = $(top_builddir)/oRTP/src/libortp.la \
++				$(SPEEX_LIBS) \
++				$(OSIP_LIBS)
+ 
+ all: all-am
+ 

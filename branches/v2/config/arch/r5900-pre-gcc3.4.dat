@@ -1,0 +1,6 @@
+KERNELCONFIG=$PWD/mipsel.config
+TARGET=mipsel-r5900-linux-gnu
+#GCC_EXTRA_CONFIG=--with-arch=r5900 --enable-cxx-flags=-march=r5900
+GLIBC_TARGET_CFLAGS=-g -Os
+TARGET_OPT_CFLAGS=-g -Os
+#TARGET_OPT_CFLAGS=-Os -finline-limit=10000

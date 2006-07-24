@@ -1,0 +1,5 @@
+KERNELCONFIG=$PWD/arm.config
+TARGET=arm-9dtmi-linux-gnu
+GCC_EXTRA_CONFIG=--with-cpu=arm9tdmi --enable-cxx-flags=-mcpu=arm9tdmi
+GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
+TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer -mcpu=arm9tdmi -mtune=arm9tdmi

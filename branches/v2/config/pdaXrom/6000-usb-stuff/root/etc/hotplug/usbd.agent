@@ -1,0 +1,153 @@
+#!/bin/sh
+
+HOTPLUG_DIR=/etc/hotplug
+
+cd ${HOTPLUG_DIR}
+# ash "." fn does not start with current dir, use absolute path just in case
+. ${HOTPLUG_DIR}/hotplug.functions
+#DEBUG=Y
+
+AGENT=usbd
+FTYPE=net
+[ -r ${HOTPLUG_DIR}/usbd.ftype ] && FTYPE=`cat ${HOTPLUG_DIR}/usbd.ftype`
+[ "$DEBUG" != "" ] && mesg "arguments ($*) env (`env`)"
+
+KERNEL_VER=`/bin/uname -r`
+MODULE_PATH=/lib/modules/$KERNEL_VER/kernel/drivers/usb/device
+MODULE_MONITOR=usbdmonitor
+MODULE_CORE=usbdcore
+MODULE_SERIAL=serial_fd
+MODULE_NET=net_fd
+MODULE_STORAGE=storage_fd
+MODULE_STORAGE_OPT="storage_device=`cat /etc/hotplug/usbdstorage.conf`"
+MODULE_BI=pxa_bi
+MODULE_BI_OPT=
+
+checkAndRemoveAll()
+{
+	[ "$DEBUG" != "" ] && mesg checkAndRemoveAll ${MODULE_BI} ${MODULE_STORAGE} ${MODULE_NET} ${MODULE_SERIAL} ${MODULE_CORE}
+	for M in ${MODULE_BI} ${MODULE_STORAGE} ${MODULE_NET} ${MODULE_SERIAL} ${MODULE_CORE}; do
+	        [ "$DEBUG" != "" ] && mesg check \[${M}\]
+		[ "$DEBUG" != "" ] && grep ${M} /proc/modules > /dev/null && mesg found ${M}
+		grep ${M} /proc/modules > /dev/null && /sbin/rmmod ${M}
+	done
+}
+
+loadAll()
+{
+	/sbin/insmod ${MODULE_PATH}/${MODULE_CORE}.o
+	case ${FTYPE} in
+	serial)
+		/sbin/insmod ${MODULE_PATH}/serial_fd/${MODULE_SERIAL}.o
+		;;
+	net)
+		/sbin/insmod ${MODULE_PATH}/net_fd/${MODULE_NET}.o
+		;;
+	storage)
+		/sbin/insmod ${MODULE_PATH}/storage_fd/${MODULE_STORAGE}.o ${MODULE_STORAGE_OPT}
+		MODULE_BI_OPT="shortpacket=1 recvpacket=256"
+		;;
+	*)
+       		mesg unknown usbd FTYPE \[${FTYPE}\]
+		exit 1
+		;;
+	esac
+	/sbin/insmod ${MODULE_PATH}/bi/${MODULE_BI}.o ${MODULE_BI_OPT}
+}
+
+#set -x
+
+[ -z ${AGENT} ] && mesg no AGENT && exit 1
+[ -z ${INTERFACE} ] && mesg no INTERFACE && exit 1
+[ -z ${ACTION} ] && mesg no ACTION && exit 1
+
+case ${AGENT} in
+
+usbd) 
+
+	case ${INTERFACE} in
+	monitor)
+		case ${ACTION} in
+
+			# called to load all usb device modules
+		load)	
+			[ "$DEBUG" != "" ] && mesg LOAD for ${FTYPE} ...
+			checkAndRemoveAll
+			loadAll
+			#sleep 2
+			#ifconfig usbd0 $IP
+			[ "$DEBUG" != "" ] && mesg LOAD for ${FTYPE} done.
+			;;
+
+			# called to handle power management event
+		suspend) 
+			[ "$DEBUG" != "" ] && mesg SUSPEND ...
+			checkAndRemoveAll
+			[ "$DEBUG" != "" ] && mesg SUSPEND done.
+			;;
+
+			# called to reload after power management event
+		restore-loaded)
+			[ "$DEBUG" != "" ] && mesg RESTORE-LOADED for ${FTYPE} ...
+			checkAndRemoveAll
+			loadAll
+			#sleep 2
+			#ifconfig usbd0 $IP
+			[ "$DEBUG" != "" ] && mesg RESTORE-LOADED for ${FTYPE} done.
+			;;
+
+			# called to unload after power management event
+		restore-unloaded)
+			[ "$DEBUG" != "" ] && mesg RESTORE-UNLOADED ...
+			# do nothing
+			[ "$DEBUG" != "" ] && mesg RESTORE-UNLOADED done.
+			;;
+
+			# called to unload all usb device modules
+		unload)
+			[ "$DEBUG" != "" ] && mesg UNLOAD ...
+			checkAndRemoveAll
+			[ "$DEBUG" != "" ] && mesg UNLOAD done.
+			;;
+
+		*)
+        		mesg unknown monitor ACTION \[${ACTION}\]
+			exit 1
+			;;
+		esac
+		# let the usbdmonitor module know we are finished
+		if [ -f /proc/usb-monitor ]; then
+			echo Done > /proc/usb-monitor
+		fi
+		;;
+	
+	usbd0)
+		case ${ACTION} in
+		register)
+			ifconfig usbd0 $IP
+			;;
+		unregister)
+			ifconfig usbd0 down
+			;;
+		*)
+        		mesg unknown usbd0 ACTION \[${ACTION}\]
+			exit 1
+			;;
+		esac
+		;;
+
+        *)
+        	mesg unknown INTERFACE \[${INTERFACE}\]
+		exit 1
+		;;
+	esac
+	;;
+
+*)
+        mesg unknown AGENT \[${AGENT}\]
+	exit 1
+	;;
+
+esac
+
+exit 0
