@@ -4,5 +4,5 @@ config GALCULATOR
 
 config GALCULATOR_INSTALL
 	bool
-	prompt "Install in ROM"
+	prompt "Install to filesystem"
 	depends on GALCULATOR

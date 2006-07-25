@@ -30,10 +30,9 @@ if [ "x$MKIPKG" = "x" ]; then
     MKIPKG="mkipkg"
 fi
 
-for dir in usr/share/locale usr/local/share/locale ; do
+cd $ROOTDIR
 
-    test -d $ROOTDIR/$dir || continue
-
+for dir in `find . -name locale -type d` ; do
     pushd $ROOTDIR/$dir
 
     for file in *; do
@@ -64,5 +63,30 @@ for dir in usr/share/locale usr/local/share/locale ; do
 
     popd
 
+    rm -rf $ROOTDIR/$dir
+
 done
 
+cd $ROOTDIR
+
+for dir in `find . -name man -type d` ; do
+	echo $dir -- man files
+
+	mkdir -p $IPKTMP/CONTROL
+	mkdir -p $IPKTMP/$dir
+	cp -a $dir/* $IPKTMP/$dir/
+
+	echo "Package: $PKGNAME-man"			 > $IPKTMP/CONTROL/control
+	echo "Priority: optional"			>> $IPKTMP/CONTROL/control
+	echo "Version: $VERSION"			>> $IPKTMP/CONTROL/control
+	echo "Architecture: $ARCH"			>> $IPKTMP/CONTROL/control
+	echo "Maintainer: pdaXrom team <team@pdaXrom.org>" >> $IPKTMP/CONTROL/control
+	echo "License: "				>> $IPKTMP/CONTROL/control
+	echo "Depends: $PKGNAME"			>> $IPKTMP/CONTROL/control
+	echo "Description: man files" 			>> $IPKTMP/CONTROL/control
+
+	$MKIPKG $IPKTMP $FEEDDIR
+
+	rm -rf $IPKTMP
+    rm -rf $ROOTDIR/$dir
+done

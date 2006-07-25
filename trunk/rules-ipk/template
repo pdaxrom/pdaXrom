@@ -123,7 +123,9 @@ $(STATEDIR)/@packet@.compile: $(@packet@_compile_deps)
 
 $(STATEDIR)/@packet@.install: $(STATEDIR)/@packet@.compile
 	@$(call targetinfo, $@)
-	$(@PACKET@_PATH) $(MAKE) -C $(@PACKET@_DIR) install
+	rm -rf $(@PACKET@_IPKG_TMP)
+	$(@PACKET@_PATH) $(MAKE) -C $(@PACKET@_DIR) DESTDIR=$(@PACKET@_IPKG_TMP) install
+	rm -rf $(@PACKET@_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -137,6 +139,16 @@ $(STATEDIR)/@packet@.install: $(STATEDIR)/@packet@.compile
 $(STATEDIR)/@packet@.targetinstall: $(@packet@_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(@PACKET@_PATH) $(MAKE) -C $(@PACKET@_DIR) DESTDIR=$(@PACKET@_IPKG_TMP) install
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(@PACKET@_VERSION)-$(@PACKET@_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh @LPACKET@ $(@PACKET@_IPKG_TMP)
+
+	@$(call stripfiles, $(@PACKET@_IPKG_TMP))
 	mkdir -p $(@PACKET@_IPKG_TMP)/CONTROL
 	echo "Package: @LPACKET@" 							 >$(@PACKET@_IPKG_TMP)/CONTROL/control
 	echo "Source: $(@PACKET@_URL)"							>>$(@PACKET@_IPKG_TMP)/CONTROL/control

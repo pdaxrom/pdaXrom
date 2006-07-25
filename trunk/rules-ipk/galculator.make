@@ -19,13 +19,14 @@ endif
 #
 # Paths and names
 #
-GALCULATOR_VERSION	= 1.2.5
-GALCULATOR		= galculator-$(GALCULATOR_VERSION)
-GALCULATOR_SUFFIX	= tar.bz2
-GALCULATOR_URL		= http://heanet.dl.sourceforge.net/sourceforge/galculator/$(GALCULATOR).$(GALCULATOR_SUFFIX)
-GALCULATOR_SOURCE	= $(SRCDIR)/$(GALCULATOR).$(GALCULATOR_SUFFIX)
-GALCULATOR_DIR		= $(BUILDDIR)/$(GALCULATOR)
-GALCULATOR_IPKG_TMP	= $(GALCULATOR_DIR)/ipkg_tmp
+GALCULATOR_VENDOR_VERSION	= 1
+GALCULATOR_VERSION		= 1.2.5
+GALCULATOR			= galculator-$(GALCULATOR_VERSION)
+GALCULATOR_SUFFIX		= tar.bz2
+GALCULATOR_URL			= http://heanet.dl.sourceforge.net/sourceforge/galculator/$(GALCULATOR).$(GALCULATOR_SUFFIX)
+GALCULATOR_SOURCE		= $(SRCDIR)/$(GALCULATOR).$(GALCULATOR_SUFFIX)
+GALCULATOR_DIR			= $(BUILDDIR)/$(GALCULATOR)
+GALCULATOR_IPKG_TMP		= $(GALCULATOR_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -76,9 +77,9 @@ galculator_prepare_deps = \
 GALCULATOR_PATH	=  PATH=$(CROSS_PATH)
 GALCULATOR_ENV 	=  $(CROSS_ENV)
 #GALCULATOR_ENV	+=
-GALCULATOR_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+GALCULATOR_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#GALCULATOR_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#GALCULATOR_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -137,26 +138,25 @@ galculator_targetinstall_deps = $(STATEDIR)/galculator.compile \
 $(STATEDIR)/galculator.targetinstall: $(galculator_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(GALCULATOR_PATH) $(MAKE) -C $(GALCULATOR_DIR) DESTDIR=$(GALCULATOR_IPKG_TMP) install
+
 	PATH=$(CROSS_PATH) 						\
 	FEEDDIR=$(FEEDDIR) 						\
 	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
-	VERSION=$(GALCULATOR_VERSION)			 		\
+	VERSION=$(GALCULATOR_VERSION)-$(GALCULATOR_VENDOR_VERSION) 	\
 	ARCH=$(SHORT_TARGET) 						\
 	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
 	$(TOPDIR)/scripts/bin/make-locale-ipks.sh galculator $(GALCULATOR_IPKG_TMP)
-	rm -rf $(GALCULATOR_IPKG_TMP)/usr/man
-	rm -rf $(GALCULATOR_IPKG_TMP)/usr/share/locale
-	$(CROSSSTRIP) $(GALCULATOR_IPKG_TMP)/usr/bin/*
-	perl -p -i -e "s/gnome\-calc2\.png/kcalc\.png/g" $(GALCULATOR_IPKG_TMP)/usr/share/applications/galculator.desktop
+
+	@$(call stripfiles, $(GALCULATOR_IPKG_TMP))
 	mkdir -p $(GALCULATOR_IPKG_TMP)/CONTROL
-	echo "Package: galculator" 			>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Package: galculator" 							 >$(GALCULATOR_IPKG_TMP)/CONTROL/control
 	echo "Source: $(GALCULATOR_URL)"						>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	echo "Section: X11"	 			>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" >>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	echo "Version: $(GALCULATOR_VERSION)" 		>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2, libglade" 			>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Section: X11" 								>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Version: $(GALCULATOR_VERSION)-$(GALCULATOR_VENDOR_VERSION)" 		>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, libglade" 							>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
 	echo "Description: galculator is a GTK 2 based calculator with ordinary notation/reverse polish notation, a formula entry mode, different number bases (DEC, HEX, OCT, BIN) and different units of angular measure (DEG, RAD, GRAD).">>$(GALCULATOR_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(GALCULATOR_IPKG_TMP)
 	touch $@

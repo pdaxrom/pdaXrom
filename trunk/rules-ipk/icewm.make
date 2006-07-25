@@ -207,7 +207,6 @@ $(STATEDIR)/icewm.targetinstall: $(icewm_targetinstall_deps)
 	$(INSTALL) -m 755 $(ICEWM_DIR)/src/genpref $(ICEWM_IPKG_TMP)/usr/share/icewm/
 	$(CROSSSTRIP) $(ICEWM_IPKG_TMP)/usr/bin/*
 	$(CROSSSTRIP) $(ICEWM_IPKG_TMP)/usr/share/icewm/genpref
-	rm -rf $(ICEWM_IPKG_TMP)/usr/share/locale
 	touch $(ICEWM_IPKG_TMP)/usr/share/icewm/preferences
 	mkdir -p $(ICEWM_IPKG_TMP)/CONTROL
 	echo "Package: icewm" 											 >$(ICEWM_IPKG_TMP)/CONTROL/control
