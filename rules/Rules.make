@@ -21,6 +21,17 @@ XMKPACKAGES	= $(TOPDIR)/scripts/bin/mkPackages
 #
 
 #
+# cross strip binaries
+#
+stripfiles = \
+	for FILE in `find $(1)/ -type f`; do			\
+	    ZZZ=`file $$FILE | grep 'ELF 32-bit'`;		\
+	    if [  "$$ZZZ" != "" ]; then				\
+		$(CROSSSTRIP) $$FILE;				\
+	    fi;							\
+	done
+
+#
 # print out header information
 #
 targetinfo = echo;					\

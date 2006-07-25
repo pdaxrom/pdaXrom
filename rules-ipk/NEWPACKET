@@ -34,4 +34,16 @@ while (<INFILE>) {
 close(OUTFILE);
 close(INFILE);
 
+open(INFILE,  "template_in") || die "Can't open template";
+open(OUTFILE, ">$packet\.in") || die "Can't open new file";
+
+while (<INFILE>) {
+	s,\@PACKET@,$PACKET,g;
+	s,\@packet@,$packet,g;
+	print OUTFILE $_;
+}
+
+close(OUTFILE);
+close(INFILE);
+
 print "\n";

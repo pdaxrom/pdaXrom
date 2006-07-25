@@ -407,6 +407,7 @@ source "rules-ipk/samba.in"
 endmenu
 source "rules-ipk/mobilemesh.in"
 source "rules-ipk/socat.in"
+source "rules-ipk/tftp.in"
 source "rules-ipk/tsocks.in"
 source "rules-ipk/vlan.in"
 source "rules-ipk/vpnc.in"
