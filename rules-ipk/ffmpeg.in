@@ -12,6 +12,16 @@ config FFMPEG_LAME
 	prompt "add lame codec"
 	depends on FFMPEG
 
+config FFMPEG_LIBOGG
+	bool
+	prompt "add ogg support"
+	depends on FFMPEG
+
+config FFMPEG_VORBIS
+	bool
+	prompt "add vorbis codec"
+	depends on FFMPEG && FFMPEG_LIBOGG
+
 config FFMPEG_INSTALL
 	bool
 	prompt "Install libffmpeg in ROM"

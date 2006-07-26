@@ -21,6 +21,62 @@ XMKPACKAGES	= $(TOPDIR)/scripts/bin/mkPackages
 #
 
 #
+#
+#
+copyincludes = \
+	cd $(1);								\
+	for DIR in usr/include usr/local/include ; do				\
+	    test -d $$DIR && cp -a $$DIR/* $(CROSS_LIB_DIR)/include;		\
+	done; \
+	echo "includes installed"
+
+copylibraries = \
+	cd $(1);										\
+	for DIR in usr usr/local ; do								\
+	    if [ -d $$DIR/lib ]; then								\
+		cp -a $$DIR/lib/* $(CROSS_LIB_DIR)/lib;						\
+		cd $$DIR;									\
+		for FILE in `find lib -name \*.la`; do						\
+		    perl -i -p -e "s,/$$DIR/lib,$(CROSS_LIB_DIR)/lib,g" $(CROSS_LIB_DIR)/$$FILE;\
+		done;										\
+		for FILE in `find lib -name \*.pc`; do						\
+		    perl -i -p -e "s,/$$DIR,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/$$FILE; 	\
+		done;										\
+	    fi;											\
+	    cd $(1);										\
+	done; \
+	echo "libraries installed"
+
+copymiscfiles = \
+	cd $(1);										\
+	for DIR in usr usr/local ; do								\
+	    test -d $$DIR/share/aclocal && cp -a $$DIR/share/aclocal/* $(PTXCONF_PREFIX)/share/aclocal; \
+	    if [ -d $$DIR/bin ]; then								\
+		cd $$DIR; 									\
+		for FILE in `find bin -type f -name \*-config` ; do				\
+		    cp $$FILE $(PTXCONF_PREFIX)/bin;						\
+		    perl -i -p -e "s,/$$DIR,$(CROSS_LIB_DIR),g" $(PTXCONF_PREFIX)/$$FILE;	\
+		done;										\
+	    fi;											\
+	    cd $(1);										\
+	done; \
+	echo "misc dev files installed"
+
+removedevfiles = \
+	cd $(1);										\
+	for DIR in usr/include usr/local/include usr/share/aclocal usr/local/share/aclocal 	\
+		    usr/lib/pkgconfig usr/local/lib/pkgconfig ; do 				\
+	    test -d $$DIR && rm -rf $$DIR ; 							\
+	done;											\
+	for FILE in `find . -type f -name *.*a`; do						\
+	    rm -f $$FILE;									\
+	done;											\
+	for FILE in `find . -type f -name *-config`; do						\
+	    rm -f $$FILE;									\
+	done; \
+	echo "developer files removed"
+
+#
 # cross strip binaries
 #
 stripfiles = \

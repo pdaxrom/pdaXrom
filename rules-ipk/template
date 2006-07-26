@@ -125,6 +125,9 @@ $(STATEDIR)/@packet@.install: $(STATEDIR)/@packet@.compile
 	@$(call targetinfo, $@)
 	rm -rf $(@PACKET@_IPKG_TMP)
 	$(@PACKET@_PATH) $(MAKE) -C $(@PACKET@_DIR) DESTDIR=$(@PACKET@_IPKG_TMP) install
+	@$(call copyincludes, $(@PACKET@_IPKG_TMP))
+	@$(call copylibraries,$(@PACKET@_IPKG_TMP))
+	@$(call copymiscfiles,$(@PACKET@_IPKG_TMP))
 	rm -rf $(@PACKET@_IPKG_TMP)
 	touch $@
 
@@ -148,6 +151,7 @@ $(STATEDIR)/@packet@.targetinstall: $(@packet@_targetinstall_deps)
 	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
 	$(TOPDIR)/scripts/bin/make-locale-ipks.sh @LPACKET@ $(@PACKET@_IPKG_TMP)
 
+	@$(call removedevfiles, $(@PACKET@_IPKG_TMP))
 	@$(call stripfiles, $(@PACKET@_IPKG_TMP))
 	mkdir -p $(@PACKET@_IPKG_TMP)/CONTROL
 	echo "Package: @LPACKET@" 							 >$(@PACKET@_IPKG_TMP)/CONTROL/control
