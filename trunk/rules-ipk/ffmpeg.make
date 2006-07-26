@@ -81,6 +81,13 @@ ifdef PTXCONF_FFMPEG_LAME
 ffmpeg_prepare_deps += $(STATEDIR)/lame.install
 endif
 
+ifdef PTXCONF_FFMPEG_VORBIS
+ffmpeg_prepare_deps += $(STATEDIR)/libvorbis.install
+endif
+ifdef PTXCONF_FFMPEG_LIBOGG
+ffmpeg_prepare_deps += $(STATEDIR)/libogg.install
+endif
+
 FFMPEG_PATH	=  PATH=$(CROSS_PATH)
 FFMPEG_ENV 	=  $(CROSS_ENV)
 #FFMPEG_ENV	+=
@@ -104,6 +111,14 @@ FFMPEG_AUTOCONF = \
 
 #	--build=$(GNU_HOST)
 #	--host=$(PTXCONF_GNU_TARGET)
+
+ifdef PTXCONF_FFMPEG_LIBOGG
+FFMPEG_AUTOCONF	+= --enable-libogg
+endif
+
+ifdef PTXCONF_FFMPEG_VORBIS
+FFMPEG_AUTOCONF	+= --enable-vorbis
+endif
 
 ifndef PTXCONF_ARCH_PPC
 FFMPEG_AUTOCONF	+= --enable-amr_nb --enable-amr_nb-fixed
@@ -198,6 +213,15 @@ ffmpeg_targetinstall_deps = $(STATEDIR)/ffmpeg.compile
 ifdef PTXCONF_FFMPEG_LAME
 ffmpeg_targetinstall_deps += $(STATEDIR)/lame.targetinstall
 FFMPEG_LIBSO = ", lame"
+endif
+
+ifdef PTXCONF_FFMPEG_VORBIS
+ffmpeg_targetinstall_deps += $(STATEDIR)/libvorbis.targetinstall
+FFMPEG_LIBSO += ", libvorbis"
+endif
+ifdef PTXCONF_FFMPEG_LIBOGG
+ffmpeg_targetinstall_deps += $(STATEDIR)/libogg.targetinstall
+FFMPEG_LIBSO += ", libogg"
 endif
 
 $(STATEDIR)/ffmpeg.targetinstall: $(ffmpeg_targetinstall_deps)
