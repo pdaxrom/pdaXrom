@@ -383,6 +383,7 @@ source "rules-ipk/dillo-xft.in"
 source "rules-ipk/osb-browser.in"
 endmenu
 menu "Mail clients        "
+source "rules-ipk/mutt.in"
 source "rules-ipk/sylpheed.in"
 source "rules-ipk/thunderbird.in"
 endmenu

@@ -101,7 +101,7 @@ xchain-squashfs_install: $(STATEDIR)/xchain-squashfs.install
 $(STATEDIR)/xchain-squashfs.install: $(STATEDIR)/xchain-squashfs.compile
 	@$(call targetinfo, $@)
 	$(INSTALL) -m 755 $(XCHAIN_SQUASHFS_DIR)/squashfs-tools/mksquashfs $(PTXCONF_PREFIX)/bin/
-	$(INSTALL) -m 755 $(XCHAIN_SQUASHFS_DIR)/squashfs-tools/mksquashfs-lzma $(PTXCONF_PREFIX)/bin/
+	#$(INSTALL) -m 755 $(XCHAIN_SQUASHFS_DIR)/squashfs-tools/mksquashfs-lzma $(PTXCONF_PREFIX)/bin/
 	touch $@
 
 # ----------------------------------------------------------------------------
