@@ -87,7 +87,8 @@ $(STATEDIR)/@packet@.extract: $(@packet@_extract_deps)
 @PACKET@_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
-	--prefix=/usr
+	--prefix=/usr \
+	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
 @PACKET@_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
