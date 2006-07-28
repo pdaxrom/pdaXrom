@@ -70,7 +70,7 @@ PTXCONF_ARCH="armv5tel"
 PTXCONF_ARCH_USERSPACE="arm"
 PTXCONF_ARM_PROC="armv"
 PTXCONF_GNU_TARGET="armv5tel-cacko-linux"
-PTXCONF_PREFIX="/opt/cross/arm/3.4.6-xscale-softvfp"
+PTXCONF_PREFIX="/opt/cross/arm/3.4.6-xscale-softvfp-initrd"
 PTXCONF_NATIVE_PREFIX="/opt/native/arm/3.4.6-xscale-softvfp"
 PTXCONF_ROOT="/tmp/roots/root-corgi-initrd"
 

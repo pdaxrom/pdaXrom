@@ -2,6 +2,16 @@
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
+# by louigi600
+
+echo "Proceed with pdaxrom installation or boot to emergency system? [y/n]"
+
+read ans
+
+if [ "$ans" != "y" -a "$ans" != "Y" ]; then
+    exit 0
+fi
+
 echo $1
 
 LOC=$1
