@@ -1,2 +1,0 @@
-TARGET=h8300-hms
-TARGET_CFLAGS="-O"

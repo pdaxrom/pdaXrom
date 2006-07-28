@@ -1,8 +1,0 @@
-config PLANNER
-	bool
-	prompt "planner"
-
-config PLANNER_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on PLANNER

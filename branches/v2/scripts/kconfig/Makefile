@@ -1,1 +1,0 @@
-../ptx-modifications/Makefile.kconfig.ptx

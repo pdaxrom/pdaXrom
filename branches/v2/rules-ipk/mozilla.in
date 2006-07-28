@@ -1,8 +1,0 @@
-config MOZILLA
-	bool
-	prompt "mozilla"
-
-config MOZILLA_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on MOZILLA

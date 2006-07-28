@@ -1,6 +1,0 @@
-mb-applet-menu-launcher
-mb-applet-launcher -o -1 --desktop /usr/share/applications/rxvt-unicode.desktop
-	
-mb-applet-clock
-mb-applet-volume
-	

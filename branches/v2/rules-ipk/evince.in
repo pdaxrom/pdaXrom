@@ -1,8 +1,0 @@
-config EVINCE
-	bool
-	prompt "evince"
-
-config EVINCE_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on EVINCE

@@ -1,7 +1,0 @@
-config LINPHONE
-	bool "linphone"
-
-config LINPHONE_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on LINPHONE

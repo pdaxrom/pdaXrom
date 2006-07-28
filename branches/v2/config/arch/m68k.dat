@@ -1,3 +1,0 @@
-KERNELCONFIG=$PWD/m68k.config
-TARGET=m68k-cacko-linux-gnu
-TARGET_CFLAGS="-O"

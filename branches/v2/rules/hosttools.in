@@ -1,9 +1,0 @@
-menu	"Host Tools          "
-
-source "rules/xchain-cdrtools.in"
-source "rules/genext2fs.in"
-source "rules/fakeroot.in"
-source "rules/hosttool-util-linux.in"
-source "rules/xchain-mkimage-u-boot.in"
-source "rules/xchain-squashfs.in"
-endmenu

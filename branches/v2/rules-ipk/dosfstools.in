@@ -1,9 +1,0 @@
-config DOSFSTOOLS
-	bool
-	prompt "dosfstools"
-	depends on XFREE430
-
-config DOSFSTOOLS_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on DOSFSTOOLS

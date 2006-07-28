@@ -1,8 +1,0 @@
-config LIBXML2
-        bool
-        prompt "Compile libxml2"
-
-config LIBXML2_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on LIBXML2
