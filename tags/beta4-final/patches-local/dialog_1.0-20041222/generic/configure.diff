@@ -1,0 +1,11 @@
+--- s/configure~	2006-07-04 11:02:36.000000000 +0000
++++ s/configure	2006-07-04 11:02:48.000000000 +0000
+@@ -7287,7 +7287,7 @@
+ 
+ 	;;
+ linux*) # Suse Linux does not follow /usr/lib convention
+-	LIBS="$LIBS -L/lib"
++	LIBS="$LIBS"
+ 	;;
+ sunos3*|sunos4*)
+ 	test -d /usr/5lib && \

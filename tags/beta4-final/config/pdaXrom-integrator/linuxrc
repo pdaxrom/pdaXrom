@@ -1,0 +1,16 @@
+#! /bin/sh
+
+
+mount -t proc proc /proc
+mount -t tmpfs -o size=12m none /dev
+
+mknod /dev/console c 5 1
+
+cd /
+tar xf /root/.dev_default.tar 2> /dev/null > /dev/null
+mkdir /dev/shm
+
+mount -t tmpfs tmpfs /var
+mkdir /var/run
+
+exec sh

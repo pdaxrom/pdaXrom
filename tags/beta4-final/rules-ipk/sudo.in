@@ -1,0 +1,8 @@
+config SUDO
+	bool
+	prompt "sudo"
+
+config SUDO_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on SUDO

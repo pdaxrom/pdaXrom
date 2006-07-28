@@ -1,0 +1,101 @@
+#!/bin/bash
+
+/bin/mount -n -t proc none /proc
+
+echo "0 0 0 0" >/proc/sys/kernel/printk
+
+/bin/insmod -f /modules/usbcore.ko
+/bin/insmod -f /modules/ehci-hcd.ko
+/bin/insmod -f /modules/uhci-hcd.ko
+/bin/insmod -f /modules/ohci-hcd.ko
+/bin/insmod -f /modules/usb-storage.ko
+# need to sleep because it takes some time to register things
+printf "Registering USB devices "
+for cnt in 1 2 3 4 5 6 7 8 9 10; do
+    printf "."
+    /bin/sleep 1
+done
+printf "\n"
+
+CD_OK="no"
+MNT_PNT=""
+
+PDAX86HDD="no"
+cat /proc/cmdline | grep 'pdaX86hdd' || PDAX86HDD=yes
+
+if [ $PDAX86HDD = "yes" ]; then
+    for cdrom in `/bin/ls /dev/discs/disc*/part* 2>/dev/null`; do
+	/bin/mount -n -o rw $cdrom /cdrom 2> /dev/null >/dev/null
+	if [ ! $? = 0 ]; then
+	    continue
+	fi
+	if [ -f /cdrom/rootfs.bin ]; then
+	    CD_OK="yes"
+	    MNT_PNT=/cdrom/rootfs.bin
+	    echo "Found pdaX86 CD at $cdrom"
+	    break
+	fi
+	/bin/umount /cdrom 
+    done
+
+    if [ $CD_OK = "no" ]; then
+	echo "Can not detect pdaX86 image on the local storages."
+	#exit 1
+    fi
+fi
+
+if [ $CD_OK = "no" ]; then
+    for cdrom in `/bin/ls /dev/cdroms/cdrom* 2>/dev/null`; do
+	/bin/mount -n -o ro $cdrom /cdrom 2> /dev/null >/dev/null
+	if [ ! $? = 0 ]; then
+	    continue
+	fi
+	if [ -f /cdrom/boot/rootfs.bin ]; then
+	    CD_OK="yes"
+	    MNT_PNT=/cdrom/boot/rootfs.bin
+	    echo "Found pdaX86 CD at $cdrom"
+	    break
+	fi
+	/bin/umount /cdrom 
+    done
+
+    if [ $CD_OK = "no" ]; then
+	echo "Can not detect pdaX86 CD!"
+	exit 1
+    fi
+fi
+
+MEM=`/bin/cat /proc/meminfo | /bin/grep 'MemTotal' | /bin/cut -d':' -f 2`
+MEM=`echo $MEM | /bin/cut -d ' ' -f 1`
+MEM=$((MEM * 1024))
+echo "Total memory: $MEM"
+
+IMG=`/bin/wc -c $MNT_PNT`
+IMG=`echo $IMG | /bin/cut -d ' ' -f 1`
+echo "Image size:   $IMG"
+
+PDAX86RAM=
+PDAX86CD=
+cat /proc/cmdline | grep 'pdaX86ram' && PDAX86RAM=yes
+cat /proc/cmdline | grep 'pdaX86cd'  && PDAX86CD=yes
+
+if [ "$PDAX86CD" = "" -a $((IMG * 2)) -lt $MEM -o ! "$PDAX86RAM" = "" ]; then
+    echo "HEY!!! So much memory there - $((MEM / 1024 / 1024)) MB. Copying linux image to RAM..."
+    /bin/mount -n -t tmpfs none /tmp
+    /bin/cp -v $MNT_PNT /tmp/
+    /bin/umount /cdrom
+    /bin/rmmod usb-storage
+    /bin/rmmod ohci-hcd
+    /bin/rmmod uhci-hcd
+    /bin/rmmod ehci-hcd
+    /bin/rmmod usbcore
+    /bin/mount -n -o loop,ro -t squashfs /tmp/rootfs.bin /mnt
+else
+    /bin/mount -n -o loop,ro -t squashfs $MNT_PNT /mnt
+fi
+
+/bin/mount -n -o remount,ro /
+/bin/mount -n -t devfs none /mnt/dev
+cd /mnt
+/bin/pivot_root . boot/initrd
+exec /boot/initrd/bin/chroot . /sbin/init </dev/console 2>/dev/console

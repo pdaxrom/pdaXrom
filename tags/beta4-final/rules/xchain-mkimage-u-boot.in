@@ -1,0 +1,4 @@
+config XCHAIN_MKIMAGE-U-BOOT
+	bool
+	prompt "mkimage (u-boot)"
+	default n
