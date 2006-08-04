@@ -388,6 +388,7 @@ source "rules-ipk/sylpheed.in"
 source "rules-ipk/thunderbird.in"
 endmenu
 menu "Instant messenging  "
+source "rules-ipk/ekiga.in"
 source "rules-ipk/gaim.in"
 source "rules-ipk/licq.in"
 source "rules-ipk/linphone.in"

@@ -1,0 +1,11 @@
+--- s/configure~	2006-08-02 18:11:14.000000000 +0000
++++ s/configure	2006-08-02 18:11:20.000000000 +0000
+@@ -2078,7 +2078,7 @@
+ fi
+ 
+ fi
+-INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
++INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c"
+ 
+ # We need awk for the "check" target.  The system "awk" is bad on
+ # some platforms.
