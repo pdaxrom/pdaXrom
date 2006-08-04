@@ -87,6 +87,9 @@ else
 	perl -i -p -e "s,\@IPKG_TMP\@,$(PERL_IPKG_TMP),g" $(PERL_DIR)/Cross/config.sh-$(PTXCONF_ARCH)-linux
  endif
 endif
+ifdef PTXCONF_OPT_MIPSEL
+	perl -i -p -e "s,\@IPKG_TMP\@,$(PERL_IPKG_TMP),g" $(PERL_DIR)/Cross/config.sh-mipsel-linux
+endif
 	perl -i -p -e "s,\@CROSS_LIB_DIR@,$(CROSS_LIB_DIR),g"	$(PERL_DIR)/ext/Errno/Errno_pm.PL
 	cd $(PERL_DIR)/Cross && $(PERL_PATH) $(MAKE) patch
 	touch $@

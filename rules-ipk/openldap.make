@@ -20,10 +20,10 @@ endif
 # Paths and names
 #
 OPENLDAP_VENDOR_VERSION	= 1
-OPENLDAP_VERSION	= 2.3.11
+OPENLDAP_VERSION	= 2.3.25
 OPENLDAP		= openldap-$(OPENLDAP_VERSION)
 OPENLDAP_SUFFIX		= tgz
-OPENLDAP_URL		= ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release//$(OPENLDAP).$(OPENLDAP_SUFFIX)
+OPENLDAP_URL		= ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(OPENLDAP).$(OPENLDAP_SUFFIX)
 OPENLDAP_SOURCE		= $(SRCDIR)/$(OPENLDAP).$(OPENLDAP_SUFFIX)
 OPENLDAP_DIR		= $(BUILDDIR)/$(OPENLDAP)
 OPENLDAP_IPKG_TMP	= $(OPENLDAP_DIR)/ipkg_tmp
@@ -88,8 +88,12 @@ OPENLDAP_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
+	--sysconfdir=/etc \
 	--with-yielding_select=yes \
-	--enable-dynamic
+	--enable-dynamic \
+	--enable-bdb=no \
+	--enable-hdb=no \
+	--libexecdir=/usr/sbin
 
 ifdef PTXCONF_XFREE430
 OPENLDAP_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -101,6 +105,7 @@ $(STATEDIR)/openldap.prepare: $(openldap_prepare_deps)
 	@$(call clean, $(OPENLDAP_DIR)/config.cache)
 	cd $(OPENLDAP_DIR) && \
 		$(OPENLDAP_PATH) $(OPENLDAP_ENV) \
+		ac_cv_func_memcmp_working=yes \
 		./configure $(OPENLDAP_AUTOCONF)
 	touch $@
 
@@ -125,7 +130,12 @@ openldap_install: $(STATEDIR)/openldap.install
 
 $(STATEDIR)/openldap.install: $(STATEDIR)/openldap.compile
 	@$(call targetinfo, $@)
-	###$(OPENLDAP_PATH) $(MAKE) -C $(OPENLDAP_DIR) install
+	rm -rf $(OPENLDAP_IPKG_TMP)
+	$(OPENLDAP_PATH) $(MAKE) -C $(OPENLDAP_DIR) DESTDIR=$(OPENLDAP_IPKG_TMP) install
+	@$(call copyincludes, $(OPENLDAP_IPKG_TMP))
+	@$(call copylibraries,$(OPENLDAP_IPKG_TMP))
+	@$(call copymiscfiles,$(OPENLDAP_IPKG_TMP))
+	rm -rf $(OPENLDAP_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -139,17 +149,27 @@ openldap_targetinstall_deps = $(STATEDIR)/openldap.compile
 $(STATEDIR)/openldap.targetinstall: $(openldap_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(OPENLDAP_PATH) $(MAKE) -C $(OPENLDAP_DIR) DESTDIR=$(OPENLDAP_IPKG_TMP) install
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(OPENLDAP_VERSION)-$(OPENLDAP_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh openldap $(OPENLDAP_IPKG_TMP)
+
+	@$(call removedevfiles, $(OPENLDAP_IPKG_TMP))
+	@$(call stripfiles, $(OPENLDAP_IPKG_TMP))
 	mkdir -p $(OPENLDAP_IPKG_TMP)/CONTROL
 	echo "Package: openldap" 							 >$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Source: $(OPENLDAP_URL)"							>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 							>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
-	echo "Section: System" 								>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
+	echo "Section: Security" 							>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Version: $(OPENLDAP_VERSION)-$(OPENLDAP_VENDOR_VERSION)" 			>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Description: OpenLDAP Software is an open source implementation of the Lightweight Directory Access Protocol." >>$(OPENLDAP_IPKG_TMP)/CONTROL/control
-	asadsd
 	cd $(FEEDDIR) && $(XMKIPKG) $(OPENLDAP_IPKG_TMP)
 	touch $@
 
