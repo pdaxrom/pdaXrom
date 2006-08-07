@@ -240,6 +240,7 @@ source "rules-ipk/minivmac.in"
 source "rules-ipk/PcsxSrc.in"
 source "rules-ipk/pyldin.in"
 source "rules-ipk/qemu.in"
+source "rules-ipk/qucs.in"
 source "rules-ipk/stella.in"
 source "rules-ipk/wine.in"
 endmenu
