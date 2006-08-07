@@ -1,0 +1,8 @@
+config PS2CLIENT
+	bool
+	prompt "ps2client"
+
+config PS2CLIENT_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on PS2CLIENT
