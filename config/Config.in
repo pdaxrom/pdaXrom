@@ -409,6 +409,7 @@ source "rules-ipk/nfs-utils.in"
 source "rules-ipk/samba.in"
 endmenu
 source "rules-ipk/mobilemesh.in"
+source "rules-ipk/openvpn.in"
 source "rules-ipk/socat.in"
 source "rules-ipk/tftp.in"
 source "rules-ipk/tsocks.in"
