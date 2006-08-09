@@ -137,7 +137,7 @@ if [ -f /home/root/zgcc-@GCC_VERSION@.img ]; then
     if [ ! -d @PTXCONF_PREFIX@ ]; then
 	mkdir -p @PTXCONF_PREFIX@
     fi
-    mount -o loop /home/root/zgcc-@GCC_VERSION@.img @PTXCONF_PREFIX@
+    mount -o loop -t squashfs /home/root/zgcc-@GCC_VERSION@.img @PTXCONF_PREFIX@
 fi
 
 mount --bind /home/user /mnt/user

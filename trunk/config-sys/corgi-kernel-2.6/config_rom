@@ -112,6 +112,7 @@ PTXCONF_AUTOMAKE176=y
 # Host Tools          
 #
 # PTXCONF_XCHAIN_CDRTOOLS is not set
+# PTXCONF_CRAMFS is not set
 # PTXCONF_GENEXT2FS is not set
 # PTXCONF_FAKEROOT is not set
 PTXCONF_UTLNX_FDISK=y
@@ -261,27 +262,6 @@ PTXCONF_VENDORTWEAKS_USERCONFIG="sharp-corgi"
 #
 # Embedded linux target specific ---  
 #
-
-#
-# Monolitic image     
-#
-
-#
-# Core Tools ---  
-#
-
-#
-# Disk and file ---   
-#
-
-#
-# Disk and file utils 
-#
-
-#
-# grub                
-#
-PTXCONF_CRAMFS=y
 
 #
 # Ipk packages        
@@ -1154,6 +1134,8 @@ PTXCONF_MINIVMAC=y
 PTXCONF_PYLDIN=y
 # PTXCONF_PYLDIN_INSTALL is not set
 # PTXCONF_QEMU is not set
+PTXCONF_QUCS=y
+# PTXCONF_QUCS_INSTALL is not set
 PTXCONF_STELLA=y
 # PTXCONF_STELLA_INSTALL is not set
 
@@ -1479,6 +1461,8 @@ PTXCONF_NFS-UTILS=y
 PTXCONF_SAMBA=y
 PTXCONF_MOBILEMESH=y
 # PTXCONF_MOBILEMESH_INSTALL is not set
+PTXCONF_OPENVPN=y
+# PTXCONF_OPENVPN_INSTALL is not set
 PTXCONF_SOCAT=y
 # PTXCONF_SOCAT_INSTALL is not set
 PTXCONF_TFTP=y

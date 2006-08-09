@@ -146,7 +146,7 @@ ifdef PTXCONF_QT-X11-FREE
 	echo "Description: pdaXrom Qt C++ header files"		>>$(BUILDDIR)/native_headers-qt/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(BUILDDIR)/native_headers-qt/
 endif
-ifdef PTXCONF_CRAMFS
+
 	rm -rf   $(BUILDDIR)/native_headers_cramfs
 	mkdir -p $(BUILDDIR)/native_headers_cramfs/$(PTXCONF_NATIVE_PREFIX)
 	cp -a $(NATIVE_BINUTILS_IPKG_TMP)/$(PTXCONF_NATIVE_PREFIX) 	$(BUILDDIR)/native_headers_cramfs/$(PTXCONF_NATIVE_PREFIX)/..
@@ -205,9 +205,14 @@ ifdef PTXCONF_NATIVE_AUTOMAKE
 #	ln -sf aclocal-1.9 $(BUILDDIR)/native_headers_cramfs/$(PTXCONF_NATIVE_PREFIX)/share/aclocal
 endif
 	rm -rf $(BUILDDIR)/native_headers_cramfs/$(PTXCONF_NATIVE_PREFIX)/lib/*.*a
+ifdef PTXCONF_CRAMFS
 	$(PTXCONF_PREFIX)/bin/mkcramfs $(BUILDDIR)/native_headers_cramfs/$(PTXCONF_NATIVE_PREFIX) $(TOPDIR)/bootdisk/zgcc-$(GCC_VERSION).img
-	md5sum $(TOPDIR)/bootdisk/zgcc-$(GCC_VERSION).img > $(TOPDIR)/bootdisk/zgcc-$(GCC_VERSION).img.md5sum
 endif
+ifdef PTXCONF_XCHAIN_SQUASHFS
+	$(PTXCONF_PREFIX)/bin/mksquashfs $(BUILDDIR)/native_headers_cramfs/$(PTXCONF_NATIVE_PREFIX) $(TOPDIR)/bootdisk/zgcc-$(GCC_VERSION).img -all-root -info
+endif
+	md5sum $(TOPDIR)/bootdisk/zgcc-$(GCC_VERSION).img > $(TOPDIR)/bootdisk/zgcc-$(GCC_VERSION).img.md5sum
+
 endif
 
 	#
