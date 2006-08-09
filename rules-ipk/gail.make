@@ -19,13 +19,14 @@ endif
 #
 # Paths and names
 #
+GAIL_VENDOR_VERSION	= 1
 GAIL_VERSION		= 1.6.5
 GAIL			= gail-$(GAIL_VERSION)
 GAIL_SUFFIX		= tar.bz2
-GAIL_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/gail/1.6/$(GAIL).$(GAIL_SUFFIX)
+GAIL_URL		= http://ftp.gnome.org/pub/gnome/sources/gail/1.6/$(GAIL).$(GAIL_SUFFIX)
 GAIL_SOURCE		= $(SRCDIR)/$(GAIL).$(GAIL_SUFFIX)
 GAIL_DIR		= $(BUILDDIR)/$(GAIL)
-GAIL_IPKG_TMP		= $(GAIL_DIR)/ipkg_tmp
+GAIL_IPKG_TMP	= $(GAIL_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -76,10 +77,10 @@ gail_prepare_deps = \
 
 GAIL_PATH	=  PATH=$(CROSS_PATH)
 GAIL_ENV 	=  $(CROSS_ENV)
-GAIL_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
-GAIL_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+#GAIL_ENV	+=
+GAIL_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#GAIL_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#GAIL_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -89,10 +90,10 @@ GAIL_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
+	--sysconfdir=/etc \
 	--enable-shared \
 	--disable-static \
-	--sysconfdir=/etc \
-	--libexecdir=/usr/bin \
+	--libexecdir=/usr/sbin \
 	--disable-debug
 
 ifdef PTXCONF_XFREE430
@@ -129,11 +130,11 @@ gail_install: $(STATEDIR)/gail.install
 
 $(STATEDIR)/gail.install: $(STATEDIR)/gail.compile
 	@$(call targetinfo, $@)
+	rm -rf $(GAIL_IPKG_TMP)
 	$(GAIL_PATH) $(MAKE) -C $(GAIL_DIR) DESTDIR=$(GAIL_IPKG_TMP) install
-	cp -a  $(GAIL_IPKG_TMP)/usr/include/*          $(CROSS_LIB_DIR)/include
-	cp -a  $(GAIL_IPKG_TMP)/usr/lib/*              $(CROSS_LIB_DIR)/lib
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libgailutil.la
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/gail.pc
+	@$(call copyincludes, $(GAIL_IPKG_TMP))
+	@$(call copylibraries,$(GAIL_IPKG_TMP))
+	@$(call copymiscfiles,$(GAIL_IPKG_TMP))
 	rm -rf $(GAIL_IPKG_TMP)
 	touch $@
 
@@ -150,27 +151,44 @@ gail_targetinstall_deps = $(STATEDIR)/gail.compile \
 $(STATEDIR)/gail.targetinstall: $(gail_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(GAIL_PATH) $(MAKE) -C $(GAIL_DIR) DESTDIR=$(GAIL_IPKG_TMP) install
-	rm -rf $(GAIL_IPKG_TMP)/usr/include
-	rm -rf $(GAIL_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(GAIL_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(GAIL_IPKG_TMP)/usr/share
-	for FILE in `find $(GAIL_IPKG_TMP)/usr/ -type f`; do		\
-	    ZZZ=`file $$FILE | grep 'ELF 32-bit'`;			\
-	    if [  "$$ZZZ" != "" ]; then					\
-		$(CROSSSTRIP) $$FILE;					\
-	    fi;								\
-	done
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(GAIL_VERSION)-$(GAIL_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh gail $(GAIL_IPKG_TMP)
+
+	@$(call removedevfiles, $(GAIL_IPKG_TMP))
+	@$(call stripfiles, $(GAIL_IPKG_TMP))
 	mkdir -p $(GAIL_IPKG_TMP)/CONTROL
-	echo "Package: gail" 				>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Source: $(GAIL_URL)"						>>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Section: Gnome"	 			>>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Version: $(GAIL_VERSION)" 		>>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Depends: libgnomecanvas, gtk2" 		>>$(GAIL_IPKG_TMP)/CONTROL/control
-	echo "Description: GNOME Accessibility Implementation Library">>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Package: gail" 										 >$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Source: $(GAIL_URL)"									>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 									>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Section: Gnome" 										>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 						>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 								>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Version: $(GAIL_VERSION)-$(GAIL_VENDOR_VERSION)" 						>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Depends: libgnomecanvas, gtk2" 								>>$(GAIL_IPKG_TMP)/CONTROL/control
+	echo "Description: GNOME Accessibility Implementation Library"					>>$(GAIL_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(GAIL_IPKG_TMP)
+	touch $@
+
+# ----------------------------------------------------------------------------
+# Image-Install
+# ----------------------------------------------------------------------------
+
+ifdef PTXCONF_GAIL_INSTALL
+ROMPACKAGES += $(STATEDIR)/gail.imageinstall
+endif
+
+gail_imageinstall_deps = $(STATEDIR)/gail.targetinstall \
+	$(STATEDIR)/virtual-image.install
+
+$(STATEDIR)/gail.imageinstall: $(gail_imageinstall_deps)
+	@$(call targetinfo, $@)
+	cd $(FEEDDIR) && $(XIPKG) install gail
 	touch $@
 
 # ----------------------------------------------------------------------------

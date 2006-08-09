@@ -35,28 +35,6 @@ source "rules/rootfs.in"
 
 comment "Embedded linux target specific ---  "
 
-menu "Monolitic image     "
-
-##############################################################################
-comment "Core Tools ---  "
-##############################################################################
-
-
-############################################################################## 
-comment	"Disk and file ---   "
-##############################################################################
-
-menu	"Disk and file utils "
-
-source "rules/grub.in"
-source "rules/cramfs.in"
-
-endmenu
-
-############################################################################## 
-
-endmenu
-
 menu "Ipk packages        "
 
 menu "Core tools          "

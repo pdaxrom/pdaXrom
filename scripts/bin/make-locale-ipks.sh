@@ -114,3 +114,27 @@ for dir in `find . -name doc -type d` ; do
 	rm -rf $IPKTMP
     rm -rf $ROOTDIR/$dir
 done
+
+cd $ROOTDIR
+
+for dir in `find . -name gtk-doc -type d` ; do
+	echo $dir -- gtk doc files
+
+	mkdir -p $IPKTMP/CONTROL
+	mkdir -p $IPKTMP/$dir
+	cp -a $dir/* $IPKTMP/$dir/
+
+	echo "Package: $PKGNAME-gtk-doc"		 > $IPKTMP/CONTROL/control
+	echo "Priority: optional"			>> $IPKTMP/CONTROL/control
+	echo "Version: $VERSION"			>> $IPKTMP/CONTROL/control
+	echo "Architecture: $ARCH"			>> $IPKTMP/CONTROL/control
+	echo "Maintainer: pdaXrom team <team@pdaXrom.org>" >> $IPKTMP/CONTROL/control
+	echo "License: "				>> $IPKTMP/CONTROL/control
+	echo "Depends: $PKGNAME"			>> $IPKTMP/CONTROL/control
+	echo "Description: gtk doc files" 		>> $IPKTMP/CONTROL/control
+
+	$MKIPKG $IPKTMP $FEEDDIR
+
+	rm -rf $IPKTMP
+    rm -rf $ROOTDIR/$dir
+done

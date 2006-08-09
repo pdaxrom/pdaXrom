@@ -20,10 +20,10 @@ endif
 # Paths and names
 #
 CAIRO_VENDOR_VERSION	= 1
-CAIRO_VERSION		= 1.0.0
+CAIRO_VERSION		= 1.2.0
 CAIRO			= cairo-$(CAIRO_VERSION)
 CAIRO_SUFFIX		= tar.gz
-CAIRO_URL		= ftp://ftp.gtk.org/pub/gtk/v2.8/dependencies/$(CAIRO).$(CAIRO_SUFFIX)
+CAIRO_URL		= http://cairographics.org/releases/$(CAIRO).$(CAIRO_SUFFIX)
 CAIRO_SOURCE		= $(SRCDIR)/$(CAIRO).$(CAIRO_SUFFIX)
 CAIRO_DIR		= $(BUILDDIR)/$(CAIRO)
 CAIRO_IPKG_TMP		= $(CAIRO_DIR)/ipkg_tmp
@@ -76,8 +76,7 @@ cairo_prepare_deps = \
 
 CAIRO_PATH	=  PATH=$(CROSS_PATH)
 CAIRO_ENV 	=  $(CROSS_ENV)
-CAIRO_ENV	+= CFLAGS="$(TARGET_OPT_CFLAGS)"
-CAIRO_ENV	+= CXXFLAGS="$(TARGET_OPT_CFLAGS)"
+#CAIRO_ENV	+=
 CAIRO_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
 #CAIRO_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
@@ -90,15 +89,7 @@ CAIRO_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
-	--disable-gtk-doc \
-	--disable-static \
-	--enable-shared \
-	--sysconfdir=/etc \
-	--disable-glitz \
-	--disable-pdf \
-	--disable-ps \
-	--disable-xcb \
-	--enable-png
+	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
 CAIRO_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -136,10 +127,9 @@ $(STATEDIR)/cairo.install: $(STATEDIR)/cairo.compile
 	@$(call targetinfo, $@)
 	rm -rf $(CAIRO_IPKG_TMP)
 	$(CAIRO_PATH) $(MAKE) -C $(CAIRO_DIR) DESTDIR=$(CAIRO_IPKG_TMP) install
-	cp -a $(CAIRO_IPKG_TMP)/usr/include/*	$(CROSS_LIB_DIR)/include/
-	cp -a $(CAIRO_IPKG_TMP)/usr/lib/*	$(CROSS_LIB_DIR)/lib/
-	perl -i -p -e "s,/usr/lib,$(CROSS_LIB_DIR)/lib,g" $(CROSS_LIB_DIR)/lib/libcairo.la
-	perl -i -p -e "s,/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/cairo.pc
+	@$(call copyincludes, $(CAIRO_IPKG_TMP))
+	@$(call copylibraries,$(CAIRO_IPKG_TMP))
+	@$(call copymiscfiles,$(CAIRO_IPKG_TMP))
 	rm -rf $(CAIRO_IPKG_TMP)
 	touch $@
 
@@ -155,21 +145,27 @@ cairo_targetinstall_deps = $(STATEDIR)/cairo.compile \
 $(STATEDIR)/cairo.targetinstall: $(cairo_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(CAIRO_PATH) $(MAKE) -C $(CAIRO_DIR) DESTDIR=$(CAIRO_IPKG_TMP) install
-	rm -rf $(CAIRO_IPKG_TMP)/usr/include
-	rm -rf $(CAIRO_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(CAIRO_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(CAIRO_IPKG_TMP)/usr/share/gtk-doc
-	$(CROSSSTRIP) $(CAIRO_IPKG_TMP)/usr/lib/*.so*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(CAIRO_VERSION)-$(CAIRO_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh cairo $(CAIRO_IPKG_TMP)
+
+	@$(call removedevfiles, $(CAIRO_IPKG_TMP))
+	@$(call stripfiles, $(CAIRO_IPKG_TMP))
 	mkdir -p $(CAIRO_IPKG_TMP)/CONTROL
 	echo "Package: cairo" 								 >$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Source: $(CAIRO_URL)"							>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 							>>$(CAIRO_IPKG_TMP)/CONTROL/control
-	echo "Section: X11" 								>>$(CAIRO_IPKG_TMP)/CONTROL/control
+	echo "Section: pdaXrom" 							>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Version: $(CAIRO_VERSION)-$(CAIRO_VENDOR_VERSION)" 			>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(CAIRO_IPKG_TMP)/CONTROL/control
-	echo "Description: Cairo is a 2D graphics library with support for multiple output devices."	>>$(CAIRO_IPKG_TMP)/CONTROL/control
+	echo "Description: Cairo is a 2D graphics library with support for multiple output devices" >>$(CAIRO_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(CAIRO_IPKG_TMP)
 	touch $@
 
