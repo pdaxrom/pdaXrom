@@ -10,7 +10,7 @@ PROJECT		:= pdaXrom
 VERSION		:= 1
 PATCHLEVEL	:= 1
 SUBLEVEL	:= 0
-EXTRAVERSION	:= beta4
+EXTRAVERSION	:= beta5
 
 CODENAMEX	:= Kathrin
 

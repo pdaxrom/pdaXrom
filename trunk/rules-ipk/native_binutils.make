@@ -181,5 +181,6 @@ $(STATEDIR)/native_binutils.imageinstall: $(native_binutils_imageinstall_deps)
 native_binutils_clean:
 	rm -rf $(STATEDIR)/native_binutils.*
 	rm -rf $(NATIVE_BINUTILS_DIR)
+	rm -rf $(NATIVE_BINUTILS_BUILD_DIR)
 
 # vim: syntax=make

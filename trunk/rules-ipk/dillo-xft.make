@@ -103,7 +103,8 @@ DILLO-XFT_AUTOCONF = \
 	--enable-meta-refresh \
 	--enable-user-agent \
 	--without-libiconv-prefix \
-	--sysconfdir=/usr/lib/dillo
+	--sysconfdir=/usr/lib/dillo \
+	--enable-cookies
 
 ifdef PTXCONF_XFREE430
 DILLO-XFT_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
