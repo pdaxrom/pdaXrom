@@ -331,11 +331,12 @@ else
 		`find $(CROSS_LIB_DIR)/lib/ -name "libstdc++[-.]*so*"`					\
 		`find $(PTXCONF_PREFIX)/lib/gcc-lib/$(PTXCONF_GNU_TARGET)/ -name "libstdc++[-.]*so*"`	\
 		;do											\
-			cp -d $$FILE $(GCC_STAGE2_DIR)/ipkg/usr/lib/;						\
+			cp -d $$FILE $(GCC_STAGE2_DIR)/ipkg/usr/lib/;					\
 			chmod 755 $$FILE;								\
 			$(CROSSSTRIP) -R .note -R .comment $$FILE;					\
 	done
 endif
+	$(CROSSSTRIP) -R .note -R .comment $(GCC_STAGE2_DIR)/ipkg/usr/lib/*.so*
 	mkdir -p $(GCC_STAGE2_DIR)/ipkg/CONTROL
 	echo "Package: libstdcxx" 						 >$(GCC_STAGE2_DIR)/ipkg/CONTROL/control
 	echo "Source: $(GCC_URL)" 						>>$(GCC_STAGE2_DIR)/ipkg/CONTROL/control
