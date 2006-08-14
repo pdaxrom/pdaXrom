@@ -73,6 +73,7 @@ ekiga_prepare_deps = \
 	$(STATEDIR)/ekiga.extract \
 	$(STATEDIR)/pwlib.install \
 	$(STATEDIR)/opal.install \
+	$(STATEDIR)/evolution-data-server.install \
 	$(STATEDIR)/virtual-xchain.install
 
 EKIGA_PATH	=  PATH=$(CROSS_PATH)
@@ -92,12 +93,13 @@ EKIGA_AUTOCONF = \
 	--prefix=/usr \
 	--sysconfdir=/etc \
 	--disable-doc \
-	--disable-schemas-install \
 	--disable-scrollkeeper \
 	--with-pwlib-dir=$(PWLIB_DIR) \
 	--with-opal-dir=$(OPAL_DIR) \
 	--disable-avahi \
 	--disable-gnome
+
+##	--disable-schemas-install
 
 ifdef PTXCONF_XFREE430
 EKIGA_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -149,6 +151,7 @@ ekiga_targetinstall: $(STATEDIR)/ekiga.targetinstall
 
 ekiga_targetinstall_deps = $(STATEDIR)/ekiga.compile \
 	$(STATEDIR)/pwlib.targetinstall \
+	$(STATEDIR)/evolution-data-server.targetinstall \
 	$(STATEDIR)/opal.targetinstall
 
 $(STATEDIR)/ekiga.targetinstall: $(ekiga_targetinstall_deps)
@@ -173,7 +176,7 @@ $(STATEDIR)/ekiga.targetinstall: $(ekiga_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(EKIGA_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(EKIGA_IPKG_TMP)/CONTROL/control
 	echo "Version: $(EKIGA_VERSION)-$(EKIGA_VENDOR_VERSION)" 			>>$(EKIGA_IPKG_TMP)/CONTROL/control
-	echo "Depends: opal, pwlib, openldap" 						>>$(EKIGA_IPKG_TMP)/CONTROL/control
+	echo "Depends: opal, pwlib, openldap, evolution-data-server" 			>>$(EKIGA_IPKG_TMP)/CONTROL/control
 	echo "Description: Ekiga (formely known as GnomeMeeting) is an open source VoIP and video conferencing application for GNOME." >>$(EKIGA_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(EKIGA_IPKG_TMP)
 	touch $@
