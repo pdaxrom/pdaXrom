@@ -1,0 +1,14 @@
+--- tslib-07072006/plugins/input-raw.c~	2006-08-15 17:16:25.000000000 +0000
++++ tslib-07072006/plugins/input-raw.c	2006-08-15 17:17:45.000000000 +0000
+@@ -26,6 +26,11 @@
+ #include <sys/time.h>
+ #include <sys/types.h>
+ 
++#ifndef kernel_ulong_t
++#define BITS_PER_LONG 32
++typedef unsigned long kernel_ulong_t;
++#endif
++
+ #include <linux/input.h>
+ #ifndef EV_SYN /* 2.4 kernel headers */
+ # define EV_SYN 0x00

@@ -74,6 +74,10 @@ mc_prepare_deps = \
 	$(STATEDIR)/slang.install \
 	$(STATEDIR)/virtual-xchain.install
 
+ifdef PTXCONF_XFREE430
+mc_prepare_deps += $(STATEDIR)/xfree430.install
+endif
+
 MC_PATH	=  PATH=$(CROSS_PATH)
 MC_ENV 	=  $(CROSS_ENV)
 #MC_ENV	+=

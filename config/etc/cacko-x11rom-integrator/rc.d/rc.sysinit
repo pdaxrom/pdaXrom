@@ -69,7 +69,7 @@ hwclock --hctosys 2>/dev/null >/dev/null
 
 # rebuild cache for shared libraries, don't update links.
 if [ -x /sbin/ldconfig ]; then
-    /sbin/ldconfig -X
+    /sbin/ldconfig
 fi
 
 # check /etc/HOSTNAME

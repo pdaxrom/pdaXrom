@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 CAIRO_VENDOR_VERSION	= 1
-CAIRO_VERSION		= 1.2.0
+CAIRO_VERSION		= 1.2.2
 CAIRO			= cairo-$(CAIRO_VERSION)
 CAIRO_SUFFIX		= tar.gz
 CAIRO_URL		= http://cairographics.org/releases/$(CAIRO).$(CAIRO_SUFFIX)

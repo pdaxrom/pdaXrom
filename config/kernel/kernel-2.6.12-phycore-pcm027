@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.12.6-elinos-218
-# Fri May 19 12:26:07 2006
+# Wed Aug 16 10:17:41 2006
 #
 CONFIG_ARM=y
 CONFIG_MMU=y
@@ -155,20 +155,7 @@ CONFIG_CMDLINE="mem=64M console=ttyS0,115200 root=/dev/hdc1 init=/sbin/init rw "
 #
 # CPU Frequency scaling
 #
-CONFIG_CPU_FREQ=y
-CONFIG_CPU_FREQ_TABLE=y
-# CONFIG_CPU_FREQ_DEBUG is not set
-CONFIG_CPU_FREQ_STAT=y
-# CONFIG_CPU_FREQ_STAT_DETAILS is not set
-CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
-# CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE is not set
-CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
-# CONFIG_CPU_FREQ_GOV_POWERSAVE is not set
-# CONFIG_CPU_FREQ_GOV_USERSPACE is not set
-# CONFIG_CPU_FREQ_GOV_ONDEMAND is not set
-# CONFIG_CPU_FREQ_GOV_CONSERVATIVE is not set
-CONFIG_DVFM=y
-CONFIG_FAST_DVFM=y
+# CONFIG_CPU_FREQ is not set
 
 #
 # Floating point emulation
@@ -192,9 +179,8 @@ CONFIG_BINFMT_MISC=y
 #
 # Power management options
 #
-CONFIG_PM=y
+# CONFIG_PM is not set
 # CONFIG_SRAM_ALLOCATE is not set
-CONFIG_APM=y
 
 #
 # Device Drivers
@@ -781,7 +767,6 @@ CONFIG_USB=y
 # CONFIG_USB_DEVICEFS is not set
 # CONFIG_USB_BANDWIDTH is not set
 # CONFIG_USB_DYNAMIC_MINORS is not set
-CONFIG_USB_SUSPEND=y
 # CONFIG_USB_OTG is not set
 
 #

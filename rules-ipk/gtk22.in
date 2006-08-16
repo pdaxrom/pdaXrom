@@ -1,8 +1,8 @@
 config GTK22
 	bool
-	prompt "gtk+-2"
+	prompt "gtk22"
 
 config GTK22_INSTALL
 	bool
-	prompt "Install on ROM"
+	prompt "Install to filesystem"
 	depends on GTK22
