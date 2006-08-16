@@ -71,6 +71,8 @@ fbpanel_prepare: $(STATEDIR)/fbpanel.prepare
 #
 fbpanel_prepare_deps = \
 	$(STATEDIR)/fbpanel.extract \
+	$(STATEDIR)/gtk22.install \
+	$(STATEDIR)/startup-notification.install \
 	$(STATEDIR)/virtual-xchain.install
 
 FBPANEL_PATH	=  PATH=$(CROSS_PATH)
@@ -128,7 +130,9 @@ $(STATEDIR)/fbpanel.install: $(STATEDIR)/fbpanel.compile
 
 fbpanel_targetinstall: $(STATEDIR)/fbpanel.targetinstall
 
-fbpanel_targetinstall_deps = $(STATEDIR)/fbpanel.compile
+fbpanel_targetinstall_deps = $(STATEDIR)/fbpanel.compile \
+	$(STATEDIR)/startup-notification.targetinstall \
+	$(STATEDIR)/gtk22.install
 
 $(STATEDIR)/fbpanel.targetinstall: $(fbpanel_targetinstall_deps)
 	@$(call targetinfo, $@)
@@ -148,7 +152,7 @@ $(STATEDIR)/fbpanel.targetinstall: $(fbpanel_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(FBPANEL_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(FBPANEL_IPKG_TMP)/CONTROL/control
 	echo "Version: $(FBPANEL_VERSION)-$(FBPANEL_VENDOR_VERSION)" 			>>$(FBPANEL_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2" 								>>$(FBPANEL_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, startup-notification" 					>>$(FBPANEL_IPKG_TMP)/CONTROL/control
 	echo "Description: fbpanel is a lightweight, NETWM compliant desktop panel. It works with any NETWM compliant window manager." >>$(FBPANEL_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(FBPANEL_IPKG_TMP)
 	touch $@

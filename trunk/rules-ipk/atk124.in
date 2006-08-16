@@ -1,0 +1,8 @@
+config ATK124
+	bool
+	prompt "atk124"
+
+config ATK124_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on ATK124
