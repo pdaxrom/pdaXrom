@@ -4,4 +4,4 @@ TARGET=arm-cacko-linux-gnu
 GCC_EXTRA_CONFIG=--with-arch=armv5te --enable-cxx-flags=-march=armv5te
 GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
 #TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer -march=armv5te -mtune=armv5te
-TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer -march=armv5te
+TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer
