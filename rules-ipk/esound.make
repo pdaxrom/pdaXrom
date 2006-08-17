@@ -19,10 +19,11 @@ endif
 #
 # Paths and names
 #
-ESOUND_VERSION		= 0.2.34
+ESOUND_VENDOR_VERSION	= 1
+ESOUND_VERSION		= 0.2.36
 ESOUND			= esound-$(ESOUND_VERSION)
 ESOUND_SUFFIX		= tar.bz2
-ESOUND_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/esound/0.2/$(ESOUND).$(ESOUND_SUFFIX)
+ESOUND_URL		= http://ftp.gnome.org/pub/GNOME/sources/esound/0.2/$(ESOUND).$(ESOUND_SUFFIX)
 ESOUND_SOURCE		= $(SRCDIR)/$(ESOUND).$(ESOUND_SUFFIX)
 ESOUND_DIR		= $(BUILDDIR)/$(ESOUND)
 ESOUND_IPKG_TMP		= $(ESOUND_DIR)/ipkg_tmp
@@ -76,9 +77,9 @@ esound_prepare_deps = \
 ESOUND_PATH	=  PATH=$(CROSS_PATH)
 ESOUND_ENV 	=  $(CROSS_ENV)
 ESOUND_ENV	+= CFLAGS="$(TARGET_OPT_CFLAGS) -DPTYS_ARE_GETPT -DPTYS_ARE_SEARCHED"
-ESOUND_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+ESOUND_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#ESOUND_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#ESOUND_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -88,10 +89,9 @@ ESOUND_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
-	--enable-shared \
-	--disable-static \
-	--disable-debug \
 	--sysconfdir=/etc \
+	--enable-shared \
+	--disable-debug \
 	--libexecdir=/usr/bin
 
 ifdef PTXCONF_XFREE430
@@ -128,14 +128,11 @@ esound_install: $(STATEDIR)/esound.install
 
 $(STATEDIR)/esound.install: $(STATEDIR)/esound.compile
 	@$(call targetinfo, $@)
+	rm -rf $(ESOUND_IPKG_TMP)
 	$(ESOUND_PATH) $(MAKE) -C $(ESOUND_DIR) DESTDIR=$(ESOUND_IPKG_TMP) install
-	cp -a  $(ESOUND_IPKG_TMP)/usr/include/*          $(CROSS_LIB_DIR)/include
-	cp -a  $(ESOUND_IPKG_TMP)/usr/lib/*              $(CROSS_LIB_DIR)/lib
-	cp -a  $(ESOUND_IPKG_TMP)/usr/bin/esd-config     $(PTXCONF_PREFIX)/bin
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/bin/esd-config
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libesd.la
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libesddsp.la
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/esound.pc
+	@$(call copyincludes, $(ESOUND_IPKG_TMP))
+	@$(call copylibraries,$(ESOUND_IPKG_TMP))
+	@$(call copymiscfiles,$(ESOUND_IPKG_TMP))
 	rm -rf $(ESOUND_IPKG_TMP)
 	touch $@
 
@@ -145,39 +142,33 @@ $(STATEDIR)/esound.install: $(STATEDIR)/esound.compile
 
 esound_targetinstall: $(STATEDIR)/esound.targetinstall
 
-esound_targetinstall_deps = \
-	$(STATEDIR)/audiofile.targetinstall \
-	$(STATEDIR)/esound.compile
+esound_targetinstall_deps = $(STATEDIR)/esound.compile \
+	$(STATEDIR)/audiofile.targetinstall
 
 $(STATEDIR)/esound.targetinstall: $(esound_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(ESOUND_PATH) $(MAKE) -C $(ESOUND_DIR) DESTDIR=$(ESOUND_IPKG_TMP) install
-	rm -rf $(ESOUND_IPKG_TMP)/usr/bin/esd-config
-	rm -rf $(ESOUND_IPKG_TMP)/usr/include
-	rm -rf $(ESOUND_IPKG_TMP)/usr/lib/pkgconfig
-	rm  -f $(ESOUND_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(ESOUND_IPKG_TMP)/usr/man
-	rm -rf $(ESOUND_IPKG_TMP)/usr/share
-	ln -sf esdplay $(ESOUND_IPKG_TMP)/usr/bin/play
-	ln -sf esdplay $(ESOUND_IPKG_TMP)/usr/bin/playwave
-	#perl -p -i -e "s/\-terminate//g" $(ESOUND_IPKG_TMP)/etc/esd.conf
-	perl -p -i -e "s/\=100/\=1000/g" $(ESOUND_IPKG_TMP)/etc/esd.conf
-	for FILE in `find $(ESOUND_IPKG_TMP)/usr/ -type f`; do		\
-	    ZZZ=`file $$FILE | grep 'ELF 32-bit'`;			\
-	    if [  "$$ZZZ" != "" ]; then					\
-		$(CROSSSTRIP) $$FILE;					\
-	    fi;								\
-	done
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(ESOUND_VERSION)-$(ESOUND_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh esound $(ESOUND_IPKG_TMP)
+
+	@$(call removedevfiles, $(ESOUND_IPKG_TMP))
+	@$(call stripfiles, $(ESOUND_IPKG_TMP))
 	mkdir -p $(ESOUND_IPKG_TMP)/CONTROL
-	echo "Package: esound" 				>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Source: $(ESOUND_URL)"			>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Section: Multimedia" 			>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Version: $(ESOUND_VERSION)" 		>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Depends: audiofile" 			>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	echo "Description: Enlightened Sound Daemon">>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Package: esound" 								 >$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Source: $(ESOUND_URL)"							>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Section: Multimedia" 							>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Version: $(ESOUND_VERSION)-$(ESOUND_VENDOR_VERSION)" 			>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Depends: audiofile" 							>>$(ESOUND_IPKG_TMP)/CONTROL/control
+	echo "Description: Enlightened Sound Daemon"					>>$(ESOUND_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(ESOUND_IPKG_TMP)
 	touch $@
 
