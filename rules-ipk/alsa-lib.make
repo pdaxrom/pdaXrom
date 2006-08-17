@@ -21,7 +21,7 @@ endif
 #
 ALSA-LIB_VENDOR_VERSION	= 1
 #ALSA-LIB_VERSION	= 1.0.8
-ALSA-LIB_VERSION	= 1.0.11rc4
+ALSA-LIB_VERSION	= 1.0.11
 ALSA-LIB		= alsa-lib-$(ALSA-LIB_VERSION)
 ALSA-LIB_SUFFIX		= tar.bz2
 ALSA-LIB_URL		= ftp://ftp.alsa-project.org/pub/lib/$(ALSA-LIB).$(ALSA-LIB_SUFFIX)
