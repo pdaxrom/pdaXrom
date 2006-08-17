@@ -19,10 +19,11 @@ endif
 #
 # Paths and names
 #
-LIBXSLT_VERSION		= 1.1.0
+LIBXSLT_VENDOR_VERSION	= 1
+LIBXSLT_VERSION		= 1.1.17
 LIBXSLT			= libxslt-$(LIBXSLT_VERSION)
 LIBXSLT_SUFFIX		= tar.bz2
-LIBXSLT_URL		= http://ftp.gnome.org/pub/GNOME/sources/libxslt/1.1/$(LIBXSLT).$(LIBXSLT_SUFFIX)
+LIBXSLT_URL		= http://ftp.acc.umu.se/pub/gnome/sources/libxslt/1.1/$(LIBXSLT).$(LIBXSLT_SUFFIX)
 LIBXSLT_SOURCE		= $(SRCDIR)/$(LIBXSLT).$(LIBXSLT_SUFFIX)
 LIBXSLT_DIR		= $(BUILDDIR)/$(LIBXSLT)
 LIBXSLT_IPKG_TMP	= $(LIBXSLT_DIR)/ipkg_tmp
@@ -76,9 +77,9 @@ libxslt_prepare_deps = \
 LIBXSLT_PATH	=  PATH=$(CROSS_PATH)
 LIBXSLT_ENV 	=  $(CROSS_ENV)
 LIBXSLT_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
-LIBXSLT_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+LIBXSLT_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#LIBXSLT_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#LIBXSLT_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -90,7 +91,7 @@ LIBXSLT_AUTOCONF = \
 	--prefix=/usr \
 	--disable-debug \
 	--enable-shared \
-	--disable-static
+	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
 LIBXSLT_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -128,18 +129,9 @@ $(STATEDIR)/libxslt.install: $(STATEDIR)/libxslt.compile
 	@$(call targetinfo, $@)
 	rm -rf $(LIBXSLT_IPKG_TMP)
 	$(LIBXSLT_PATH) $(MAKE) -C $(LIBXSLT_DIR) DESTDIR=$(LIBXSLT_IPKG_TMP) install
-	
-	cp -a $(LIBXSLT_IPKG_TMP)/usr/include/*		$(CROSS_LIB_DIR)/include/
-	cp -a $(LIBXSLT_IPKG_TMP)/usr/lib/*		$(CROSS_LIB_DIR)/lib/
-	cp -a $(LIBXSLT_IPKG_TMP)/usr/share/aclocal/*	$(PTXCONF_PREFIX)/share/aclocal/
-	cp -a $(LIBXSLT_IPKG_TMP)/usr/bin/xslt-config	$(PTXCONF_PREFIX)/bin/
-
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/pkgconfig/libxslt.pc
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/libxslt.la
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/libexslt.la
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/xsltConf.sh
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(PTXCONF_PREFIX)/bin/xslt-config
-
+	@$(call copyincludes, $(LIBXSLT_IPKG_TMP))
+	@$(call copylibraries,$(LIBXSLT_IPKG_TMP))
+	@$(call copymiscfiles,$(LIBXSLT_IPKG_TMP))
 	rm -rf $(LIBXSLT_IPKG_TMP)
 	touch $@
 
@@ -155,26 +147,27 @@ libxslt_targetinstall_deps = $(STATEDIR)/libxslt.compile \
 $(STATEDIR)/libxslt.targetinstall: $(libxslt_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(LIBXSLT_PATH) $(MAKE) -C $(LIBXSLT_DIR) DESTDIR=$(LIBXSLT_IPKG_TMP) install
-	rm  -f $(LIBXSLT_IPKG_TMP)/usr/bin/xslt-config
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/include
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/lib/*.sh
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/lib/python2.2
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/man
-	rm -rf $(LIBXSLT_IPKG_TMP)/usr/share
-	$(CROSSSTRIP) $(LIBXSLT_IPKG_TMP)/usr/bin/*
-	$(CROSSSTRIP) $(LIBXSLT_IPKG_TMP)/usr/lib/*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(LIBXSLT_VERSION)-$(LIBXSLT_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh libxslt $(LIBXSLT_IPKG_TMP)
+
+	@$(call removedevfiles, $(LIBXSLT_IPKG_TMP))
+	@$(call stripfiles, $(LIBXSLT_IPKG_TMP))
 	mkdir -p $(LIBXSLT_IPKG_TMP)/CONTROL
-	echo "Package: libxslt" 						 >$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Source: $(LIBXSLT_URL)"						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Section: Libraries" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 			>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 					>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Version: $(LIBXSLT_VERSION)" 					>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Depends: libxml2" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Description: XSLT support for libxml2"				>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Package: libxslt" 							 >$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Source: $(LIBXSLT_URL)"							>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Section: Libraries" 							>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Version: $(LIBXSLT_VERSION)-$(LIBXSLT_VENDOR_VERSION)" 			>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Depends: libxml2" 							>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Description: XSLT support for libxml2"					>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LIBXSLT_IPKG_TMP)
 	touch $@
 

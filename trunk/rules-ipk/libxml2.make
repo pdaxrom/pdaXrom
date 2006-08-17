@@ -20,10 +20,10 @@ endif
 # Paths and names
 #
 LIBXML2_VENDOR_VERSION	= 1
-LIBXML2_VERSION		= 2.6.13
+LIBXML2_VERSION		= 2.6.26
 LIBXML2			= libxml2-$(LIBXML2_VERSION)
 LIBXML2_SUFFIX		= tar.bz2
-LIBXML2_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/libxml2/2.6/$(LIBXML2).$(LIBXML2_SUFFIX)
+LIBXML2_URL		= http://ftp.acc.umu.se/pub/gnome/sources/libxml2/2.6/$(LIBXML2).$(LIBXML2_SUFFIX)
 LIBXML2_SOURCE		= $(SRCDIR)/$(LIBXML2).$(LIBXML2_SUFFIX)
 LIBXML2_DIR		= $(BUILDDIR)/$(LIBXML2)
 LIBXML2_IPKG_TMP	= $(LIBXML2_DIR)/ipkg_tmp
@@ -96,7 +96,6 @@ LIBXML2_AUTOCONF = \
 	--prefix=/usr \
 	--disable-debug \
 	--enable-shared \
-	--disable-static \
 	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
@@ -135,15 +134,9 @@ $(STATEDIR)/libxml2.install: $(STATEDIR)/libxml2.compile
 	@$(call targetinfo, $@)
 	rm -rf $(LIBXML2_IPKG_TMP)
 	$(LIBXML2_PATH) $(MAKE) -C $(LIBXML2_DIR) DESTDIR=$(LIBXML2_IPKG_TMP) install
-	cp -a $(LIBXML2_IPKG_TMP)/usr/include/*		$(CROSS_LIB_DIR)/include/
-	cp -a $(LIBXML2_IPKG_TMP)/usr/lib/*		$(CROSS_LIB_DIR)/lib/
-	cp -a $(LIBXML2_IPKG_TMP)/usr/share/aclocal/*	$(PTXCONF_PREFIX)/share/aclocal/
-	cp -a $(LIBXML2_IPKG_TMP)/usr/bin/xml2-config	$(PTXCONF_PREFIX)/bin/
-
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/pkgconfig/libxml-2.0.pc
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/libxml2.la
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(CROSS_LIB_DIR)/lib/xml2Conf.sh
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g"	$(PTXCONF_PREFIX)/bin/xml2-config
+	@$(call copyincludes, $(LIBXML2_IPKG_TMP))
+	@$(call copylibraries,$(LIBXML2_IPKG_TMP))
+	@$(call copymiscfiles,$(LIBXML2_IPKG_TMP))
 	rm -rf $(LIBXML2_IPKG_TMP)
 	touch $@
 
@@ -163,24 +156,26 @@ endif
 $(STATEDIR)/libxml2.targetinstall: $(libxml2_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(LIBXML2_PATH) $(MAKE) -C $(LIBXML2_DIR) DESTDIR=$(LIBXML2_IPKG_TMP) install
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/bin/xml2-config
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/include
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/lib/*.sh
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/man
-	rm -rf $(LIBXML2_IPKG_TMP)/usr/share
-	$(CROSSSTRIP) $(LIBXML2_IPKG_TMP)/usr/bin/*
-	$(CROSSSTRIP) $(LIBXML2_IPKG_TMP)/usr/lib/*.so*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(LIBXML2_VERSION)-$(LIBXML2_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh libxml2 $(LIBXML2_IPKG_TMP)
+
+	@$(call removedevfiles, $(LIBXML2_IPKG_TMP))
+	@$(call stripfiles, $(LIBXML2_IPKG_TMP))
 	mkdir -p $(LIBXML2_IPKG_TMP)/CONTROL
 	echo "Package: libxml2" 							 >$(LIBXML2_IPKG_TMP)/CONTROL/control
-	echo "Source: $(LIBXML2_URL)"						>>$(LIBXML2_IPKG_TMP)/CONTROL/control
+	echo "Source: $(LIBXML2_URL)"							>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 							>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Section: Libraries" 							>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Version: $(LIBXML2_VERSION)-$(LIBXML2_VENDOR_VERSION)" 			>>$(LIBXML2_IPKG_TMP)/CONTROL/control
-	echo "Depends: " 								>>$(LIBXML2_IPKG_TMP)/CONTROL/control
+	echo "Depends: libz" 								>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Description: XML toolkit from the GNOME project"				>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LIBXML2_IPKG_TMP)
 	touch $@

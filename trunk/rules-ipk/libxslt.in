@@ -1,8 +1,8 @@
 config LIBXSLT
-        bool
-        prompt "Compile libxslt"
+	bool
+	prompt "libxslt"
 
 config LIBXSLT_INSTALL
 	bool
-	prompt "Install in ROM"
+	prompt "Install to filesystem"
 	depends on LIBXSLT

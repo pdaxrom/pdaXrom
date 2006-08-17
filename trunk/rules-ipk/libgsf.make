@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 #LIBGSF_VERSION		= 1.13.2
-LIBGSF_VERSION		= 1.14.0
+LIBGSF_VERSION		= 1.14.1
 LIBGSF			= libgsf-$(LIBGSF_VERSION)
 LIBGSF_SUFFIX		= tar.bz2
 LIBGSF_URL		= http://ftp.acc.umu.se/pub/GNOME/sources/libgsf/1.14/$(LIBGSF).$(LIBGSF_SUFFIX)

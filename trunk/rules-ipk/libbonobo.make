@@ -19,14 +19,14 @@ endif
 #
 # Paths and names
 #
-#LIBBONOBO_VERSION	= 2.4.3
-LIBBONOBO_VERSION	= 2.8.1
-LIBBONOBO		= libbonobo-$(LIBBONOBO_VERSION)
-LIBBONOBO_SUFFIX	= tar.bz2
-LIBBONOBO_URL		= ftp://ftp.acc.umu.se/pub/GNOME/sources/libbonobo/2.8/$(LIBBONOBO).$(LIBBONOBO_SUFFIX)
-LIBBONOBO_SOURCE	= $(SRCDIR)/$(LIBBONOBO).$(LIBBONOBO_SUFFIX)
-LIBBONOBO_DIR		= $(BUILDDIR)/$(LIBBONOBO)
-LIBBONOBO_IPKG_TMP	= $(LIBBONOBO_DIR)/ipkg_tmp
+LIBBONOBO_VENDOR_VERSION	= 1
+LIBBONOBO_VERSION		= 2.15.3
+LIBBONOBO			= libbonobo-$(LIBBONOBO_VERSION)
+LIBBONOBO_SUFFIX		= tar.bz2
+LIBBONOBO_URL			= http://ftp.acc.umu.se/pub/gnome/sources/libbonobo/2.15/$(LIBBONOBO).$(LIBBONOBO_SUFFIX)
+LIBBONOBO_SOURCE		= $(SRCDIR)/$(LIBBONOBO).$(LIBBONOBO_SUFFIX)
+LIBBONOBO_DIR			= $(BUILDDIR)/$(LIBBONOBO)
+LIBBONOBO_IPKG_TMP		= $(LIBBONOBO_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -78,9 +78,9 @@ libbonobo_prepare_deps = \
 LIBBONOBO_PATH	=  PATH=$(CROSS_PATH)
 LIBBONOBO_ENV 	=  $(CROSS_ENV)
 LIBBONOBO_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
-LIBBONOBO_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+LIBBONOBO_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#LIBBONOBO_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#LIBBONOBO_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -90,9 +90,8 @@ LIBBONOBO_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
-	--enable-shared \
-	--disable-static \
 	--sysconfdir=/etc \
+	--enable-shared \
 	--libexecdir=/usr/bin \
 	--disable-debug
 
@@ -130,16 +129,11 @@ libbonobo_install: $(STATEDIR)/libbonobo.install
 
 $(STATEDIR)/libbonobo.install: $(STATEDIR)/libbonobo.compile
 	@$(call targetinfo, $@)
+	rm -rf $(LIBBONOBO_IPKG_TMP)
 	$(LIBBONOBO_PATH) $(MAKE) -C $(LIBBONOBO_DIR) DESTDIR=$(LIBBONOBO_IPKG_TMP) install
-	cp -a  $(LIBBONOBO_IPKG_TMP)/usr/include/* $(CROSS_LIB_DIR)/include
-	cp -a  $(LIBBONOBO_IPKG_TMP)/usr/lib/*     $(CROSS_LIB_DIR)/lib
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/share/gtk-doc
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/share/locale
-	cp -a  $(LIBBONOBO_IPKG_TMP)/usr/share/*   $(CROSS_LIB_DIR)/share
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libbonobo-2.la
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libbonobo-activation.la
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/libbonobo-2.0.pc
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/bonobo-activation-2.0.pc
+	@$(call copyincludes, $(LIBBONOBO_IPKG_TMP))
+	@$(call copylibraries,$(LIBBONOBO_IPKG_TMP))
+	@$(call copymiscfiles,$(LIBBONOBO_IPKG_TMP))
 	rm -rf $(LIBBONOBO_IPKG_TMP)
 	touch $@
 
@@ -149,48 +143,51 @@ $(STATEDIR)/libbonobo.install: $(STATEDIR)/libbonobo.compile
 
 libbonobo_targetinstall: $(STATEDIR)/libbonobo.targetinstall
 
-libbonobo_targetinstall_deps = \
-	$(STATEDIR)/libbonobo.compile \
+libbonobo_targetinstall_deps = $(STATEDIR)/libbonobo.compile \
 	$(STATEDIR)/glib22.targetinstall \
 	$(STATEDIR)/ORBit2.targetinstall
 
 $(STATEDIR)/libbonobo.targetinstall: $(libbonobo_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(LIBBONOBO_PATH) $(MAKE) -C $(LIBBONOBO_DIR) DESTDIR=$(LIBBONOBO_IPKG_TMP) install
+
 	PATH=$(CROSS_PATH) 						\
 	FEEDDIR=$(FEEDDIR) 						\
 	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
-	VERSION=$(LIBBONOBO_VERSION) 					\
+	VERSION=$(LIBBONOBO_VERSION)-$(LIBBONOBO_VENDOR_VERSION)	 	\
 	ARCH=$(SHORT_TARGET) 						\
 	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
 	$(TOPDIR)/scripts/bin/make-locale-ipks.sh libbonobo $(LIBBONOBO_IPKG_TMP)
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/include
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/lib/bonobo/monikers/*.a
-	###rm -rf $(LIBBONOBO_IPKG_TMP)/usr/lib/bonobo/monikers/*.la
-	##rm -rf $(LIBBONOBO_IPKG_TMP)/usr/lib/bonobo-2.0/samples/*.*a
-	###rm -rf $(LIBBONOBO_IPKG_TMP)/usr/lib/orbit-2.0/*.la
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/man
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/share/gtk-doc
-	rm -rf $(LIBBONOBO_IPKG_TMP)/usr/share/locale
-	for FILE in `find $(LIBBONOBO_IPKG_TMP)/usr/ -type f`; do	\
-	    ZZZ=`file $$FILE | grep 'ELF 32-bit'`;			\
-	    if [  "$$ZZZ" != "" ]; then					\
-		$(CROSSSTRIP) $$FILE;					\
-	    fi;								\
-	done
+
+	@$(call removedevfiles, $(LIBBONOBO_IPKG_TMP))
+	@$(call stripfiles, $(LIBBONOBO_IPKG_TMP))
 	mkdir -p $(LIBBONOBO_IPKG_TMP)/CONTROL
-	echo "Package: libbonobo" 			>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Source: $(LIBBONOBO_URL)"						>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Section: Gnome"	 			>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Version: $(LIBBONOBO_VERSION)" 		>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2, orbit2" 				>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Package: libbonobo" 							 >$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Source: $(LIBBONOBO_URL)"							>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Section: Gnome" 								>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Version: $(LIBBONOBO_VERSION)-$(LIBBONOBO_VENDOR_VERSION)" 		>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, orbit2" 							>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
 	echo "Description: Bonobo is a set of language and system independant CORBA interfaces for creating reusable components, controls and creating compound documents.">>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LIBBONOBO_IPKG_TMP)
+	touch $@
+
+# ----------------------------------------------------------------------------
+# Image-Install
+# ----------------------------------------------------------------------------
+
+ifdef PTXCONF_LIBBONOBO_INSTALL
+ROMPACKAGES += $(STATEDIR)/libbonobo.imageinstall
+endif
+
+libbonobo_imageinstall_deps = $(STATEDIR)/libbonobo.targetinstall \
+	$(STATEDIR)/virtual-image.install
+
+$(STATEDIR)/libbonobo.imageinstall: $(libbonobo_imageinstall_deps)
+	@$(call targetinfo, $@)
+	cd $(FEEDDIR) && $(XIPKG) install libbonobo
 	touch $@
 
 # ----------------------------------------------------------------------------
