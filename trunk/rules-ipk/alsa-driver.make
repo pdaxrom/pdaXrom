@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 ALSA-DRIVER_VENDOR_VERSION	= 1
-ALSA-DRIVER_VERSION		= 1.0.11rc4
+ALSA-DRIVER_VERSION		= 1.0.11
 ALSA-DRIVER			= alsa-driver-$(ALSA-DRIVER_VERSION)
 ALSA-DRIVER_SUFFIX		= tar.bz2
 ALSA-DRIVER_URL			= ftp://ftp.alsa-project.org/pub/driver/$(ALSA-DRIVER).$(ALSA-DRIVER_SUFFIX)
