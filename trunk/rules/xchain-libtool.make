@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-XCHAIN_LIBTOOL_VERSION		= 1.5
+XCHAIN_LIBTOOL_VERSION		= 1.5.22
 XCHAIN_LIBTOOL			= libtool-$(XCHAIN_LIBTOOL_VERSION)
 XCHAIN_LIBTOOL_SUFFIX		= tar.gz
 XCHAIN_LIBTOOL_URL		= http://ftp.club.cc.cmu.edu/pub/gnu/libtool/$(XCHAIN_LIBTOOL).$(XCHAIN_LIBTOOL_SUFFIX)
