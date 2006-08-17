@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-LIBART_LGPL_VERSION	= 2.3.16
+LIBART_LGPL_VERSION	= 2.3.17
 LIBART_LGPL		= libart_lgpl-$(LIBART_LGPL_VERSION)
 LIBART_LGPL_SUFFIX	= tar.bz2
 LIBART_LGPL_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/libart_lgpl/2.3/$(LIBART_LGPL).$(LIBART_LGPL_SUFFIX)

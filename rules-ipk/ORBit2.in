@@ -1,0 +1,8 @@
+config ORBIT2
+	bool
+	prompt "ORBit2"
+
+config ORBIT2_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on ORBIT2

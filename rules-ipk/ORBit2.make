@@ -19,10 +19,11 @@ endif
 #
 # Paths and names
 #
-ORBIT2_VERSION		= 2.10.2
+ORBIT2_VENDOR_VERSION	= 1
+ORBIT2_VERSION		= 2.14.2
 ORBIT2			= ORBit2-$(ORBIT2_VERSION)
 ORBIT2_SUFFIX		= tar.bz2
-ORBIT2_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/ORBit2/2.10/$(ORBIT2).$(ORBIT2_SUFFIX)
+ORBIT2_URL		= http://ftp.acc.umu.se/pub/gnome/sources/ORBit2/2.14/$(ORBIT2).$(ORBIT2_SUFFIX)
 ORBIT2_SOURCE		= $(SRCDIR)/$(ORBIT2).$(ORBIT2_SUFFIX)
 ORBIT2_DIR		= $(BUILDDIR)/$(ORBIT2)
 ORBIT2_IPKG_TMP		= $(ORBIT2_DIR)/ipkg_tmp
@@ -76,16 +77,12 @@ ORBit2_prepare_deps = \
 	$(STATEDIR)/xchain-ORBit2.install \
 	$(STATEDIR)/virtual-xchain.install
 
-ifdef PTXCONF_LIBICONV
-ORBit2_prepare_deps += 	$(STATEDIR)/libiconv.install
-endif
-
 ORBIT2_PATH	=  PATH=$(CROSS_PATH)
 ORBIT2_ENV 	=  $(CROSS_ENV)
 ORBIT2_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
-ORBIT2_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+ORBIT2_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#ORBIT2_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#ORBIT2_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -96,7 +93,7 @@ ORBIT2_AUTOCONF = \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
 	--enable-shared \
-	--disable-static
+	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
 ORBIT2_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -107,9 +104,8 @@ $(STATEDIR)/ORBit2.prepare: $(ORBit2_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(ORBIT2_DIR)/config.cache)
 	cd $(ORBIT2_DIR) && \
-		$(ORBIT2_PATH) $(ORBIT2_ENV) $(ORBIT2X_ENV) \
-		./configure $(ORBIT2_AUTOCONF) -C
-	cp -f $(PTXCONF_PREFIX)/bin/libtool $(ORBIT2_DIR)/
+		$(ORBIT2_PATH) $(ORBIT2_ENV) \
+		./configure $(ORBIT2_AUTOCONF)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -133,20 +129,13 @@ ORBit2_install: $(STATEDIR)/ORBit2.install
 
 $(STATEDIR)/ORBit2.install: $(STATEDIR)/ORBit2.compile
 	@$(call targetinfo, $@)
-	$(ORBIT2_PATH) $(MAKE) -C $(ORBIT2_DIR) DESTDIR=$(ORBIT2_IPKG_TMP) install IDL_COMPILER=$(PTXCONF_PREFIX)/bin/orbit-idl-2
-	cp -a  $(ORBIT2_IPKG_TMP)/usr/include/*          $(CROSS_LIB_DIR)/include
-	cp -a  $(ORBIT2_IPKG_TMP)/usr/lib/*              $(CROSS_LIB_DIR)/lib
-	cp -a  $(ORBIT2_IPKG_TMP)/usr/bin/orbit2-config  $(PTXCONF_PREFIX)/bin
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/bin/orbit2-config
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libORBit-2.la
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libORBit-imodule-2.la
-	perl -p -i -e "s/\/usr\/lib/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/libORBitCosNaming-2.la
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/ORBit-2.0.pc
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/ORBit-CosNaming-2.0.pc
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/ORBit-idl-2.0.pc
-	perl -p -i -e "s/\/usr/`echo $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET) | sed -e '/\//s//\\\\\//g'`/g" $(PTXCONF_PREFIX)/$(PTXCONF_GNU_TARGET)/lib/pkgconfig/ORBit-imodule-2.0.pc
-	ln -sf $(PTXCONF_PREFIX)/bin/orbit-idl-2 $(CROSS_LIB_DIR)/bin/orbit-idl-2
 	rm -rf $(ORBIT2_IPKG_TMP)
+	$(ORBIT2_PATH) $(MAKE) -C $(ORBIT2_DIR) DESTDIR=$(ORBIT2_IPKG_TMP) install
+	@$(call copyincludes, $(ORBIT2_IPKG_TMP))
+	@$(call copylibraries,$(ORBIT2_IPKG_TMP))
+	@$(call copymiscfiles,$(ORBIT2_IPKG_TMP))
+	rm -rf $(ORBIT2_IPKG_TMP)
+	ln -sf $(PTXCONF_PREFIX)/bin/orbit-idl-2 $(CROSS_LIB_DIR)/bin/orbit-idl-2
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -155,47 +144,55 @@ $(STATEDIR)/ORBit2.install: $(STATEDIR)/ORBit2.compile
 
 ORBit2_targetinstall: $(STATEDIR)/ORBit2.targetinstall
 
-ORBit2_targetinstall_deps = \
-	$(STATEDIR)/ORBit2.compile \
+ORBit2_targetinstall_deps = $(STATEDIR)/ORBit2.compile \
 	$(STATEDIR)/popt.targetinstall \
 	$(STATEDIR)/glib22.targetinstall
 
-ifdef PTXCONF_LIBICONV
-ORBit2_targetinstall_deps += $(STATEDIR)/libiconv.targetinstall
-endif
-
 $(STATEDIR)/ORBit2.targetinstall: $(ORBit2_targetinstall_deps)
 	@$(call targetinfo, $@)
-	$(ORBIT2_PATH) $(MAKE) -C $(ORBIT2_DIR) DESTDIR=$(ORBIT2_IPKG_TMP) install IDL_COMPILER=$(PTXCONF_PREFIX)/bin/orbit-idl-2
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/bin/orbit2-config
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/include
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/lib/orbit-2.0/*.a
-	###rm -rf $(ORBIT2_IPKG_TMP)/usr/lib/orbit-2.0/*.la
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/share/aclocal
-	rm -rf $(ORBIT2_IPKG_TMP)/usr/share/gtk-doc
-	for FILE in `find $(ORBIT2_IPKG_TMP)/usr/ -type f`; do		\
-	    ZZZ=`file $$FILE | grep 'ELF 32-bit'`;			\
-	    if [  "$$ZZZ" != "" ]; then					\
-		$(CROSSSTRIP) $$FILE;					\
-	    fi;								\
-	done
+	$(ORBIT2_PATH) $(MAKE) -C $(ORBIT2_DIR) DESTDIR=$(ORBIT2_IPKG_TMP) install
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(ORBIT2_VERSION)-$(ORBIT2_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh orbit2 $(ORBIT2_IPKG_TMP)
+
+	@$(call removedevfiles, $(ORBIT2_IPKG_TMP))
+	@$(call stripfiles, $(ORBIT2_IPKG_TMP))
 	mkdir -p $(ORBIT2_IPKG_TMP)/CONTROL
-	echo "Package: orbit2" 			>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	echo "Source: $(ORBIT2_URL)"			>>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	echo "Section: Libraries" 			>>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	echo "Version: $(ORBIT2_VERSION)" 		>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Package: orbit2" 								 >$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Source: $(ORBIT2_URL)"							>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Section: Libraries" 							>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Version: $(ORBIT2_VERSION)-$(ORBIT2_VENDOR_VERSION)" 			>>$(ORBIT2_IPKG_TMP)/CONTROL/control
 ifdef PTXCONF_LIBICONV
-	echo "Depends: glib2, libiconv, popt" 		>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Depends: glib2, libiconv, popt" 						>>$(ORBIT2_IPKG_TMP)/CONTROL/control
 else
-	echo "Depends: glib2, popt" 			>>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Depends: glib2, popt" 							>>$(ORBIT2_IPKG_TMP)/CONTROL/control
 endif
-	echo "Description: High-performance CORBA Object Request Broker">>$(ORBIT2_IPKG_TMP)/CONTROL/control
+	echo "Description: High-performance CORBA Object Request Broker"		>>$(ORBIT2_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(ORBIT2_IPKG_TMP)
+	touch $@
+
+# ----------------------------------------------------------------------------
+# Image-Install
+# ----------------------------------------------------------------------------
+
+ifdef PTXCONF_ORBIT2_INSTALL
+ROMPACKAGES += $(STATEDIR)/ORBit2.imageinstall
+endif
+
+ORBit2_imageinstall_deps = $(STATEDIR)/ORBit2.targetinstall \
+	$(STATEDIR)/virtual-image.install
+
+$(STATEDIR)/ORBit2.imageinstall: $(ORBit2_imageinstall_deps)
+	@$(call targetinfo, $@)
+	cd $(FEEDDIR) && $(XIPKG) install orbit2
 	touch $@
 
 # ----------------------------------------------------------------------------
