@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-ROX-LIB_VERSION		= 1.9.15
+ROX-LIB_VERSION		= 2.0.2
 ROX-LIB			= rox-lib-$(ROX-LIB_VERSION)
 ROX-LIB_SUFFIX		= tgz
 ROX-LIB_URL		= http://heanet.dl.sourceforge.net/sourceforge/rox/$(ROX-LIB).$(ROX-LIB_SUFFIX)
@@ -131,7 +131,6 @@ $(STATEDIR)/rox-lib.targetinstall: $(rox-lib_targetinstall_deps)
 	@$(call targetinfo, $@)
 	mkdir -p $(ROX-LIB_IPKG_TMP)/usr/lib
 	cp -a $(ROX-LIB_DIR)/ROX-Lib2 $(ROX-LIB_IPKG_TMP)/usr/lib
-	rm -rf $(ROX-LIB_IPKG_TMP)/usr/lib/ROX-Lib2/Messages/*
 	mkdir -p $(ROX-LIB_IPKG_TMP)/CONTROL
 	echo "Package: rox-lib" 			>$(ROX-LIB_IPKG_TMP)/CONTROL/control
 	echo "Source: $(ROX-LIB_URL)"						>>$(ROX-LIB_IPKG_TMP)/CONTROL/control

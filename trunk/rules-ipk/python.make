@@ -97,6 +97,10 @@ PYTHON_AUTOCONF += --disable-static
 PYTHON_AUTOCONF += --with-threads 
 PYTHON_AUTOCONF += --with-pymalloc 
 PYTHON_AUTOCONF += --with-cyclic-gc
+
+#PYTHON_AUTOCONF += --without-cxx 
+#PYTHON_AUTOCONF += --with-signal-module 
+#PYTHON_AUTOCONF += --with-wctype-functions
  
 PYTHON_MAKEVARS	=  HOSTPYTHON=$(XCHAIN_PYTHON_BUILDDIR)/python
 PYTHON_MAKEVARS	+= HOSTPGEN=$(XCHAIN_PYTHON_BUILDDIR)/Parser/pgen

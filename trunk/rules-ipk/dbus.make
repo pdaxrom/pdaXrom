@@ -19,10 +19,10 @@ endif
 #
 # Paths and names
 #
-DBUS_VERSION		= 0.21
+DBUS_VERSION		= 0.91
 DBUS			= dbus-$(DBUS_VERSION)
 DBUS_SUFFIX		= tar.gz
-DBUS_URL		= http://freedesktop.org/Software/dbus/releases/$(DBUS).$(DBUS_SUFFIX)
+DBUS_URL		= http://dbus.freedesktop.org/releases/$(DBUS).$(DBUS_SUFFIX)
 DBUS_SOURCE		= $(SRCDIR)/$(DBUS).$(DBUS_SUFFIX)
 DBUS_DIR		= $(BUILDDIR)/$(DBUS)
 DBUS_IPKG_TMP		= $(DBUS_DIR)/ipkg_tmp
@@ -73,7 +73,6 @@ dbus_prepare_deps = \
 	$(STATEDIR)/xfree430.install \
 	$(STATEDIR)/glib22.install \
 	$(STATEDIR)/libxml2.install \
-	$(STATEDIR)/python.install \
 	$(STATEDIR)/xchain-Pyrex.install \
 	$(STATEDIR)/virtual-xchain.install
 
@@ -180,21 +179,21 @@ $(STATEDIR)/dbus.targetinstall: $(dbus_targetinstall_deps)
 	    fi;								\
 	done
 
-	rm -rf $(DBUS_IPKG_TMP)-pyhton
-	mkdir -p $(DBUS_IPKG_TMP)-pyhton/usr/lib
-	mv $(DBUS_IPKG_TMP)/usr/lib/python2.4 $(DBUS_IPKG_TMP)-pyhton/usr/lib
-	rm -rf $(DBUS_IPKG_TMP)/usr/lib/python2.4
-	mkdir -p $(DBUS_IPKG_TMP)-pyhton/CONTROL
-	echo "Package: python-dbus" 			 >$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Source: $(DBUS_URL)" 			>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Priority: optional" 			>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Section: ROX"	 			>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Version: $(DBUS_VERSION)" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Depends: python-core, dbus" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	echo "Description: D-BUS python binding."	>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DBUS_IPKG_TMP)-pyhton
+	#rm -rf $(DBUS_IPKG_TMP)-pyhton
+	#mkdir -p $(DBUS_IPKG_TMP)-pyhton/usr/lib
+	#mv $(DBUS_IPKG_TMP)/usr/lib/python2.4 $(DBUS_IPKG_TMP)-pyhton/usr/lib
+	#rm -rf $(DBUS_IPKG_TMP)/usr/lib/python2.4
+	#mkdir -p $(DBUS_IPKG_TMP)-pyhton/CONTROL
+	#echo "Package: python-dbus" 			 >$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Source: $(DBUS_URL)" 			>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Priority: optional" 			>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Section: ROX"	 			>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Architecture: $(SHORT_TARGET)" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Version: $(DBUS_VERSION)" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Depends: python-core, dbus" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#echo "Description: D-BUS python binding."	>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
+	#cd $(FEEDDIR) && $(XMKIPKG) $(DBUS_IPKG_TMP)-pyhton
 	
 	mkdir -p $(DBUS_IPKG_TMP)/CONTROL
 	echo "Package: dbus" 				 >$(DBUS_IPKG_TMP)/CONTROL/control

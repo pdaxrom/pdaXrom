@@ -19,16 +19,11 @@ endif
 #
 # Paths and names
 #
-PYGTK_VERSION		= 2.5.3
+PYGTK_VENDOR_VERSION	= 1
+PYGTK_VERSION		= 2.9.6
 PYGTK			= pygtk-$(PYGTK_VERSION)
 PYGTK_SUFFIX		= tar.bz2
-PYGTK_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/pygtk/2.5/$(PYGTK).$(PYGTK_SUFFIX)
-
-#PYGTK_VERSION		= 2.8.0
-#PYGTK			= pygtk-$(PYGTK_VERSION)
-#PYGTK_SUFFIX		= tar.bz2
-#PYGTK_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/pygtk/2.8/$(PYGTK).$(PYGTK_SUFFIX)
-
+PYGTK_URL		= http://ftp.acc.umu.se/pub/gnome/sources/pygtk/2.9/$(PYGTK).$(PYGTK_SUFFIX)
 PYGTK_SOURCE		= $(SRCDIR)/$(PYGTK).$(PYGTK_SUFFIX)
 PYGTK_DIR		= $(BUILDDIR)/$(PYGTK)
 PYGTK_IPKG_TMP		= $(PYGTK_DIR)/ipkg_tmp
@@ -81,14 +76,16 @@ pygtk_prepare_deps = \
 	$(STATEDIR)/python.install \
 	$(STATEDIR)/xchain-python.install \
 	$(STATEDIR)/dbus.install \
+	$(STATEDIR)/pygobject.install \
+	$(STATEDIR)/pycairo.install \
 	$(STATEDIR)/virtual-xchain.install
 
 PYGTK_PATH	=  PATH=$(CROSS_PATH)
 PYGTK_ENV 	=  $(CROSS_ENV)
 PYGTK_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
-PYGTK_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+PYGTK_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#PYGTK_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#PYGTK_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -98,11 +95,12 @@ PYGTK_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
+	--sysconfdir=/etc \
 	--enable-shared \
 	--disable-static \
-	--sysconfdir=/etc \
 	--libexecdir=/usr/bin \
-	--disable-debug
+	--disable-debug \
+	--disable-docs
 
 ifdef PTXCONF_XFREE430
 PYGTK_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -112,13 +110,9 @@ endif
 $(STATEDIR)/pygtk.prepare: $(pygtk_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(PYGTK_DIR)/config.cache)
-	#cd $(PYGTK_DIR) && $(PYGTK_PATH) aclocal
-	#cd $(PYGTK_DIR) && $(PYGTK_PATH) automake --add-missing
-	#cd $(PYGTK_DIR) && $(PYGTK_PATH) autoconf
 	cd $(PYGTK_DIR) && \
 		$(PYGTK_PATH) $(PYGTK_ENV) \
 		./configure $(PYGTK_AUTOCONF)
-	#cp -f $(PTXCONF_PREFIX)/bin/libtool $(PYGTK_DIR)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -131,7 +125,7 @@ pygtk_compile_deps = $(STATEDIR)/pygtk.prepare
 
 $(STATEDIR)/pygtk.compile: $(pygtk_compile_deps)
 	@$(call targetinfo, $@)
-	$(PYGTK_ENV) $(PYGTK_PATH) $(MAKE) -C $(PYGTK_DIR)
+	$(PYGTK_PATH) $(MAKE) -C $(PYGTK_DIR)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -143,17 +137,10 @@ pygtk_install: $(STATEDIR)/pygtk.install
 $(STATEDIR)/pygtk.install: $(STATEDIR)/pygtk.compile
 	@$(call targetinfo, $@)
 	rm -rf $(PYGTK_IPKG_TMP)
-	$(PYGTK_ENV) $(PYGTK_PATH) $(MAKE) -C $(PYGTK_DIR) DESTDIR=$(PYGTK_IPKG_TMP) install
-
-	cp -a $(PYGTK_IPKG_TMP)/usr/bin/*	$(PTXCONF_PREFIX)/bin/
-	cp -a $(PYGTK_IPKG_TMP)/usr/include/*	$(CROSS_LIB_DIR)/include/
-	cp -a $(PYGTK_IPKG_TMP)/usr/lib/*	$(CROSS_LIB_DIR)/lib/
-	cp -a $(PYGTK_IPKG_TMP)/usr/share/*	$(CROSS_LIB_DIR)/share/
-	
-	perl -i -p -e "s,/usr,$(CROSS_LIB_DIR),g" $(PTXCONF_PREFIX)/bin/pygtk-codegen-2.0
-	perl -i -p -e "s,/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/pygobject-2.0.pc
-	perl -i -p -e "s,/usr,$(CROSS_LIB_DIR),g" $(CROSS_LIB_DIR)/lib/pkgconfig/pygtk-2.0.pc
-
+	$(PYGTK_PATH) $(MAKE) -C $(PYGTK_DIR) DESTDIR=$(PYGTK_IPKG_TMP) install
+	@$(call copyincludes, $(PYGTK_IPKG_TMP))
+	@$(call copylibraries,$(PYGTK_IPKG_TMP))
+	@$(call copymiscfiles,$(PYGTK_IPKG_TMP))
 	rm -rf $(PYGTK_IPKG_TMP)
 	touch $@
 
@@ -167,45 +154,36 @@ pygtk_targetinstall_deps = $(STATEDIR)/pygtk.compile \
 	$(STATEDIR)/gtk22.targetinstall \
 	$(STATEDIR)/libglade.targetinstall \
 	$(STATEDIR)/dbus.targetinstall \
+	$(STATEDIR)/pygobject.targetinstall \
+	$(STATEDIR)/pycairo.targetinstall \
 	$(STATEDIR)/python.targetinstall
 
 $(STATEDIR)/pygtk.targetinstall: $(pygtk_targetinstall_deps)
 	@$(call targetinfo, $@)
-	$(PYGTK_ENV) $(PYGTK_PATH) $(MAKE) -C $(PYGTK_DIR) DESTDIR=$(PYGTK_IPKG_TMP) install
-	perl -p -i -e "s/`echo $(PTXCONF_NATIVE_PREFIX) | sed -e '/\//s//\\\\\//g'`/\/usr/g" $(PYGTK_IPKG_TMP)/usr/bin/pygtk-codegen-2.0
-	rm -rf $(PYGTK_IPKG_TMP)/usr/include
-	rm -rf $(PYGTK_IPKG_TMP)/usr/lib/pkgconfig
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/*.*a
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/*.py
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/*.pyo
+	$(PYGTK_PATH) $(MAKE) -C $(PYGTK_DIR) DESTDIR=$(PYGTK_IPKG_TMP) install
 
-	###rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk2/*.*a
-	###rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk2/*.py
-	###rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk2/*.pyo
-	###$(CROSSSTRIP) $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/*.so
-	###$(CROSSSTRIP) $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk2/*.so
+	perl -i -p -e "s,$(PTXCONF_NATIVE_PREFIX),/usr,g" $(PYGTK_IPKG_TMP)/usr/bin/pygtk-codegen-2.0
 
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/*.*a
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/*.py
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/*.pyo
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/gtk/*.*a
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/gtk/*.py
-	rm  -f $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/gtk/*.pyo
-	$(CROSSSTRIP) $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/*.so
-	$(CROSSSTRIP) $(PYGTK_IPKG_TMP)/usr/lib/python2.4/site-packages/gtk-2.0/gtk/*.so
-	
-	rm -rf $(PYGTK_IPKG_TMP)/usr/share
-	rm  -f $(PYGTK_IPKG_TMP)/usr/bin/pygtk-codegen-2.0
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(PYGTK_VERSION)-$(PYGTK_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh pygtk $(PYGTK_IPKG_TMP)
+
+	@$(call removedevfiles, $(PYGTK_IPKG_TMP))
+	@$(call stripfiles, $(PYGTK_IPKG_TMP))
 	mkdir -p $(PYGTK_IPKG_TMP)/CONTROL
-	echo "Package: pygtk" 				 >$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Source: $(PYGTK_URL)"						>>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Section: ROX"	 			>>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>">>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Version: $(PYGTK_VERSION)" 		>>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2, python-core, python-codecs, python-dbus, python-fcntl, python-stringold, python-xml, libglade" >>$(PYGTK_IPKG_TMP)/CONTROL/control
-	echo "Description: Modules that allow you to use gtk in Python programs.">>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Package: pygtk" 								 >$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Source: $(PYGTK_URL)"							>>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Section: ROX"	 							>>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Version: $(PYGTK_VERSION)-$(PYGTK_VENDOR_VERSION)" 			>>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, python-core, python-codecs, python-dbus, python-fcntl, python-stringold, python-xml, pygobject, pycairo, libglade" >>$(PYGTK_IPKG_TMP)/CONTROL/control
+	echo "Description: Modules that allow you to use gtk in Python programs."	>>$(PYGTK_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(PYGTK_IPKG_TMP)
 	touch $@
 
