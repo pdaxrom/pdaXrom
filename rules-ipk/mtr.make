@@ -19,13 +19,14 @@ endif
 #
 # Paths and names
 #
-MTR_VERSION	= 0.65
-MTR		= mtr-$(MTR_VERSION)
-MTR_SUFFIX	= tar.gz
-MTR_URL		= ftp://ftp.bitwizard.nl/mtr/$(MTR).$(MTR_SUFFIX)
-MTR_SOURCE	= $(SRCDIR)/$(MTR).$(MTR_SUFFIX)
-MTR_DIR		= $(BUILDDIR)/$(MTR)
-MTR_IPKG_TMP	= $(MTR_DIR)/ipkg_tmp
+MTR_VENDOR_VERSION	= 1
+MTR_VERSION		= 0.71
+MTR			= mtr-$(MTR_VERSION)
+MTR_SUFFIX		= tar.gz
+MTR_URL			= ftp://ftp.bitwizard.nl/mtr/$(MTR).$(MTR_SUFFIX)
+MTR_SOURCE		= $(SRCDIR)/$(MTR).$(MTR_SUFFIX)
+MTR_DIR			= $(BUILDDIR)/$(MTR)
+MTR_IPKG_TMP		= $(MTR_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -80,9 +81,9 @@ endif
 MTR_PATH	=  PATH=$(CROSS_PATH)
 MTR_ENV 	=  $(CROSS_ENV)
 #MTR_ENV	+=
-MTR_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+MTR_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#MTR_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#MTR_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -91,14 +92,22 @@ MTR_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/p
 MTR_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
-	--prefix=/usr
+	--prefix=/usr \
+	--sysconfdir=/etc \
+	--disable-ipv6
 
 ifdef PTXCONF_XFREE430
 MTR_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
 MTR_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
+MTR_AUTOCONF += --enable-gtk2
 else
 MTR_AUTOCONF += --without-x
 MTR_AUTOCONF += --without-gtk
+endif
+
+ifdef PTXCONF_XFREE430
+MTR_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
+MTR_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
 endif
 
 $(STATEDIR)/mtr.prepare: $(mtr_prepare_deps)
@@ -130,7 +139,12 @@ mtr_install: $(STATEDIR)/mtr.install
 
 $(STATEDIR)/mtr.install: $(STATEDIR)/mtr.compile
 	@$(call targetinfo, $@)
-	$(MTR_PATH) $(MAKE) -C $(MTR_DIR) install
+	rm -rf $(MTR_IPKG_TMP)
+	$(MTR_PATH) $(MAKE) -C $(MTR_DIR) DESTDIR=$(MTR_IPKG_TMP) install
+	@$(call copyincludes, $(MTR_IPKG_TMP))
+	@$(call copylibraries,$(MTR_IPKG_TMP))
+	@$(call copymiscfiles,$(MTR_IPKG_TMP))
+	rm -rf $(MTR_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -149,18 +163,27 @@ endif
 $(STATEDIR)/mtr.targetinstall: $(mtr_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(MTR_PATH) $(MAKE) -C $(MTR_DIR) DESTDIR=$(MTR_IPKG_TMP) install
-	rm -rf $(MTR_IPKG_TMP)/usr/man
-	$(CROSSSTRIP) $(MTR_IPKG_TMP)/usr/sbin/*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(MTR_VERSION)-$(MTR_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh mtr $(MTR_IPKG_TMP)
+
+	@$(call removedevfiles, $(MTR_IPKG_TMP))
+	@$(call stripfiles, $(MTR_IPKG_TMP))
 	mkdir -p $(MTR_IPKG_TMP)/CONTROL
-	echo "Package: mtr" 							>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Source: $(MTR_URL)"						>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 						>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Section: Network" 						>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 			>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 					>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Version: $(MTR_VERSION)" 						>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Package: mtr" 							 >$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Source: $(MTR_URL)"							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Section: pdaXrom" 							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Version: $(MTR_VERSION)-$(MTR_VENDOR_VERSION)" 			>>$(MTR_IPKG_TMP)/CONTROL/control
 ifdef PTXCONF_XFREE430
-	echo "Depends: gtk" 							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2" 							>>$(MTR_IPKG_TMP)/CONTROL/control
 else
 	echo "Depends: " 							>>$(MTR_IPKG_TMP)/CONTROL/control
 endif
