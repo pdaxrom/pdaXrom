@@ -20,10 +20,10 @@ endif
 # Paths and names
 #
 #GNOME-VFS_VERSION	= 2.4.3
-GNOME-VFS_VERSION	= 2.10.0
+GNOME-VFS_VERSION	= 2.15.91
 GNOME-VFS		= gnome-vfs-$(GNOME-VFS_VERSION)
 GNOME-VFS_SUFFIX	= tar.bz2
-GNOME-VFS_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/gnome-vfs/2.10/$(GNOME-VFS).$(GNOME-VFS_SUFFIX)
+GNOME-VFS_URL		= ftp://ftp.gnome.org/pub/GNOME/sources/gnome-vfs/2.15/$(GNOME-VFS).$(GNOME-VFS_SUFFIX)
 GNOME-VFS_SOURCE	= $(SRCDIR)/$(GNOME-VFS).$(GNOME-VFS_SUFFIX)
 GNOME-VFS_DIR		= $(BUILDDIR)/$(GNOME-VFS)
 GNOME-VFS_IPKG_TMP	= $(GNOME-VFS_DIR)/ipkg_tmp
@@ -76,6 +76,7 @@ gnome-vfs_prepare_deps = \
 	$(STATEDIR)/gnome-mime-data.install \
 	$(STATEDIR)/glib22.install \
 	$(STATEDIR)/libbonobo.install \
+	$(STATEDIR)/dbus-glib.install \
 	$(STATEDIR)/virtual-xchain.install
 
 #	$(STATEDIR)/xchain-GConf.install
@@ -156,6 +157,7 @@ gnome-vfs_targetinstall_deps = \
 	$(STATEDIR)/gnome-mime-data.targetinstall \
 	$(STATEDIR)/glib22.targetinstall \
 	$(STATEDIR)/libbonobo.targetinstall \
+	$(STATEDIR)/dbus-glib.targetinstall \
 	$(STATEDIR)/ubzip2.targetinstall
 
 $(STATEDIR)/gnome-vfs.targetinstall: $(gnome-vfs_targetinstall_deps)
@@ -193,7 +195,7 @@ $(STATEDIR)/gnome-vfs.targetinstall: $(gnome-vfs_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" >>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 		>>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
 	echo "Version: $(GNOME-VFS_VERSION)" 		>>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2, bzip2, gnome-mime-data, gconf, libbonobo, orbit2">>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, dbus-glib, bzip2, gnome-mime-data, gconf, libbonobo, orbit2">>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the GNOME Virtual File System.">>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-VFS_IPKG_TMP)
 	touch $@

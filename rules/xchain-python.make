@@ -56,6 +56,14 @@ xchain-python_prepare_deps = \
 XCHAIN_PYTHON_ENV	= $(HOSTCC_ENV)
 XCHAIN_PYTHON_AUTOCONF	= --prefix=$(PTXCONF_PREFIX)
 
+XCHAIN_PYTHON_AUTOCONF += --with-threads 
+XCHAIN_PYTHON_AUTOCONF += --with-pymalloc 
+XCHAIN_PYTHON_AUTOCONF += --with-cyclic-gc
+
+XCHAIN_PYTHON_AUTOCONF += --without-cxx 
+XCHAIN_PYTHON_AUTOCONF += --with-signal-module 
+XCHAIN_PYTHON_AUTOCONF += --with-wctype-functions
+
 $(STATEDIR)/xchain-python.prepare: $(xchain-python_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(XCHAIN_PYTHON_BUILDDIR))

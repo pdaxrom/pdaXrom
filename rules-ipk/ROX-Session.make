@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-ROX-SESSION_VERSION	= 0.1.25
+ROX-SESSION_VERSION	= 0.26
 ROX-SESSION		= ROX-Session-$(ROX-SESSION_VERSION)
 ROX-SESSION_SUFFIX	= tgz
 ROX-SESSION_URL		= http://heanet.dl.sourceforge.net/sourceforge/rox/$(ROX-SESSION).$(ROX-SESSION_SUFFIX)
@@ -100,9 +100,10 @@ endif
 $(STATEDIR)/ROX-Session.prepare: $(ROX-Session_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(ROX-SESSION_DIR)/config.cache)
-	cd $(ROX-SESSION_DIR)/ROX-Session/src && \
+	cd $(ROX-SESSION_DIR)/ROX-Session && \
 		$(ROX-SESSION_PATH) $(ROX-SESSION_ENV) \
-		./configure $(ROX-SESSION_AUTOCONF)
+		./AppRun --compile $(ROX-SESSION_AUTOCONF)
+		#./configure $(ROX-SESSION_AUTOCONF)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -115,7 +116,7 @@ ROX-Session_compile_deps = $(STATEDIR)/ROX-Session.prepare
 
 $(STATEDIR)/ROX-Session.compile: $(ROX-Session_compile_deps)
 	@$(call targetinfo, $@)
-	$(ROX-SESSION_ENV) $(ROX-SESSION_PATH) $(MAKE) -C $(ROX-SESSION_DIR)/ROX-Session/src
+	#$(ROX-SESSION_ENV) $(ROX-SESSION_PATH) $(MAKE) -C $(ROX-SESSION_DIR)/ROX-Session/src
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -143,10 +144,9 @@ $(STATEDIR)/ROX-Session.targetinstall: $(ROX-Session_targetinstall_deps)
 	@$(call targetinfo, $@)
 	mkdir -p $(ROX-SESSION_IPKG_TMP)/usr/apps
 	cp -a $(ROX-SESSION_DIR)/ROX-Session $(ROX-SESSION_IPKG_TMP)/usr/apps
-	$(CROSSSTRIP) $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/Linux-armv5tel/ROX-Session
-	rm -rf $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/Help/Guide/de
-	rm -rf $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/Help/Guide/it
-	rm -rf $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/Messages/*
+	$(CROSSSTRIP) $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/ROX-Session
+	rm  -f $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/ROX-Session.dbg
+	rm -rf $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/build
 	rm -rf $(ROX-SESSION_IPKG_TMP)/usr/apps/ROX-Session/src
 	mkdir -p $(ROX-SESSION_IPKG_TMP)/CONTROL
 	echo "Package: rox-session" 			>$(ROX-SESSION_IPKG_TMP)/CONTROL/control
