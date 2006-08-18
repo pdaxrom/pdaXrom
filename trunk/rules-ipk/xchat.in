@@ -4,5 +4,5 @@ config XCHAT
 
 config XCHAT_INSTALL
 	bool
-	prompt "install in ROM"
+	prompt "Install to filesystem"
 	depends on XCHAT

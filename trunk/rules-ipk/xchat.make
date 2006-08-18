@@ -19,11 +19,11 @@ endif
 #
 # Paths and names
 #
-#XCHAT_VERSION		= 2.4.5
-XCHAT_VERSION		= 2.6.0
+XCHAT_VENDOR_VERSION	= 1
+XCHAT_VERSION		= 2.6.6
 XCHAT			= xchat-$(XCHAT_VERSION)
 XCHAT_SUFFIX		= tar.bz2
-XCHAT_URL		= http://www.xchat.org/files/source/2.6/$(XCHAT).$(XCHAT_SUFFIX)
+XCHAT_URL		= http://xchat.org/files/source/2.6/$(XCHAT).$(XCHAT_SUFFIX)
 XCHAT_SOURCE		= $(SRCDIR)/$(XCHAT).$(XCHAT_SUFFIX)
 XCHAT_DIR		= $(BUILDDIR)/$(XCHAT)
 XCHAT_IPKG_TMP		= $(XCHAT_DIR)/ipkg_tmp
@@ -78,9 +78,9 @@ xchat_prepare_deps = \
 XCHAT_PATH	=  PATH=$(CROSS_PATH)
 XCHAT_ENV 	=  $(CROSS_ENV)
 XCHAT_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
-XCHAT_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+XCHAT_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#XCHAT_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#XCHAT_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -90,13 +90,11 @@ XCHAT_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
+	--sysconfdir=/etc \
 	--disable-python \
 	--disable-perl \
-	--disable-tcl
-
-ifdef PTXCONF_LIBICONV
-XCHAT_AUTOCONF += --with-libiconv-prefix=$(CROSS_LIB_DIR)
-endif
+	--disable-tcl \
+	--disable-dbus
 
 ifdef PTXCONF_XFREE430
 XCHAT_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -132,7 +130,12 @@ xchat_install: $(STATEDIR)/xchat.install
 
 $(STATEDIR)/xchat.install: $(STATEDIR)/xchat.compile
 	@$(call targetinfo, $@)
-	$(XCHAT_PATH) $(MAKE) -C $(XCHAT_DIR) install
+	rm -rf $(XCHAT_IPKG_TMP)
+	$(XCHAT_PATH) $(MAKE) -C $(XCHAT_DIR) DESTDIR=$(XCHAT_IPKG_TMP) install
+	@$(call copyincludes, $(XCHAT_IPKG_TMP))
+	@$(call copylibraries,$(XCHAT_IPKG_TMP))
+	@$(call copymiscfiles,$(XCHAT_IPKG_TMP))
+	rm -rf $(XCHAT_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -142,23 +145,33 @@ $(STATEDIR)/xchat.install: $(STATEDIR)/xchat.compile
 xchat_targetinstall: $(STATEDIR)/xchat.targetinstall
 
 xchat_targetinstall_deps = $(STATEDIR)/xchat.compile \
-	$(STATEDIR)/openssl.targetinstall
+	$(STATEDIR)/openssl.targetinstall \
+	$(STATEDIR)/gtk22.targetinstall
 
 $(STATEDIR)/xchat.targetinstall: $(xchat_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(XCHAT_PATH) $(MAKE) -C $(XCHAT_DIR) DESTDIR=$(XCHAT_IPKG_TMP) install
-	$(CROSSSTRIP) $(XCHAT_IPKG_TMP)/usr/bin/*
-	rm -rf $(XCHAT_IPKG_TMP)/usr/share/locale
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(XCHAT_VERSION)-$(XCHAT_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh xchat $(XCHAT_IPKG_TMP)
+
+	@$(call removedevfiles, $(XCHAT_IPKG_TMP))
+	@$(call stripfiles, $(XCHAT_IPKG_TMP))
 	mkdir -p $(XCHAT_IPKG_TMP)/CONTROL
-	echo "Package: xchat" 						>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Source: $(XCHAT_URL)"						>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 					>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Section: X11"			 			>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 		>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 				>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Version: $(XCHAT_VERSION)" 				>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2, openssl" 					>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	echo "Description: X-Chat is an IRC client for UNIX operating systems.">>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Package: xchat" 								 >$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Source: $(XCHAT_URL)"							>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Section: Internet" 							>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Version: $(XCHAT_VERSION)-$(XCHAT_VENDOR_VERSION)" 			>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, openssl" 							>>$(XCHAT_IPKG_TMP)/CONTROL/control
+	echo "Description: X-Chat is an IRC client for UNIX operating systems."		>>$(XCHAT_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(XCHAT_IPKG_TMP)
 	touch $@
 
