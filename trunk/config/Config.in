@@ -177,6 +177,9 @@ endmenu
 endmenu
 
 menu "Development         "
+menu "IDE"
+source "rules-ipk/geany.in"
+endmenu
 menu "Languages ---       "
 source "rules-ipk/bison.in"
 source "rules-ipk/native_binutils.in"

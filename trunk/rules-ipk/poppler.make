@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 POPPLER_VENDOR_VERSION	= 1
-POPPLER_VERSION		= 0.3.1
+POPPLER_VERSION		= 0.5.3
 POPPLER			= poppler-$(POPPLER_VERSION)
 POPPLER_SUFFIX		= tar.gz
 POPPLER_URL		= http://poppler.freedesktop.org/$(POPPLER).$(POPPLER_SUFFIX)
@@ -71,12 +71,14 @@ poppler_prepare: $(STATEDIR)/poppler.prepare
 #
 poppler_prepare_deps = \
 	$(STATEDIR)/poppler.extract \
+	$(STATEDIR)/cairo.install \
+	$(STATEDIR)/gtk22.install \
 	$(STATEDIR)/virtual-xchain.install
 
 POPPLER_PATH	=  PATH=$(CROSS_PATH)
 POPPLER_ENV 	=  $(CROSS_ENV)
-POPPLER_ENV	+= CFLAGS="-O3 -fomit-frame-pointer"
-POPPLER_ENV	+= CXXFLAGS="-O3 -fomit-frame-pointer"
+POPPLER_ENV	+= CFLAGS="$(TARGET_OPT_CFLAGS)"
+POPPLER_ENV	+= CXXFLAGS="$(TARGET_OPT_CFLAGS)"
 POPPLER_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
 #POPPLER_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
@@ -89,10 +91,16 @@ POPPLER_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
-	--disable-cairo-output \
+	--sysconfdir=/etc \
 	--disable-poppler-qt \
 	--enable-shared \
-	--disable-static
+	--enable-zlib \
+	--enable-xpdf-headers \
+	--enable-libjpeg
+
+ifdef PTXCONF_ARCH_ARM
+POPPLER_AUTOCONF += --enable-fixedpoint
+endif
 
 ifdef PTXCONF_XFREE430
 POPPLER_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -130,13 +138,9 @@ $(STATEDIR)/poppler.install: $(STATEDIR)/poppler.compile
 	@$(call targetinfo, $@)
 	rm -rf $(POPPLER_IPKG_TMP)
 	$(POPPLER_PATH) $(MAKE) -C $(POPPLER_DIR) DESTDIR=$(POPPLER_IPKG_TMP) install
-	cp -a $(POPPLER_IPKG_TMP)/usr/include/*	$(CROSS_LIB_DIR)/include/
-	cp -a $(POPPLER_IPKG_TMP)/usr/lib/*	$(CROSS_LIB_DIR)/lib/
-	perl -i -p -e "s,\/usr/lib,$(CROSS_LIB_DIR)/lib,g"	$(CROSS_LIB_DIR)/lib/libpoppler-glib.la
-	perl -i -p -e "s,\/usr/lib,$(CROSS_LIB_DIR)/lib,g"	$(CROSS_LIB_DIR)/lib/libpoppler.la
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" 		$(CROSS_LIB_DIR)/lib/pkgconfig/poppler-glib.pc
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" 		$(CROSS_LIB_DIR)/lib/pkgconfig/poppler-splash.pc
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" 		$(CROSS_LIB_DIR)/lib/pkgconfig/poppler.pc
+	@$(call copyincludes, $(POPPLER_IPKG_TMP))
+	@$(call copylibraries,$(POPPLER_IPKG_TMP))
+	@$(call copymiscfiles,$(POPPLER_IPKG_TMP))
 	rm -rf $(POPPLER_IPKG_TMP)
 	touch $@
 
@@ -146,25 +150,33 @@ $(STATEDIR)/poppler.install: $(STATEDIR)/poppler.compile
 
 poppler_targetinstall: $(STATEDIR)/poppler.targetinstall
 
-poppler_targetinstall_deps = $(STATEDIR)/poppler.compile
+poppler_targetinstall_deps = $(STATEDIR)/poppler.compile \
+	$(STATEDIR)/gtk22.targetinstall \
+	$(STATEDIR)/cairo.targetinstall
 
 $(STATEDIR)/poppler.targetinstall: $(poppler_targetinstall_deps)
 	@$(call targetinfo, $@)
-	rm -rf $(POPPLER_IPKG_TMP)
 	$(POPPLER_PATH) $(MAKE) -C $(POPPLER_DIR) DESTDIR=$(POPPLER_IPKG_TMP) install
-	rm -rf $(POPPLER_IPKG_TMP)/usr/include
-	rm -rf $(POPPLER_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(POPPLER_IPKG_TMP)/usr/lib/pkgconfig
-	$(CROSSSTRIP) $(POPPLER_IPKG_TMP)/usr/lib/*.so*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(POPPLER_VERSION)-$(POPPLER_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh poppler $(POPPLER_IPKG_TMP)
+
+	@$(call removedevfiles, $(POPPLER_IPKG_TMP))
+	@$(call stripfiles, $(POPPLER_IPKG_TMP))
 	mkdir -p $(POPPLER_IPKG_TMP)/CONTROL
-	echo "Package: poppler" 									 >$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Source: $(POPPLER_URL)"						>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 									>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Section: Gnome" 										>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 						>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 								>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Version: $(POPPLER_VERSION)-$(POPPLER_VENDOR_VERSION)" 					>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2" 										>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Package: poppler" 							 >$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Source: $(POPPLER_URL)"							>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Section: pdaXrom" 							>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Version: $(POPPLER_VERSION)-$(POPPLER_VENDOR_VERSION)" 			>>$(POPPLER_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, cairo" 							>>$(POPPLER_IPKG_TMP)/CONTROL/control
 	echo "Description: Poppler is a PDF rendering library based on the xpdf-3.0 code base."		>>$(POPPLER_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(POPPLER_IPKG_TMP)
 	touch $@
