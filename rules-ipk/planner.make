@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 PLANNER_VENDOR_VERSION	= 1
-PLANNER_VERSION		= 0.13
+PLANNER_VERSION		= 0.14
 PLANNER			= planner-$(PLANNER_VERSION)
 PLANNER_SUFFIX		= tar.bz2
 PLANNER_URL		= http://ftp.gnome.org/pub/GNOME/sources/planner/$(PLANNER_VERSION)/$(PLANNER).$(PLANNER_SUFFIX)
@@ -100,7 +100,8 @@ PLANNER_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
-	--sysconfdir=/etc
+	--sysconfdir=/etc \
+	--disable-update-mimedb
 
 ifdef PTXCONF_ARCH_X86
 PLANNER_AUTOCONF += --disable-schemas-install

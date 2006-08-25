@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.12.6-elinos-218
-# Fri Aug 18 12:54:25 2006
+# Fri Aug 18 15:58:21 2006
 #
 CONFIG_ARM=y
 CONFIG_MMU=y
@@ -912,8 +912,12 @@ CONFIG_DNOTIFY=y
 #
 # CD-ROM/DVD Filesystems
 #
-# CONFIG_ISO9660_FS is not set
-# CONFIG_UDF_FS is not set
+CONFIG_ISO9660_FS=m
+CONFIG_JOLIET=y
+CONFIG_ZISOFS=y
+CONFIG_ZISOFS_FS=m
+CONFIG_UDF_FS=m
+CONFIG_UDF_NLS=y
 
 #
 # DOS/FAT/NT Filesystems

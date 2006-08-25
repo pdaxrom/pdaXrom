@@ -134,6 +134,7 @@ $(STATEDIR)/libbonobo.install: $(STATEDIR)/libbonobo.compile
 	@$(call copyincludes, $(LIBBONOBO_IPKG_TMP))
 	@$(call copylibraries,$(LIBBONOBO_IPKG_TMP))
 	@$(call copymiscfiles,$(LIBBONOBO_IPKG_TMP))
+	cp -a $(LIBBONOBO_IPKG_TMP)/usr/share/idl $(CROSS_LIB_DIR)/share/
 	rm -rf $(LIBBONOBO_IPKG_TMP)
 	touch $@
 

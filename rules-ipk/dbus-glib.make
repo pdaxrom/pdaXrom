@@ -70,6 +70,7 @@ dbus-glib_prepare: $(STATEDIR)/dbus-glib.prepare
 # dependencies
 #
 dbus-glib_prepare_deps = \
+	$(STATEDIR)/xchain-dbus-glib.install \
 	$(STATEDIR)/dbus-glib.extract \
 	$(STATEDIR)/dbus.install \
 	$(STATEDIR)/virtual-xchain.install
@@ -114,7 +115,7 @@ dbus-glib_compile_deps = $(STATEDIR)/dbus-glib.prepare
 
 $(STATEDIR)/dbus-glib.compile: $(dbus-glib_compile_deps)
 	@$(call targetinfo, $@)
-	$(DBUS-GLIB_PATH) $(MAKE) -C $(DBUS-GLIB_DIR)
+	$(DBUS-GLIB_PATH) $(MAKE) -C $(DBUS-GLIB_DIR) HOST_DBUS-BINDING-TOOL=$(PTXCONF_PREFIX)/bin
 	touch $@
 
 # ----------------------------------------------------------------------------
