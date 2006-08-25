@@ -20,7 +20,6 @@ endif
 # Paths and names
 #
 ALSA-UTILS_VENDOR_VERSION	= 1
-#ALSA-UTILS_VERSION		= 1.0.8
 ALSA-UTILS_VERSION		= 1.0.11
 ALSA-UTILS			= alsa-utils-$(ALSA-UTILS_VERSION)
 ALSA-UTILS_SUFFIX		= tar.bz2
@@ -79,9 +78,9 @@ alsa-utils_prepare_deps = \
 ALSA-UTILS_PATH	=  PATH=$(CROSS_PATH)
 ALSA-UTILS_ENV 	=  $(CROSS_ENV)
 #ALSA-UTILS_ENV	+=
-ALSA-UTILS_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+ALSA-UTILS_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#ALSA-UTILS_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#ALSA-UTILS_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -127,7 +126,12 @@ alsa-utils_install: $(STATEDIR)/alsa-utils.install
 
 $(STATEDIR)/alsa-utils.install: $(STATEDIR)/alsa-utils.compile
 	@$(call targetinfo, $@)
-	asdasd
+	rm -rf $(ALSA-UTILS_IPKG_TMP)
+	$(ALSA-UTILS_PATH) $(MAKE) -C $(ALSA-UTILS_DIR) DESTDIR=$(ALSA-UTILS_IPKG_TMP) install
+	@$(call copyincludes, $(ALSA-UTILS_IPKG_TMP))
+	@$(call copylibraries,$(ALSA-UTILS_IPKG_TMP))
+	@$(call copymiscfiles,$(ALSA-UTILS_IPKG_TMP))
+	rm -rf $(ALSA-UTILS_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -143,9 +147,15 @@ alsa-utils_targetinstall_deps = $(STATEDIR)/alsa-utils.compile \
 $(STATEDIR)/alsa-utils.targetinstall: $(alsa-utils_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(ALSA-UTILS_PATH) $(MAKE) -C $(ALSA-UTILS_DIR) DESTDIR=$(ALSA-UTILS_IPKG_TMP) install
-	rm -rf $(ALSA-UTILS_IPKG_TMP)/usr/man
-	$(CROSSSTRIP) $(ALSA-UTILS_IPKG_TMP)/usr/bin/*
-	$(CROSSSTRIP) $(ALSA-UTILS_IPKG_TMP)/usr/sbin/alsactl
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(ALSA-UTILS_VERSION)-$(ALSA-UTILS_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh alsa-utils $(ALSA-UTILS_IPKG_TMP)
+
 	mkdir -p $(ALSA-UTILS_IPKG_TMP)/etc/rc.d/init.d
 	mkdir -p $(ALSA-UTILS_IPKG_TMP)/etc/rc.d/rc0.d
 	mkdir -p $(ALSA-UTILS_IPKG_TMP)/etc/rc.d/rc1.d
@@ -161,6 +171,9 @@ $(STATEDIR)/alsa-utils.targetinstall: $(alsa-utils_targetinstall_deps)
 	ln -sf ../init.d/alsa $(ALSA-UTILS_IPKG_TMP)/etc/rc.d/rc4.d/S90alsa
 	ln -sf ../init.d/alsa $(ALSA-UTILS_IPKG_TMP)/etc/rc.d/rc5.d/S90alsa
 	ln -sf ../init.d/alsa $(ALSA-UTILS_IPKG_TMP)/etc/rc.d/rc6.d/K40alsa
+
+	@$(call removedevfiles, $(ALSA-UTILS_IPKG_TMP))
+	@$(call stripfiles, $(ALSA-UTILS_IPKG_TMP))
 	mkdir -p $(ALSA-UTILS_IPKG_TMP)/CONTROL
 	echo "Package: alsa-utils" 							 >$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Source: $(ALSA-UTILS_URL)"						>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
@@ -170,7 +183,7 @@ $(STATEDIR)/alsa-utils.targetinstall: $(alsa-utils_targetinstall_deps)
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Version: $(ALSA-UTILS_VERSION)-$(ALSA-UTILS_VENDOR_VERSION)" 		>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: alsa-lib" 							>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
-	echo "Description: ALSA utilities"						>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
+	echo "Description: ALSA utilites"						>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(ALSA-UTILS_IPKG_TMP)
 	touch $@
 

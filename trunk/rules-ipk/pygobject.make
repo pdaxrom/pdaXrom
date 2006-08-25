@@ -172,7 +172,7 @@ $(STATEDIR)/pygobject.targetinstall: $(pygobject_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
 	echo "Version: $(PYGOBJECT_VERSION)-$(PYGOBJECT_VENDOR_VERSION)" 		>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
-	echo "Depends: glib2, python" 							>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
+	echo "Depends: glib2"	 							>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
 	echo "Description: python glib binding"						>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(PYGOBJECT_IPKG_TMP)
 	touch $@
