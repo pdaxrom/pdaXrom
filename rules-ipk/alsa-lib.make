@@ -20,7 +20,6 @@ endif
 # Paths and names
 #
 ALSA-LIB_VENDOR_VERSION	= 1
-#ALSA-LIB_VERSION	= 1.0.8
 ALSA-LIB_VERSION	= 1.0.11
 ALSA-LIB		= alsa-lib-$(ALSA-LIB_VERSION)
 ALSA-LIB_SUFFIX		= tar.bz2
@@ -77,9 +76,9 @@ alsa-lib_prepare_deps = \
 ALSA-LIB_PATH	=  PATH=$(CROSS_PATH)
 ALSA-LIB_ENV 	=  $(CROSS_ENV)
 #ALSA-LIB_ENV	+=
-ALSA-LIB_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+ALSA-LIB_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#ALSA-LIB_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#ALSA-LIB_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -89,10 +88,10 @@ ALSA-LIB_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
+	--sysconfdir=/etc \
 	--disable-debug \
 	--disable-static \
-	--enable-shared \
-	--sysconfdir=/etc
+	--enable-shared
 
 ifdef PTXCONF_XFREE430
 ALSA-LIB_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -130,11 +129,9 @@ $(STATEDIR)/alsa-lib.install: $(STATEDIR)/alsa-lib.compile
 	@$(call targetinfo, $@)
 	rm -rf $(ALSA-LIB_IPKG_TMP)
 	$(ALSA-LIB_PATH) $(MAKE) -C $(ALSA-LIB_DIR) DESTDIR=$(ALSA-LIB_IPKG_TMP) install
-	cp -a $(ALSA-LIB_IPKG_TMP)/usr/include/* 	$(CROSS_LIB_DIR)/include
-	cp -a $(ALSA-LIB_IPKG_TMP)/usr/lib/*     	$(CROSS_LIB_DIR)/lib
-	cp -a $(ALSA-LIB_IPKG_TMP)/usr/share/aclocal/*	$(PTXCONF_PREFIX)/share/aclocal/
-	perl -i -p -e "s,\/usr/lib,$(CROSS_LIB_DIR)/lib,g" $(CROSS_LIB_DIR)/lib/libasound.la
-	perl -i -p -e "s,\/usr,$(CROSS_LIB_DIR),g" 	$(CROSS_LIB_DIR)/lib/pkgconfig/alsa.pc
+	@$(call copyincludes, $(ALSA-LIB_IPKG_TMP))
+	@$(call copylibraries,$(ALSA-LIB_IPKG_TMP))
+	@$(call copymiscfiles,$(ALSA-LIB_IPKG_TMP))
 	rm -rf $(ALSA-LIB_IPKG_TMP)
 	touch $@
 
@@ -149,12 +146,17 @@ alsa-lib_targetinstall_deps = $(STATEDIR)/alsa-lib.compile
 $(STATEDIR)/alsa-lib.targetinstall: $(alsa-lib_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(ALSA-LIB_PATH) $(MAKE) -C $(ALSA-LIB_DIR) DESTDIR=$(ALSA-LIB_IPKG_TMP) install
-	rm -rf $(ALSA-LIB_IPKG_TMP)/usr/include
-	rm -rf $(ALSA-LIB_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(ALSA-LIB_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(ALSA-LIB_IPKG_TMP)/usr/share/aclocal
-	$(CROSSSTRIP) $(ALSA-LIB_IPKG_TMP)/usr/bin/*
-	$(CROSSSTRIP) $(ALSA-LIB_IPKG_TMP)/usr/lib/*.so*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(ALSA-LIB_VERSION)-$(ALSA-LIB_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh alsa-lib $(ALSA-LIB_IPKG_TMP)
+
+	@$(call removedevfiles, $(ALSA-LIB_IPKG_TMP))
+	@$(call stripfiles, $(ALSA-LIB_IPKG_TMP))
 	mkdir -p $(ALSA-LIB_IPKG_TMP)/CONTROL
 	echo "Package: alsa-lib" 							 >$(ALSA-LIB_IPKG_TMP)/CONTROL/control
 	echo "Source: $(ALSA-LIB_URL)"							>>$(ALSA-LIB_IPKG_TMP)/CONTROL/control
