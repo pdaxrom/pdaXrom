@@ -73,6 +73,7 @@ pwlib_prepare_deps = \
 	$(STATEDIR)/pwlib.extract \
 	$(STATEDIR)/openssl.install \
 	$(STATEDIR)/openldap.install \
+	$(STATEDIR)/SDL.install \
 	$(STATEDIR)/virtual-xchain.install
 
 PWLIB_PATH	=  PATH=$(CROSS_PATH)
@@ -147,6 +148,7 @@ pwlib_targetinstall: $(STATEDIR)/pwlib.targetinstall
 
 pwlib_targetinstall_deps = $(STATEDIR)/pwlib.compile \
 	$(STATEDIR)/openldap.targetinstall \
+	$(STATEDIR)/SDL.targetinstall \
 	$(STATEDIR)/openssl.targetinstall
 
 $(STATEDIR)/pwlib.targetinstall: $(pwlib_targetinstall_deps)
@@ -175,7 +177,7 @@ $(STATEDIR)/pwlib.targetinstall: $(pwlib_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(PWLIB_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(PWLIB_IPKG_TMP)/CONTROL/control
 	echo "Version: $(PWLIB_VERSION)-$(PWLIB_VENDOR_VERSION)" 			>>$(PWLIB_IPKG_TMP)/CONTROL/control
-	echo "Depends: openssl, openldap" 						>>$(PWLIB_IPKG_TMP)/CONTROL/control
+	echo "Depends: openssl, openldap, sdl" 						>>$(PWLIB_IPKG_TMP)/CONTROL/control
 	echo "Description: Portable Windows Libary"					>>$(PWLIB_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(PWLIB_IPKG_TMP)
 	touch $@

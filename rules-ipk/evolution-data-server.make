@@ -72,6 +72,10 @@ evolution-data-server_prepare: $(STATEDIR)/evolution-data-server.prepare
 evolution-data-server_prepare_deps = \
 	$(STATEDIR)/evolution-data-server.extract \
 	$(STATEDIR)/libsoup.install \
+	$(STATEDIR)/ORBit2.install \
+	$(STATEDIR)/libbonobo.install \
+	$(STATEDIR)/GConf.install \
+	$(STATEDIR)/libgnome.install \
 	$(STATEDIR)/virtual-xchain.install
 
 EVOLUTION-DATA-SERVER_PATH	=  PATH=$(CROSS_PATH)
@@ -143,6 +147,10 @@ $(STATEDIR)/evolution-data-server.install: $(STATEDIR)/evolution-data-server.com
 evolution-data-server_targetinstall: $(STATEDIR)/evolution-data-server.targetinstall
 
 evolution-data-server_targetinstall_deps = $(STATEDIR)/evolution-data-server.compile \
+	$(STATEDIR)/ORBit2.targetinstall \
+	$(STATEDIR)/libbonobo.targetinstall \
+	$(STATEDIR)/GConf.targetinstall \
+	$(STATEDIR)/libgnome.targetinstall \
 	$(STATEDIR)/libsoup.targetinstall
 
 $(STATEDIR)/evolution-data-server.targetinstall: $(evolution-data-server_targetinstall_deps)
@@ -166,8 +174,8 @@ $(STATEDIR)/evolution-data-server.targetinstall: $(evolution-data-server_targeti
 	echo "Section: Internet" 							>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
-	echo "Version: $(EVOLUTION-DATA-SERVER_VERSION)-$(EVOLUTION-DATA-SERVER_VENDOR_VERSION)" 			>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
-	echo "Depends: libsoup" 					 		>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
+	echo "Version: $(EVOLUTION-DATA-SERVER_VERSION)-$(EVOLUTION-DATA-SERVER_VENDOR_VERSION)" >>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
+	echo "Depends: libsoup, orbit2, libbonobo, gconf" 		 		>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
 	echo "Description:  The Evolution Data Server package provides a unified backend for programs that work with contacts, tasks, and calendar information." >>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(EVOLUTION-DATA-SERVER_IPKG_TMP)
 	touch $@

@@ -72,6 +72,7 @@ libxslt_prepare: $(STATEDIR)/libxslt.prepare
 libxslt_prepare_deps = \
 	$(STATEDIR)/libxslt.extract \
 	$(STATEDIR)/libxml2.install \
+	$(STATEDIR)/libgcrypt.install \
 	$(STATEDIR)/virtual-xchain.install
 
 LIBXSLT_PATH	=  PATH=$(CROSS_PATH)
@@ -142,6 +143,7 @@ $(STATEDIR)/libxslt.install: $(STATEDIR)/libxslt.compile
 libxslt_targetinstall: $(STATEDIR)/libxslt.targetinstall
 
 libxslt_targetinstall_deps = $(STATEDIR)/libxslt.compile \
+	$(STATEDIR)/libgcrypt.targetinstall \
 	$(STATEDIR)/libxml2.targetinstall
 
 $(STATEDIR)/libxslt.targetinstall: $(libxslt_targetinstall_deps)
@@ -166,7 +168,7 @@ $(STATEDIR)/libxslt.targetinstall: $(libxslt_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	echo "Version: $(LIBXSLT_VERSION)-$(LIBXSLT_VENDOR_VERSION)" 			>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	echo "Depends: libxml2" 							>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
+	echo "Depends: libxml2, libgcrypt" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	echo "Description: XSLT support for libxml2"					>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LIBXSLT_IPKG_TMP)
 	touch $@
