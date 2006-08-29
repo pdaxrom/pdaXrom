@@ -1,0 +1,92 @@
+diff -Nur openbox-3.3-orig/themes/artwiz-boxed/openbox-3/themerc openbox-3.3/themes/artwiz-boxed/openbox-3/themerc
+--- openbox-3.3-orig/themes/artwiz-boxed/openbox-3/themerc	2006-08-18 19:26:08.000000000 +0000
++++ openbox-3.3/themes/artwiz-boxed/openbox-3/themerc	2006-08-29 15:11:13.000000000 +0000
+@@ -97,6 +97,6 @@
+ borderWidth:			1
+ window.handle.width:			4
+ 
+-window.active.label.text.font: sans:pixelsize=10
+-menu.title.text.font: sans:pixelsize=10
+-menu.items.font: sans:pixelsize=10
++window.active.label.text.font: Verdana:pixelsize=10
++menu.title.text.font: Verdana:pixelsize=10
++menu.items.font: Verdana:pixelsize=10
+diff -Nur openbox-3.3-orig/themes/bear2/openbox-3/themerc openbox-3.3/themes/bear2/openbox-3/themerc
+--- openbox-3.3-orig/themes/bear2/openbox-3/themerc	2006-08-26 22:15:52.000000000 +0000
++++ openbox-3.3/themes/bear2/openbox-3/themerc	2006-08-29 15:11:49.000000000 +0000
+@@ -12,10 +12,10 @@
+ 
+ !!Fonts
+ 
+-window.active.label.text.font: sans:pixelsize=12:shadow=y:shadowoffset=1:shadowtint=3:bold
+-window.inactive.label.text.font: sans:pixelsize=12:shadow=y:shadowoffset=1:shadowtint=0:bold
+-menu.items.font: sans:pixelsize=12
+-menu.title.text.font: sans:pixelsize=12:shadow=y:shadowoffset=1:shadowtint=30:bold
++window.active.label.text.font: Verdana:pixelsize=12:shadow=y:shadowoffset=1:shadowtint=3:bold
++window.inactive.label.text.font: Verdana:pixelsize=12:shadow=y:shadowoffset=1:shadowtint=0:bold
++menu.items.font: Verdana:pixelsize=12
++menu.title.text.font: Verdana:pixelsize=12:shadow=y:shadowoffset=1:shadowtint=30:bold
+ 
+ !!Menu
+ menu.border.color: #9d9d9d
+diff -Nur openbox-3.3-orig/themes/Mikachu/openbox-3/themerc openbox-3.3/themes/Mikachu/openbox-3/themerc
+--- openbox-3.3-orig/themes/Mikachu/openbox-3/themerc	2006-08-26 22:15:52.000000000 +0000
++++ openbox-3.3/themes/Mikachu/openbox-3/themerc	2006-08-29 15:10:09.000000000 +0000
+@@ -151,9 +151,9 @@
+ border.color: #223344
+ 
+ !! Font stuff
+-window.active.label.text.font: Candara,sans:pixelsize=14:shadow=n:weight=0
+-window.inactive.label.text.font: Candara,sans:pixelsize=14:shadowoffset=3:shadowtint=32:shadow=y:weight=0
+-menu.title.text.font: Technical,sans:pixelsize=26:shadowoffset=2:shadowtint=35:shadow=y
+-menu.items.font: Technical,sans:pixelsize=14:shadowoffset=2:shadowtint=15:shadow=y
++window.active.label.text.font: Verdana:pixelsize=14:shadow=n:weight=0
++window.inactive.label.text.font: Verdana:pixelsize=14:shadowoffset=3:shadowtint=32:shadow=y:weight=0
++menu.title.text.font: Verdana:pixelsize=26:shadowoffset=2:shadowtint=35:shadow=y
++menu.items.font: Verdana:pixelsize=14:shadowoffset=2:shadowtint=15:shadow=y
+ 
+ !menu.overlap: 3
+diff -Nur openbox-3.3-orig/themes/Natura/openbox-3/themerc openbox-3.3/themes/Natura/openbox-3/themerc
+--- openbox-3.3-orig/themes/Natura/openbox-3/themerc	2006-08-26 22:15:52.000000000 +0000
++++ openbox-3.3/themes/Natura/openbox-3/themerc	2006-08-29 15:10:49.000000000 +0000
+@@ -90,7 +90,7 @@
+ window.inactive.grip.bg:  parentrelative
+ 
+ !! Fonts
+-window.active.label.text.font: sans:pixelsize=12:bold:shadow=y:shadowoffset=1:shadowtint=75
+-window.inactive.label.text.font: sans:pixelsize=12:bold:shadow=y:shadowoffset=1:shadowtint=0
+-menu.items.font: sans:pixelsize=12
+-menu.title.text.font: sans:pixelsize=12:bold:shadow=y:shadowoffset=1:shadowtint=75
++window.active.label.text.font: Verdana:pixelsize=12:bold:shadow=y:shadowoffset=1:shadowtint=75
++window.inactive.label.text.font: Verdana:pixelsize=12:bold:shadow=y:shadowoffset=1:shadowtint=0
++menu.items.font: Verdana:pixelsize=12
++menu.title.text.font: Verdana:pixelsize=12:bold:shadow=y:shadowoffset=1:shadowtint=75
+diff -Nur openbox-3.3-orig/themes/orang/openbox-3/themerc openbox-3.3/themes/orang/openbox-3/themerc
+--- openbox-3.3-orig/themes/orang/openbox-3/themerc	2006-08-18 19:26:08.000000000 +0000
++++ openbox-3.3/themes/orang/openbox-3/themerc	2006-08-29 15:12:20.000000000 +0000
+@@ -92,9 +92,9 @@
+ border.color: #000000
+ 
+ !! font me!
+-window.active.label.text.font: sans:pixelsize=10:bold
+-window.inactive.label.text.font: sans:pixelsize=10:bold
++window.active.label.text.font: Verdana:pixelsize=10:bold
++window.inactive.label.text.font: Verdana:pixelsize=10:bold
+ 
+-menu.title.text.font: sans:pixelsize=10:bold
+-menu.items.font: sans:pixelsize=9
++menu.title.text.font: Verdana:pixelsize=10:bold
++menu.items.font: Verdana:pixelsize=9
+ 
+diff -Nur openbox-3.3-orig/themes/syscrash/openbox-3/themerc openbox-3.3/themes/syscrash/openbox-3/themerc
+--- openbox-3.3-orig/themes/syscrash/openbox-3/themerc	2006-08-18 19:26:08.000000000 +0000
++++ openbox-3.3/themes/syscrash/openbox-3/themerc	2006-08-29 15:12:41.000000000 +0000
+@@ -15,7 +15,7 @@
+ !!---------------------------------------------------------------------------
+ !! Fonts
+ 
+-*.font:		sans:pixelsize=11
++*.font:		Verdana:pixelsize=11
+ window.label.text.justify:		left
+ 
+ menu.title.text.justify:		left

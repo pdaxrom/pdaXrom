@@ -20,7 +20,8 @@ endif
 # Paths and names
 #
 OPENBOX_VENDOR_VERSION	= 1
-OPENBOX_VERSION		= 3.3-rc2
+#OPENBOX_VERSION		= 3.3-rc2
+OPENBOX_VERSION		= 3.3
 OPENBOX			= openbox-$(OPENBOX_VERSION)
 OPENBOX_SUFFIX		= tar.gz
 OPENBOX_URL		= http://icculus.org/openbox/releases/$(OPENBOX).$(OPENBOX_SUFFIX)
@@ -94,7 +95,8 @@ OPENBOX_AUTOCONF = \
 	--x-libraries=$(CROSS_LIB_DIR)/lib \
 	--prefix=/usr \
 	--disable-debug \
-	--sysconfdir=/etc
+	--sysconfdir=/etc \
+	--enable-startup-notification
 
 $(STATEDIR)/openbox.prepare: $(openbox_prepare_deps)
 	@$(call targetinfo, $@)

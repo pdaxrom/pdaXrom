@@ -101,7 +101,9 @@ PHP_AUTOCONF = \
         --with-zlib \
 	--with-zlib-dir=$(CROSS_LIB_DIR) \
         --with-config-file-path=/etc/php4 \
-	--without-pear
+	--without-pear \
+	--with-openssl \
+	--with-openssl-dir=$(CROSS_LIB_DIR)
 
 #       --without-libpng
 #	--without-libjpeg
