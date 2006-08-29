@@ -143,6 +143,10 @@ $(STATEDIR)/pygtk.install: $(STATEDIR)/pygtk.compile
 	@$(call copymiscfiles,$(PYGTK_IPKG_TMP))
 
 	mkdir -p $(CROSS_LIB_DIR)/share/pygtk/2.0/codegen
+	mkdir -p $(CROSS_LIB_DIR)/share/pygtk/2.0/defs
+	
+	cp -a $(PYGTK_DIR)/*.defs 	$(CROSS_LIB_DIR)/share/pygtk/2.0/defs/
+	cp -a $(PYGTK_DIR)/gtk/*.defs 	$(CROSS_LIB_DIR)/share/pygtk/2.0/defs/
 	cp -a $(PYGTK_DIR)/codegen/*.py $(CROSS_LIB_DIR)/share/pygtk/2.0/codegen
 	cp -a $(PYGTK_DIR)/codegen/pygtk-codegen-2.0.in 	$(PTXCONF_PREFIX)/bin/pygtk-codegen-2.0
 	perl -i -p -e "s,\@datadir\@,$(CROSS_LIB_DIR)/share,g"	$(PTXCONF_PREFIX)/bin/pygtk-codegen-2.0
