@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 GALCULATOR_VENDOR_VERSION	= 1
-GALCULATOR_VERSION		= 1.2.5
+GALCULATOR_VERSION		= 1.2.5.2
 GALCULATOR			= galculator-$(GALCULATOR_VERSION)
 GALCULATOR_SUFFIX		= tar.bz2
 GALCULATOR_URL			= http://heanet.dl.sourceforge.net/sourceforge/galculator/$(GALCULATOR).$(GALCULATOR_SUFFIX)
