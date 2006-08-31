@@ -19,11 +19,11 @@ endif
 #
 # Paths and names
 #
-#MOZILLA_VERSION		= 1.7.11
-MOZILLA_VERSION		= 1.7.12
+#MOZILLA_VERSION		= 1.7.12
+MOZILLA_VERSION		= 1.7.13
 MOZILLA			= mozilla-$(MOZILLA_VERSION)-source
 MOZILLA_SUFFIX		= tar.bz2
-MOZILLA_URL		= ftp://ftp.mozilla.org/pub/mozilla.org/mozilla/releases/mozilla$(MOZILLA_VERSION)/src/$(MOZILLA).$(MOZILLA_SUFFIX)
+MOZILLA_URL		= ftp://ftp.mozilla.org/pub/mozilla.org/mozilla/releases/mozilla$(MOZILLA_VERSION)/source/$(MOZILLA).$(MOZILLA_SUFFIX)
 MOZILLA_SOURCE		= $(SRCDIR)/$(MOZILLA).$(MOZILLA_SUFFIX)
 MOZILLA_DIR		= $(BUILDDIR)/mozilla
 MOZILLA_IPKG_TMP	= $(MOZILLA_DIR)/ipkg_tmp

@@ -19,12 +19,12 @@ endif
 #
 # Paths and names
 #
-#FIREFOX_VERSION		= 1.0.6
-FIREFOX_VERSION		= 1.5
+#FIREFOX_VERSION		= 1.5
+FIREFOX_VERSION		= 1.5.0.6
 ###FIREFOX		= firefox-source-$(FIREFOX_VERSION)
 FIREFOX			= firefox-$(FIREFOX_VERSION)-source
 FIREFOX_SUFFIX		= tar.bz2
-FIREFOX_URL		= http://ftp28f.newaol.com/pub/mozilla.org/firefox/releases/$(FIREFOX_VERSION)/$(FIREFOX).$(FIREFOX_SUFFIX)
+FIREFOX_URL		= ftp://ftp.mozilla.org/pub/mozilla.org/firefox/releases/$(FIREFOX_VERSION)/source/$(FIREFOX).$(FIREFOX_SUFFIX)
 FIREFOX_SOURCE		= $(SRCDIR)/$(FIREFOX).$(FIREFOX_SUFFIX)
 FIREFOX_DIR		= $(BUILDDIR)/mozilla
 FIREFOX_IPKG_TMP	= $(FIREFOX_DIR)/ipkg_tmp
