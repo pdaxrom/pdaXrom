@@ -7,6 +7,11 @@ config LINKS_GUI
 	prompt "GUI version"
 	depends on LINKS && XFREE430
 
+config LINKS_GUI-LIBTIFF
+	bool
+	prompt "Enable TIFF"
+	depends on LINKS_GUI
+
 config LINKS_INSTALL
 	bool
 	prompt "Install in ROM"

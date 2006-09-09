@@ -19,10 +19,11 @@ endif
 #
 # Paths and names
 #
-LINKS_VERSION		= 2.1pre14
+LINKS_VERSION		= 2.1pre23
 LINKS			= links-$(LINKS_VERSION)
 LINKS_SUFFIX		= tar.bz2
-LINKS_URL		= http://atrey.karlin.mff.cuni.cz/~clock/twibright/links/download/$(LINKS).$(LINKS_SUFFIX)
+LINKS_URL		= http://links.twibright.com/download/$(LINKS).$(LINKS_SUFFIX)
+##LINKS_URL		= http://atrey.karlin.mff.cuni.cz/~clock/twibright/links/download/$(LINKS).$(LINKS_SUFFIX)
 LINKS_SOURCE		= $(SRCDIR)/$(LINKS).$(LINKS_SUFFIX)
 LINKS_DIR		= $(BUILDDIR)/$(LINKS)
 LINKS_IPKG_TMP	= $(LINKS_DIR)/ipkg_tmp
@@ -71,11 +72,17 @@ links_prepare: $(STATEDIR)/links.prepare
 links_prepare_deps = \
 	$(STATEDIR)/links.extract \
 	$(STATEDIR)/openssl.install \
+	$(STATEDIR)/pcre.install \
 	$(STATEDIR)/virtual-xchain.install
 
 ifdef PTXCONF_LINKS_GUI
 links_prepare_deps += $(STATEDIR)/xfree430.install
 endif
+
+ifdef PTXCONF_LINKS_GUI-LIBTIFF
+links_prepare_deps += $(STATEDIR)/tiff.install
+endif
+
 
 LINKS_PATH	=  PATH=$(CROSS_PATH)
 LINKS_ENV 	=  $(CROSS_ENV)
@@ -107,6 +114,10 @@ LINKS_AUTOCONF += --with-x
 else
 LINKS_AUTOCONF += --without-x
 endif
+endif
+
+ifndef PTXCONF_LINKS_GUI-LIBTIFF
+LINKS_AUTOCONF += --without-libtiff
 endif
 
 $(STATEDIR)/links.prepare: $(links_prepare_deps)
@@ -148,10 +159,19 @@ $(STATEDIR)/links.install: $(STATEDIR)/links.compile
 links_targetinstall: $(STATEDIR)/links.targetinstall
 
 links_targetinstall_deps = $(STATEDIR)/links.compile \
-	$(STATEDIR)/openssl.targetinstall
+	$(STATEDIR)/openssl.targetinstall \
+	$(STATEDIR)/pcre.targetinstall
+
+LINKS_DEPLIST = openssl, pcre
 
 ifdef PTXCONF_LINKS_GUI
 links_targetinstall_deps += $(STATEDIR)/xfree430.targetinstall
+LINKS_DEPLIST += , xfree, libjpeg
+endif
+
+ifdef PTXCONF_LINKS_GUI-LIBTIFF
+links_targetinstall_deps += $(STATEDIR)/tiff.targetinstall
+LINKS_DEPLIST += , libtiff
 endif
 
 $(STATEDIR)/links.targetinstall: $(links_targetinstall_deps)
@@ -175,19 +195,15 @@ endif
 	echo "Type=Application"		 >>$(LINKS_IPKG_TMP)/usr/share/applications/links.desktop
 	echo "Categories=Application;Network;WebBrowser;" >>$(LINKS_IPKG_TMP)/usr/share/applications/links.desktop
 	mkdir -p $(LINKS_IPKG_TMP)/CONTROL
-	echo "Package: links" 				>$(LINKS_IPKG_TMP)/CONTROL/control
-	echo "Source: $(LINKS_URL)"						>>$(LINKS_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(LINKS_IPKG_TMP)/CONTROL/control
-	echo "Section: pdaXrom" 			>>$(LINKS_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" >>$(LINKS_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(LINKS_IPKG_TMP)/CONTROL/control
-	echo "Version: $(LINKS_VERSION)" 		>>$(LINKS_IPKG_TMP)/CONTROL/control
-ifdef PTXCONF_LINKS_GUI
-	echo "Depends: xfree, openssl" 		>>$(LINKS_IPKG_TMP)/CONTROL/control
-else
-	echo "Depends: openssl" 			>>$(LINKS_IPKG_TMP)/CONTROL/control
-endif
-	echo "Description: generated with pdaXrom builder">>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Package: links" 						 >$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Source: $(LINKS_URL)"					>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 					>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Section: Internet" 					>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 		>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 				>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Version: $(LINKS_VERSION)" 				>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Depends: $(LINKS_DEPLIST)" 				>>$(LINKS_IPKG_TMP)/CONTROL/control
+	echo "Description: generated with pdaXrom builder"		>>$(LINKS_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LINKS_IPKG_TMP)
 	touch $@
 

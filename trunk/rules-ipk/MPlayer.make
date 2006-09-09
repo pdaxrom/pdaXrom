@@ -85,6 +85,10 @@ ifdef PTXCONF_ALSA-UTILS
 MPlayer_prepare_deps += $(STATEDIR)/alsa-lib.install
 endif
 
+ifdef PTXCONF_MPLAYER_SPEEX
+MPlayer_prepare_deps += $(STATEDIR)/speex.install
+endif
+
 MPLAYER_PATH	=  PATH=$(CROSS_PATH)
 MPLAYER_ENV 	=  $(CROSS_ENV)
 #MPLAYER_ENV	+=
@@ -162,6 +166,10 @@ ifndef PTXCONF_ALSA-UTILS
 MPLAYER_AUTOCONF += --disable-alsa
 endif
 
+ifndef PTXCONF_MPLAYER_SPEEX
+MPLAYER_AUTOCONF += --disable-speex
+endif
+
 #ifdef PTXCONF_XFREE430
 #MPLAYER_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
 #MPLAYER_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
@@ -213,6 +221,21 @@ MPlayer_targetinstall_deps = $(STATEDIR)/MPlayer.compile \
 	$(STATEDIR)/ffmpeg.targetinstall \
 	$(STATEDIR)/SDL.targetinstall
 
+MPLAYER_DEPLIST = xfree, libmad, sdl, esound, libffmpeg
+
+ifdef PTXCONF_MPLAYER_SPEEX
+MPlayer_targetinstall_deps += $(STATEDIR)/speex.targetinstall
+MPLAYER_DEPLIST += , libspeex
+endif
+
+ifdef PTXCONF_ATICORE
+MPLAYER_DEPLIST += , aticore
+endif
+
+ifdef PTXCONF_ALSA-UTILS
+MPLAYER_DEPLIST += , alsa-utils
+endif
+
 $(STATEDIR)/MPlayer.targetinstall: $(MPlayer_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(MPLAYER_PATH) $(MAKE) -C $(MPLAYER_DIR) DESTDIR=$(MPLAYER_IPKG_TMP) install STRIP=$(PTXCONF_GNU_TARGET)-strip STRIPBINARIES=no
@@ -234,11 +257,7 @@ endif
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 			>>$(MPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 					>>$(MPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Version: $(MPLAYER_VERSION)" 					>>$(MPLAYER_IPKG_TMP)/CONTROL/control
-ifdef PTXCONF_ATICORE
-	echo "Depends: xfree, libmad, aticore, sdl, esound, libffmpeg" 	>>$(MPLAYER_IPKG_TMP)/CONTROL/control
-else
-	echo "Depends: xfree, libmad, sdl, esound, libffmpeg" 		>>$(MPLAYER_IPKG_TMP)/CONTROL/control
-endif
+	echo "Depends: $(MPLAYER_DEPLIST)" 					>>$(MPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Description: the Unix movie player."				>>$(MPLAYER_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(MPLAYER_IPKG_TMP)
 	touch $@
