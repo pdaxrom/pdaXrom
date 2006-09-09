@@ -354,6 +354,7 @@ source "rules-ipk/wlan-ng.in"
 source "rules-ipk/wpa_supplicant.in"
 endmenu
 menu "Web browsers        "
+source "rules-ipk/elinks.in"
 source "rules-ipk/links.in"
 source "rules-ipk/lynx.in"
 source "rules-ipk/firefox.in"
