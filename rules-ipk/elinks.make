@@ -122,7 +122,7 @@ elinks_compile_deps = $(STATEDIR)/elinks.prepare
 
 $(STATEDIR)/elinks.compile: $(elinks_compile_deps)
 	@$(call targetinfo, $@)
-	$(ELINKS_PATH) $(MAKE) -C $(ELINKS_DIR)
+	$(ELINKS_PATH) $(MAKE) -C $(ELINKS_DIR) $(CROSS_ENV_LD)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -133,12 +133,6 @@ elinks_install: $(STATEDIR)/elinks.install
 
 $(STATEDIR)/elinks.install: $(STATEDIR)/elinks.compile
 	@$(call targetinfo, $@)
-	rm -rf $(ELINKS_IPKG_TMP)
-	$(ELINKS_PATH) $(MAKE) -C $(ELINKS_DIR) DESTDIR=$(ELINKS_IPKG_TMP) install
-	@$(call copyincludes, $(ELINKS_IPKG_TMP))
-	@$(call copylibraries,$(ELINKS_IPKG_TMP))
-	@$(call copymiscfiles,$(ELINKS_IPKG_TMP))
-	rm -rf $(ELINKS_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -158,7 +152,7 @@ endif
 
 $(STATEDIR)/elinks.targetinstall: $(elinks_targetinstall_deps)
 	@$(call targetinfo, $@)
-	$(ELINKS_PATH) $(MAKE) -C $(ELINKS_DIR) DESTDIR=$(ELINKS_IPKG_TMP) install
+	$(ELINKS_PATH) $(MAKE) -C $(ELINKS_DIR) DESTDIR=$(ELINKS_IPKG_TMP) install $(CROSS_ENV_LD)
 
 	PATH=$(CROSS_PATH) 						\
 	FEEDDIR=$(FEEDDIR) 						\
