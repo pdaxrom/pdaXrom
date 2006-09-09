@@ -9,8 +9,11 @@ fi
 
 test -e /etc/rc.d/init.d/switchev && /etc/rc.d/init.d/switchev restart
 
-DESKTOP=matchbox
-#DESKTOP=rox
+if [ -f $HOME/.fbpanel/use_rox ]; then
+    DESKTOP=rox
+else
+    DESKTOP=matchbox
+fi
 
 # Uncomment below to enable parsing of debian menu entrys
 # export MB_USE_DEB_MENUS=1 

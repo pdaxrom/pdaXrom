@@ -2,6 +2,11 @@ config MPLAYER
 	bool
 	prompt "mplayer"
 
+config MPLAYER_SPEEX
+	bool
+	prompt "Speex codec support"
+	depends on MPLAYER
+
 config MPLAYER_IWMMXT
 	bool
 	prompt "XScale2 iwmmxt optimization"
