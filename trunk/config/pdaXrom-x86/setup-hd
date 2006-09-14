@@ -30,6 +30,8 @@ done
 
 cat /etc/fstab | grep -v "/dev/lazydisk" | grep -v "${ROOT_DIR}" > ${ROOT_DIR}/etc/fstab
 
+mknod ${ROOT_DIR}/dev/console c 5 1
+
 BOODHD=`fdisk -l | grep 'Disk /dev' | grep -io '/dev.*:' | cut -d':' -f1`
 BOOTPART=`mount | grep "$ROOT_DIR" | cut -d ' ' -f 1`
 

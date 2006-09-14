@@ -183,7 +183,7 @@ $(STATEDIR)/gimp.targetinstall: $(gimp_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(GIMP_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(GIMP_IPKG_TMP)/CONTROL/control
 	echo "Version: $(GIMP_VERSION)-$(GIMP_VENDOR_VERSION)" 				>>$(GIMP_IPKG_TMP)/CONTROL/control
-	echo "Depends: gtk2, libart-lgpl, librsvg, bzip2, tiff" 			>>$(GIMP_IPKG_TMP)/CONTROL/control
+	echo "Depends: gtk2, libart-lgpl, librsvg, bzip2, libtiff" 			>>$(GIMP_IPKG_TMP)/CONTROL/control
 	echo "Description: The GNU Image Manipulation Program"				>>$(GIMP_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(GIMP_IPKG_TMP)
 	touch $@
