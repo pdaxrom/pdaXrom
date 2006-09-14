@@ -135,6 +135,9 @@ endif
 
 	#test -f $(ROOTDIR)/usr/lib/ipkg/info/bluez-utils.postinst && rm -f $(ROOTDIR)/usr/lib/ipkg/info/bluez-utils.postinst
 
+	cd $(ROOTDIR) && tar -zcf $(TOPDIR)/bootdisk/rootfs.tar.gz .
+	md5sum $(TOPDIR)/bootdisk/rootfs.tar.gz > $(TOPDIR)/bootdisk/rootfs.tar.gz.md5sum
+
 ifndef PTXCONF_DEVFSD
 	$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16384 --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-minimal.txt -n --output=$(TOPDIR)/bootdisk/initrd.bin
 else
