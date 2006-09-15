@@ -10,7 +10,9 @@ PROJECT		:= pdaXrom
 VERSION		:= 1
 PATCHLEVEL	:= 1
 SUBLEVEL	:= 0
-EXTRAVERSION	:= beta5
+EXTRAVERSION	:= -r$(shell \
+			svn info `dirname \`readlink Makefile\`` | grep Revision | cut -f2 -d' ' \
+		    )
 
 CODENAMEX	:= Kathrin
 
