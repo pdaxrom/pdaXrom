@@ -1,0 +1,52 @@
+/*#define BuildServersOnly	YES*/
+
+#define KDriveXServer              YES
+#define KdriveServerExtraDefines -DMAXSCREENS=2 -DXResExtension -g -Os
+#define TinyXServer                YES
+#define CrossCompiling             YES
+/* #define TouchScreen                NO */
+#undef BuildRandR
+#define BuildRandR                 YES
+#define BuildXInputLib             YES
+
+#define HasExpat		YES
+#define HasFreetype2		YES
+#define HasLibpng		YES
+#define HasZlib			YES
+#define HasFontconfig		YES
+
+#define Freetype2Dir               @FREETYPE2DIR@
+#define FontconfigDir              @FONTCONFIGDIR@
+#define ExpatDir                   @EXPATDIR@
+#define LibpngDir                  @LIBPNGDIR@
+
+#define BuildXTrueType             YES
+#define BuildScreenSaverExt        YES
+#define BuildScreenSaverLibrary    YES
+#define SharedLibXss               YES
+#define ServerXdmcpDefines
+#define XfbdevServer               YES
+#define MakeLocalFontDir	YES
+#undef OptimizedCDebugFlags
+#define OptimizedCDebugFlags 	-g -Os
+#define ServerCDebugFlags 	-g -Os
+#define StandardDefines         -Dlinux -D__mips__ -D_POSIX_SOURCE \
+                                -D_BSD_SOURCE -D_GNU_SOURCE
+#define ProjectRoot                /usr/X11R6
+/* #define HasTsLib                   YES */
+#define BuildXcursorgen		   NO
+#define BuildXResExt               YES
+#define XResExtension              YES
+#define BuildXKB		YES
+#define BuildXKBlib		YES
+#define BuildDPMS		YES
+
+#undef TermcapLibrary
+#define TermcapLibrary 		-lcurses		/* special cases of System V */
+
+#undef ExtraLoadFlags
+#define ExtraLoadFlags
+#define FbNoPixelAddrCode
+
+#undef i386Architecture
+#define MipsArchitecture

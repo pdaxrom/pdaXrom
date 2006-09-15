@@ -1,0 +1,8 @@
+config FLITE
+	bool
+	prompt "flite"
+
+config FLITE_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on FLITE

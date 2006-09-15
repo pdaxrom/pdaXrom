@@ -1,0 +1,8 @@
+--- libxslt-1.1.17/libxslt/Makefile.am~	2006-08-18 12:37:34.000000000 +0000
++++ libxslt-1.1.17/libxslt/Makefile.am	2006-08-18 12:37:43.000000000 +0000
+@@ -61,4 +61,4 @@
+ 	@(cd ../xsltproc ; $(MAKE))
+ 
+ install-exec-hook:
+-	$(mkinstalldirs) "$(libdir)/libxslt-plugins"
++	$(mkinstalldirs) "$(DESTDIR)$(libdir)/libxslt-plugins"

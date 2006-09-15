@@ -1,0 +1,9 @@
+config XSCREENSAVER
+	bool
+	prompt "xscreensaver"
+	depends on XFREE430
+
+config XSCREENSAVER_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on XSCREENSAVER

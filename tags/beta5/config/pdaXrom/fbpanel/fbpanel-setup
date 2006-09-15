@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -e ~/.xinitrc.prefbpanel ]; then 
+    echo "fbpanel startup scripts already installed!"
+    exit
+fi
+
+test -e ~/.fbpanel || mkdir ~/.fbpanel
+
+test -e ~/.fbpanel/default || cp /usr/share/fbpanel/default ~/.fbpanel/
+
+test -e ~/.xinitrc  && mv ~/.xinitrc  ~/.xinitrc.prefbpanel
+test -e ~/.xsession && mv ~/.xsession ~/.xsession.prefbpanel
+
+rm -f ~/.xinitrc
+
+ln -s /usr/bin/fbpanel-session ~/.xinitrc
+ln -s /usr/bin/fbpanel-session ~/.xsession

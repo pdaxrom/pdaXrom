@@ -1,0 +1,35 @@
+#!/bin/sh
+
+PATH=/usr/X11R6/bin:$PATH
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# See how we were called.
+case "$1" in
+  start)
+	if [ ! -e /etc/X11/XF86Config ]; then
+	    if [ -x /usr/sbin/xdetect ]; then
+		action "Configuring XFree86: " /usr/sbin/xdetect
+	    fi
+	fi
+	#if [ -e /etc/X11/XF86Config ]; then
+	#    action "Starting xdm: " /usr/X11R6/bin/xdm
+	#fi
+	;;
+  stop)
+	#if [ -e /etc/X11/XF86Config ]; then
+	#    echo -n "Shutting down xdm: "
+	#    killproc xdm
+	#fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit 0

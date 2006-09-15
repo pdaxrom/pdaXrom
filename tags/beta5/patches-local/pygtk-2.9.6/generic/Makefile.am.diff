@@ -1,0 +1,11 @@
+--- s/Makefile.am~	2006-08-25 12:32:16.000000000 +0000
++++ s/Makefile.am	2006-08-25 12:34:24.000000000 +0000
+@@ -4,7 +4,7 @@
+   GTK_SUBDIR = gtk
+ endif
+ 
+-SUBDIRS = codegen . $(GTK_SUBDIR) examples tests 
++SUBDIRS = . $(GTK_SUBDIR) tests 
+ if ENABLE_DOCS
+ SUBDIRS += docs
+ endif

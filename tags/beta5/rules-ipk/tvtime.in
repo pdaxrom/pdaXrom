@@ -1,0 +1,9 @@
+config TVTIME
+	bool
+	prompt "tvtime"
+###	depends on ARCH_X86
+
+config TVTIME_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on TVTIME

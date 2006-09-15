@@ -1,0 +1,8 @@
+config LYX
+	bool
+	prompt "lyx"
+
+config LYX_INSTALL
+	bool
+	prompt "Install in the ROM"
+	depends on LYX

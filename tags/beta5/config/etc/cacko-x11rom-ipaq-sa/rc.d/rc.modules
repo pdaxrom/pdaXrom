@@ -1,0 +1,15 @@
+#!/bin/sh
+
+modprobe ipaq_hal
+
+if [ -d /proc/hal ]; then
+  model=`cat /proc/hal/model`
+  modprobe ipaq_hal_$model
+fi
+
+#modprobe sa1100-rtc
+#modprobe h3600-uda1341
+#modprobe h3600_ts
+#modprobe apm
+#modprobe sa1100_ir
+#modprobe usb-eth

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+. /etc/rc.d/init.d/functions
+
+RESOLV=/etc/resolv.conf
+DEVICE=$1
+
+if [ ! "$DEVICE" ]; then
+    exit 1
+fi
+
+if [ ! -e "/etc/sysconfig/netconfig/$DEVICE.conf" ]; then
+    msg "No configuration for device $DEVICE"
+    exit 1
+else
+    . /etc/sysconfig/netconfig/$DEVICE.conf
+fi
+
+is_true ()
+{
+    [ "$1" = "y" -o "$1" = "Y" -o "$1" = "yes" -o "$1" = "YES" ]
+}
+
+match () { case $1 in $2) return 0; ;; *) return 1; ;; esac ; }
+
+#echo $IPADDR
+#echo $NETMASK
+#echo $BROADCAST
+#echo $GATEWAY
+
+if is_true $DHCP || [ "$IPADDR" ] ; then
+
+    # Shut down all NFS mounts on this interface
+    #nfsstop ()
+    #{
+    #	local HOST MT
+    #	if read HOST MT ; then
+    #	    nfsstop
+    #	    if /sbin/ifuser $DEVICE $HOST ; then
+    #		do_fuser -k -m $MT > /dev/null
+    #		umount -v $MT
+    #	    fi
+    #	fi
+    #}
+    #mount -t nfs | grep "type nfs" | sed -e 's/:.* on \(.*\) type .*/ \1/' | nfsstop
+
+    #test "$IPX_NETNUM" && ipx_interface del $DEVICE $IPX_FRAME
+
+    # Remove nameservers
+    if fgrep -q "# $DEVICE begin" $RESOLV ; then
+	sed -e "/# $DEVICE begin/,/# $DEVICE end/d"	$RESOLV > $RESOLV.N
+	mv $RESOLV.N $RESOLV
+    fi
+
+    if is_true $PUMP ; then
+	pump -r -i $DEVICE
+    elif is_true $DHCP ; then
+	if [ -x /sbin/dhcpcd ] ; then
+	    if [ -e /var/run/dhcpcd-$DEVICE.pid ] ; then
+		kill -TERM `cat /var/run/dhcpcd-$DEVICE.pid`
+	    fi
+	    #sleep 2
+	    /sbin/dhcpcd -XYZZY 2>&1 | grep -q DHCP || \
+		rm -f /var/run/dhcpcd-$DEVICE.pid
+	elif [ -x /sbin/dhclient ] ; then
+	    kill -TERM `cat /var/run/dhclient.pid`
+	elif [ -x /sbin/pump ] ; then
+	    /sbin/pump -r -i $DEVICE
+	fi
+    fi
+fi
+/sbin/ifconfig $DEVICE down

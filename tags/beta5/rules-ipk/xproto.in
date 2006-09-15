@@ -1,0 +1,8 @@
+config XPROTO
+	bool
+	prompt "xproto"
+
+config XPROTO_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XPROTO

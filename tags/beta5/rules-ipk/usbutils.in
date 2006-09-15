@@ -1,0 +1,8 @@
+config USBUTILS
+	bool
+	prompt "usbutils"
+
+config USBUTILS_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on USBUTILS
