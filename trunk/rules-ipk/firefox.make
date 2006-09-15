@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 #FIREFOX_VERSION		= 1.5
-FIREFOX_VERSION		= 1.5.0.6
+FIREFOX_VERSION		= 1.5.0.7
 ###FIREFOX		= firefox-source-$(FIREFOX_VERSION)
 FIREFOX			= firefox-$(FIREFOX_VERSION)-source
 FIREFOX_SUFFIX		= tar.bz2
