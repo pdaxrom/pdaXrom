@@ -1,0 +1,64 @@
+#! /bin/sh
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+#/bin/mount -a
+/bin/mount -n -t proc none /proc
+/bin/mount -n -t sysfs none /sys
+/bin/mount -n -t ramfs none /dev || /bin/mount -n -t tmpfs none /dev
+/bin/mount -n -t ramfs none /tmp || /bin/mount -n -t tmpfs none /tmp
+
+# Disable kernel log to console
+echo "0 0 0 0" >/proc/sys/kernel/printk
+
+reset
+
+echo "pdaXrom emergency system"
+echo "========================"
+
+if [ -d /sys/block ]; then
+    /sbin/udevstart
+    if [ -e /etc/udev/links.conf ]; then
+	grep '^[^#]' /etc/udev/links.conf | \
+	while read type name arg1; do
+	    [ "$type" -a "$name" -a ! -e "/dev/$name" -a ! -L "/dev/$name" ] || continue
+	    case "$type" in
+    		L) ln -s $arg1 /dev/$name ;;
+    		D) mkdir -p /dev/$name ;;
+    		M) mknod -m 600 /dev/$name $arg1 ;;
+    		*) echo "links.conf: unparseable line ($type $name $arg1)" ;;
+	    esac
+	done
+    fi
+    /sbin/udevd --daemon
+fi
+
+ifconfig lo 127.0.0.1 netmask 255.0.0.0
+
+depmod
+
+#for RC in /etc/hotplug/*.rc
+#do
+#    $RC $1
+#done
+#touch /var/lock/subsys/hotplug
+
+HARDWARE=`cat /proc/cpuinfo | grep 'Hardware' | cut -d':' -f2 | cut -d' ' -f3`
+echo "pdaXrom [${HARDWARE}]"
+loadkeys /etc/sysconfig/keyboard/${HARDWARE}/keymap.map
+
+pccardctl eject
+sleep 1
+pccardctl insert
+sleep 1
+
+switchevd /dev/input/event0
+
+for dir in /mnt/*; do
+    for file in "$dir/autoboot.sh" "$dir/AUTOBOOT.SH" ; do
+	if [ -f "$file" ]; then
+	    echo "Bootscript $file, go..."
+	    /bin/sh "$file" `dirname "$file"`
+	fi
+    done
+done

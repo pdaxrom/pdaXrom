@@ -1,0 +1,8 @@
+config GEANY
+	bool
+	prompt "geany"
+
+config GEANY_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on GEANY

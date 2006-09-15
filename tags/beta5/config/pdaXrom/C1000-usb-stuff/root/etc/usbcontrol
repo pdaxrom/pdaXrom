@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# usbcontrol 1.0 2001/8/10 21:03:45 (Hideki Hayami)
+#
+# USB drivers settings
+#
+# The first argument should be either 'serial', 'net', 'storage' or 'remove'.
+#
+
+ACTION=$1
+KERNEL_VER=`/bin/uname -r`
+MODULE_PATH=/lib/modules/$KERNEL_VER/kernel/drivers/usb/device
+MODULE_PATH_HOST=/lib/modules/$KERNEL_VER/kernel/drivers/usb
+MODULE_MONITOR=usbdmonitor
+MODULE_STORAGE=storage_fd
+MODULE_NET=net_fd
+MODULE_MONITOR_HOST=usb-monitor
+
+checkAndRemove()
+{
+	if grep -q $MODULE_MONITOR /proc/modules ; then
+		# unloading monitor generates hotplug unload event
+		/sbin/rmmod $MODULE_MONITOR
+	fi
+}
+
+checkAndRemoveHost()
+{
+	if grep -q $MODULE_MONITOR_HOST /proc/modules ; then
+		# unloading monitor generates hotplug unload event
+		/sbin/rmmod $MODULE_MONITOR_HOST
+	fi
+}
+
+checkAndLoadStorage()
+{
+	if grep -q $MODULE_STORAGE /proc/modules ; then
+		# unloading monitor generates hotplug unload event
+		/bin/true
+	else
+		echo Reload_Storage_Driver > /tmp/reload_usb
+		/sbin/rmmod $MODULE_MONITOR
+		sleep 1
+		/sbin/insmod $MODULE_PATH/$MODULE_MONITOR.o
+	fi
+}
+
+checkAndLoadNet()
+{
+	if grep -q $MODULE_NET /proc/modules ; then
+		# unloading monitor generates hotplug unload event
+		/bin/true
+	else
+		/sbin/rmmod $MODULE_MONITOR
+		sleep 1
+		/sbin/insmod $MODULE_PATH/$MODULE_MONITOR.o
+	fi
+}
+
+
+# Record ACTION for use by /etc/hotplug/usbd.agent
+echo $ACTION > /etc/hotplug/usbd.ftype
+
+case "$ACTION" in
+'serial' | 'net' | 'storage')
+	checkAndRemove
+	/sbin/insmod $MODULE_PATH/$MODULE_MONITOR.o
+	;;
+'remove')
+	checkAndRemove
+	;;
+'host')
+	checkAndRemoveHost
+	/sbin/insmod $MODULE_PATH_HOST/$MODULE_MONITOR_HOST.o
+	;;
+'checkAndLoadStorage')
+        echo 'storage' > /etc/hotplug/usbd.ftype
+	checkAndLoadStorage
+	;;
+'checkAndLoadNet')
+        echo 'net' > /etc/hotplug/usbd.ftype
+	checkAndLoadNet
+	;;
+esac
+
+exit 0

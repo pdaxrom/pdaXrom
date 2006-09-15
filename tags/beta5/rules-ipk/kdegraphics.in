@@ -1,0 +1,8 @@
+config KDEGRAPHICS
+	bool
+	prompt "kde graphics"
+
+config KDEGRAPHICS_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on KDEGRAPHICS

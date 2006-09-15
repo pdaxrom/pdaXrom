@@ -1,0 +1,8 @@
+config STARDICT
+	bool
+	prompt "stardict"
+
+config STARDICT_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on STARDICT

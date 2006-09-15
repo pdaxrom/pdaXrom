@@ -1,0 +1,15 @@
+#####
+#
+# Exec 
+# keycode, modifier,     Exec,  Command,          Extra parameters
+#
+#######################################################
+#keycode=25,        Control+Shift,  Exec, xterm -fg green2 -bg black -sb -sl 1000 -cr green2, Fork, NoAutoRepeat
+#keycode=49,        Control,  Exec, xmodmap -e "pointer = 1 2 3", NoFork, NoAutoRepeat
+#keycode=50,        Control,  Exec, xmodmap -e "pointer = 2 1 3", NoFork, NoAutoRepeat
+#keycode=51,        Control,  Exec, xmodmap -e "pointer = 3 2 1", NoFork, NoAutoRepeat
+keycode=110,        none,     Exec, chkhinge, NoFork, NoAutoRepeat
+keycode=49,         Mode_switch,     Exec, xrandr -s 0, NoFork, NoAutoRepeat
+keycode=50,         Mode_switch,     Exec, xrandr -s 1, NoFork, NoAutoRepeat
+keycode=51,         Mode_switch,     Exec, setfl -, NoFork, NoAutoRepeat
+keycode=52,         Mode_switch,     Exec, setfl +, NoFork, NoAutoRepeat

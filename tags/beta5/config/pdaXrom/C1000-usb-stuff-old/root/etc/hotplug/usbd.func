@@ -1,0 +1,100 @@
+#
+dhcpd_pid=/var/run/dhcpd-usbd0.pid
+dhcpcd_pid=/var/run/dhcpcd-usbd0.pid
+
+
+usbd_net_if_up()
+{
+	if [ "$NETMASK" = "" ]; then
+		NETMASK=255.255.255.0
+	fi
+
+	# DHCP server
+	if [ "$DHCPS" = "yes" -a -f /usr/sbin/dhcpd ]; then
+		if [ ! -f $dhcpd_pid ]; then
+			IP1=`echo $IP | cut -d. -f1`
+			IP2=`echo $IP | cut -d. -f2`
+			IP3=`echo $IP | cut -d. -f3`
+			IP4=`echo $IP | cut -d. -f4`
+			NM1=`echo $NETMASK | cut -d. -f1`
+			NM2=`echo $NETMASK | cut -d. -f2`
+			NM3=`echo $NETMASK | cut -d. -f3`
+			NM4=`echo $NETMASK | cut -d. -f4`
+			dhcpd_conf=/etc/hotplug/dhcpcd.conf
+			dhcpd_leases=/var/state/dhcp/dhcpd-usbd0.leases
+			echo "#" > $dhcpd_conf
+
+			if [ `expr $NM2 = 0` = 1 -a `expr $NM3 = 0` = 1 ]; then
+				#class A
+				SUBNET=$IP1.0.0
+				echo "subnet $SUBNET.0 netmask $NETMASK {" >> $dhcpd_conf
+				if [ `expr $IP2 = 0` = 1 -a `expr $IP3 = 0` = 1 -a `expr $IP4 = 1` = 1 ]; then
+					echo "range $SUBNET.2 $SUBNET.2;" >> $dhcpd_conf
+				else
+					echo "range $SUBNET.1 $SUBNET.1;" >> $dhcpd_conf
+				fi
+			elif [ `expr $NM3 = 0` = 1 ]; then
+				#class B
+				SUBNET=$IP1.$IP2.0
+				echo "subnet $SUBNET.0 netmask $NETMASK {" >> $dhcpd_conf
+				if [ `expr $IP3 = 0` = 1 -a `expr $IP4 = 1` = 1 ]; then
+					echo "range $SUBNET.2 $SUBNET.2;" >> $dhcpd_conf
+				else
+					echo "range $SUBNET.1 $SUBNET.1;" >> $dhcpd_conf
+				fi
+			else
+				#class C
+				SUBNET=$IP1.$IP2.$IP3
+				echo "subnet $SUBNET.0 netmask $NETMASK {" >> $dhcpd_conf
+				if [ `expr $IP4 = 1` = 1 ]; then
+					echo "range $SUBNET.2 $SUBNET.2;" >> $dhcpd_conf
+				else
+					echo "range $SUBNET.1 $SUBNET.1;" >> $dhcpd_conf
+				fi
+			fi
+#			if [ `expr $IP4 \< 128` = 1 ]; then
+#				echo "range $SUBNET.128 $SUBNET.254;" >> $dhcpd_conf
+#			else
+#				echo "range $SUBNET.1 $SUBNET.127;" >> $dhcpd_conf
+#			fi
+			echo "option netbios-name-servers $IP;" >> $dhcpd_conf
+			echo "option netbios-node-type 8;" >> $dhcpd_conf
+			echo "default-lease-time 600;" >> $dhcpd_conf
+			echo "max-lease-time 7200;" >> $dhcpd_conf
+			echo "}" >> $dhcpd_conf
+			if [ ! -d /var/state/dhcp ]; then
+				mkdir -p /var/state/dhcp
+			fi
+			if [ ! -f $dhcpd_leases ]; then
+				touch $dhcpd_leases
+			fi
+			/usr/sbin/dhcpd -cf $dhcpd_conf -lf $dhcpd_leases -pf $dhcpd_pid usbd0 > /dev/null 2>&1
+		fi
+	fi
+	# DHCP client
+	if [ "$DHCPC" = "yes" -a -f /sbin/dhcpcd ]; then
+		if [ ! -f $dhcpcd_pid ]; then
+			/sbin/dhcpcd usbd0 >/dev/null 2>&1
+		fi
+	fi
+}
+
+usbd_net_if_down()
+{
+	if [ -f $dhcpd_pid ]; then
+		PID=`cat $dhcpd_pid`
+		if [ "$PID" != "" ]; then
+			kill $PID
+		fi
+		rm -f $dhcpd_pid
+	fi
+	if [ -f $dhcpcd_pid ]; then
+		PID=`cat $dhcpcd_pid`
+		if [ "$PID" != "" ]; then
+			kill $PID
+		fi
+		rm -f $dhcpd_pid
+	fi
+
+	ifconfig usbd0 down
+}

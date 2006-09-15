@@ -1,0 +1,176 @@
+# fbpanel <profile> config file
+# see http://fbpanel.sf.net/docs.html for complete configuration guide
+
+
+Global {
+    edge = bottom
+    allign = left
+    margin = 0
+    widthtype = percent
+    width = 100
+    height = 32
+    transparent = false
+    tintcolor = #000000
+    alpha = 0
+    setdocktype = true
+    setpartialstrut = true
+}
+
+Plugin {
+    type = menu
+    config {
+        image = /usr/share/pixmaps/mbmenu.png
+        menu {
+            name = Office
+            image = /usr/share/pixmaps/mbfolder_office.png
+            include {
+                name = ~/.fbpanel/Office.inc
+            }
+        }
+        menu {
+            name = Internet
+            image = /usr/share/pixmaps/mbfolder_internet.png
+            include {
+                name = ~/.fbpanel/Network.inc
+            }
+        }
+        menu {
+            name = Graphics
+            image = /usr/share/pixmaps/mbfolder_graphics.png
+            include {
+                name = ~/.fbpanel/Graphics.inc
+            }
+        }
+        menu {
+            name = Multimedia
+            image = /usr/share/pixmaps/mbfolder_multimedia.png
+            include {
+                name = ~/.fbpanel/AudioVideo.inc
+            }
+        }
+        menu {
+            name = Games
+            image = /usr/share/pixmaps/mbfolder_games.png
+            include {
+                name = ~/.fbpanel/Games.inc
+            }
+        }
+        menu {
+            name = Applications
+            image = /usr/share/pixmaps/mbfolder_other.png
+            include {
+                name = ~/.fbpanel/Applications.inc
+            }
+        }
+        menu {
+            name = Settings
+            image = /usr/share/pixmaps/mbfolder_system.png
+            include {
+                name = ~/.fbpanel/Settings.inc
+            }
+            separator {
+            }
+            item {
+                name = FBPanel Configure
+                image = /usr/share/fbpanel/images/settings.png
+                command = configure
+            }
+        }
+        separator {
+        }
+        item {
+            name = Rotate
+            image = /usr/share/pixmaps/rotate.png
+            action = rotate.sh
+        }
+        item {
+            name = Exit
+            image = /usr/share/pixmaps/cancel.png
+            actionsn = eXit
+        }
+        item {
+            name = Suspend
+            image = /usr/share/pixmaps/exit.png
+            action = xset dpms force off
+        }
+    }
+}
+
+
+Plugin {
+    type = wincmd
+    config {
+        image = /usr/share/fbpanel/images/Desktop2.png
+        tooltip = Left click to iconify all windows. Middle click to shade them.
+    }
+}
+
+
+Plugin {
+    type = launchbar
+    config {
+        button {
+            image = /usr/share/fbpanel/images/GNOME-Terminal.png
+            tooltip = Terminal
+            action = rxvt
+        }
+        button {
+            image = /usr/share/pixmaps/leafpad.png
+            tooltip = Text Editor
+            actionsn = leafpad
+        }
+    }
+}
+
+
+Plugin {
+    type = separator
+}
+
+
+Plugin {
+    type = taskbar
+    expand = true
+    config {
+        ShowIconified = true
+        ShowMapped = true
+        ShowAllDesks = false
+        tooltips = true
+        IconsOnly = false
+        MaxTaskWidth = 150
+    }
+}
+
+
+Plugin {
+    type = tray
+}
+
+
+Plugin {
+    type = cards
+}
+
+
+Plugin {
+    type = audio
+}
+
+Plugin {
+    type = cpu
+}
+
+Plugin {
+    type = apm
+}
+
+Plugin {
+    type = dclock
+    config {
+        ClockFmt = %R
+        TooltipFmt = %A %x
+        Action = xmessage Please define some command &
+    }
+}
+
+

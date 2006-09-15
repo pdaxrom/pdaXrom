@@ -1,0 +1,8 @@
+config TFTP
+	bool
+	prompt "tftp"
+
+config TFTP_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on TFTP

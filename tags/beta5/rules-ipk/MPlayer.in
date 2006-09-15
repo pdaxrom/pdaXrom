@@ -1,0 +1,18 @@
+config MPLAYER
+	bool
+	prompt "mplayer"
+
+config MPLAYER_SPEEX
+	bool
+	prompt "Speex codec support"
+	depends on MPLAYER
+
+config MPLAYER_IWMMXT
+	bool
+	prompt "XScale2 iwmmxt optimization"
+	depends on MPLAYER && ARM_ARCH_PXA
+
+config MPLAYER_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on MPLAYER

@@ -1,0 +1,8 @@
+config HOSTAP-DRIVER
+	bool
+	prompt "hostap-driver"
+
+config HOSTAP-DRIVER_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on HOSTAP-DRIVER

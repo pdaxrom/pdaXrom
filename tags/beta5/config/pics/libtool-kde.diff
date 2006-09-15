@@ -1,0 +1,12 @@
+--- src/libtool~	2005-05-07 12:19:48.000000000 +0000
++++ src/libtool	2005-05-07 12:23:17.000000000 +0000
+@@ -2253,6 +2253,9 @@
+ 	  fi
+ 	  continue
+ 	  ;;
++	-Wl*)
++	  continue
++	  ;;
+ 	-L*)
+ 	  case $linkmode in
+ 	  lib)

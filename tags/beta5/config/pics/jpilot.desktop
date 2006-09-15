@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=J-Pilot
+Comment=Desktop organizer application for the Palm Pilot
+Exec=jpilot
+Icon=jpilot.xpm
+Terminal=false
+StartupNotify=True
+Type=Application
+Categories=Application;Office;

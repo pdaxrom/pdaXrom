@@ -1,0 +1,11 @@
+--- tk8.4.6/unix/configure~	2006-08-04 12:55:45.000000000 +0000
++++ tk8.4.6/unix/configure	2006-08-04 12:55:51.000000000 +0000
+@@ -4938,7 +4938,7 @@
+ fi
+ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+   echo "$ac_t""yes" 1>&6
+-  MATH_LIBS="-lieee $MATH_LIBS"
++  MATH_LIBS="$MATH_LIBS"
+ else
+   echo "$ac_t""no" 1>&6
+ fi
