@@ -150,8 +150,9 @@ endif
 
 	cp -a $(TOPDIR)/config/pdaXrom/updater.pro $(TOPDIR)/bootdisk/
 	cp -a $(TOPDIR)/config/pdaXrom/u-boot-installer.sh $(TOPDIR)/bootdisk/updater.sh
+	cp -a $(TOPDIR)/config/pdaXrom/autoboot.sh-emergency $(TOPDIR)/bootdisk/autoboot.sh
 
-	cd $(TOPDIR)/bootdisk && zip -9 $(PROJECT)-$(FULLVERSION)-$(CODENAMEX)-u-boot-$(PTXCONF_U-BOOT_CONFIG)-current.zip emergenc.img* u-boot.bin* updater.pro updater.sh
+	cd $(TOPDIR)/bootdisk && zip -9 $(PROJECT)-$(FULLVERSION)-$(CODENAMEX)-u-boot-$(PTXCONF_U-BOOT_CONFIG)-current.zip emergenc.img* u-boot.bin* updater.pro updater.sh autoboot.sh
 
 	touch $@
 
