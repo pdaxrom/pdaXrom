@@ -1,9 +1,0 @@
-config TK
-	bool
-	prompt "Tk"
-	depends on TCL
-
-config TK_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on TK

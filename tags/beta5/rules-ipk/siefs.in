@@ -1,8 +1,0 @@
-config SIEFS
-	bool
-	prompt "siefs"
-
-config SIEFS_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on SIEFS

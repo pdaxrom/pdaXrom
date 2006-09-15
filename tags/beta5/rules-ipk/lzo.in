@@ -1,8 +1,0 @@
-config LZO
-	bool
-	prompt "lzo"
-
-config LZO_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LZO

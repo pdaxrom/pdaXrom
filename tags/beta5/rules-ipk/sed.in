@@ -1,8 +1,0 @@
-config SED
-	bool
-	prompt "sed"
-
-config SED_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on SED

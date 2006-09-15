@@ -1,8 +1,0 @@
-config ZKBDD
-	bool
-	prompt "zkbdd"
-
-config ZKBDD_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on ZKBDD

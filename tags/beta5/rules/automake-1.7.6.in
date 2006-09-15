@@ -1,3 +1,0 @@
-config AUTOMAKE176
-	bool
-	prompt "automake"

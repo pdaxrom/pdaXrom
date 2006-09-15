@@ -1,5 +1,0 @@
-KERNELCONFIG=$PWD/arm.config
-TARGET=arm-cacko-linux
-GCC_EXTRA_CONFIG=--with-cpu=strongarm --enable-cxx-flags=-mcpu=strongarm
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
-TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer

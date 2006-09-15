@@ -1,9 +1,0 @@
-config MADPLAY
-	bool
-	prompt "madplay"
-	depends on LIBMAD && LIBID3TAG
-
-config MADPLAY_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on MADPLAY

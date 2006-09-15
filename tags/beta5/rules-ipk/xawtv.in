@@ -1,8 +1,0 @@
-config XAWTV
-	bool
-	prompt "xawtv"
-
-config XAWTV_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XAWTV
