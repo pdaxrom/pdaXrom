@@ -174,15 +174,10 @@ $(STATEDIR)/gaim.targetinstall: $(gaim_targetinstall_deps)
 	ARCH=$(SHORT_TARGET) 			\
 	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 	\
 	$(TOPDIR)/scripts/bin/make-locale-ipks.sh gaim $(GAIM_IPKG_TMP)
-	$(CROSSSTRIP) $(GAIM_IPKG_TMP)/usr/bin/*
-	rm -rf $(GAIM_IPKG_TMP)/usr/include
-	rm -rf $(GAIM_IPKG_TMP)/usr/lib/*.*a
-	rm -rf $(GAIM_IPKG_TMP)/usr/lib/pkgconfig
-	$(CROSSSTRIP) $(GAIM_IPKG_TMP)/usr/lib/*.so
-	rm -rf $(GAIM_IPKG_TMP)/usr/lib/gaim/*.*a
-	$(CROSSSTRIP) $(GAIM_IPKG_TMP)/usr/lib/gaim/*.so
-	rm -rf $(GAIM_IPKG_TMP)/usr/man
-	rm -rf $(GAIM_IPKG_TMP)/usr/share/locale
+
+	@$(call removedevfiles, $(GAIM_IPKG_TMP))
+	@$(call stripfiles, $(GAIM_IPKG_TMP))
+
 	mkdir -p $(GAIM_IPKG_TMP)/CONTROL
 	echo "Package: gaim" 				>$(GAIM_IPKG_TMP)/CONTROL/control
 	echo "Source: $(GAIM_URL)"						>>$(GAIM_IPKG_TMP)/CONTROL/control
