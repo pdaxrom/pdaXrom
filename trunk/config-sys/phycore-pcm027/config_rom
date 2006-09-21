@@ -92,6 +92,7 @@ PTXCONF_AUTOMAKE176=y
 # Host Tools          
 #
 # PTXCONF_XCHAIN_CDRTOOLS is not set
+PTXCONF_CRAMFS=y
 # PTXCONF_GENEXT2FS is not set
 # PTXCONF_FAKEROOT is not set
 PTXCONF_UTLNX_FDISK=y
@@ -129,6 +130,8 @@ PTXCONF_KERNEL_CONFIG="kernel-2.6.12-phycore-pcm027"
 # PTXCONF_KERNEL_2_6_11 is not set
 PTXCONF_KERNEL_2_6_12=y
 # PTXCONF_KERNEL_2_6_14 is not set
+# PTXCONF_KERNEL_2_6_15 is not set
+# PTXCONF_KERNEL_2_6_16 is not set
 # PTXCONF_KERNEL_SH_DC is not set
 # PTXCONF_KERNEL_RMK is not set
 # PTXCONF_KERNEL_RMK2_LINEO5 is not set
@@ -212,6 +215,7 @@ PTXCONF_GLIBC_LOCALEDEF_INSTALL=y
 PTXCONF_GLIBC_LOCALES=y
 PTXCONF_GLIBC_LOCALES_STR="en_US.UTF-8 ru_RU.UTF-8 zh_TW.UTF-8 ja_JP.UTF-8 ko_KR.UTF-8 ru_RU.KOI8-R ru_RU.CP1251 zh_CN.UTF-8 zh_HK.UTF-8 pt_BR.ISO-8859-1"
 PTXCONF_GLIBC_LOCALES_INSTALL="en_US.UTF-8 pt_BR.ISO-8859-1"
+PTXCONF_GLIBC_GCONV_INSTALL="ISO8859-1"
 
 #
 # C++ Library         
@@ -238,27 +242,6 @@ PTXCONF_VENDORTWEAKS_USERCONFIG="phycore-pcm027"
 #
 # Embedded linux target specific ---  
 #
-
-#
-# Monolitic image     
-#
-
-#
-# Core Tools ---  
-#
-
-#
-# Disk and file ---   
-#
-
-#
-# Disk and file utils 
-#
-
-#
-# grub                
-#
-PTXCONF_CRAMFS=y
 
 #
 # Ipk packages        
@@ -751,7 +734,6 @@ PTXCONF_MTD_XCHAIN_MKJFFS2=y
 # PTXCONF_MTD_UTILS is not set
 # PTXCONF_NET-TOOLS is not set
 # PTXCONF_NETKIT-BASE is not set
-# PTXCONF_PCMCIA-CS is not set
 # PTXCONF_PPP is not set
 # PTXCONF_PPTP is not set
 # PTXCONF_PSMISC is not set
@@ -768,8 +750,10 @@ PTXCONF_SURVIVE_INSTALL=y
 # PTXCONF_SURVIVE_SETFL is not set
 PTXCONF_SURVIVE_IPKG=y
 # PTXCONF_SURVIVE_CHKHINGE is not set
+# PTXCONF_SURVIVE_SWITCHEVD is not set
 # PTXCONF_SURVIVE_WRITEROMINFO is not set
 # PTXCONF_SURVIVE_SETHWCLOCK is not set
+# PTXCONF_SURVIVE_NANDLOGICAL is not set
 PTXCONF_SYSFSUTILS=y
 PTXCONF_SYSFSUTILS_INSTALL=y
 PTXCONF_SYSVINIT=y
@@ -866,8 +850,10 @@ PTXCONF_ROX_INSTALL=y
 # X11 utils           
 #
 # PTXCONF_FBPANEL is not set
+# PTXCONF_FONTFORGE is not set
 # PTXCONF_HOT-BABE is not set
 # PTXCONF_SCIM is not set
+# PTXCONF_XSCREENSAVER is not set
 # PTXCONF_XKBD is not set
 # PTXCONF_XVKBD is not set
 # PTXCONF_XKEYMOUSE is not set
@@ -913,6 +899,11 @@ PTXCONF_TTF-BITSTREAM-VERA=y
 #
 
 #
+# IDE
+#
+# PTXCONF_GEANY is not set
+
+#
 # Languages ---       
 #
 # PTXCONF_BISON is not set
@@ -946,6 +937,7 @@ PTXCONF_TTF-BITSTREAM-VERA=y
 # PTXCONF_XGDB is not set
 # PTXCONF_GDBSERVER is not set
 # PTXCONF_GDB is not set
+# PTXCONF_SUBVERSION is not set
 
 #
 # Emulators           
@@ -957,6 +949,7 @@ PTXCONF_TTF-BITSTREAM-VERA=y
 # PTXCONF_PCSXSRC is not set
 # PTXCONF_PYLDIN is not set
 # PTXCONF_QEMU is not set
+# PTXCONF_QUCS is not set
 # PTXCONF_STELLA is not set
 
 #
@@ -1022,8 +1015,7 @@ PTXCONF_LIBID3TAG=y
 # PTXCONF_LIBID3TAG_INSTALL is not set
 PTXCONF_LIBMAD=y
 # PTXCONF_LIBMAD_INSTALL is not set
-PTXCONF_LIBICONV=y
-# PTXCONF_LIBICONV_INSTALL is not set
+# PTXCONF_LIBICONV is not set
 PTXCONF_LIBXML2=y
 # PTXCONF_LIBXML2_INSTALL is not set
 PTXCONF_LIBXSLT=y
@@ -1072,6 +1064,7 @@ PTXCONF_XMMS-MAD=y
 # Drivers             
 #
 # PTXCONF_CFXGA is not set
+# PTXCONF_ALSA-UTILS is not set
 # PTXCONF_BMP is not set
 # PTXCONF_CAMSTREAM is not set
 PTXCONF_ESOUND=y
@@ -1095,6 +1088,7 @@ PTXCONF_MIXMOS=y
 # PTXCONF_XAWTV is not set
 # PTXCONF_XDTV is not set
 # PTXCONF_ZCAMERA is not set
+# PTXCONF_ZMIXER is not set
 
 #
 # Network             
@@ -1110,6 +1104,7 @@ PTXCONF_MIXMOS=y
 #
 # Network security    
 #
+# PTXCONF_DROPBEAR is not set
 # PTXCONF_ETHEREAL is not set
 # PTXCONF_IPROUTE2 is not set
 # PTXCONF_IPTABLES is not set
@@ -1135,12 +1130,14 @@ PTXCONF_OPENSSH_INSTALL=y
 # PTXCONF_HOSTAP-UTILS is not set
 # PTXCONF_HOSTAPD is not set
 # PTXCONF_KISMET is not set
+# PTXCONF_MADWIFI-NG is not set
 # PTXCONF_WLAN-NG is not set
 # PTXCONF_WPA_SUPPLICANT is not set
 
 #
 # Web browsers        
 #
+# PTXCONF_ELINKS is not set
 # PTXCONF_LINKS is not set
 # PTXCONF_LYNX is not set
 PTXCONF_FIREFOX=y
@@ -1154,6 +1151,7 @@ PTXCONF_FIREFOX=y
 #
 # Mail clients        
 #
+# PTXCONF_MUTT is not set
 # PTXCONF_SYLPHEED is not set
 PTXCONF_THUNDERBIRD=y
 # PTXCONF_THUNDERBIRD_INSTALL is not set
@@ -1161,10 +1159,12 @@ PTXCONF_THUNDERBIRD=y
 #
 # Instant messenging  
 #
+# PTXCONF_EKIGA is not set
 PTXCONF_GAIM=y
 # PTXCONF_GAIM_INSTALL is not set
 PTXCONF_LICQ=y
 # PTXCONF_LICQ_INSTALL is not set
+# PTXCONF_LINPHONE is not set
 PTXCONF_XCHAT=y
 # PTXCONF_XCHAT_INSTALL is not set
 
@@ -1187,7 +1187,10 @@ PTXCONF_WGETA_INSTALL=y
 #
 # PTXCONF_NFS-UTILS is not set
 # PTXCONF_SAMBA is not set
+# PTXCONF_MOBILEMESH is not set
+# PTXCONF_OPENVPN is not set
 # PTXCONF_SOCAT is not set
+# PTXCONF_TFTP is not set
 # PTXCONF_TSOCKS is not set
 # PTXCONF_VLAN is not set
 # PTXCONF_VPNC is not set
@@ -1208,6 +1211,7 @@ PTXCONF_GALCULATOR=y
 # PTXCONF_GIMP is not set
 PTXCONF_GNUMERIC=y
 # PTXCONF_GNUMERIC_BONOBO is not set
+# PTXCONF_GNUMERIC_GNOME is not set
 # PTXCONF_GNUMERIC_INSTALL is not set
 # PTXCONF_LEAFPAD is not set
 # PTXCONF_LYX is not set
@@ -1217,6 +1221,8 @@ PTXCONF_MTPAINT=y
 # PTXCONF_PLANNER is not set
 PTXCONF_SCITE=y
 # PTXCONF_SCITE_INSTALL is not set
+# PTXCONF_SQLITEBROWSER is not set
+# PTXCONF_STARDICT is not set
 PTXCONF_VIM=y
 # PTXCONF_VIM_INSTALL is not set
 PTXCONF_XPDF=y
@@ -1278,11 +1284,15 @@ PTXCONF_UNZIP=y
 # PTXCONF_UNZIP_INSTALL is not set
 # PTXCONF_APMD is not set
 # PTXCONF_ATD is not set
+# PTXCONF_BC is not set
 PTXCONF_CONSOLE-TOOLS=y
 PTXCONF_CONSOLE-TOOLS_INSTALL=y
 PTXCONF_CONSOLE-TOOLS-LOADKEYS_INSTALL=y
+# PTXCONF_CONSOLE-TOOLS-CONSOLECHARS_INSTALL is not set
+# PTXCONF_DDCXINFO-KANOTIX is not set
 # PTXCONF_DIALOG is not set
 # PTXCONF_DIFFUTILS is not set
+# PTXCONF_DVFM is not set
 # PTXCONF_ED is not set
 # PTXCONF_EJECT is not set
 PTXCONF_FILE=y
@@ -1296,13 +1306,17 @@ PTXCONF_FILE_INSTALL=y
 # PTXCONF_UGREP is not set
 # PTXCONF_HDPARM is not set
 # PTXCONF_HEXEDIT is not set
+# PTXCONF_KERMIT is not set
 # PTXCONF_LESS is not set
 # PTXCONF_LRZSZ is not set
 # PTXCONF_MTOOLS is not set
 # PTXCONF_MTR is not set
 # PTXCONF_NTP is not set
+# PTXCONF_PCMCIA-CS is not set
+# PTXCONF_PCMCIAUTILS is not set
 # PTXCONF_PCIUTILS is not set
 # PTXCONF_PORTMAP is not set
+# PTXCONF_PS2CLIENT is not set
 # PTXCONF_RSYNC is not set
 # PTXCONF_SED is not set
 # PTXCONF_SIEFS is not set
@@ -1312,6 +1326,7 @@ PTXCONF_FILE_INSTALL=y
 # PTXCONF_REISER4PROGS is not set
 # PTXCONF_REISERFSPROGS is not set
 # PTXCONF_USBUTILS is not set
+# PTXCONF_U-BOOT is not set
 
 #
 # XFree86             
