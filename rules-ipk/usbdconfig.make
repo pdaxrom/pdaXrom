@@ -141,7 +141,7 @@ $(STATEDIR)/usbdconfig.targetinstall: $(usbdconfig_targetinstall_deps)
 	echo "Maintainer: Mikkel Skovgaard <laze@pdaxrom.org>" 			>>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 					>>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Version: $(USBDCONFIG_VERSION)" 					>>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
-	echo "Depends: pygtk, python-core, python-codecs, python-dbus, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
+	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Description: USB Device emulation settings"			>>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(USBDCONFIG_IPKG_TMP)
 	touch $@
