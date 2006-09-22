@@ -142,7 +142,7 @@ $(STATEDIR)/backlight.targetinstall: $(backlight_targetinstall_deps)
 	echo "Maintainer: Mikkel Skovgaard <laze@pdaxrom.org>" 			>>$(BACKLIGHT_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 					>>$(BACKLIGHT_IPKG_TMP)/CONTROL/control
 	echo "Version: $(BACKLIGHT_VERSION)-$(BACKLIGHT_VENDOR_VERSION)" 	>>$(BACKLIGHT_IPKG_TMP)/CONTROL/control
-	echo "Depends: pygtk, python-core, python-codecs, python-dbus, python-fcntl, python-io, python-math, python-stringold, python-xml, python-unixadmin" >>$(BACKLIGHT_IPKG_TMP)/CONTROL/control
+	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml, python-unixadmin" >>$(BACKLIGHT_IPKG_TMP)/CONTROL/control
 	echo "Description: Backlight settings"					>>$(BACKLIGHT_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(BACKLIGHT_IPKG_TMP)
 	touch $@

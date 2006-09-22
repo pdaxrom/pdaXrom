@@ -147,7 +147,7 @@ $(STATEDIR)/cpuoverclock.targetinstall: $(cpuoverclock_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Version: $(CPUOVERCLOCK_VERSION)-$(CPUOVERCLOCK_VENDOR_VERSION)" 		>>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
-	echo "Depends: pygtk, python-core, python-codecs, python-dbus, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
+	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Description: CPU overclock utility"					>>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(CPUOVERCLOCK_IPKG_TMP)
 	touch $@

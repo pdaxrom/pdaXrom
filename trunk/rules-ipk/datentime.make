@@ -142,7 +142,7 @@ $(STATEDIR)/datentime.targetinstall: $(datentime_targetinstall_deps)
 	echo "Maintainer: Mikkel Skovgaard <laze@pdaxrom.org>" 			>>$(DATENTIME_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 					>>$(DATENTIME_IPKG_TMP)/CONTROL/control
 	echo "Version: $(DATENTIME_VERSION)-$(DATENTIME_VENDOR_VERSION)" 	>>$(DATENTIME_IPKG_TMP)/CONTROL/control
-	echo "Depends: pygtk, python-core, python-codecs, python-dbus, python-fcntl, python-io, python-math, python-stringold, python-xml, python-unixadmin" >>$(DATENTIME_IPKG_TMP)/CONTROL/control
+	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml, python-unixadmin" >>$(DATENTIME_IPKG_TMP)/CONTROL/control
 	echo "Description: Date & Time settings"				>>$(DATENTIME_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(DATENTIME_IPKG_TMP)
 	touch $@

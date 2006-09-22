@@ -142,7 +142,7 @@ $(STATEDIR)/lanconfig.targetinstall: $(lanconfig_targetinstall_deps)
 	echo "Maintainer: Mikkel Skovgaard <laze@pdaxrom.org>" 			>>$(LANCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 					>>$(LANCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Version: $(LANCONFIG_VERSION)-$(LANCONFIG_VENDOR_VERSION)" 	>>$(LANCONFIG_IPKG_TMP)/CONTROL/control
-	echo "Depends: pygtk, python-core, python-codecs, python-re, python-dbus, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(LANCONFIG_IPKG_TMP)/CONTROL/control
+	echo "Depends: pygtk, python-core, python-codecs, python-re, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(LANCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Description: NIC & WiFi settings tool"				>>$(LANCONFIG_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LANCONFIG_IPKG_TMP)
 	touch $@
