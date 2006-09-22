@@ -20,10 +20,12 @@ endif
 # Paths and names
 #
 #LICQ_VERSION		= 1.3.0
-LICQ_VERSION		= 1.3.2
+#LICQ_VERSION		= 1.3.2
+LICQ_VERSION		= 1.3.4-RC1
 LICQ			= licq-$(LICQ_VERSION)
 LICQ_SUFFIX		= tar.bz2
-LICQ_URL		= http://heanet.dl.sourceforge.net/sourceforge/licq/$(LICQ).$(LICQ_SUFFIX)
+#LICQ_URL		= http://heanet.dl.sourceforge.net/sourceforge/licq/$(LICQ).$(LICQ_SUFFIX)
+LICQ_URL		= http://www.fanfic.org/~jon/$(LICQ).$(LICQ_SUFFIX)
 LICQ_SOURCE		= $(SRCDIR)/$(LICQ).$(LICQ_SUFFIX)
 LICQ_DIR		= $(BUILDDIR)/$(LICQ)
 LICQ_IPKG_TMP		= $(LICQ_DIR)/ipkg_tmp
@@ -80,18 +82,14 @@ LICQ_PATH	=  PATH=$(CROSS_PATH)
 LICQ_ENV 	=  $(CROSS_ENV)
 LICQ_ENV	+= QTDIR=$(QT-X11-FREE_DIR)
 LICQ_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
-#ifdef PTXCONF_XFREE430
-#LICQ_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
-#endif
-
-#LICQ_ENV	+= CFLAGS="-O2 -fomit-frame-pointer `pkg-config --cflags "libstartup-notification-1.0"` -DUSE_LIBSN -fno-exceptions"
-#LICQ_ENV	+= CXXFLAGS="-O2 -fomit-frame-pointer `pkg-config --cflags "libstartup-notification-1.0"` -DUSE_LIBSN -fno-exceptions"
-#LICQ_ENV	+= LDFLAGS="`pkg-config --cflags "libstartup-notification-1.0"` -liconv"
 
 LICQ_ENV	+= CFLAGS="-O2 -fomit-frame-pointer -fno-exceptions"
-LICQ_ENV	+= CXXFLAGS="-O2 -fomit-frame-pointer -DUSE_LIBSN -fno-exceptions"
+LICQ_ENV	+= CXXFLAGS="-O2 -fomit-frame-pointer -fno-exceptions"
+
 ifdef PTXCONF_LIBICONV
-LICQ_ENV	+= LDFLAGS=-liconv
+LICQ_ENV	+= LDFLAGS="-liconv"
+#else
+#LICQ_ENV	+= LDFLAGS="`pkg-config --cflags libstartup-notification-1.0`"
 endif
 
 #
@@ -118,17 +116,18 @@ $(STATEDIR)/licq.prepare: $(licq_prepare_deps)
 		$(LICQ_PATH) $(LICQ_ENV) \
 		./configure $(LICQ_AUTOCONF)
 
-	cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) aclocal
-	#cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) automake --add-missing
-	cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) autoconf
-	#cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) autoheader
+	#cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) aclocal
+	#cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) autoconf
+
+	cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) autoreconf
+	cd $(LICQ_DIR)/plugins/qt-gui && $(LICQ_PATH) perl am_edit
 
 	cd $(LICQ_DIR)/plugins/qt-gui && \
 		$(LICQ_PATH) $(LICQ_ENV) \
 		./configure $(LICQ_AUTOCONF) --with-licq-includes=$(LICQ_DIR)/include
 
-	cp -a $(PTXCONF_PREFIX)/bin/libtool $(LICQ_DIR)/
-	cp -a $(PTXCONF_PREFIX)/bin/libtool $(LICQ_DIR)/plugins/qt-gui/
+	#cp -a $(PTXCONF_PREFIX)/bin/libtool $(LICQ_DIR)/
+	#cp -a $(PTXCONF_PREFIX)/bin/libtool $(LICQ_DIR)/plugins/qt-gui/
 
 	touch $@
 
@@ -170,12 +169,26 @@ $(STATEDIR)/licq.targetinstall: $(licq_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(LICQ_PATH) $(LICQ_ENV) $(MAKE) -C $(LICQ_DIR)                DESTDIR=$(LICQ_IPKG_TMP) install
 	$(LICQ_PATH) $(LICQ_ENV) $(MAKE) -C $(LICQ_DIR)/plugins/qt-gui DESTDIR=$(LICQ_IPKG_TMP) install
+
 	rm -rf $(LICQ_IPKG_TMP)/home
-	rm -rf $(LICQ_IPKG_TMP)/usr/include
-	rm -rf $(LICQ_IPKG_TMP)/usr/lib/licq/*.*a
-	rm -rf $(LICQ_IPKG_TMP)/usr/share/locale
-	$(CROSSSTRIP) $(LICQ_IPKG_TMP)/usr/bin/licq
-	$(CROSSSTRIP) $(LICQ_IPKG_TMP)/usr/lib/licq/*.so
+
+	#rm -rf $(LICQ_IPKG_TMP)/usr/include
+	#rm -rf $(LICQ_IPKG_TMP)/usr/lib/licq/*.*a
+	#rm -rf $(LICQ_IPKG_TMP)/usr/share/locale
+	#$(CROSSSTRIP) $(LICQ_IPKG_TMP)/usr/bin/licq
+	#$(CROSSSTRIP) $(LICQ_IPKG_TMP)/usr/lib/licq/*.so
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(LICQ_VERSION)					 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh licq $(LICQ_IPKG_TMP)
+
+	@$(call removedevfiles, $(LICQ_IPKG_TMP))
+	@$(call stripfiles,     $(LICQ_IPKG_TMP))
+
 	mkdir -p $(LICQ_IPKG_TMP)/usr/share/applications
 	mkdir -p $(LICQ_IPKG_TMP)/usr/share/pixmaps
 	cp -f $(TOPDIR)/config/pics/licq.desktop $(LICQ_IPKG_TMP)/usr/share/applications
