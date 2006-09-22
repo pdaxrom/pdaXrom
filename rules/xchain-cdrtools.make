@@ -21,7 +21,7 @@ endif
 #
 XCHAIN_CDRTOOLS_VERSION		= $(CDRTOOLS_VERSION)
 XCHAIN_CDRTOOLS			= cdrtools-$(XCHAIN_CDRTOOLS_VERSION)
-XCHAIN_CDRTOOLS_DIR		= $(XCHAIN_BUILDDIR)/$(XCHAIN_CDRTOOLS)
+XCHAIN_CDRTOOLS_DIR		= $(XCHAIN_BUILDDIR)/cdrtools-2.01.01
 
 # ----------------------------------------------------------------------------
 # Get

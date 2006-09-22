@@ -19,12 +19,13 @@ endif
 #
 # Paths and names
 #
-CDRTOOLS_VERSION	= 2.01
+CDRTOOLS_VERSION	= 2.01.01a04
 CDRTOOLS		= cdrtools-$(CDRTOOLS_VERSION)
 CDRTOOLS_SUFFIX		= tar.bz2
-CDRTOOLS_URL		= ftp://ftp.berlios.de/pub/cdrecord/$(CDRTOOLS).$(CDRTOOLS_SUFFIX)
+#CDRTOOLS_URL		= ftp://ftp.berlios.de/pub/cdrecord/$(CDRTOOLS).$(CDRTOOLS_SUFFIX)
+CDRTOOLS_URL		= http://people.mandriva.com/~warly/files/cdrtools/archives/$(CDRTOOLS).$(CDRTOOLS_SUFFIX)
 CDRTOOLS_SOURCE		= $(SRCDIR)/$(CDRTOOLS).$(CDRTOOLS_SUFFIX)
-CDRTOOLS_DIR		= $(BUILDDIR)/$(CDRTOOLS)
+CDRTOOLS_DIR		= $(BUILDDIR)/cdrtools-2.01.01
 CDRTOOLS_IPKG_TMP	= $(CDRTOOLS_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
@@ -54,9 +55,9 @@ cdrtools_extract_deps = $(STATEDIR)/cdrtools.get
 
 $(STATEDIR)/cdrtools.extract: $(cdrtools_extract_deps)
 	@$(call targetinfo, $@)
-	@$(call clean, $(CDRTOOLS_DIR))
+	@$(call clean,   $(CDRTOOLS_DIR))
 	@$(call extract, $(CDRTOOLS_SOURCE))
-	@$(call patchin, $(CDRTOOLS))
+	@$(call patchin, $(CDRTOOLS), $(CDRTOOLS_DIR))
 	touch $@
 
 # ----------------------------------------------------------------------------
