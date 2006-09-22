@@ -91,7 +91,7 @@ LINPHONE_AUTOCONF = \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
 	--libexecdir=/usr/sbin \
-	--enable-gnome_ui=no
+	--enable-gnome_ui=yes
 
 ifdef PTXCONF_XFREE430
 LINPHONE_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -143,11 +143,13 @@ linphone_targetinstall_deps = $(STATEDIR)/linphone.compile \
 $(STATEDIR)/linphone.targetinstall: $(linphone_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(LINPHONE_PATH) $(MAKE) -C $(LINPHONE_DIR) DESTDIR=$(LINPHONE_IPKG_TMP) install
-	rm -rf $(LINPHONE_IPKG_TMP)/usr/include
-	rm -rf $(LINPHONE_IPKG_TMP)/usr/man
-	rm -rf $(LINPHONE_IPKG_TMP)/usr/lib/pkgconfig
-	rm -rf $(LINPHONE_IPKG_TMP)/usr/share/gtk-doc
-	rm  -r $(LINPHONE_IPKG_TMP)/usr/lib/*.*a
+
+	#rm -rf $(LINPHONE_IPKG_TMP)/usr/include
+	#rm -rf $(LINPHONE_IPKG_TMP)/usr/man
+	#rm -rf $(LINPHONE_IPKG_TMP)/usr/lib/pkgconfig
+	#rm -rf $(LINPHONE_IPKG_TMP)/usr/share/gtk-doc
+	#rm  -r $(LINPHONE_IPKG_TMP)/usr/lib/*.*a
+
 	PATH=$(CROSS_PATH) 						\
 	FEEDDIR=$(FEEDDIR) 						\
 	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
@@ -155,10 +157,15 @@ $(STATEDIR)/linphone.targetinstall: $(linphone_targetinstall_deps)
 	ARCH=$(SHORT_TARGET) 						\
 	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
 	$(TOPDIR)/scripts/bin/make-locale-ipks.sh linphone $(LINPHONE_IPKG_TMP)
-	rm -rf $(LINPHONE_IPKG_TMP)/usr/share/locale
-	$(CROSSSTRIP) $(LINPHONE_IPKG_TMP)/usr/bin/*
-	$(CROSSSTRIP) $(LINPHONE_IPKG_TMP)/usr/sbin/*
-	$(CROSSSTRIP) $(LINPHONE_IPKG_TMP)/usr/lib/*.so*
+	
+	@$(call removedevfiles, $(LINPHONE_IPKG_TMP))
+	@$(call stripfiles,     $(LINPHONE_IPKG_TMP))
+
+	#rm -rf $(LINPHONE_IPKG_TMP)/usr/share/locale
+	#$(CROSSSTRIP) $(LINPHONE_IPKG_TMP)/usr/bin/*
+	#$(CROSSSTRIP) $(LINPHONE_IPKG_TMP)/usr/sbin/*
+	#$(CROSSSTRIP) $(LINPHONE_IPKG_TMP)/usr/lib/*.so*
+
 	mkdir -p $(LINPHONE_IPKG_TMP)/CONTROL
 	echo "Package: linphone" 							 >$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Source: $(LINPHONE_URL)"							>>$(LINPHONE_IPKG_TMP)/CONTROL/control
@@ -167,7 +174,7 @@ $(STATEDIR)/linphone.targetinstall: $(linphone_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Version: $(LINPHONE_VERSION)-$(LINPHONE_VENDOR_VERSION)" 			>>$(LINPHONE_IPKG_TMP)/CONTROL/control
-	echo "Depends: glib2, libspeex, libosip2, readline" 				>>$(LINPHONE_IPKG_TMP)/CONTROL/control
+	echo "Depends: glib2, libspeex, libosip2, readline, libgnomeui" 		>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Description: Linphone is a web phone - it let you phone to your friends anywhere in the whole world, freely, simply by using the internet." >>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LINPHONE_IPKG_TMP)
 	touch $@
