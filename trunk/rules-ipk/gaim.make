@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 #GAIM_VERSION		= 1.5.0
-GAIM_VERSION		= 2.0.0beta3.1
+GAIM_VERSION		= 2.0.0beta2
 GAIM			= gaim-$(GAIM_VERSION)
 GAIM_SUFFIX		= tar.bz2
 GAIM_URL		= http://ovh.dl.sourceforge.net/sourceforge/gaim/$(GAIM).$(GAIM_SUFFIX)

@@ -20,8 +20,8 @@ endif
 # Paths and names
 #
 #LICQ_VERSION		= 1.3.0
-#LICQ_VERSION		= 1.3.2
-LICQ_VERSION		= 1.3.4-RC1
+LICQ_VERSION		= 1.3.2
+#LICQ_VERSION		= 1.3.4-RC1
 LICQ			= licq-$(LICQ_VERSION)
 LICQ_SUFFIX		= tar.bz2
 #LICQ_URL		= http://heanet.dl.sourceforge.net/sourceforge/licq/$(LICQ).$(LICQ_SUFFIX)
