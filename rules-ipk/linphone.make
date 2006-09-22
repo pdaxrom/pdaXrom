@@ -20,10 +20,11 @@ endif
 # Paths and names
 #
 LINPHONE_VENDOR_VERSION	= 1
-LINPHONE_VERSION	= 1.3.5
+#LINPHONE_VERSION	= 1.3.5
+LINPHONE_VERSION	= 1.4.1
 LINPHONE		= linphone-$(LINPHONE_VERSION)
 LINPHONE_SUFFIX		= tar.gz
-LINPHONE_URL		= http://download.savannah.nongnu.org/releases/linphone/1.3.x/source/$(LINPHONE).$(LINPHONE_SUFFIX)
+LINPHONE_URL		= http://download.savannah.nongnu.org/releases/linphone/1.4.x/source/$(LINPHONE).$(LINPHONE_SUFFIX)
 LINPHONE_SOURCE		= $(SRCDIR)/$(LINPHONE).$(LINPHONE_SUFFIX)
 LINPHONE_DIR		= $(BUILDDIR)/$(LINPHONE)
 LINPHONE_IPKG_TMP	= $(LINPHONE_DIR)/ipkg_tmp
@@ -75,6 +76,11 @@ linphone_prepare_deps = \
 	$(STATEDIR)/libosip2.install \
 	$(STATEDIR)/virtual-xchain.install
 
+ifdef PTXCONF_LINPHONE-VIDEO
+linphone_prepare_deps += $(STATEDIR)/ffmpeg.install \
+	$(STATEDIR)/libtheora.install
+endif
+
 LINPHONE_PATH	=  PATH=$(CROSS_PATH)
 LINPHONE_ENV 	=  $(CROSS_ENV)
 #LINPHONE_ENV	+=
@@ -92,6 +98,10 @@ LINPHONE_AUTOCONF = \
 	--prefix=/usr \
 	--libexecdir=/usr/sbin \
 	--enable-gnome_ui=yes
+
+ifdef PTXCONF_LINPHONE-VIDEO
+LINPHONE_AUTOCONF += --enable-video
+endif
 
 ifdef PTXCONF_XFREE430
 LINPHONE_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -140,6 +150,15 @@ linphone_targetinstall_deps = $(STATEDIR)/linphone.compile \
 	$(STATEDIR)/speex.targetinstall \
 	$(STATEDIR)/libosip2.targetinstall
 
+LINPHONE_DEPLIST = "glib2, libspeex, libosip2, readline, libgnomeui"
+
+ifdef PTXCONF_LINPHONE-VIDEO
+linphone_targetinstall_deps += $(STATEDIR)/ffmpeg.targetinstall \
+	$(STATEDIR)/libtheora.targetinstall
+
+LINPHONE_DEPLIST += ", libffmpeg, sdl, libtheora"
+endif
+
 $(STATEDIR)/linphone.targetinstall: $(linphone_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(LINPHONE_PATH) $(MAKE) -C $(LINPHONE_DIR) DESTDIR=$(LINPHONE_IPKG_TMP) install
@@ -174,7 +193,7 @@ $(STATEDIR)/linphone.targetinstall: $(linphone_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Version: $(LINPHONE_VERSION)-$(LINPHONE_VENDOR_VERSION)" 			>>$(LINPHONE_IPKG_TMP)/CONTROL/control
-	echo "Depends: glib2, libspeex, libosip2, readline, libgnomeui" 		>>$(LINPHONE_IPKG_TMP)/CONTROL/control
+	echo "Depends: $(LINPHONE_DEPLIST)" 						>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Description: Linphone is a web phone - it let you phone to your friends anywhere in the whole world, freely, simply by using the internet." >>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(LINPHONE_IPKG_TMP)
 	touch $@

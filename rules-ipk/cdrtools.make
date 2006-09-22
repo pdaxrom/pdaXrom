@@ -137,11 +137,24 @@ cdrtools_targetinstall_deps = $(STATEDIR)/cdrtools.compile
 $(STATEDIR)/cdrtools.targetinstall: $(cdrtools_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(CDRTOOLS_PATH) $(MAKE) -C $(CDRTOOLS_DIR) install INS_BASE=$(CDRTOOLS_IPKG_TMP)/usr
-	rm -rf $(CDRTOOLS_IPKG_TMP)/usr/include
-	rm -rf $(CDRTOOLS_IPKG_TMP)/usr/lib
-	rm -rf $(CDRTOOLS_IPKG_TMP)/usr/man
-	$(CROSSSTRIP) $(CDRTOOLS_IPKG_TMP)/usr/bin/*
-	$(CROSSSTRIP) $(CDRTOOLS_IPKG_TMP)/usr/sbin/*
+
+	#rm -rf $(CDRTOOLS_IPKG_TMP)/usr/include
+	#rm -rf $(CDRTOOLS_IPKG_TMP)/usr/lib
+	#rm -rf $(CDRTOOLS_IPKG_TMP)/usr/man
+	#$(CROSSSTRIP) $(CDRTOOLS_IPKG_TMP)/usr/bin/*
+	#$(CROSSSTRIP) $(CDRTOOLS_IPKG_TMP)/usr/sbin/*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(CDRTOOLS_VERSION)				 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh cdrtools $(CDRTOOLS_IPKG_TMP)
+
+	@$(call removedevfiles, $(CDRTOOLS_IPKG_TMP))
+	@$(call stripfiles,     $(CDRTOOLS_IPKG_TMP))
+
 	mkdir -p $(CDRTOOLS_IPKG_TMP)/CONTROL
 	echo "Package: cdrtools" 						 >$(CDRTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Source: $(CDRTOOLS_URL)"						>>$(CDRTOOLS_IPKG_TMP)/CONTROL/control
