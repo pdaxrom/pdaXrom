@@ -58,7 +58,7 @@ PTXCONF_TARGET_CONFIG_FILE="athlon.dat"
 PTXCONF_ARCH="i386"
 PTXCONF_ARCH_USERSPACE="i386"
 PTXCONF_GNU_TARGET="i686-cacko-linux-gnu"
-PTXCONF_PREFIX="/opt/cross/i686/3.4.6-2.2.5-1"
+PTXCONF_PREFIX="/opt/cross/i686/3.4.6-2.2.5"
 PTXCONF_NATIVE_PREFIX="/opt/native/i686/3.4.6-2.2.5"
 PTXCONF_ROOT="/tmp/roots/root-cacko-x86"
 
