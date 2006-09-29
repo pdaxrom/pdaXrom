@@ -294,6 +294,7 @@ source "rules-ipk/xmmsmplayer.in"
 endmenu
 menu "Drivers             "
 source "rules-ipk/cfxga.in"
+source "rules-ipk/gspcav1.in"
 endmenu
 source "rules-ipk/alsa-utils.in"
 source "rules-ipk/bmp.in"
