@@ -1,0 +1,8 @@
+config SCREEN
+	bool
+	prompt "screen"
+
+config SCREEN_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on SCREEN
