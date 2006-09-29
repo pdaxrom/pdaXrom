@@ -19,8 +19,8 @@ endif
 #
 # Paths and names 
 #
-#PPP_VERSION	= 2.4.2
-PPP_VERSION	= 2.4.3
+#PPP_VERSION	= 2.4.3
+PPP_VERSION	= 2.4.4
 PPP		= ppp-$(PPP_VERSION)
 PPP_URL		= ftp://ftp.samba.org/pub/ppp/$(PPP).tar.gz
 PPP_SOURCE	= $(SRCDIR)/$(PPP).tar.gz
