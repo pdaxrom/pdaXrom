@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 PPTP_VENDOR_VERSION	= 1
-PPTP_VERSION		= 1.6.0
+PPTP_VERSION		= 1.7.1
 PPTP			= pptp-$(PPTP_VERSION)
 PPTP_SUFFIX		= tar.gz
 PPTP_URL		= http://belnet.dl.sourceforge.net/sourceforge/pptpclient/$(PPTP).$(PPTP_SUFFIX)
@@ -137,11 +137,25 @@ pptp_targetinstall_deps = $(STATEDIR)/pptp.compile
 $(STATEDIR)/pptp.targetinstall: $(pptp_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(PPTP_PATH) $(MAKE) -C $(PPTP_DIR) DESTDIR=$(PPTP_IPKG_TMP) install
-	$(CROSSSTRIP) $(PPTP_IPKG_TMP)/usr/sbin/*
-	rm -rf $(PPTP_IPKG_TMP)/usr/share/man
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(PPTP_VERSION)-$(PPTP_VENDOR_VERSION)		 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh pptp $(PPTP_IPKG_TMP)
+
+	@$(call removedevfiles, $(PPTP_IPKG_TMP))
+	@$(call stripfiles,     $(PPTP_IPKG_TMP))
+
+
+	#$(CROSSSTRIP) $(PPTP_IPKG_TMP)/usr/sbin/*
+	#rm -rf $(PPTP_IPKG_TMP)/usr/share/man
+
 	mkdir -p $(PPTP_IPKG_TMP)/CONTROL
 	echo "Package: pptp" 											 >$(PPTP_IPKG_TMP)/CONTROL/control
-	echo "Source: $(PPTP_URL)"						>>$(PPTP_IPKG_TMP)/CONTROL/control
+	echo "Source: $(PPTP_URL)"										>>$(PPTP_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 										>>$(PPTP_IPKG_TMP)/CONTROL/control
 	echo "Section: Network" 										>>$(PPTP_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 							>>$(PPTP_IPKG_TMP)/CONTROL/control
