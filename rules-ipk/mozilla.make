@@ -145,8 +145,21 @@ mozilla_install: $(STATEDIR)/mozilla.install
 
 $(STATEDIR)/mozilla.install: $(STATEDIR)/mozilla.compile
 	@$(call targetinfo, $@)
-	##$(MOZILLA_PATH) $(MAKE) -C $(MOZILLA_DIR) install
-	aasda
+	rm -rf $(MOZILLA_IPKG_TMP)
+	$(MOZILLA_PATH) $(MAKE) -C $(MOZILLA_DIR) DESTDIR=$(MOZILLA_IPKG_TMP) install
+
+	@$(call copyincludes, $(MOZILLA_IPKG_TMP))
+	@$(call copymiscfiles,$(MOZILLA_IPKG_TMP))
+	@$(call copylibraries,$(MOZILLA_IPKG_TMP))
+
+	##cp -a $(MOZILLA_IPKG_TMP)/usr/lib/pkgconfig/*.pc $(CROSS_LIB_DIR)/lib/pkgconfig/
+
+	$(MOZILLA_ENV) ; rm -rf $(CROSS_LIB_DIR)/lib/mozilla-`pkg-config mozilla-nspr --modversion`
+	$(MOZILLA_ENV) ; mkdir -p $(CROSS_LIB_DIR)/lib/mozilla-`pkg-config mozilla-nspr --modversion`
+	$(MOZILLA_ENV) ; cp -a $(MOZILLA_IPKG_TMP)/usr/lib/mozilla-`pkg-config mozilla-nspr --modversion`/*.so \
+		$(CROSS_LIB_DIR)/lib/mozilla-`pkg-config mozilla-nspr --modversion`/
+
+	rm -rf $(MOZILLA_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
