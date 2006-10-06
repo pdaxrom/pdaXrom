@@ -158,6 +158,11 @@ $(STATEDIR)/openvpn.targetinstall: $(openvpn_targetinstall_deps)
 
 	@$(call removedevfiles, $(OPENVPN_IPKG_TMP))
 	@$(call stripfiles, $(OPENVPN_IPKG_TMP))
+
+	mkdir -p $(OPENVPN_IPKG_TMP)/etc/openvpn
+	mkdir -p $(OPENVPN_IPKG_TMP)/etc/rc.d/{init.d,rc0.d,rc5.d,rc6.d}
+	cp -a $(OPENVPN_DIR)/sample-scripts/openvpn.init $(OPENVPN_IPKG_TMP)/etc/rc.d/init.d/openvpn
+
 	mkdir -p $(OPENVPN_IPKG_TMP)/CONTROL
 	echo "Package: openvpn" 							 >$(OPENVPN_IPKG_TMP)/CONTROL/control
 	echo "Source: $(OPENVPN_URL)"							>>$(OPENVPN_IPKG_TMP)/CONTROL/control
