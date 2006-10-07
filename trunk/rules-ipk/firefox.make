@@ -101,7 +101,7 @@ $(STATEDIR)/firefox.prepare: $(firefox_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(FIREFOX_DIR)/config.cache)
 ifdef PTXCONF_ARCH_X86
-	cp $(TOPDIR)/config/pdaXrom-x86/mozconfig $(FIREFOX_DIR)/.mozconfig
+	cp $(TOPDIR)/config/pdaXrom-x86/firefox/mozconfig $(FIREFOX_DIR)/.mozconfig
 else
  ifdef PTXCONF_ARCH_ARM
 	cp $(TOPDIR)/config/pdaXrom/firefox/.mozconfig $(FIREFOX_DIR)/.mozconfig
