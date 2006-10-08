@@ -175,11 +175,11 @@ $(STATEDIR)/mtr.targetinstall: $(mtr_targetinstall_deps)
 	@$(call removedevfiles, $(MTR_IPKG_TMP))
 	@$(call stripfiles, $(MTR_IPKG_TMP))
 	mkdir -p $(MTR_IPKG_TMP)/CONTROL
-	echo "Package: mtr" 							 >$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Package: mtr" 								 >$(MTR_IPKG_TMP)/CONTROL/control
 	echo "Source: $(MTR_URL)"							>>$(MTR_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 							>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Section: pdaXrom" 							>>$(MTR_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Section: Internet" 							>>$(MTR_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(MTR_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(MTR_IPKG_TMP)/CONTROL/control
 	echo "Version: $(MTR_VERSION)-$(MTR_VENDOR_VERSION)" 			>>$(MTR_IPKG_TMP)/CONTROL/control
 ifdef PTXCONF_XFREE430

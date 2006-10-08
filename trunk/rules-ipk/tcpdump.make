@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 TCPDUMP_VENDOR_VERSION	= 1
-TCPDUMP_VERSION		= 3.8.3
+TCPDUMP_VERSION		= 3.9.5
 TCPDUMP			= tcpdump-$(TCPDUMP_VERSION)
 TCPDUMP_SUFFIX		= tar.gz
 TCPDUMP_URL		= http://www.tcpdump.org/release/$(TCPDUMP).$(TCPDUMP_SUFFIX)
@@ -139,8 +139,21 @@ tcpdump_targetinstall_deps = $(STATEDIR)/tcpdump.compile
 $(STATEDIR)/tcpdump.targetinstall: $(tcpdump_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(TCPDUMP_PATH) $(MAKE) -C $(TCPDUMP_DIR) DESTDIR=$(TCPDUMP_IPKG_TMP) install
-	rm -rf $(TCPDUMP_IPKG_TMP)/usr/man
-	$(CROSSSTRIP) $(TCPDUMP_IPKG_TMP)/usr/sbin/*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(TCPDUMP_VERSION)-$(TCPDUMP_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh tcpdump $(TCPDUMP_IPKG_TMP)
+
+	@$(call removedevfiles, $(TCPDUMP_IPKG_TMP))
+	@$(call stripfiles, 	$(TCPDUMP_IPKG_TMP))
+
+	#rm -rf $(TCPDUMP_IPKG_TMP)/usr/man
+	#$(CROSSSTRIP) $(TCPDUMP_IPKG_TMP)/usr/sbin/*
+
 	mkdir -p $(TCPDUMP_IPKG_TMP)/CONTROL
 	echo "Package: tcpdump" 							 >$(TCPDUMP_IPKG_TMP)/CONTROL/control
 	echo "Source: $(TCPDUMP_URL)"						>>$(TCPDUMP_IPKG_TMP)/CONTROL/control

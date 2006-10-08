@@ -96,6 +96,14 @@ choice
 		bool
 		prompt "2.6.16"
 
+	config KERNEL_2_6_17
+		bool
+		prompt "2.6.17"
+
+	config KERNEL_2_6_18
+		bool
+		prompt "2.6.18"
+
 endchoice
 
 
