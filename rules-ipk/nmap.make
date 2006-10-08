@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 NMAP_VENDOR_VERSION	= 1
-NMAP_VERSION		= 3.80
+NMAP_VERSION		= 4.11
 NMAP			= nmap-$(NMAP_VERSION)
 NMAP_SUFFIX		= tar.bz2
 NMAP_URL		= http://download.insecure.org/nmap/dist/$(NMAP).$(NMAP_SUFFIX)
@@ -72,9 +72,13 @@ nmap_prepare: $(STATEDIR)/nmap.prepare
 nmap_prepare_deps = \
 	$(STATEDIR)/nmap.extract \
 	$(STATEDIR)/openssl.install \
-	$(STATEDIR)/pcre.install \
+	$(STATEDIR)/pcre.install
+
+ifdef PTXCONF_XFREE430
+nmap_prepare_deps += \
 	$(STATEDIR)/gtk1210.install \
 	$(STATEDIR)/virtual-xchain.install
+endif
 
 NMAP_PATH	=  PATH=$(CROSS_PATH)
 NMAP_ENV 	=  $(CROSS_ENV)
@@ -96,6 +100,10 @@ NMAP_AUTOCONF = \
 	--with-pcap=linux \
 	--with-openssl=$(CROSS_LIB_DIR) \
 	--with-libpcre=$(CROSS_LIB_DIR)
+
+ifndef PTXCONF_XFREE430
+NMAP_AUTOCONF += --without-nmapfe
+endif
 
 ifdef PTXCONF_XFREE430
 NMAP_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -149,11 +157,23 @@ $(STATEDIR)/nmap.targetinstall: $(nmap_targetinstall_deps)
 
 	rm -rf $(NMAP_IPKG_TMP)
 	$(NMAP_PATH) $(MAKE) -C $(NMAP_DIR) DESTDIR=$(NMAP_IPKG_TMP) install
-	$(CROSSSTRIP) $(NMAP_IPKG_TMP)/usr/bin/{nmap,nmapfe}
-	$(INSTALL) -D -m 644 $(TOPDIR)/config/pics/icon-network.png $(NMAP_IPKG_TMP)/usr/share/pixmaps/icon-network.png
-	rm -rf $(NMAP_IPKG_TMP)/usr/man
-	rm -rf $(NMAP_IPKG_TMP)/usr/bin/{nmapfe,xnmap}
-	rm -rf $(NMAP_IPKG_TMP)/usr/share/{applications,pixmaps}
+
+	#$(CROSSSTRIP) $(NMAP_IPKG_TMP)/usr/bin/{nmap,nmapfe}
+	#rm -rf $(NMAP_IPKG_TMP)/usr/man
+	#rm -rf $(NMAP_IPKG_TMP)/usr/bin/{nmapfe,xnmap}
+	#rm -rf $(NMAP_IPKG_TMP)/usr/share/{applications,pixmaps}
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(NMAP_VERSION)-$(NMAP_VENDOR_VERSION)		 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh nmap $(NMAP_IPKG_TMP)
+
+	@$(call removedevfiles, $(NMAP_IPKG_TMP))
+	@$(call stripfiles, 	$(NMAP_IPKG_TMP))
+
 	mkdir -p $(NMAP_IPKG_TMP)/CONTROL
 	echo "Package: nmap" 								 >$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Source: $(NMAP_URL)" 							>>$(NMAP_IPKG_TMP)/CONTROL/control
@@ -165,14 +185,18 @@ $(STATEDIR)/nmap.targetinstall: $(nmap_targetinstall_deps)
 	echo "Depends: openssl, pcre" 							>>$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Description: Nmap ("Network Mapper") is a free open source utility for network exploration or security auditing."	>>$(NMAP_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(NMAP_IPKG_TMP)
-	
+
+ifdef PTXCONF_XFREE430	
 	rm -rf $(NMAP_IPKG_TMP)
 	$(NMAP_PATH) $(MAKE) -C $(NMAP_DIR) DESTDIR=$(NMAP_IPKG_TMP) install
+
 	$(CROSSSTRIP) $(NMAP_IPKG_TMP)/usr/bin/{nmap,nmapfe}
-	$(INSTALL) -D -m 644 $(TOPDIR)/config/pics/icon-network.png $(NMAP_IPKG_TMP)/usr/share/pixmaps/icon-network.png
 	rm -rf $(NMAP_IPKG_TMP)/usr/man
 	rm -rf $(NMAP_IPKG_TMP)/usr/bin/nmap
 	rm -rf $(NMAP_IPKG_TMP)/usr/share/nmap
+
+	$(INSTALL) -D -m 644 $(TOPDIR)/config/pics/icon-network.png $(NMAP_IPKG_TMP)/usr/share/pixmaps/icon-network.png
+
 	mkdir -p $(NMAP_IPKG_TMP)/CONTROL
 	echo "Package: nmapfe" 								 >$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Source: $(NMAP_URL)" 							>>$(NMAP_IPKG_TMP)/CONTROL/control
@@ -184,6 +208,7 @@ $(STATEDIR)/nmap.targetinstall: $(nmap_targetinstall_deps)
 	echo "Depends: gtk, nmap" 							>>$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Description: Nmap Gtk frontend."						>>$(NMAP_IPKG_TMP)/CONTROL/control
 	cd $(FEEDDIR) && $(XMKIPKG) $(NMAP_IPKG_TMP)
+endif
 
 	touch $@
 

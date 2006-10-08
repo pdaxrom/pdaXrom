@@ -20,10 +20,10 @@ endif
 # Paths and names
 #
 # IPTABLES_VERSION	= 1.2.11
-IPTABLES_VERSION	= 1.3.5
+IPTABLES_VERSION	= 1.3.6
 IPTABLES		= iptables-$(IPTABLES_VERSION)
 IPTABLES_SUFFIX		= tar.bz2
-IPTABLES_URL		= http://netfilter.org/files/$(IPTABLES).$(IPTABLES_SUFFIX)
+IPTABLES_URL		= http://netfilter.org/projects/iptables/files/$(IPTABLES).$(IPTABLES_SUFFIX)
 IPTABLES_SOURCE		= $(SRCDIR)/$(IPTABLES).$(IPTABLES_SUFFIX)
 IPTABLES_DIR		= $(BUILDDIR)/$(IPTABLES)
 IPTABLES_IPKG_TMP	= $(IPTABLES_DIR)/ipkg_tmp
@@ -101,6 +101,7 @@ $(STATEDIR)/iptables.prepare: $(iptables_prepare_deps)
 	#	$(IPTABLES_PATH) $(IPTABLES_ENV) \
 	#	./configure $(IPTABLES_AUTOCONF)
 	#asdasd
+	chmod 755 $(IPTABLES_DIR)/extensions/.*-test*
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -140,9 +141,22 @@ iptables_targetinstall_deps = $(STATEDIR)/iptables.compile
 $(STATEDIR)/iptables.targetinstall: $(iptables_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(IPTABLES_PATH) $(IPTABLES_ENV) $(MAKE) -C $(IPTABLES_DIR) DO_IPV6=0 KERNEL_DIR=$(KERNEL_DIR) PREFIX=/usr DESTDIR=$(IPTABLES_IPKG_TMP) install
-	rm -rf        $(IPTABLES_IPKG_TMP)/usr/man
-	$(CROSSSTRIP) $(IPTABLES_IPKG_TMP)/usr/lib/iptables/*
-	$(CROSSSTRIP) $(IPTABLES_IPKG_TMP)/usr/sbin/*
+
+	#rm -rf        $(IPTABLES_IPKG_TMP)/usr/man
+	#$(CROSSSTRIP) $(IPTABLES_IPKG_TMP)/usr/lib/iptables/*
+	#$(CROSSSTRIP) $(IPTABLES_IPKG_TMP)/usr/sbin/*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(IPTABLES_VERSION) 					\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh iptables $(IPTABLES_IPKG_TMP)
+	
+	@$(call removedevfiles, $(IPTABLES_IPKG_TMP))
+	@$(call stripfiles,     $(IPTABLES_IPKG_TMP))
+
 	mkdir -p $(IPTABLES_IPKG_TMP)/CONTROL
 	echo "Package: iptables" 			>$(IPTABLES_IPKG_TMP)/CONTROL/control
 	echo "Source: $(IPTABLES_URL)"						>>$(IPTABLES_IPKG_TMP)/CONTROL/control

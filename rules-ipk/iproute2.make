@@ -20,8 +20,8 @@ endif
 # Paths and names
 #
 IPROUTE2_VENDOR_VERSION	= 1
-IPROUTE2_VERSION	= 2.6.8
-IPROUTE2		= iproute2-$(IPROUTE2_VERSION)-ss040730
+IPROUTE2_VERSION	= 2.6.18-061002
+IPROUTE2		= iproute2-$(IPROUTE2_VERSION)
 IPROUTE2_SUFFIX		= tar.gz
 IPROUTE2_URL		= http://developer.osdl.org/dev/iproute2/download/$(IPROUTE2).$(IPROUTE2_SUFFIX)
 IPROUTE2_SOURCE		= $(SRCDIR)/$(IPROUTE2).$(IPROUTE2_SUFFIX)
@@ -112,7 +112,7 @@ iproute2_compile_deps = $(STATEDIR)/iproute2.prepare
 
 $(STATEDIR)/iproute2.compile: $(iproute2_compile_deps)
 	@$(call targetinfo, $@)
-	$(IPROUTE2_PATH) $(IPROUTE2_ENV) $(MAKE) -C $(IPROUTE2_DIR) $(CROSS_ENV_CC) KERNEL_INCLUDE=$(KERNEL_DIR)/include DOCDIR=/usr/share/doc/iproute2 SUBDIRS='lib tc ip'
+	$(IPROUTE2_PATH) $(IPROUTE2_ENV) $(MAKE) -C $(IPROUTE2_DIR) $(CROSS_ENV_CC) KERNEL_INCLUDE=$(KERNEL_DIR)/include DOCDIR=/usr/share/doc/iproute2 SUBDIRS='lib tc ip' SBINDIR=/sbin
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -135,9 +135,22 @@ iproute2_targetinstall_deps = $(STATEDIR)/iproute2.compile
 
 $(STATEDIR)/iproute2.targetinstall: $(iproute2_targetinstall_deps)
 	@$(call targetinfo, $@)
-	$(IPROUTE2_PATH) $(IPROUTE2_ENV) $(MAKE) -C $(IPROUTE2_DIR) DESTDIR=$(IPROUTE2_IPKG_TMP) install  $(CROSS_ENV_CC) KERNEL_INCLUDE=$(KERNEL_DIR)/include DOCDIR=/usr/share/doc/iproute2 SUBDIRS='lib tc ip'
-	rm -rf $(IPROUTE2_IPKG_TMP)/usr/share/doc
-	$(CROSSSTRIP) $(IPROUTE2_IPKG_TMP)/usr/sbin/{ip,rtmon,tc}
+	$(IPROUTE2_PATH) $(IPROUTE2_ENV) $(MAKE) -C $(IPROUTE2_DIR) DESTDIR=$(IPROUTE2_IPKG_TMP) install  $(CROSS_ENV_CC) KERNEL_INCLUDE=$(KERNEL_DIR)/include DOCDIR=/usr/share/doc/iproute2 SUBDIRS='lib tc ip' SBINDIR=/sbin
+
+	#rm -rf $(IPROUTE2_IPKG_TMP)/usr/share/doc
+	#$(CROSSSTRIP) $(IPROUTE2_IPKG_TMP)/usr/sbin/{ip,rtmon,tc}
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(IPROUTE2_VERSION) 					\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh iproute2 $(IPROUTE2_IPKG_TMP)
+	
+	@$(call removedevfiles, $(IPROUTE2_IPKG_TMP))
+	@$(call stripfiles,     $(IPROUTE2_IPKG_TMP))
+
 	mkdir -p $(IPROUTE2_IPKG_TMP)/CONTROL
 	echo "Package: iproute2" 							 >$(IPROUTE2_IPKG_TMP)/CONTROL/control
 	echo "Source: $(IPROUTE2_URL)"						>>$(IPROUTE2_IPKG_TMP)/CONTROL/control

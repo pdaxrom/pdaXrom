@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 LIBPCAP_VENDOR_VERSION	= 1
-LIBPCAP_VERSION		= 0.8.3
+LIBPCAP_VERSION		= 0.9.5
 LIBPCAP			= libpcap-$(LIBPCAP_VERSION)
 LIBPCAP_SUFFIX		= tar.gz
 LIBPCAP_URL		= http://www.tcpdump.org/release/$(LIBPCAP).$(LIBPCAP_SUFFIX)
