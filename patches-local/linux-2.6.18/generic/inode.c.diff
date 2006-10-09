@@ -1,0 +1,12 @@
+--- linux-2.6.15/fs/fat/inode.c~	2006-10-03 18:50:35.000000000 +0000
++++ linux-2.6.15/fs/fat/inode.c	2006-10-03 18:59:40.000000000 +0000
+@@ -858,7 +858,8 @@
+ 
+ 	opts->fs_uid = current->uid;
+ 	opts->fs_gid = current->gid;
+-	opts->fs_fmask = opts->fs_dmask = current->fs->umask;
++	opts->fs_fmask = 0x49; //rw-rw-rw-
++	opts->fs_dmask = 0x00; //rwxrwxrwx
+ 	opts->codepage = fat_default_codepage;
+ 	opts->iocharset = fat_default_iocharset;
+ 	if (is_vfat)
