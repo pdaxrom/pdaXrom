@@ -172,7 +172,3 @@ if [ -e /usr/bin/consolechars -a -e /etc/sysconfig/locale ]; then
 	action "Setup console font:" consolechars --font /usr/share/kbd/consolefonts/$FONT
     fi
 fi
-
-if [ -f /etc/rc.d/rc.localdevices -o -x /etc/rc.d/rc.localdevices ];then   
-    . /etc/rc.d/rc.localdevices
-fi
