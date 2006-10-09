@@ -11,6 +11,9 @@ export PATH
 mount -n -t proc none /proc
 mount -n -t sysfs none /sys
 
+# Disable kernel log to console
+echo "0 0 0 0" >/proc/sys/kernel/printk
+
 mount -t ramfs none /dev || mount -t tmpfs none /dev
 
 if [ -d /sys/block ]; then
@@ -168,4 +171,8 @@ if [ -e /usr/bin/consolechars -a -e /etc/sysconfig/locale ]; then
     if [ ! "x$FONT" = "x" ]; then
 	action "Setup console font:" consolechars --font /usr/share/kbd/consolefonts/$FONT
     fi
+fi
+
+if [ -f /etc/rc.d/rc.localdevices -o -x /etc/rc.d/rc.localdevices ];then   
+    . /etc/rc.d/rc.localdevices
 fi

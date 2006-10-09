@@ -1,14 +1,14 @@
 #!/bin/bash
 
-#export PATH=$PATH:/usr/sbin.rom:/usr/bin.rom
-
-#mkdir /dev/shm
-
 cp -a /etc /dev/shm/
 cp -a /var /dev/shm/
 
 mount -o bind /dev/shm/etc /etc
 mount -o bind /dev/shm/var /var
+
+#cp -a /mnt /dev/shm/
+mkdir -p /dev/shm/mnt
+mount -o bind /dev/shm/mnt /mnt
 
 mkdir /dev/shm/tmp
 mkdir /dev/shm/run

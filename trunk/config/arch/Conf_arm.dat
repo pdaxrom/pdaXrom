@@ -145,3 +145,7 @@ CROSS_ENV += \
 # vim
 CROSS_ENV += \
 	ac_cv_func_tgetent=yes
+
+# fcron
+CROSS_ENV += \
+	ac_cv_func_memcmp_working=yes

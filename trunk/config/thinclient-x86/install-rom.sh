@@ -26,8 +26,7 @@ mkdir -p ${MNTPNT}
 echo "Mount $DEVICE"
 mount ${DEVICE} ${MNTPNT}
 echo "Copy files to $DEVICE"
-cp -f ${TOPDIR}/../boot/rootfs.bin ${MNTPNT}/
-cp -f ${TOPDIR}/../boot/isolinux/{initrd.gz,credits.txt,mx2help.txt,pdax86.*,kernel/vmlinuz} ${MNTPNT}/
+cp -f ${TOPDIR}/../boot/isolinux/{initrd.bin,credits.txt,mx2help.txt,pdax86.*,kernel/bzImage} ${MNTPNT}/
 cp -f ${TOPDIR}/syslinux.cfg ${MNTPNT}/
 umount ${MNTPNT}
 rm -rf ${MNTPNT}
