@@ -40,7 +40,7 @@ add_cdrom() {
 
 add_hd() {
     local COUNT=0
-    for dev in `fdisk -l | grep '^/dev/' | grep -v 'Linux swap' | cut -d ' ' -f 1`; do
+    for dev in `ls /dev/sd*[1-9] /dev/hd*[1-9]`; do
 	if [ $COUNT -eq 0 ]; then
 	    echo "$dev       /mnt/hd	auto	defaults	0   0" >>/etc/fstab
 	    mkdir -p /mnt/hd
@@ -55,11 +55,12 @@ add_hd() {
 }
 
 check_devices() {
-    action "10s delay for USB initialization" sleep 10
     for dir in /mnt/* ; do 
 	 try_autoboot ${dir}
     done
 }
+
+action "10s delay for USB initialization" sleep 10
 
 add_cdrom
 add_swap
