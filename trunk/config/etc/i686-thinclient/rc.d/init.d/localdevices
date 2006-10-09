@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Source function library.
+. /etc/rc.d/init.d/functions
+
 try_autoboot() {
     local umnt=
     if ! grep $1 /etc/fstab >/dev/null ; then
@@ -7,7 +10,7 @@ try_autoboot() {
 	umnt=yes
     fi
     
-    test -f $1/autoboot.sh && sh $1/autoboot.sh
+    test -f $1/autoboot.sh && sh $1/autoboot.sh $2
     
     if [ ! "x$umnt" = "x" ]; then
 	umount $1
@@ -56,14 +59,26 @@ add_hd() {
 
 check_devices() {
     for dir in /mnt/* ; do 
-	 try_autoboot ${dir}
+	 try_autoboot ${dir} $1
     done
 }
 
-action "10s delay for USB initialization" sleep 10
+case "$1" in
+  start)
+	action "15s delay for USB initialization" sleep 10
 
-add_cdrom
-add_swap
-add_hd
+	add_cdrom
+	add_swap
+	add_hd
 
-check_devices
+	check_devices start
+	;;
+  stop)
+	check_devices stop
+	;;
+  *)
+	echo "Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit 0
