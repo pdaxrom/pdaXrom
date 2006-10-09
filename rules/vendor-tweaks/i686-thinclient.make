@@ -145,7 +145,7 @@ endif
 	cd $(ROOTDIR) && tar c var  > 			 		$(ROOTDIR)/root/.var_default.tar
     
 	# hack!!!
-	depmod -b $(ROOTDIR) -F $(KERNEL_DIR)/System.map
+	depmod -b $(ROOTDIR) `ls $(KERNEL_DIR)/ipkg_tmp/lib/modules` -F $(KERNEL_DIR)/System.map
 
 	rm -f $(TOPDIR)/bootdisk/initrd.bin
 	###$(PTXCONF_PREFIX)/bin/mksquashfs $(ROOTDIR) $(TOPDIR)/bootdisk/initrd.bin -all-root -le -info
@@ -158,7 +158,16 @@ endif
 	cp -a $(TOPDIR)/config/pdaXrom-x86/isolinux $(ROOTFS_DIR)/cdrom-compressed/boot
 	cp -a $(TOPDIR)/bootdisk/initrd.bin $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/
 	cp -a $(TOPDIR)/bootdisk/bzImage $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/kernel/
-	cp -a $(TOPDIR)/config/pdaXrom-x86/isolinux.cfg.thinclient $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/isolinux.cfg
+	cp -a $(TOPDIR)/config/thinclient-x86/isolinux.cfg $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/isolinux.cfg
+
+ifdef PTXCONF_SYSLINUX
+	cp -a $(TOPDIR)/config/pdaXrom-x86/usb-flash  	$(ROOTFS_DIR)/cdrom-compressed/
+	cp -a $(SYSLINUX_DIR)/unix/syslinux		$(ROOTFS_DIR)/cdrom-compressed/usb-flash/linux/
+	cp -a $(SYSLINUX_DIR)/win32/syslinux.exe	$(ROOTFS_DIR)/cdrom-compressed/usb-flash/win32/
+	cp -a $(SYSLINUX_DIR)/dos/syslinux.com		$(ROOTFS_DIR)/cdrom-compressed/usb-flash/msdos/	
+	cp -a $(TOPDIR)/config/thinclient-x86/isolinux.cfg   $(ROOTFS_DIR)/cdrom-compressed/usb-flash/syslinux.cfg
+	cp -a $(TOPDIR)/config/thinclient-x86/install-rom.sh $(ROOTFS_DIR)/cdrom-compressed/usb-flash/
+endif
 
 	$(PTXCONF_PREFIX)/bin/mkisofs -o $(TOPDIR)/bootdisk/pdaXrom.iso -r -J \
 	-V "$(PROJECT) $(FULLVERSION) \"$(CODENAMEX)\"" -v -no-emul-boot \

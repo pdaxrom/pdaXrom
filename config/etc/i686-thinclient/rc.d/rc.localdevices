@@ -1,0 +1,68 @@
+#!/bin/bash
+
+try_autoboot() {
+    local umnt=
+    if ! grep $1 /etc/fstab >/dev/null ; then
+	mount $1 || return
+	umnt=yes
+    fi
+    
+    test -f $1/autoboot.sh && sh $1/autoboot.sh
+    
+    if [ ! "x$umnt" = "x" ]; then
+	umount $1
+    fi
+}
+
+add_swap() {
+    # add swap
+    for dev in `/sbin/fdisk -l | grep 'Linux swap' | cut -d ' ' -f 1`; do
+	action "Found swap on $dev, turn it on:" /sbin/swapon $dev
+	echo "$dev       swap	swap	defaults	0   0" >>/etc/fstab
+	break
+    done
+}
+
+add_cdrom() {
+    # add cdroms
+    local COUNT=0
+    for cdrom in /dev/cdroms/*; do
+	if [ $COUNT -eq 0 ]; then
+	    echo "$cdrom       /mnt/cdrom       iso9660     ro,users,noauto,unhide,iocharset=utf8  0   0" >>/etc/fstab
+	    mkdir -p /mnt/cdrom
+	else
+	    echo "$cdrom       /mnt/cdrom$COUNT       iso9660     ro,users,noauto,unhide,iocharset=utf8  0   0" >>/etc/fstab
+	    mkdir -p "/mnt/cdrom$COUNT"
+	fi
+	COUNT=$((COUNT + 1))
+    done
+}
+
+add_hd() {
+    local COUNT=0
+    for dev in `fdisk -l | grep '^/dev/' | grep -v 'Linux swap' | cut -d ' ' -f 1`; do
+	if [ $COUNT -eq 0 ]; then
+	    echo "$dev       /mnt/hd	auto	defaults	0   0" >>/etc/fstab
+	    mkdir -p /mnt/hd
+	    mount $dev /mnt/hd >/dev/null 2>/dev/null || continue
+	else
+	    echo "$dev       /mnt/hd$COUNT	auto	defaults	0   0" >>/etc/fstab
+	    mkdir -p "/mnt/hd$COUNT"
+	    mount $dev /mnt/hd$COUNT >/dev/null 2>/dev/null || continue
+	fi
+	COUNT=$((COUNT + 1))
+    done
+}
+
+check_devices() {
+    action "10s delay for USB initialization" sleep 10
+    for dir in /mnt/* ; do 
+	 try_autoboot ${dir}
+    done
+}
+
+add_cdrom
+add_swap
+add_hd
+
+check_devices

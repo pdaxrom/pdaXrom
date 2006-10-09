@@ -111,3 +111,7 @@ CROSS_ENV += \
 	ac_cv_sizeof_ssize_t=4 \
 	ac_cv_struct_rlimit=yes \
 	apr_cv_mutex_recursive=yes
+
+# fcron
+CROSS_ENV += \
+	ac_cv_func_memcmp_working=yes

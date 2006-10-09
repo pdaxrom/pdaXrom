@@ -89,7 +89,8 @@ QUAGGA_AUTOCONF = \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
 	--enable-netlink \
-	--sysconfdir=/etc/quagga
+	--sysconfdir=/etc/quagga \
+	--localstatedir=/var
 
 ifdef PTXCONF_XFREE430
 QUAGGA_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include

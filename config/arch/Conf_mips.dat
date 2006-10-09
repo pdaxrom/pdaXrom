@@ -146,3 +146,6 @@ CROSS_ENV += \
 CROSS_ENV += \
 	ac_cv_func_tgetent=yes
 
+# fcron
+CROSS_ENV += \
+	ac_cv_func_memcmp_working=yes

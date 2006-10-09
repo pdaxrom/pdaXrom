@@ -3,3 +3,7 @@ TARGET_OPT_CFLAGS=-O3 -fomit-frame-pointer
 # findutils
 CROSS_ENV += \
 	ac_cv_func_closedir_void=yes
+
+# fcron
+CROSS_ENV += \
+	ac_cv_func_memcmp_working=yes
