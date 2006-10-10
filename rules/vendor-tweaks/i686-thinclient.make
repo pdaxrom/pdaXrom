@@ -155,9 +155,9 @@ endif
 
 	rm -rf $(ROOTFS_DIR)/cdrom-compressed
 	mkdir -p $(ROOTFS_DIR)/cdrom-compressed/boot
-	cp -a $(TOPDIR)/config/pdaXrom-x86/isolinux $(ROOTFS_DIR)/cdrom-compressed/boot
-	cp -a $(TOPDIR)/bootdisk/initrd.bin $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/
-	cp -a $(TOPDIR)/bootdisk/bzImage $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/kernel/
+	cp -a $(TOPDIR)/config/pdaXrom-x86/isolinux 	$(ROOTFS_DIR)/cdrom-compressed/boot
+	cp -a $(TOPDIR)/bootdisk/initrd.bin 		$(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/
+	cp -a $(TOPDIR)/bootdisk/bzImage 		$(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/
 	cp -a $(TOPDIR)/config/thinclient-x86/isolinux.cfg $(ROOTFS_DIR)/cdrom-compressed/boot/isolinux/isolinux.cfg
 
 ifdef PTXCONF_SYSLINUX
