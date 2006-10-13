@@ -158,7 +158,7 @@ $(STATEDIR)/circuslinux.targetinstall: $(circuslinux_targetinstall_deps)
 	echo "Version: $(CIRCUSLINUX_VERSION)-$(CIRCUSLINUX_VENDOR_VERSION)" 		>>$(CIRCUSLINUX_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl, sdl-image,sdl-mixer" 					>>$(CIRCUSLINUX_IPKG_TMP)/CONTROL/control
 	echo "Description: clone of the Atari 2600 game Circus Atari, produced by Atari, Inc." >>$(CIRCUSLINUX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CIRCUSLINUX_IPKG_TMP)
+	@$(call makeipkg, $(CIRCUSLINUX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

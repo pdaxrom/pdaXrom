@@ -148,7 +148,7 @@ $(STATEDIR)/mb-applet-blanker.targetinstall: $(mb-applet-blanker_targetinstall_d
 	echo "Version: $(MB-APPLET-BLANKER_VERSION)" 					>>$(MB-APPLET-BLANKER_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmatchbox, gtk2" 						>>$(MB-APPLET-BLANKER_IPKG_TMP)/CONTROL/control
 	echo "Description: a screen blanking applet"					>>$(MB-APPLET-BLANKER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-BLANKER_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-BLANKER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

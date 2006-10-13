@@ -151,7 +151,7 @@ $(STATEDIR)/mpg123.targetinstall: $(mpg123_targetinstall_deps)
 	echo "Version: $(MPG123_VERSION)-$(MPG123_VENDOR_VERSION)" 			>>$(MPG123_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(MPG123_IPKG_TMP)/CONTROL/control
 	echo "Description: commande line mpeg 1,2 layer 1,2,3 player"			>>$(MPG123_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MPG123_IPKG_TMP)
+	@$(call makeipkg, $(MPG123_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

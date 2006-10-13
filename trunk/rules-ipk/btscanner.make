@@ -154,7 +154,7 @@ $(STATEDIR)/btscanner.targetinstall: $(btscanner_targetinstall_deps)
 	echo "Version: $(BTSCANNER_VERSION)" 				>>$(BTSCANNER_IPKG_TMP)/CONTROL/control
 	echo "Depends: bluez-libs, bluez-sdp, gdbm, ncurses" 		>>$(BTSCANNER_IPKG_TMP)/CONTROL/control
 	echo "Description: Displays the output of Bluetooth scans"	>>$(BTSCANNER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BTSCANNER_IPKG_TMP)
+	@$(call makeipkg, $(BTSCANNER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

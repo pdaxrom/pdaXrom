@@ -168,7 +168,7 @@ $(STATEDIR)/gqview.targetinstall: $(gqview_targetinstall_deps)
 	echo "Version: $(GQVIEW_VERSION)" 		>>$(GQVIEW_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 				>>$(GQVIEW_IPKG_TMP)/CONTROL/control
 	echo "Description: GQview is an image viewer for Unix operating systems.">>$(GQVIEW_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GQVIEW_IPKG_TMP)
+	@$(call makeipkg, $(GQVIEW_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

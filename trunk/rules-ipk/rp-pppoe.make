@@ -148,7 +148,7 @@ $(STATEDIR)/rp-pppoe.targetinstall: $(rp-pppoe_targetinstall_deps)
 	echo "Depends: " 									>>$(RP-PPPOE_IPKG_TMP)/CONTROL/control
 	echo "Description: PPPoE (Point-to-Point Protocol over Ethernet) is a protocol used by many ADSL Internet Service Providers. Roaring Penguin has a free PPPoE client for Linux and Solaris systems to connect to PPPoE service providers." >>$(RP-PPPOE_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(RP-PPPOE_IPKG_TMP)
+	@$(call makeipkg, $(RP-PPPOE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

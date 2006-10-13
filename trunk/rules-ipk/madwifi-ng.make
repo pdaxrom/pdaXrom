@@ -151,7 +151,7 @@ $(STATEDIR)/madwifi-ng.targetinstall: $(madwifi-ng_targetinstall_deps)
 	echo "Version: $(MADWIFI-NG_VERSION)-$(MADWIFI-NG_VENDOR_VERSION)" 		>>$(MADWIFI-NG_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(MADWIFI-NG_IPKG_TMP)/CONTROL/control
 	echo "Description: Atheros chipset drivers"					>>$(MADWIFI-NG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MADWIFI-NG_IPKG_TMP)
+	@$(call makeipkg, $(MADWIFI-NG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

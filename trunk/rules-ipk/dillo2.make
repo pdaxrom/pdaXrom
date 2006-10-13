@@ -173,7 +173,7 @@ $(STATEDIR)/dillo2.targetinstall: $(dillo2_targetinstall_deps)
 	echo "Version: $(DILLO2_VERSION)-$(DILLO2_VENDOR_VERSION)" 			>>$(DILLO2_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, openssl" 							>>$(DILLO2_IPKG_TMP)/CONTROL/control
 	echo "Description: Lightweight GTK2 web browser"				>>$(DILLO2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DILLO2_IPKG_TMP)
+	@$(call makeipkg, $(DILLO2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

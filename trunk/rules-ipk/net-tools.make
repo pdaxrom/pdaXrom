@@ -197,7 +197,7 @@ endif
 	echo "Version: $(NET-TOOLS_VERSION)" 					>>$(NET-TOOLS_DIR)/ipkg/CONTROL/control
 	echo "Depends: " 							>>$(NET-TOOLS_DIR)/ipkg/CONTROL/control
 	echo "Description: Network tools"					>>$(NET-TOOLS_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NET-TOOLS_DIR)/ipkg
+	@$(call makeipkg, $(NET-TOOLS_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

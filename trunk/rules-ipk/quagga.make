@@ -187,7 +187,7 @@ $(STATEDIR)/quagga.targetinstall: $(quagga_targetinstall_deps)
 	echo "Version: $(QUAGGA_VERSION)-$(QUAGGA_VENDOR_VERSION)" 			>>$(QUAGGA_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(QUAGGA_DEPLIST)" 						>>$(QUAGGA_IPKG_TMP)/CONTROL/control
 	echo "Description: Quagga Routing Suite"					>>$(QUAGGA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QUAGGA_IPKG_TMP)
+	@$(call makeipkg, $(QUAGGA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

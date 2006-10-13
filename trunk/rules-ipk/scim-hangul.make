@@ -169,7 +169,7 @@ $(STATEDIR)/scim-hangul.targetinstall: $(scim-hangul_targetinstall_deps)
 	echo "Depends: scim" 								>>$(SCIM-HANGUL_IPKG_TMP)/CONTROL/control
 	echo "Description: smart hangul input method"					>>$(SCIM-HANGUL_IPKG_TMP)/CONTROL/control
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCIM-HANGUL_IPKG_TMP)
+	@$(call makeipkg, $(SCIM-HANGUL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

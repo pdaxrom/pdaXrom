@@ -159,7 +159,7 @@ $(STATEDIR)/libosip2.targetinstall: $(libosip2_targetinstall_deps)
 	echo "Version: $(LIBOSIP2_VERSION)-$(LIBOSIP2_VENDOR_VERSION)" 			>>$(LIBOSIP2_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LIBOSIP2_IPKG_TMP)/CONTROL/control
 	echo "Description: oSIP is an implementation of SIP."				>>$(LIBOSIP2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBOSIP2_IPKG_TMP)
+	@$(call makeipkg, $(LIBOSIP2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -148,7 +148,7 @@ $(STATEDIR)/openobex-apps.targetinstall: $(openobex-apps_targetinstall_deps)
 	echo "Version: $(OPENOBEX-APPS_VERSION)" 		>>$(OPENOBEX-APPS_IPKG_TMP)/CONTROL/control
 	echo "Depends: openobex" 				>>$(OPENOBEX-APPS_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the apps that comes with the Open OBEX c-library. These are not meant to be more than test-programs to look at if you want to see how use the library itself.">>$(OPENOBEX-APPS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENOBEX-APPS_IPKG_TMP)
+	@$(call makeipkg, $(OPENOBEX-APPS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -167,7 +167,7 @@ $(STATEDIR)/lame.targetinstall: $(lame_targetinstall_deps)
 	echo "Version: $(LAME_VERSION)" 					>>$(LAME_IPKG_TMP)/CONTROL/control
 	echo "Depends: ncurses" 						>>$(LAME_IPKG_TMP)/CONTROL/control
 	echo "Description: LAME Ain't an MP3 Encoder"				>>$(LAME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LAME_IPKG_TMP)
+	@$(call makeipkg, $(LAME_IPKG_TMP))
 	
 	mkdir -p $(LAME_IPKG_TMP)-gtk/CONTROL
 	echo "Package: mp3x" 							 >$(LAME_IPKG_TMP)-gtk/CONTROL/control
@@ -179,7 +179,7 @@ $(STATEDIR)/lame.targetinstall: $(lame_targetinstall_deps)
 	echo "Version: $(LAME_VERSION)" 					>>$(LAME_IPKG_TMP)-gtk/CONTROL/control
 	echo "Depends: lame, gtk" 						>>$(LAME_IPKG_TMP)-gtk/CONTROL/control
 	echo "Description: LAME GTK frontend"					>>$(LAME_IPKG_TMP)-gtk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LAME_IPKG_TMP)-gtk
+	@$(call makeipkg, $(LAME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

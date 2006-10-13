@@ -149,7 +149,7 @@ $(STATEDIR)/rdesktop.targetinstall: $(rdesktop_targetinstall_deps)
 	echo "Version: $(RDESKTOP_VERSION)" 					>>$(RDESKTOP_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 						>>$(RDESKTOP_IPKG_TMP)/CONTROL/control
 	echo "Description: Remote Desktop Client for MS Windows"		>>$(RDESKTOP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(RDESKTOP_IPKG_TMP)
+	@$(call makeipkg, $(RDESKTOP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

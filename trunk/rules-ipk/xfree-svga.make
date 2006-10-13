@@ -177,7 +177,7 @@ $(STATEDIR)/xfree-svga.targetinstall: $(xfree-svga_targetinstall_deps)
 
 	chmod 755 $(XFREE-SVGA_IPKG_TMP)/CONTROL/{preinst,postinst,postrm}
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(XFREE-SVGA_IPKG_TMP)
+	@$(call makeipkg, $(XFREE-SVGA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

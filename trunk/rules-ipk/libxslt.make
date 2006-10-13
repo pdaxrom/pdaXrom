@@ -170,7 +170,7 @@ $(STATEDIR)/libxslt.targetinstall: $(libxslt_targetinstall_deps)
 	echo "Version: $(LIBXSLT_VERSION)-$(LIBXSLT_VENDOR_VERSION)" 			>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	echo "Depends: libxml2, libgcrypt" 						>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
 	echo "Description: XSLT support for libxml2"					>>$(LIBXSLT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBXSLT_IPKG_TMP)
+	@$(call makeipkg, $(LIBXSLT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

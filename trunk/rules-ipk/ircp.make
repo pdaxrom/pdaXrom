@@ -149,7 +149,7 @@ $(STATEDIR)/ircp.targetinstall: $(ircp_targetinstall_deps)
 	echo "Version: $(IRCP_VERSION)" 			>>$(IRCP_IPKG_TMP)/CONTROL/control
 	echo "Depends: openobex" 				>>$(IRCP_IPKG_TMP)/CONTROL/control
 	echo "Description: ircp is used to "beam" files or whole directories to/from Linux, Windows.">>$(IRCP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IRCP_IPKG_TMP)
+	@$(call makeipkg, $(IRCP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

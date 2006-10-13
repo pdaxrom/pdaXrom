@@ -178,7 +178,7 @@ $(STATEDIR)/efltk.targetinstall: $(efltk_targetinstall_deps)
 	echo "Version: $(EFLTK_VERSION)-$(EFLTK_VENDOR_VERSION)" 					>>$(EFLTK_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, libxml2" 									>>$(EFLTK_IPKG_TMP)/CONTROL/control
 	echo "Description: modified FLTK library (called extended FLTK or just eFLTK)"			>>$(EFLTK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EFLTK_IPKG_TMP)
+	@$(call makeipkg, $(EFLTK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

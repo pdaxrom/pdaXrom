@@ -175,7 +175,7 @@ $(STATEDIR)/kdegraphics.targetinstall: $(kdegraphics_targetinstall_deps)
 	echo "Version: $(KDEGRAPHICS_VERSION)-$(KDEGRAPHICS_VENDOR_VERSION)" 			>>$(KDEGRAPHICS_IPKG_TMP)/CONTROL/control
 	echo "Depends: kdelibs" 								>>$(KDEGRAPHICS_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE graphics"							>>$(KDEGRAPHICS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDEGRAPHICS_IPKG_TMP)
+	@$(call makeipkg, $(KDEGRAPHICS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

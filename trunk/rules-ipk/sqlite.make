@@ -179,7 +179,7 @@ $(STATEDIR)/sqlite.targetinstall: $(sqlite_targetinstall_deps)
 	echo "Version: $(SQLITE_VERSION)" 		>>$(SQLITE_IPKG_TMP)/CONTROL/control
 	echo "Depends: readline" 			>>$(SQLITE_IPKG_TMP)/CONTROL/control
 	echo "Description: An Embeddable SQL Database Engine">>$(SQLITE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SQLITE_IPKG_TMP)
+	@$(call makeipkg, $(SQLITE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

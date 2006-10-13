@@ -187,7 +187,7 @@ $(STATEDIR)/kde-pim.targetinstall: $(kde-pim_targetinstall_deps)
 	echo "Version: $(KDE-PIM_VERSION)-$(KDE-PIM_VENDOR_VERSION)" 			>>$(KDE-PIM_IPKG_TMP)/CONTROL/control
 	echo "Depends: kdebase, libqui" 						>>$(KDE-PIM_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE PIM applications"					>>$(KDE-PIM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDE-PIM_IPKG_TMP)
+	@$(call makeipkg, $(KDE-PIM_IPKG_TMP))
 
 	rm -rf $(KDE-PIM_IPKG_TMP)
 
@@ -204,7 +204,7 @@ $(STATEDIR)/kde-pim.targetinstall: $(kde-pim_targetinstall_deps)
 	echo "Version: $(QT-X11-FREE_VERSION)"				 		>>$(KDE-PIM_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt" 								>>$(KDE-PIM_IPKG_TMP)/CONTROL/control
 	echo "Description: UI QT library"						>>$(KDE-PIM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDE-PIM_IPKG_TMP)
+	@$(call makeipkg, $(KDE-PIM_IPKG_TMP))
 
 
 	touch $@

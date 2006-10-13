@@ -165,7 +165,7 @@ $(STATEDIR)/libvorbis.targetinstall: $(libvorbis_targetinstall_deps)
 	echo "Version: $(LIBVORBIS_VERSION)-$(LIBVORBIS_VENDOR_VERSION)" 		>>$(LIBVORBIS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libogg" 								>>$(LIBVORBIS_IPKG_TMP)/CONTROL/control
 	echo "Description: vorbisfile is a library that provides a convenient high-level API for decoding and basic manipulation of all Vorbis I audio streams">>$(LIBVORBIS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBVORBIS_IPKG_TMP)
+	@$(call makeipkg, $(LIBVORBIS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

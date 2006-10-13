@@ -152,7 +152,7 @@ $(STATEDIR)/vlan.targetinstall: $(vlan_targetinstall_deps)
 	echo "Version: $(VLAN_VERSION)-$(VLAN_VENDOR_VERSION)" 				>>$(VLAN_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(VLAN_IPKG_TMP)/CONTROL/control
 	echo "Description: 802.1Q VLAN implementation for Linux"			>>$(VLAN_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VLAN_IPKG_TMP)
+	@$(call makeipkg, $(VLAN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

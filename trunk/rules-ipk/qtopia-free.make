@@ -201,7 +201,7 @@ $(STATEDIR)/qtopia-free.targetinstall: $(qtopia-free_targetinstall_deps)
 	echo "Version: $(QTOPIA-FREE_VERSION)" 							>>$(QTOPIA-FREE_IPKG_TMP)/CONTROL/control
 	echo "Depends: qpe-base, qpe-quicklauncher, qpe-taskbar, qt-embedded-fonts-t10, libpng, libjpeg, libz" >>$(QTOPIA-FREE_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"					>>$(QTOPIA-FREE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QTOPIA-FREE_IPKG_TMP)
+	@$(call makeipkg, $(QTOPIA-FREE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

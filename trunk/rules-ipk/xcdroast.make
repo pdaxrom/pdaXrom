@@ -159,7 +159,7 @@ $(STATEDIR)/xcdroast.targetinstall: $(xcdroast_targetinstall_deps)
 	echo "Version: $(XCDROAST_VERSION)-$(XCDROAST_VENDOR_VERSION)" 			>>$(XCDROAST_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(XCDROAST_IPKG_TMP)/CONTROL/control
 	echo "Description: X-CD-Roast tries to be the most flexible CD-burning software ever. It allows even the unexperienced user to create or copy a CD with a few mouse clicks in a intuitive and nice looking graphical user interface." >>$(XCDROAST_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XCDROAST_IPKG_TMP)
+	@$(call makeipkg, $(XCDROAST_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

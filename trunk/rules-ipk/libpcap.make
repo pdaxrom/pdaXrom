@@ -157,7 +157,7 @@ $(STATEDIR)/libpcap.targetinstall: $(libpcap_targetinstall_deps)
 	echo "Depends: " 								>>$(LIBPCAP_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(LIBPCAP_IPKG_TMP)/CONTROL/control
 	asdas
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBPCAP_IPKG_TMP)
+	@$(call makeipkg, $(LIBPCAP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

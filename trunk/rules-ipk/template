@@ -166,7 +166,7 @@ $(STATEDIR)/@packet@.targetinstall: $(@packet@_targetinstall_deps)
 	echo "Version: $(@PACKET@_VERSION)-$(@PACKET@_VENDOR_VERSION)" 			>>$(@PACKET@_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(@PACKET@_DEPLIST)" 						>>$(@PACKET@_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(@PACKET@_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(@PACKET@_IPKG_TMP)
+	@$(call makeipkg, $(@PACKET@_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -161,7 +161,7 @@ $(STATEDIR)/t1lib.targetinstall: $(t1lib_targetinstall_deps)
 	echo "Version: $(T1LIB_VERSION)-$(T1LIB_VENDOR_VERSION)" 						>>$(T1LIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 											>>$(T1LIB_IPKG_TMP)/CONTROL/control
 	echo "Description: Adobe Type 1 Font Rasterizing Library"						>>$(T1LIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(T1LIB_IPKG_TMP)
+	@$(call makeipkg, $(T1LIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -155,7 +155,7 @@ $(STATEDIR)/motion.targetinstall: $(motion_targetinstall_deps)
 	echo "Version: $(MOTION_VERSION)-$(MOTION_VENDOR_VERSION)" 			>>$(MOTION_IPKG_TMP)/CONTROL/control
 	echo "Depends: libffmpeg" 							>>$(MOTION_IPKG_TMP)/CONTROL/control
 	echo "Description: Motion is a software motion detector."			>>$(MOTION_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MOTION_IPKG_TMP)
+	@$(call makeipkg, $(MOTION_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

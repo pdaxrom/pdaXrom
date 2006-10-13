@@ -174,7 +174,7 @@ $(STATEDIR)/sudo.targetinstall: $(sudo_targetinstall_deps)
 	echo "chmod 440 /etc/sudoers"			>>$(SUDO_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(SUDO_IPKG_TMP)/CONTROL/postinst
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(SUDO_IPKG_TMP)
+	@$(call makeipkg, $(SUDO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

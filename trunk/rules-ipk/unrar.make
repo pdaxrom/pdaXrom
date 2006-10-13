@@ -148,7 +148,7 @@ $(STATEDIR)/unrar.targetinstall: $(unrar_targetinstall_deps)
 	echo "Version: $(UNRAR_VERSION)-$(UNRAR_VENDOR_VERSION)" 			>>$(UNRAR_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(UNRAR_IPKG_TMP)/CONTROL/control
 	echo "Description: Command line UNRAR utility"					>>$(UNRAR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UNRAR_IPKG_TMP)
+	@$(call makeipkg, $(UNRAR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

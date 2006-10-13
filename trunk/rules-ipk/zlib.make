@@ -116,7 +116,7 @@ $(STATEDIR)/zlib.targetinstall: $(STATEDIR)/zlib.install
 	echo "Version: $(ZIP_VERSION)" 						>>$(ZLIB_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(ZLIB_DIR)/ipk/CONTROL/control
 	echo "Description: a general purpose data compression library."		>>$(ZLIB_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZLIB_DIR)/ipk
+	@$(call makeipkg, $(ZLIB_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

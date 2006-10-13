@@ -156,7 +156,7 @@ $(STATEDIR)/ugrep.targetinstall: $(ugrep_targetinstall_deps)
 	echo "Version: $(UGREP_VERSION)" 					>>$(UGREP_IPKG_TMP)/CONTROL/control
 	echo "Depends: pcre" 							>>$(UGREP_IPKG_TMP)/CONTROL/control
 	echo "Description: Grep searches one or more input files for lines containing a match to a specified pattern. By default, grep prints the matching lines.">>$(UGREP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UGREP_IPKG_TMP)
+	@$(call makeipkg, $(UGREP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

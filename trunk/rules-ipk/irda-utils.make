@@ -137,7 +137,7 @@ $(STATEDIR)/irda-utils.targetinstall: $(irda-utils_targetinstall_deps)
 	echo "Version: $(IRDA-UTILS_VERSION)" 					>>$(IRDA-UTILS_DIR)/ipkg/CONTROL/control
 	echo "Depends: " 							>>$(IRDA-UTILS_DIR)/ipkg/CONTROL/control
 	echo "Description: Provides common files needed to use IrDA."		>>$(IRDA-UTILS_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IRDA-UTILS_DIR)/ipkg
+	@$(call makeipkg, $(IRDA-UTILS_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

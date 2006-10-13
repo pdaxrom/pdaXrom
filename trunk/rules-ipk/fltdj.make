@@ -148,7 +148,7 @@ $(STATEDIR)/fltdj.targetinstall: $(fltdj_targetinstall_deps)
 	echo "Version: $(FLTDJ_VERSION)" 			>>$(FLTDJ_IPKG_TMP)/CONTROL/control
 	echo "Depends: fltk-utf8" 				>>$(FLTDJ_IPKG_TMP)/CONTROL/control
 	echo "Description: fltdj manages daily notes, appointments, alarms to upcoming appointments, contacts, holidays and to-do list.">>$(FLTDJ_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FLTDJ_IPKG_TMP)
+	@$(call makeipkg, $(FLTDJ_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

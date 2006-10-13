@@ -184,7 +184,7 @@ $(STATEDIR)/alsa-utils.targetinstall: $(alsa-utils_targetinstall_deps)
 	echo "Version: $(ALSA-UTILS_VERSION)-$(ALSA-UTILS_VENDOR_VERSION)" 		>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: alsa-lib" 							>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: ALSA utilites"						>>$(ALSA-UTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ALSA-UTILS_IPKG_TMP)
+	@$(call makeipkg, $(ALSA-UTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -197,7 +197,7 @@ $(STATEDIR)/pygtk.targetinstall: $(pygtk_targetinstall_deps)
 	echo "Version: $(PYGTK_VERSION)-$(PYGTK_VENDOR_VERSION)" 			>>$(PYGTK_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, python-core, python-codecs, python-fcntl, python-stringold, python-xml, pygobject, pycairo, libglade" >>$(PYGTK_IPKG_TMP)/CONTROL/control
 	echo "Description: Modules that allow you to use gtk in Python programs."	>>$(PYGTK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYGTK_IPKG_TMP)
+	@$(call makeipkg, $(PYGTK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

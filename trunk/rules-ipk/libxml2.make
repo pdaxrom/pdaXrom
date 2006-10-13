@@ -177,7 +177,7 @@ $(STATEDIR)/libxml2.targetinstall: $(libxml2_targetinstall_deps)
 	echo "Version: $(LIBXML2_VERSION)-$(LIBXML2_VENDOR_VERSION)" 			>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Depends: libz" 								>>$(LIBXML2_IPKG_TMP)/CONTROL/control
 	echo "Description: XML toolkit from the GNOME project"				>>$(LIBXML2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBXML2_IPKG_TMP)
+	@$(call makeipkg, $(LIBXML2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

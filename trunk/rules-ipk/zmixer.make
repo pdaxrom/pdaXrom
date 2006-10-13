@@ -155,7 +155,7 @@ $(STATEDIR)/zmixer.targetinstall: $(zmixer_targetinstall_deps)
 	echo "Version: $(ZMIXER_VERSION)-$(ZMIXER_VENDOR_VERSION)" 			>>$(ZMIXER_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, alsa-lib" 							>>$(ZMIXER_IPKG_TMP)/CONTROL/control
 	echo "Description: Simple ALSA mixer"						>>$(ZMIXER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZMIXER_IPKG_TMP)
+	@$(call makeipkg, $(ZMIXER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

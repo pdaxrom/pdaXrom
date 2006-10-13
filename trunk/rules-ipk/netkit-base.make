@@ -152,7 +152,7 @@ endif
 	echo "Version: $(NETKIT-BASE_VERSION)" 					>>$(NETKIT-BASE_DIR)/ipkg/CONTROL/control
 	echo "Depends: " 							>>$(NETKIT-BASE_DIR)/ipkg/CONTROL/control
 	echo "Description: some network apps"					>>$(NETKIT-BASE_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NETKIT-BASE_DIR)/ipkg
+	@$(call makeipkg, $(NETKIT-BASE_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

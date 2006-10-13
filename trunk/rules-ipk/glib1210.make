@@ -174,7 +174,7 @@ $(STATEDIR)/glib1210.targetinstall: $(glib1210_targetinstall_deps)
 	echo "Version: $(GLIB1210_VERSION)" 		>>$(GLIB1210_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(GLIB1210_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(GLIB1210_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GLIB1210_IPKG_TMP)
+	@$(call makeipkg, $(GLIB1210_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

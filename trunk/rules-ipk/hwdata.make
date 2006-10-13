@@ -150,7 +150,7 @@ $(STATEDIR)/hwdata.targetinstall: $(hwdata_targetinstall_deps)
 	echo "Version: $(HWDATA_VERSION)-$(HWDATA_VENDOR_VERSION)" 			>>$(HWDATA_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(HWDATA_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(HWDATA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HWDATA_IPKG_TMP)
+	@$(call makeipkg, $(HWDATA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

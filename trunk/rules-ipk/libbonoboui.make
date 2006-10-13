@@ -169,7 +169,7 @@ $(STATEDIR)/libbonoboui.targetinstall: $(libbonoboui_targetinstall_deps)
 	echo "Version: $(LIBBONOBOUI_VERSION)-$(LIBBONOBOUI_VENDOR_VERSION)" 		>>$(LIBBONOBOUI_IPKG_TMP)/CONTROL/control
 	echo "Depends: orbit2, libbonobo, libgnomecanvas, libgnome" 			>>$(LIBBONOBOUI_IPKG_TMP)/CONTROL/control
 	echo "Description: UI for libbonobo"						>>$(LIBBONOBOUI_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBBONOBOUI_IPKG_TMP)
+	@$(call makeipkg, $(LIBBONOBOUI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

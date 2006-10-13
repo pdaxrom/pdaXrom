@@ -188,7 +188,7 @@ $(STATEDIR)/wlan-ng.targetinstall: $(wlan-ng_targetinstall_deps)
 	echo "#!/bin/sh" 				 > $(WLAN-NG_IPKG_TMP)/CONTROL/postinst
 	echo "depmod -a"				>> $(WLAN-NG_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(WLAN-NG_IPKG_TMP)/CONTROL/postinst
-	cd $(FEEDDIR) && $(XMKIPKG) $(WLAN-NG_IPKG_TMP)
+	@$(call makeipkg, $(WLAN-NG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

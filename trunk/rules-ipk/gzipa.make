@@ -138,7 +138,7 @@ $(STATEDIR)/gzip.targetinstall: $(gzip_targetinstall_deps)
 	echo "Version: $(GZIPA_VERSION)" 			>>$(GZIPA_DIR)/ipk/CONTROL/control
 	echo "Depends: "		 			>>$(GZIPA_DIR)/ipk/CONTROL/control
 	echo "Description: Compress utility."			>>$(GZIPA_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GZIPA_DIR)/ipk
+	@$(call makeipkg, $(GZIPA_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -158,7 +158,7 @@ $(STATEDIR)/libungif.targetinstall: $(libungif_targetinstall_deps)
 	echo "Version: $(LIBUNGIF_VERSION)-$(LIBUNGIF_VENDOR_VERSION)" 			>>$(LIBUNGIF_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 							>>$(LIBUNGIF_IPKG_TMP)/CONTROL/control
 	echo "Description: This is libungif, a library for manipulating gif files in a manner compatible with libgif, the gif library authored and maintainer by Eric S. Raymond." >>$(LIBUNGIF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBUNGIF_IPKG_TMP)
+	@$(call makeipkg, $(LIBUNGIF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

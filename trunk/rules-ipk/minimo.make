@@ -182,7 +182,7 @@ $(STATEDIR)/minimo.targetinstall: $(minimo_targetinstall_deps)
 	echo "Version: $(MOZILLA_VERSION)" 				>>$(MINIMO_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 						>>$(MINIMO_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the Embedding distribution of Mozilla.">>$(MINIMO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MINIMO_IPKG_TMP)
+	@$(call makeipkg, $(MINIMO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

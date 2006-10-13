@@ -188,7 +188,7 @@ else
 	echo "Depends: glib2"		 									>>$(MONO_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: Mono Runtime"									>>$(MONO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MONO_IPKG_TMP)
+	@$(call makeipkg, $(MONO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

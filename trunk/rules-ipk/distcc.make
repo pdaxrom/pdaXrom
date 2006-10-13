@@ -148,7 +148,7 @@ $(STATEDIR)/distcc.targetinstall: $(distcc_targetinstall_deps)
 	echo "Version: $(XCHAIN-DISTCC_VERSION)" 	>>$(DISTCC_IPKG_TMP)/CONTROL/control
 	echo "Depends: popt" 				>>$(DISTCC_IPKG_TMP)/CONTROL/control
 	echo "Description: a free distributed C/C++ compiler system.">>$(DISTCC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DISTCC_IPKG_TMP)
+	@$(call makeipkg, $(DISTCC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

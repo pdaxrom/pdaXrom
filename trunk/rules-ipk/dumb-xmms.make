@@ -149,7 +149,7 @@ $(STATEDIR)/dumb-xmms.targetinstall: $(dumb-xmms_targetinstall_deps)
 	echo "Version: $(DUMB-XMMS_VERSION)" 							>>$(DUMB-XMMS_IPKG_TMP)/CONTROL/control
 	echo "Depends: xmms" 									>>$(DUMB-XMMS_IPKG_TMP)/CONTROL/control
 	echo "Description: MOD,IT,S3M XMMS plugin"						>>$(DUMB-XMMS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DUMB-XMMS_IPKG_TMP)
+	@$(call makeipkg, $(DUMB-XMMS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

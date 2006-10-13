@@ -147,7 +147,7 @@ $(STATEDIR)/gedit.targetinstall: $(gedit_targetinstall_deps)
 	echo "Depends: " 								>>$(GEDIT_IPKG_TMP)/CONTROL/control
 	echo "Description: gedit is the official text editor of the GNOME desktop environment." >>$(GEDIT_IPKG_TMP)/CONTROL/control
 	asasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(GEDIT_IPKG_TMP)
+	@$(call makeipkg, $(GEDIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

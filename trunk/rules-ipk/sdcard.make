@@ -176,7 +176,7 @@ $(STATEDIR)/sdcard.targetinstall: $(sdcard_targetinstall_deps)
 	echo "Version: $(SDCARD_VERSION)-$(SDCARD_VENDOR_VERSION)" 		>>$(SDCARD_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(SDCARD_IPKG_TMP)/CONTROL/control
 	echo "Description: SD card drivers and utils"				>>$(SDCARD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDCARD_IPKG_TMP)
+	@$(call makeipkg, $(SDCARD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

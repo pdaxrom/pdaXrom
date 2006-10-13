@@ -164,7 +164,7 @@ $(STATEDIR)/xproto.targetinstall: $(xproto_targetinstall_deps)
 	echo "Version: $(XPROTO_VERSION)-$(XPROTO_VENDOR_VERSION)" 			>>$(XPROTO_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(XPROTO_IPKG_TMP)/CONTROL/control
 	echo "Description: X protocol and ancillary headers"				>>$(XPROTO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XPROTO_IPKG_TMP)
+	@$(call makeipkg, $(XPROTO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -204,7 +204,7 @@ endif
 	echo "Version: $(MTD_VERSION)"	 					>>$(MTD_DIR)/ipk/CONTROL/control
 	echo "Depends: libz" 							>>$(MTD_DIR)/ipk/CONTROL/control
 	echo "Description: Tools for managing memory technology devices."	>>$(MTD_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MTD_DIR)/ipk
+	@$(call makeipkg, $(MTD_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

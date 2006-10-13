@@ -159,7 +159,7 @@ $(STATEDIR)/libipp.targetinstall: $(libipp_targetinstall_deps)
 	echo "Version: $(LIBIPP_VERSION)" 		>>$(LIBIPP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBIPP_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(LIBIPP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBIPP_IPKG_TMP)
+	@$(call makeipkg, $(LIBIPP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

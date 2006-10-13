@@ -180,7 +180,7 @@ $(STATEDIR)/thunderbird.targetinstall: $(thunderbird_targetinstall_deps)
 	echo "Version: $(THUNDERBIRD_VERSION)" 						>>$(THUNDERBIRD_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2"	 							>>$(THUNDERBIRD_IPKG_TMP)/CONTROL/control
 	echo "Description: Thunderbird is a full-featured e-mail and newsgroup client that makes emailing safer, faster and easier than ever before more.">>$(THUNDERBIRD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(THUNDERBIRD_IPKG_TMP)
+	@$(call makeipkg, $(THUNDERBIRD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

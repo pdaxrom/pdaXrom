@@ -146,7 +146,7 @@ $(STATEDIR)/Wrappers.targetinstall: $(Wrappers_targetinstall_deps)
 	echo "Version: $(WRAPPERS_VERSION)" 		>>$(WRAPPERS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(WRAPPERS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(WRAPPERS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WRAPPERS_IPKG_TMP)
+	@$(call makeipkg, $(WRAPPERS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

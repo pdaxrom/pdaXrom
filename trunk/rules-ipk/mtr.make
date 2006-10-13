@@ -188,7 +188,7 @@ else
 	echo "Depends: " 							>>$(MTR_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: mtr combines the functionality of the 'traceroute' and 'ping' programs in a single network diagnostic tool."	>>$(MTR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MTR_IPKG_TMP)
+	@$(call makeipkg, $(MTR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

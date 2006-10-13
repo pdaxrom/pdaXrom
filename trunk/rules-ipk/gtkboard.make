@@ -155,7 +155,7 @@ $(STATEDIR)/gtkboard.targetinstall: $(gtkboard_targetinstall_deps)
 	echo "Version: $(GTKBOARD_VERSION)" 			>>$(GTKBOARD_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, sdl, sdl-mixer" 			>>$(GTKBOARD_IPKG_TMP)/CONTROL/control
 	echo "Description: 31 games in a single program."	>>$(GTKBOARD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTKBOARD_IPKG_TMP)
+	@$(call makeipkg, $(GTKBOARD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -158,7 +158,7 @@ $(STATEDIR)/portmap.targetinstall: $(portmap_targetinstall_deps)
 	chmod 755 $(PORTMAP_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(PORTMAP_IPKG_TMP)/CONTROL/prerm
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(PORTMAP_IPKG_TMP)
+	@$(call makeipkg, $(PORTMAP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -154,7 +154,7 @@ $(STATEDIR)/fbpanel.targetinstall: $(fbpanel_targetinstall_deps)
 	echo "Version: $(FBPANEL_VERSION)-$(FBPANEL_VENDOR_VERSION)" 			>>$(FBPANEL_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, startup-notification" 					>>$(FBPANEL_IPKG_TMP)/CONTROL/control
 	echo "Description: fbpanel is a lightweight, NETWM compliant desktop panel. It works with any NETWM compliant window manager." >>$(FBPANEL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FBPANEL_IPKG_TMP)
+	@$(call makeipkg, $(FBPANEL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

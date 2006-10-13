@@ -162,7 +162,7 @@ $(STATEDIR)/fltk.targetinstall: $(fltk_targetinstall_deps)
 	echo "Depends: xfree" 					>>$(FLTK_IPKG_TMP)/CONTROL/control
 	echo "Description: FLTK (pronounced \"fulltick\") is a cross-platform C++ GUI toolkit for UNIX?/Linux (X11), Microsoft? Windows, and MacOS X.">>$(FLTK_IPKG_TMP)/CONTROL/control
 	asads
-	cd $(FEEDDIR) && $(XMKIPKG) $(FLTK_IPKG_TMP)
+	@$(call makeipkg, $(FLTK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

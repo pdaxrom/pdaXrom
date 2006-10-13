@@ -173,7 +173,7 @@ $(STATEDIR)/openvpn.targetinstall: $(openvpn_targetinstall_deps)
 	echo "Version: $(OPENVPN_VERSION)-$(OPENVPN_VENDOR_VERSION)" 			>>$(OPENVPN_IPKG_TMP)/CONTROL/control
 	echo "Depends: lzo, openssl" 							>>$(OPENVPN_IPKG_TMP)/CONTROL/control
 	echo "Description: OpenVPN is a full-featured SSL VPN solution which can accomodate a wide range of configurations, including remote access, site-to-site VPNs, WiFi security, and enterprise-scale remote access solutions with load balancing, failover, and fine-grained access-controls" >>$(OPENVPN_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENVPN_IPKG_TMP)
+	@$(call makeipkg, $(OPENVPN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

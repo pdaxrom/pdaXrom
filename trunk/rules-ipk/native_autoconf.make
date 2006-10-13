@@ -142,7 +142,7 @@ $(STATEDIR)/native_autoconf.targetinstall: $(native_autoconf_targetinstall_deps)
 	echo "Version: $(NATIVE_AUTOCONF_VERSION)-$(NATIVE_AUTOCONF_VENDOR_VERSION)" 		>>$(NATIVE_AUTOCONF_IPKG_TMP)/CONTROL/control
 	echo "Depends: perl" 									>>$(NATIVE_AUTOCONF_IPKG_TMP)/CONTROL/control
 	echo "Description: Autoconf is an extensible package of M4 macros that produce shell scripts to automatically configure software source code packages."	>>$(NATIVE_AUTOCONF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NATIVE_AUTOCONF_IPKG_TMP)
+	@$(call makeipkg, $(NATIVE_AUTOCONF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

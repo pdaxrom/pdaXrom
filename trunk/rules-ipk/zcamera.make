@@ -139,20 +139,20 @@ $(STATEDIR)/zcamera.targetinstall: $(zcamera_targetinstall_deps)
 	$(ZCAMERA_PATH) $(MAKE) -C $(ZCAMERA_DIR) DESTDIR=$(ZCAMERA_IPKG_TMP) install $(CROSS_ENV_CC)
 
 ifeq ("sharp-corgi", $(PTXCONF_VENDORTWEAKS_USERCONFIG))
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZCAMERA_DIR)/corgi
+	@$(call makeipkg, $(ZCAMERA_DIR)/corgi)
 endif
 
 ifeq ("sharp-akita", $(PTXCONF_VENDORTWEAKS_USERCONFIG))
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZCAMERA_DIR)/akita
+	@$(call makeipkg, $(ZCAMERA_DIR)/akita)
 endif
 
 ifeq ("sharp-collie", $(PTXCONF_VENDORTWEAKS_USERCONFIG))
 	not redy yet
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZCAMERA_DIR)/collie
+	@$(call makeipkg, $(ZCAMERA_DIR)/collie)
 endif
 
 ifeq ("sharp-tosa", $(PTXCONF_VENDORTWEAKS_USERCONFIG))
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZCAMERA_DIR)/tosa
+	@$(call makeipkg, $(ZCAMERA_DIR)/tosa)
 endif
 
 	mkdir -p $(ZCAMERA_IPKG_TMP)/CONTROL
@@ -165,7 +165,7 @@ endif
 	echo "Version: $(ZCAMERA_VERSION)-$(ZCAMERA_VENDOR_VERSION)" 			>>$(ZCAMERA_IPKG_TMP)/CONTROL/control
 	echo "Depends: sharpzdc-cs, sdl" 						>>$(ZCAMERA_IPKG_TMP)/CONTROL/control
 	echo "Description: SHARP CF CE-AG06 digital camera grabber"			>>$(ZCAMERA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZCAMERA_IPKG_TMP)
+	@$(call makeipkg, $(ZCAMERA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

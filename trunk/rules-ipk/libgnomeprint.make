@@ -183,7 +183,7 @@ $(STATEDIR)/libgnomeprint.targetinstall: $(libgnomeprint_targetinstall_deps)
 	echo "Version: $(LIBGNOMEPRINT_VERSION)" 	>>$(LIBGNOMEPRINT_IPKG_TMP)/CONTROL/control
 	echo "Depends: glib2, libxml2, libart-lgpl" 	>>$(LIBGNOMEPRINT_IPKG_TMP)/CONTROL/control
 	echo "Description: Gnome Printing Library">>$(LIBGNOMEPRINT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGNOMEPRINT_IPKG_TMP)
+	@$(call makeipkg, $(LIBGNOMEPRINT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

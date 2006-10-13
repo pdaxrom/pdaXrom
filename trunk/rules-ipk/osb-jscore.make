@@ -163,7 +163,7 @@ $(STATEDIR)/osb-jscore.targetinstall: $(osb-jscore_targetinstall_deps)
 	echo "Version: $(OSB-JSCORE_VERSION)-$(OSB-JSCORE_VENDOR_VERSION)" 		>>$(OSB-JSCORE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(OSB-JSCORE_IPKG_TMP)/CONTROL/control
 	echo "Description: OSB EcmaScript engine"					>>$(OSB-JSCORE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OSB-JSCORE_IPKG_TMP)
+	@$(call makeipkg, $(OSB-JSCORE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

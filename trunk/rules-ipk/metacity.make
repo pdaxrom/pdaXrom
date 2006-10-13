@@ -167,7 +167,7 @@ $(STATEDIR)/metacity.targetinstall: $(metacity_targetinstall_deps)
 	echo "Version: $(METACITY_VERSION)" 					>>$(METACITY_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, startup-notification, gconf" 			>>$(METACITY_IPKG_TMP)/CONTROL/control
 	echo "Description: GNOME windows manager"				>>$(METACITY_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(METACITY_IPKG_TMP)
+	@$(call makeipkg, $(METACITY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

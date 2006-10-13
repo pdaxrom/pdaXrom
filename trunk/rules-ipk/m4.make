@@ -148,7 +148,7 @@ $(STATEDIR)/m4.targetinstall: $(m4_targetinstall_deps)
 	echo "Version: $(M4_VERSION)" 			>>$(M4_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(M4_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU m4 is an implementation of the traditional Unix macro processor.">>$(M4_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(M4_IPKG_TMP)
+	@$(call makeipkg, $(M4_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

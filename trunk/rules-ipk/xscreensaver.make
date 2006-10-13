@@ -169,7 +169,7 @@ $(STATEDIR)/xscreensaver.targetinstall: $(xscreensaver_targetinstall_deps)
 	echo "Version: $(XSCREENSAVER_VERSION)-$(XSCREENSAVER_VENDOR_VERSION)" 		>>$(XSCREENSAVER_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(XSCREENSAVER_IPKG_TMP)/CONTROL/control
 	echo "Description:  The XScreenSaver collection is available below as a DMG containing all 200+ screen savers."	>>$(XSCREENSAVER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XSCREENSAVER_IPKG_TMP)
+	@$(call makeipkg, $(XSCREENSAVER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

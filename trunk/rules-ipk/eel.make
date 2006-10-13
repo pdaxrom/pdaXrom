@@ -181,7 +181,7 @@ $(STATEDIR)/eel.targetinstall: $(eel_targetinstall_deps)
 	echo "Version: $(EEL_VERSION)" 			>>$(EEL_IPKG_TMP)/CONTROL/control
 	echo "Depends: gconf, gnome-vfs, libart-lgpl, libgnome, libgnomeui, libglade">>$(EEL_IPKG_TMP)/CONTROL/control
 	echo "Description: Eazel Extensions Library">>$(EEL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EEL_IPKG_TMP)
+	@$(call makeipkg, $(EEL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

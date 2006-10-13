@@ -166,7 +166,7 @@ $(STATEDIR)/libIDL.targetinstall: $(libIDL_targetinstall_deps)
 	echo "Version: $(LIBIDL_VERSION)" 					>>$(LIBIDL_IPKG_TMP)/CONTROL/control
 	echo "Depends: glib" 							>>$(LIBIDL_IPKG_TMP)/CONTROL/control
 	echo "Description: Interface Definition Language parsing library."	>>$(LIBIDL_IPKG_TMP)/CONTROL/control
-	###cd $(FEEDDIR) && $(XMKIPKG) $(LIBIDL_IPKG_TMP)
+	###@$(call makeipkg, $(LIBIDL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

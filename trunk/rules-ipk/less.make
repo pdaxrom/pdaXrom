@@ -151,7 +151,7 @@ $(STATEDIR)/less.targetinstall: $(less_targetinstall_deps)
 	echo "Version: $(LESS_VERSION)" 						>>$(LESS_IPKG_TMP)/CONTROL/control
 	echo "Depends: ncurses" 							>>$(LESS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(LESS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LESS_IPKG_TMP)
+	@$(call makeipkg, $(LESS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

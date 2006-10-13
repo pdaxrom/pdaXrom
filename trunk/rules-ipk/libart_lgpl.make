@@ -163,7 +163,7 @@ $(STATEDIR)/libart_lgpl.targetinstall: $(libart_lgpl_targetinstall_deps)
 	echo "Version: $(LIBART_LGPL_VERSION)" 		>>$(LIBART_LGPL_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBART_LGPL_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the LGPL'd component of libart. All functions needed for running the Gnome canvas, and for printing support, will be going in here. The GPL'd component will be getting various enhanced functions for specific applications.">>$(LIBART_LGPL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBART_LGPL_IPKG_TMP)
+	@$(call makeipkg, $(LIBART_LGPL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

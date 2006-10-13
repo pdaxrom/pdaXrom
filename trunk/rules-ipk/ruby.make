@@ -148,7 +148,7 @@ $(STATEDIR)/ruby.targetinstall: $(ruby_targetinstall_deps)
 	echo "Depends: " 				>>$(RUBY_IPKG_TMP)/CONTROL/control
 	echo "Description: ">>$(RUBY_IPKG_TMP)/CONTROL/control
 	asdads
-	cd $(FEEDDIR) && $(XMKIPKG) $(RUBY_IPKG_TMP)
+	@$(call makeipkg, $(RUBY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

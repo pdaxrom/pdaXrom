@@ -154,7 +154,7 @@ $(STATEDIR)/ovlfs.targetinstall: $(ovlfs_targetinstall_deps)
 	echo "Version: $(OVLFS_VERSION)" 				>>$(OVLFS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 						>>$(OVLFS_IPKG_TMP)/CONTROL/control
 	echo "Description: The overlay filesystem is a pseudo filesystem that allows users to work with files from another filesystem without affecting it.">>$(OVLFS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OVLFS_IPKG_TMP)
+	@$(call makeipkg, $(OVLFS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -192,7 +192,7 @@ $(STATEDIR)/planner.targetinstall: $(planner_targetinstall_deps)
 	echo "Version: $(PLANNER_VERSION)-$(PLANNER_VENDOR_VERSION)" 			>>$(PLANNER_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnomeui, gnome-keyring, libbonoboui, libgnome, esound, libglade, libgnomeprintui, libgnomecanvas, gnome-vfs, gconf, orbit2" >>$(PLANNER_IPKG_TMP)/CONTROL/control
 	echo "Description: Planner is a tool for planning, scheduling and tracking projects." >>$(PLANNER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PLANNER_IPKG_TMP)
+	@$(call makeipkg, $(PLANNER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

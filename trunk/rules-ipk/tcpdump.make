@@ -164,7 +164,7 @@ $(STATEDIR)/tcpdump.targetinstall: $(tcpdump_targetinstall_deps)
 	echo "Version: $(TCPDUMP_VERSION)-$(TCPDUMP_VENDOR_VERSION)" 			>>$(TCPDUMP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(TCPDUMP_IPKG_TMP)/CONTROL/control
 	echo "Description: dump traffic on a network"					>>$(TCPDUMP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TCPDUMP_IPKG_TMP)
+	@$(call makeipkg, $(TCPDUMP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -176,7 +176,7 @@ $(STATEDIR)/libmad.targetinstall: $(libmad_targetinstall_deps)
 	echo "Version: $(LIBMAD_VERSION)" 		>>$(LIBMAD_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBMAD_IPKG_TMP)/CONTROL/control
 	echo "Description: MAD (libmad) is a high-quality MPEG audio decoder.">>$(LIBMAD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBMAD_IPKG_TMP)
+	@$(call makeipkg, $(LIBMAD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

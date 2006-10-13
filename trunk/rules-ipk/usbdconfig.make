@@ -143,7 +143,7 @@ $(STATEDIR)/usbdconfig.targetinstall: $(usbdconfig_targetinstall_deps)
 	echo "Version: $(USBDCONFIG_VERSION)" 					>>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Description: USB Device emulation settings"			>>$(USBDCONFIG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(USBDCONFIG_IPKG_TMP)
+	@$(call makeipkg, $(USBDCONFIG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

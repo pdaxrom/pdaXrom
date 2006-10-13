@@ -153,7 +153,7 @@ $(STATEDIR)/xpdf-freetype.targetinstall: $(xpdf-freetype_targetinstall_deps)
 	echo "Version: $(XPDF-FREETYPE_VERSION)-$(XPDF-FREETYPE_VENDOR_VERSION)" 			>>$(XPDF-FREETYPE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(XPDF-FREETYPE_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(XPDF-FREETYPE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XPDF-FREETYPE_IPKG_TMP)
+	@$(call makeipkg, $(XPDF-FREETYPE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

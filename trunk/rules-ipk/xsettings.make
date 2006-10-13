@@ -151,7 +151,7 @@ $(STATEDIR)/xsettings.targetinstall: $(xsettings_targetinstall_deps)
 	echo "Depends: xfree" 										>>$(XSETTINGS_IPKG_TMP)/CONTROL/control
 	echo "Description: xsettings contains a reference implementation of the xsettings specification."	>>$(XSETTINGS_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(XSETTINGS_IPKG_TMP)
+	@$(call makeipkg, $(XSETTINGS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

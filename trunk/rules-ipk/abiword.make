@@ -181,7 +181,7 @@ $(STATEDIR)/abiword.targetinstall: $(abiword_targetinstall_deps)
 	echo "Version: $(ABIWORD_VERSION)" 		>>$(ABIWORD_IPKG_TMP)/CONTROL/control
 	echo "Depends: fribidi, libglade, gtk2, popt, libgnomeprint, libgnomeprintui" 	>>$(ABIWORD_IPKG_TMP)/CONTROL/control
 	echo "Description: AbiWord is a free word processing program similar to Microsoft Word. It is suitable for typing papers, letters, reports, memos, and so forth.">>$(ABIWORD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ABIWORD_IPKG_TMP)
+	@$(call makeipkg, $(ABIWORD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

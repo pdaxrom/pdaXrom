@@ -150,7 +150,7 @@ $(STATEDIR)/bc.targetinstall: $(bc_targetinstall_deps)
 	echo "Version: $(BC_VERSION)-$(BC_VENDOR_VERSION)" 				>>$(BC_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(BC_IPKG_TMP)/CONTROL/control
 	echo "Description: bc is an arbitrary precision numeric processing language. Syntax is similar to C, but differs in many substantial areas. It supports interactive execution of statements. bc is a utility included in the POSIX P1003.2/D11 draft standard." >>$(BC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BC_IPKG_TMP)
+	@$(call makeipkg, $(BC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

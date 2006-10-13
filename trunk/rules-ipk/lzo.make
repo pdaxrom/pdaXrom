@@ -166,7 +166,7 @@ $(STATEDIR)/lzo.targetinstall: $(lzo_targetinstall_deps)
 	echo "Version: $(LZO_VERSION)-$(LZO_VENDOR_VERSION)" 				>>$(LZO_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LZO_IPKG_TMP)/CONTROL/control
 	echo "Description: LZO is a portable lossless data compression library written in ANSI C" >>$(LZO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LZO_IPKG_TMP)
+	@$(call makeipkg, $(LZO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

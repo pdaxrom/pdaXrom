@@ -259,7 +259,7 @@ endif
 	echo "Version: $(MPLAYER_VERSION)" 					>>$(MPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(MPLAYER_DEPLIST)" 					>>$(MPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Description: the Unix movie player."				>>$(MPLAYER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MPLAYER_IPKG_TMP)
+	@$(call makeipkg, $(MPLAYER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

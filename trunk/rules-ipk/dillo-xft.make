@@ -193,7 +193,7 @@ else
 	echo "Depends: gtk, libjpeg, libpng, openssl" >>$(DILLO-XFT_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: Dillo is a web browser project completely written in C.">>$(DILLO-XFT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DILLO-XFT_IPKG_TMP)
+	@$(call makeipkg, $(DILLO-XFT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

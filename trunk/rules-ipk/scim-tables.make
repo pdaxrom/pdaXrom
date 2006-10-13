@@ -170,7 +170,7 @@ $(STATEDIR)/scim-tables.targetinstall: $(scim-tables_targetinstall_deps)
 	echo "Depends: scim" 								>>$(SCIM-TABLES_IPKG_TMP)/CONTROL/control
 	echo "Description: Self contained IMEngine"					>>$(SCIM-TABLES_IPKG_TMP)/CONTROL/control
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCIM-TABLES_IPKG_TMP)
+	@$(call makeipkg, $(SCIM-TABLES_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

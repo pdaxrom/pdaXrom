@@ -162,7 +162,7 @@ $(STATEDIR)/gettext.targetinstall: $(gettext_targetinstall_deps)
 	echo "Version: $(GETTEXT_VERSION)" 					>>$(GETTEXT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(GETTEXT_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the GNU gettext package."			>>$(GETTEXT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GETTEXT_IPKG_TMP)
+	@$(call makeipkg, $(GETTEXT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

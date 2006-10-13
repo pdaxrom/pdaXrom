@@ -158,7 +158,7 @@ $(STATEDIR)/cdriso.targetinstall: $(cdriso_targetinstall_deps)
 	echo "Version: $(CDRISO_VERSION)-$(CDRISO_VENDOR_VERSION)" 			>>$(CDRISO_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk, libz, bzip2" 						>>$(CDRISO_IPKG_TMP)/CONTROL/control
 	echo "Description: cdriso plugin"						>>$(CDRISO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CDRISO_IPKG_TMP)
+	@$(call makeipkg, $(CDRISO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

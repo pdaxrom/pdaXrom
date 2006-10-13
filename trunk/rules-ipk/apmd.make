@@ -174,7 +174,7 @@ ifdef PTXCONF_APMD_APM_PCMCIA_FIX
 endif
 	chmod 755 $(APMD_DIR)/ipk/CONTROL/postinst
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(APMD_DIR)/ipk
+	@$(call makeipkg, $(APMD_DIR)/ipk)
 
 #	rm -rf $(APMD_DIR)/ipk
 #	$(INSTALL) -D -m 755 $(APMD_DIR)/.libs/apmd 	$(APMD_DIR)/ipk/usr/bin/apmd
@@ -188,7 +188,7 @@ endif
 #	echo "Version: $(APMD_VERSION)" 				>>$(APMD_DIR)/ipk/CONTROL/control
 #	echo "Depends: apm"			 			>>$(APMD_DIR)/ipk/CONTROL/control
 #	echo "Description: APM daemon."					>>$(APMD_DIR)/ipk/CONTROL/control
-#	cd $(FEEDDIR) && $(XMKIPKG) $(APMD_DIR)/ipk
+#	@$(call makeipkg, $(APMD_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

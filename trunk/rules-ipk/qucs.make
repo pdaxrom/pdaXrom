@@ -166,7 +166,7 @@ $(STATEDIR)/qucs.targetinstall: $(qucs_targetinstall_deps)
 	echo "Version: $(QUCS_VERSION)-$(QUCS_VENDOR_VERSION)" 				>>$(QUCS_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt" 								>>$(QUCS_IPKG_TMP)/CONTROL/control
 	echo "Description: Qucs is an integrated circuit simulator which means you are able to setup a circuit with a graphical user interface (GUI) and simulate the large-signal, small-signal and noise behaviour of the circuit." >>$(QUCS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QUCS_IPKG_TMP)
+	@$(call makeipkg, $(QUCS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -153,7 +153,7 @@ $(STATEDIR)/udev.targetinstall: $(udev_targetinstall_deps)
 	echo "Version: $(UDEV_VERSION)-$(UDEV_VENDOR_VERSION)" 				>>$(UDEV_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(UDEV_IPKG_TMP)/CONTROL/control
 	echo "Description: udev is a program which dynamically creates and removes device nodes from /dev" >>$(UDEV_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UDEV_IPKG_TMP)
+	@$(call makeipkg, $(UDEV_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -169,7 +169,7 @@ $(STATEDIR)/iftop.targetinstall: $(iftop_targetinstall_deps)
 	echo "Version: $(IFTOP_VERSION)-$(IFTOP_VENDOR_VERSION)" 			>>$(IFTOP_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(IFTOP_DEPLIST)" 						>>$(IFTOP_IPKG_TMP)/CONTROL/control
 	echo "Description: display bandwidth usage on an interface"			>>$(IFTOP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IFTOP_IPKG_TMP)
+	@$(call makeipkg, $(IFTOP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

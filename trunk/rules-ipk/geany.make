@@ -166,7 +166,7 @@ $(STATEDIR)/geany.targetinstall: $(geany_targetinstall_deps)
 	echo "Version: $(GEANY_VERSION)-$(GEANY_VENDOR_VERSION)" 			>>$(GEANY_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(GEANY_IPKG_TMP)/CONTROL/control
 	echo "Description: GTK2 IDE"							>>$(GEANY_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GEANY_IPKG_TMP)
+	@$(call makeipkg, $(GEANY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

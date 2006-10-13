@@ -175,7 +175,7 @@ $(STATEDIR)/rox.targetinstall: $(rox_targetinstall_deps)
 	echo "Version: $(ROX_VERSION)" 			>>$(ROX_IPKG_TMP)/CONTROL/control
 	echo "Depends: shared-mime-info, gtk2" 		>>$(ROX_IPKG_TMP)/CONTROL/control
 	echo "Description: A RISC OS-like filer for X">>$(ROX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX_IPKG_TMP)
+	@$(call makeipkg, $(ROX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

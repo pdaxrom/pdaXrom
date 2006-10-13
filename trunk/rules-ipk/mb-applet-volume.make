@@ -150,7 +150,7 @@ $(STATEDIR)/mb-applet-volume.targetinstall: $(mb-applet-volume_targetinstall_dep
 	echo "Version: $(MB-APPLET-VOLUME_VERSION)" 			>>$(MB-APPLET-VOLUME_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmatchbox" 					>>$(MB-APPLET-VOLUME_IPKG_TMP)/CONTROL/control
 	echo "Description: matchbox volume applet"			>>$(MB-APPLET-VOLUME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-VOLUME_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-VOLUME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -148,7 +148,7 @@ $(STATEDIR)/lirc.targetinstall: $(lirc_targetinstall_deps)
 	echo "Depends: " 								>>$(LIRC_IPKG_TMP)/CONTROL/control
 	echo "Description:  LIRC is a package that allows you to decode and send infra-red signals of many (but not all) commonly used remote controls." >>$(LIRC_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIRC_IPKG_TMP)
+	@$(call makeipkg, $(LIRC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

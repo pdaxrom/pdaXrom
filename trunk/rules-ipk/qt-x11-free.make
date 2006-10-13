@@ -317,7 +317,7 @@ endif
 	echo "Version: $(QT-X11-FREE_VERSION)"	 		>>$(QT-X11-FREE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, libjpeg, libpng"	 	>>$(QT-X11-FREE_IPKG_TMP)/CONTROL/control
 	echo "Description: QT."	>>$(QT-X11-FREE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QT-X11-FREE_IPKG_TMP)
+	@$(call makeipkg, $(QT-X11-FREE_IPKG_TMP))
 
 	touch $@
 

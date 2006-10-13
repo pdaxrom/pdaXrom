@@ -158,7 +158,7 @@ $(STATEDIR)/libtasn1.targetinstall: $(libtasn1_targetinstall_deps)
 	echo "Version: $(LIBTASN1_VERSION)" 		>>$(LIBTASN1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBTASN1_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the ASN.1 library used in GNUTLS.">>$(LIBTASN1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBTASN1_IPKG_TMP)
+	@$(call makeipkg, $(LIBTASN1_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -243,7 +243,7 @@ $(STATEDIR)/kdelibs.targetinstall: $(kdelibs_targetinstall_deps)
 	echo "Version: $(KDELIBS_VERSION)-$(KDELIBS_VENDOR_VERSION)" 			>>$(KDELIBS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libxml2, libxslt, qt-mt, pcre, libart-lgpl" 			>>$(KDELIBS_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE core libraries"						>>$(KDELIBS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDELIBS_IPKG_TMP)
+	@$(call makeipkg, $(KDELIBS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

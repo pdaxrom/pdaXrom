@@ -166,7 +166,7 @@ $(STATEDIR)/octave.targetinstall: $(octave_targetinstall_deps)
 	echo "Version: $(OCTAVE_VERSION)-$(OCTAVE_VENDOR_VERSION)" 			>>$(OCTAVE_IPKG_TMP)/CONTROL/control
 	echo "Depends: readline, libz, libg2c" 						>>$(OCTAVE_IPKG_TMP)/CONTROL/control
 	echo "Description: high-level language, primarily intended for numerical computations."	>>$(OCTAVE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OCTAVE_IPKG_TMP)
+	@$(call makeipkg, $(OCTAVE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

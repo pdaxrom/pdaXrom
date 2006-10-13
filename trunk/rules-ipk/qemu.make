@@ -165,7 +165,7 @@ $(STATEDIR)/qemu.targetinstall: $(qemu_targetinstall_deps)
 	echo "Version: $(QEMU_VERSION)-$(QEMU_VENDOR_VERSION)" 						>>$(QEMU_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl$(QEMU-ALSA-UTILS-DEP)" 							>>$(QEMU_IPKG_TMP)/CONTROL/control
 	echo "Description: QEMU is a generic and open source processor emulator which achieves a good emulation speed by using dynamic translation." >>$(QEMU_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QEMU_IPKG_TMP)
+	@$(call makeipkg, $(QEMU_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

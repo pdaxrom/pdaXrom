@@ -162,7 +162,7 @@ $(STATEDIR)/jpilot.targetinstall: $(jpilot_targetinstall_deps)
 	echo "Version: $(JPILOT_VERSION)-$(JPILOT_VENDOR_VERSION)" 			>>$(JPILOT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libpisync, libpisock" 					>>$(JPILOT_IPKG_TMP)/CONTROL/control
 	echo "Description: J-Pilot is a desktop organizer application for PalmOS devices." >>$(JPILOT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(JPILOT_IPKG_TMP)
+	@$(call makeipkg, $(JPILOT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

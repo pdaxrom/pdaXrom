@@ -179,7 +179,7 @@ $(STATEDIR)/sunbird.targetinstall: $(sunbird_targetinstall_deps)
 	echo "Version: $(SUNBIRD_VERSION)" 						>>$(SUNBIRD_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2"	 							>>$(SUNBIRD_IPKG_TMP)/CONTROL/control
 	echo "Description: The Sunbird Project is a redesign of the Calendar component - a cross platform standalone calendar application based on Mozilla's XUL user interface language.">>$(SUNBIRD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SUNBIRD_IPKG_TMP)
+	@$(call makeipkg, $(SUNBIRD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

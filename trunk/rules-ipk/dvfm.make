@@ -147,7 +147,7 @@ $(STATEDIR)/dvfm.targetinstall: $(dvfm_targetinstall_deps)
 	echo "Version: $(DVFM_VERSION)-$(DVFM_VENDOR_VERSION)" 				>>$(DVFM_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(DVFM_IPKG_TMP)/CONTROL/control
 	echo "Description: frequency scale utility"					>>$(DVFM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DVFM_IPKG_TMP)
+	@$(call makeipkg, $(DVFM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

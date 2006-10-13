@@ -192,7 +192,7 @@ $(STATEDIR)/rxvt-unicode.targetinstall: $(rxvt-unicode_targetinstall_deps)
 	echo "Version: $(RXVT-UNICODE_VERSION)-$(RXVT-UNICODE_VENDOR_VERSION)" 				>>$(RXVT-UNICODE_IPKG_TMP)-d/CONTROL/control
 	echo "Depends: rxvt-unicode" 									>>$(RXVT-UNICODE_IPKG_TMP)-d/CONTROL/control
 	echo "Description: rxvt-unicode daemon."							>>$(RXVT-UNICODE_IPKG_TMP)-d/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(RXVT-UNICODE_IPKG_TMP)-d
+	@$(call makeipkg, $(RXVT-UNICODE_IPKG_TMP))
 
 	mkdir -p $(RXVT-UNICODE_IPKG_TMP)/CONTROL
 	echo "Package: rxvt-unicode" 									 >$(RXVT-UNICODE_IPKG_TMP)/CONTROL/control
@@ -204,7 +204,7 @@ $(STATEDIR)/rxvt-unicode.targetinstall: $(rxvt-unicode_targetinstall_deps)
 	echo "Version: $(RXVT-UNICODE_VERSION)-$(RXVT-UNICODE_VENDOR_VERSION)" 				>>$(RXVT-UNICODE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, webfonts-lucon" 								>>$(RXVT-UNICODE_IPKG_TMP)/CONTROL/control
 	echo "Description: rxvt-unicode is a clone of the well known terminal emulator rxvt."		>>$(RXVT-UNICODE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(RXVT-UNICODE_IPKG_TMP)
+	@$(call makeipkg, $(RXVT-UNICODE_IPKG_TMP))
 
 
 	touch $@

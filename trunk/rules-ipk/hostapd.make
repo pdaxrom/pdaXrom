@@ -154,7 +154,7 @@ $(STATEDIR)/hostapd.targetinstall: $(hostapd_targetinstall_deps)
 	echo "Version: $(HOSTAPD_VERSION)-$(HOSTAPD_VENDOR_VERSION)" 			>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
 	echo "Depends: hostap-driver, hostap-utils" 					>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
 	echo "Description: WPA/RSN/EAP Authenticator"					>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HOSTAPD_IPKG_TMP)
+	@$(call makeipkg, $(HOSTAPD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -151,7 +151,7 @@ $(STATEDIR)/nxproxy.targetinstall: $(nxproxy_targetinstall_deps)
 	echo "Depends: " 				>>$(NXPROXY_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(NXPROXY_IPKG_TMP)/CONTROL/control
 	saasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(NXPROXY_IPKG_TMP)
+	@$(call makeipkg, $(NXPROXY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

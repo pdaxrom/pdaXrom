@@ -157,7 +157,7 @@ $(STATEDIR)/xircp.targetinstall: $(xircp_targetinstall_deps)
 	echo "Version: $(XIRCP_VERSION)" 			>>$(XIRCP_IPKG_TMP)/CONTROL/control
 	echo "Depends: ircp, gtk2" 				>>$(XIRCP_IPKG_TMP)/CONTROL/control
 	echo "Description: Xircp is a GUI frontend to the program ircp. It is used for transfering files via IrDA. ">>$(XIRCP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XIRCP_IPKG_TMP)
+	@$(call makeipkg, $(XIRCP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

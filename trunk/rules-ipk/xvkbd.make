@@ -164,7 +164,7 @@ $(STATEDIR)/xvkbd.targetinstall: $(xvkbd_targetinstall_deps)
 	echo "Version: $(XVKBD_VERSION)$(XVKBD_VERSION_VENDOR)" 		>>$(XVKBD_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, xresizewindow" 				>>$(XVKBD_IPKG_TMP)/CONTROL/control
 	echo "Description: Virtual keyboard for X window system"		>>$(XVKBD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XVKBD_IPKG_TMP)
+	@$(call makeipkg, $(XVKBD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

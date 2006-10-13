@@ -240,7 +240,7 @@ ifdef PTXCONF_UTLNX_HWCLOCK
 endif
 	chmod 755 $(UTIL-LINUX_DIR)/ipkg_tmp/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(UTIL-LINUX_DIR)/ipkg_tmp
+	@$(call makeipkg, $(UTIL-LINUX_DIR)/ipkg_tmp)
 
 	touch $@
 

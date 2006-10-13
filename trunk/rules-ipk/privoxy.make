@@ -153,7 +153,7 @@ $(STATEDIR)/privoxy.targetinstall: $(privoxy_targetinstall_deps)
 	echo "Depends: " 								>>$(PRIVOXY_IPKG_TMP)/CONTROL/control
 	echo "Description: Privoxy is a web proxy with advanced filtering capabilities for protecting privacy, modifying web page content, managing cookies, controlling access, and removing ads, banners, pop-ups and other obnoxious Internet junk." >>$(PRIVOXY_IPKG_TMP)/CONTROL/control
 	asdas
-	cd $(FEEDDIR) && $(XMKIPKG) $(PRIVOXY_IPKG_TMP)
+	@$(call makeipkg, $(PRIVOXY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

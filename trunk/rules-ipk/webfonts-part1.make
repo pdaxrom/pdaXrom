@@ -151,7 +151,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: andalemo"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -166,7 +166,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Arial"			>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -181,7 +181,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Arial Black"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -196,7 +196,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Comic"			>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -211,7 +211,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Courier"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -226,7 +226,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Georgia"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -241,7 +241,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Georgia"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -256,7 +256,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Times"			>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -271,7 +271,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Trebuchet"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -286,7 +286,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Verdana"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -301,7 +301,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Impact"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -316,7 +316,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Lucida console"	>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	###
 	rm -rf $(WEBFONTS-PART1_IPKG_TMP)
 	mkdir -p $(WEBFONTS-PART1_IPKG_TMP)/usr/X11R6/lib/X11/fonts/TTF
@@ -331,7 +331,7 @@ $(STATEDIR)/webfonts-part1.targetinstall: $(webfonts-part1_targetinstall_deps)
 	echo "Version: $(WEBFONTS-PART1_VERSION)" 		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
 	echo "Description: MS web fonts: Webdings"		>>$(WEBFONTS-PART1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WEBFONTS-PART1_IPKG_TMP)
+	@$(call makeipkg, $(WEBFONTS-PART1_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

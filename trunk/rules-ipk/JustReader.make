@@ -144,7 +144,7 @@ $(STATEDIR)/JustReader.targetinstall: $(JustReader_targetinstall_deps)
 	echo "Version: $(JUSTREADER_VERSION)" 					>>$(JUSTREADER_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt, startup-notification" 				>>$(JUSTREADER_IPKG_TMP)/CONTROL/control
 	echo "Description: E-Books Reader"					>>$(JUSTREADER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(JUSTREADER_IPKG_TMP)
+	@$(call makeipkg, $(JUSTREADER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

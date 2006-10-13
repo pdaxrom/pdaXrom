@@ -184,7 +184,7 @@ ifndef PTXCONF_PACKAGEMANAGER_QTOPIA-FREE2
 	echo "Version: $(PACKAGEMANAGER_VERSION)-$(PACKAGEMANAGER_VENDOR_VERSION)" >>$(PACKAGEMANAGER_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt, startup-notification" 				>>$(PACKAGEMANAGER_IPKG_TMP)/CONTROL/control
 	echo "Description: ipkg QT X11 frontend"				>>$(PACKAGEMANAGER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PACKAGEMANAGER_IPKG_TMP)
+	@$(call makeipkg, $(PACKAGEMANAGER_IPKG_TMP))
 else
 	$(CROSSSTRIP) $(PACKAGEMANAGER_IPKG_TMP)_qtopia/opt/Qtopia/bin/*
 	echo "Package: qpe-packagemanager"		 			 >$(PACKAGEMANAGER_IPKG_TMP)_qtopia/CONTROL/control
@@ -195,7 +195,7 @@ else
 	echo "Version: $(PACKAGEMANAGER_VERSION)-$(PACKAGEMANAGER_VENDOR_VERSION)" >>$(PACKAGEMANAGER_IPKG_TMP)_qtopia/CONTROL/control
 	echo "Depends: qpe-libqtopia2" 						>>$(PACKAGEMANAGER_IPKG_TMP)_qtopia/CONTROL/control
 	echo "Description: ipkg QT frontend"					>>$(PACKAGEMANAGER_IPKG_TMP)_qtopia/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PACKAGEMANAGER_IPKG_TMP)_qtopia
+	@$(call makeipkg, $(PACKAGEMANAGER_IPKG_TMP))
 endif
 	touch $@
 

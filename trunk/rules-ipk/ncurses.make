@@ -180,7 +180,7 @@ endif
 	echo "Version: $(NCURSES_VERSION)" 					>>$(NCURSES_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(NCURSES_DIR)/ipk/CONTROL/control
 	echo "Description: Ncurses library"					>>$(NCURSES_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NCURSES_DIR)/ipk
+	@$(call makeipkg, $(NCURSES_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

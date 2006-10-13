@@ -155,7 +155,7 @@ $(STATEDIR)/wpa_supplicant.targetinstall: $(wpa_supplicant_targetinstall_deps)
 	echo "Version: $(WPA_SUPPLICANT_VERSION)-$(WPA_SUPPLICANT_VENDOR_VERSION)" 	>>$(WPA_SUPPLICANT_IPKG_TMP)/CONTROL/control
 	echo "Depends: openssl, ncurses, readline" 					>>$(WPA_SUPPLICANT_IPKG_TMP)/CONTROL/control
 	echo "Description: WPA/RSN Supplicant (wpa_supplicant)"				>>$(WPA_SUPPLICANT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WPA_SUPPLICANT_IPKG_TMP)
+	@$(call makeipkg, $(WPA_SUPPLICANT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -157,7 +157,7 @@ $(STATEDIR)/leafpad.targetinstall: $(leafpad_targetinstall_deps)
 	echo "Version: $(LEAFPAD_VERSION)-$(LEAFPAD_VENDOR_VERSION)" 							>>$(LEAFPAD_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 												>>$(LEAFPAD_IPKG_TMP)/CONTROL/control
 	echo "Description: Leafpad is a GTK+ based simple text editor. The user interface is similar to Notepad."	>>$(LEAFPAD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LEAFPAD_IPKG_TMP)
+	@$(call makeipkg, $(LEAFPAD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

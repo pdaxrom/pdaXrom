@@ -161,7 +161,7 @@ $(STATEDIR)/SDL_image.targetinstall: $(SDL_image_targetinstall_deps)
 	rm -rf $(SDL_IMAGE_IPKG_TMP)/usr/lib/*.la
 	$(CROSSSTRIP) $(SDL_IMAGE_IPKG_TMP)/usr/lib/libSDL_image-1.2.so.0.1.2
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDL_IMAGE_IPKG_TMP)
+	@$(call makeipkg, $(SDL_IMAGE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -146,7 +146,7 @@ $(STATEDIR)/Dev86src.targetinstall: $(Dev86src_targetinstall_deps)
 	echo "Version: $(DEV86SRC_VERSION)" 		>>$(DEV86SRC_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(DEV86SRC_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(DEV86SRC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DEV86SRC_IPKG_TMP)
+	@$(call makeipkg, $(DEV86SRC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

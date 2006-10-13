@@ -156,7 +156,7 @@ $(STATEDIR)/gtkterm2.targetinstall: $(gtkterm2_targetinstall_deps)
 	echo "Version: $(GTKTERM2_VERSION)-$(GTKTERM2_VENDOR_VERSION)" 			>>$(GTKTERM2_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, vte" 							>>$(GTKTERM2_IPKG_TMP)/CONTROL/control
 	echo "Description: GTK2 terminal with tabs"					>>$(GTKTERM2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTKTERM2_IPKG_TMP)
+	@$(call makeipkg, $(GTKTERM2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

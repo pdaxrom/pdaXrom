@@ -147,7 +147,7 @@ $(STATEDIR)/gpsdrive.targetinstall: $(gpsdrive_targetinstall_deps)
 	echo "Depends: " 								>>$(GPSDRIVE_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(GPSDRIVE_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPSDRIVE_IPKG_TMP)
+	@$(call makeipkg, $(GPSDRIVE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

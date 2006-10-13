@@ -148,7 +148,7 @@ $(STATEDIR)/unzip.targetinstall: $(unzip_targetinstall_deps)
 	echo "Version: $(UNZIP_VERSION)" 					>>$(UNZIP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(UNZIP_IPKG_TMP)/CONTROL/control
 	echo "Description: UnZip is an extraction utility for archives compressed in .zip format (also called 'zipfiles').">>$(UNZIP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UNZIP_IPKG_TMP)
+	@$(call makeipkg, $(UNZIP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

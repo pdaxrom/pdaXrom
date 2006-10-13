@@ -183,7 +183,7 @@ $(STATEDIR)/gtk1210.targetinstall: $(gtk1210_targetinstall_deps)
 	echo "Version: $(GTK1210_VERSION)" 					>>$(GTK1210_IPKG_TMP)/CONTROL/control
 	echo "Depends: glib, xfree, startup-notification" 			>>$(GTK1210_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"			>>$(GTK1210_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTK1210_IPKG_TMP)
+	@$(call makeipkg, $(GTK1210_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

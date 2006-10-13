@@ -148,7 +148,7 @@ $(STATEDIR)/SheepShaver.targetinstall: $(SheepShaver_targetinstall_deps)
 	echo "Depends: xfree, gtk2, sdl" 						>>$(SHEEPSHAVER_IPKG_TMP)/CONTROL/control
 	echo "Description:  SheepShaver is a MacOS run-time environment for BeOS and Linux that allows you to run classic MacOS applications inside the BeOS/Linux multitasking environment." >>$(SHEEPSHAVER_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(SHEEPSHAVER_IPKG_TMP)
+	@$(call makeipkg, $(SHEEPSHAVER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

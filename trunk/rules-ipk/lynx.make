@@ -165,7 +165,7 @@ $(STATEDIR)/lynx.targetinstall: $(lynx_targetinstall_deps)
 	echo "Version: $(LYNX_VERSION)-$(LYNX_VENDOR_VERSION)" 				>>$(LYNX_IPKG_TMP)/CONTROL/control
 	echo "Depends: ncurses, openssl, libz, bzip2" 					>>$(LYNX_IPKG_TMP)/CONTROL/control
 	echo "Description: Lynx is a text browser for the World Wide Web."		>>$(LYNX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LYNX_IPKG_TMP)
+	@$(call makeipkg, $(LYNX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

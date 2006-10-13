@@ -153,7 +153,7 @@ $(STATEDIR)/HawkNL.targetinstall: $(HawkNL_targetinstall_deps)
 	echo "Version: $(HAWKNL_VERSION)-$(HAWKNL_VENDOR_VERSION)" 			>>$(HAWKNL_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(HAWKNL_IPKG_TMP)/CONTROL/control
 	echo "Description: HawkNL is a free, open source, game oriented network API released under the GNU Library General Public License (LGPL). " >>$(HAWKNL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HAWKNL_IPKG_TMP)
+	@$(call makeipkg, $(HAWKNL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

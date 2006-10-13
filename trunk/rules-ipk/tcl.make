@@ -173,7 +173,7 @@ else
 	echo "Depends: "	 			>>$(TCL_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: generated with pdaXrom builder">>$(TCL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TCL_IPKG_TMP)
+	@$(call makeipkg, $(TCL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

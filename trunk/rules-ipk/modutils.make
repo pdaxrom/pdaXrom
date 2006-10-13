@@ -149,7 +149,7 @@ $(STATEDIR)/modutils.targetinstall: $(modutils_targetinstall_deps)
 	echo "Version: $(MODUTILS_VERSION)" 					>>$(MODUTILS_DIR)/ipkg/CONTROL/control
 	echo "Depends: " 							>>$(MODUTILS_DIR)/ipkg/CONTROL/control
 	echo "Description: These utilities are intended to make a Linux modular kernel manageable for all users, administrators and distribution maintainers.">>$(MODUTILS_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MODUTILS_DIR)/ipkg
+	@$(call makeipkg, $(MODUTILS_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

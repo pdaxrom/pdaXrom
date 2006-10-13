@@ -152,7 +152,7 @@ $(STATEDIR)/tsocks.targetinstall: $(tsocks_targetinstall_deps)
 	echo "Version: $(TSOCKS_VERSION)-$(TSOCKS_VENDOR_VERSION)" 			>>$(TSOCKS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(TSOCKS_IPKG_TMP)/CONTROL/control
 	echo "Description: transparent SOCKS proxying library."				>>$(TSOCKS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TSOCKS_IPKG_TMP)
+	@$(call makeipkg, $(TSOCKS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

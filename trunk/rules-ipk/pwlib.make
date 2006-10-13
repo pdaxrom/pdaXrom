@@ -179,7 +179,7 @@ $(STATEDIR)/pwlib.targetinstall: $(pwlib_targetinstall_deps)
 	echo "Version: $(PWLIB_VERSION)-$(PWLIB_VENDOR_VERSION)" 			>>$(PWLIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: openssl, openldap, sdl" 						>>$(PWLIB_IPKG_TMP)/CONTROL/control
 	echo "Description: Portable Windows Libary"					>>$(PWLIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PWLIB_IPKG_TMP)
+	@$(call makeipkg, $(PWLIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

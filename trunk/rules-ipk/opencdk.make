@@ -163,7 +163,7 @@ $(STATEDIR)/opencdk.targetinstall: $(opencdk_targetinstall_deps)
 	echo "Version: $(OPENCDK_VERSION)" 		>>$(OPENCDK_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgcrypt" 			>>$(OPENCDK_IPKG_TMP)/CONTROL/control
 	echo "Description: Open Crypto Development Kit">>$(OPENCDK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENCDK_IPKG_TMP)
+	@$(call makeipkg, $(OPENCDK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

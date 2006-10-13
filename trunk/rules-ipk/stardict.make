@@ -162,7 +162,7 @@ $(STATEDIR)/stardict.targetinstall: $(stardict_targetinstall_deps)
 	echo "Version: $(STARDICT_VERSION)-$(STARDICT_VENDOR_VERSION)" 			>>$(STARDICT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(STARDICT_IPKG_TMP)/CONTROL/control
 	echo "Description: StarDict is a Cross-Platform and international dictionary written in Gtk2." >>$(STARDICT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(STARDICT_IPKG_TMP)
+	@$(call makeipkg, $(STARDICT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

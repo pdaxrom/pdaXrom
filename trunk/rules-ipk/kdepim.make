@@ -180,7 +180,7 @@ $(STATEDIR)/kdepim.targetinstall: $(kdepim_targetinstall_deps)
 	echo "Version: $(KDEPIM_VERSION)" 					>>$(KDEPIM_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt, bluez-libs"					>>$(KDEPIM_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE Organizer"					>>$(KDEPIM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDEPIM_IPKG_TMP)
+	@$(call makeipkg, $(KDEPIM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

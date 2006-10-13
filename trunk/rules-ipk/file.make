@@ -157,7 +157,7 @@ $(STATEDIR)/file.targetinstall: $(file_targetinstall_deps)
 	echo "Version: $(FILE_VERSION)" 		>>$(FILE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(FILE_IPKG_TMP)/CONTROL/control
 	echo "Description: file - determine file type.">>$(FILE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FILE_IPKG_TMP)
+	@$(call makeipkg, $(FILE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

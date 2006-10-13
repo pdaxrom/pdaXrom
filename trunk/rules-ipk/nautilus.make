@@ -175,7 +175,7 @@ $(STATEDIR)/nautilus.targetinstall: $(nautilus_targetinstall_deps)
 	echo "Version: $(NAUTILUS_VERSION)" 		>>$(NAUTILUS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnomeui, gnome-desktop, esound, libbonoboui, libgnomeui, eel, librsvg, gail" >>$(NAUTILUS_IPKG_TMP)/CONTROL/control
 	echo "Description: This is Nautilus, the file manager for the GNOME desktop.">>$(NAUTILUS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NAUTILUS_IPKG_TMP)
+	@$(call makeipkg, $(NAUTILUS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

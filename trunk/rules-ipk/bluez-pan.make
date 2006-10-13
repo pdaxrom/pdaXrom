@@ -164,7 +164,7 @@ $(STATEDIR)/bluez-pan.targetinstall: $(bluez-pan_targetinstall_deps)
 	rm -rf $(BLUEZ-PAN_IPKG_TMP)/usr/include
 	$(CROSSSTRIP) $(BLUEZ-PAN_IPKG_TMP)/usr/bin/dund
 	$(CROSSSTRIP) $(BLUEZ-PAN_IPKG_TMP)/usr/bin/pand
-	cd $(FEEDDIR) && $(XMKIPKG) $(BLUEZ-PAN_IPKG_TMP)
+	@$(call makeipkg, $(BLUEZ-PAN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

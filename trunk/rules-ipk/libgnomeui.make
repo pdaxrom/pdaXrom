@@ -191,7 +191,7 @@ $(STATEDIR)/libgnomeui.targetinstall: $(libgnomeui_targetinstall_deps)
 	echo "Version: $(LIBGNOMEUI_VERSION)" 		>>$(LIBGNOMEUI_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnome, libgnomecanvas, libbonoboui, gconf, libart-lgpl" >>$(LIBGNOMEUI_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the gui parts of what was previously gnome-libs">>$(LIBGNOMEUI_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGNOMEUI_IPKG_TMP)
+	@$(call makeipkg, $(LIBGNOMEUI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

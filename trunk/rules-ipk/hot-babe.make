@@ -154,7 +154,7 @@ $(STATEDIR)/hot-babe.targetinstall: $(hot-babe_targetinstall_deps)
 	echo "Version: $(HOT-BABE_VERSION)-$(HOT-BABE_VENDOR_VERSION)" 				>>$(HOT-BABE_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 									>>$(HOT-BABE_IPKG_TMP)/CONTROL/control
 	echo "Description: Hot-babe is a small graphical utility which displays the system activity in a very special way." >>$(HOT-BABE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HOT-BABE_IPKG_TMP)
+	@$(call makeipkg, $(HOT-BABE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

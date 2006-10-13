@@ -149,7 +149,7 @@ $(STATEDIR)/eject.targetinstall: $(eject_targetinstall_deps)
 	echo "Version: $(EJECT_VERSION)-$(EJECT_VENDOR_VERSION)" 			>>$(EJECT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(EJECT_IPKG_TMP)/CONTROL/control
 	echo "Description: CD insert/eject utility"					>>$(EJECT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EJECT_IPKG_TMP)
+	@$(call makeipkg, $(EJECT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

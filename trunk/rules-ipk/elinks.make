@@ -174,7 +174,7 @@ $(STATEDIR)/elinks.targetinstall: $(elinks_targetinstall_deps)
 	echo "Version: $(ELINKS_VERSION)-$(ELINKS_VENDOR_VERSION)" 			>>$(ELINKS_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(ELINKS_DEPLIST)" 						>>$(ELINKS_IPKG_TMP)/CONTROL/control
 	echo "Description: ELinks is a program for browsing the web in text mode."	>>$(ELINKS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ELINKS_IPKG_TMP)
+	@$(call makeipkg, $(ELINKS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

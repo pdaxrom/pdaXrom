@@ -202,7 +202,7 @@ endif
 	
 	$(CROSSSTRIP) $(SDL_IPKG_TMP)/usr/lib/libSDL-1.2.so.*
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDL_IPKG_TMP)
+	@$(call makeipkg, $(SDL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -159,7 +159,7 @@ $(STATEDIR)/matchbox-window-manager.targetinstall: $(matchbox-window-manager_tar
 	echo "Version: $(MATCHBOX-WINDOW-MANAGER_VERSION)-$(MATCHBOX-WINDOW-MANAGER_VENDOR_VERSION)" 			>>$(MATCHBOX-WINDOW-MANAGER_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmatchbox, startup-notification" 								>>$(MATCHBOX-WINDOW-MANAGER_IPKG_TMP)/CONTROL/control
 	echo "Description: Matchbox Window Manager"									>>$(MATCHBOX-WINDOW-MANAGER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MATCHBOX-WINDOW-MANAGER_IPKG_TMP)
+	@$(call makeipkg, $(MATCHBOX-WINDOW-MANAGER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

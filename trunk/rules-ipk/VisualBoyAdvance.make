@@ -154,7 +154,7 @@ $(STATEDIR)/VisualBoyAdvance.targetinstall: $(VisualBoyAdvance_targetinstall_dep
 	echo "Version: $(VISUALBOYADVANCE_VERSION)-$(VISUALBOYADVANCE_VENDOR_VERSION)" 	>>$(VISUALBOYADVANCE_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl" 								>>$(VISUALBOYADVANCE_IPKG_TMP)/CONTROL/control
 	echo "Description: VisualBoyAdvance emulator"					>>$(VISUALBOYADVANCE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VISUALBOYADVANCE_IPKG_TMP)
+	@$(call makeipkg, $(VISUALBOYADVANCE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

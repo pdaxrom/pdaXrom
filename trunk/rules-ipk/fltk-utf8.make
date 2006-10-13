@@ -171,7 +171,7 @@ $(STATEDIR)/fltk-utf8.targetinstall: $(fltk-utf8_targetinstall_deps)
 	echo "Version: $(FLTK-UTF8_VERSION)" 			>>$(FLTK-UTF8_IPKG_TMP)/CONTROL/control
 	echo "Depends: xutf8, xfree" 			>>$(FLTK-UTF8_IPKG_TMP)/CONTROL/control
 	echo "Description: The Fast Light Toolkit, UTF-8 patched">>$(FLTK-UTF8_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FLTK-UTF8_IPKG_TMP)
+	@$(call makeipkg, $(FLTK-UTF8_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

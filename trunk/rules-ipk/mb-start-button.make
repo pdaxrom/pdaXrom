@@ -148,7 +148,7 @@ $(STATEDIR)/mb-start-button.targetinstall: $(mb-start-button_targetinstall_deps)
 	echo "Version: $(MB-START-BUTTON_VERSION)" 				>>$(MB-START-BUTTON_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 						>>$(MB-START-BUTTON_IPKG_TMP)/CONTROL/control
 	echo "Description: Send SHOW_MENU event to matchbox-panel"		>>$(MB-START-BUTTON_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-START-BUTTON_IPKG_TMP)
+	@$(call makeipkg, $(MB-START-BUTTON_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

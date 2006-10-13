@@ -164,7 +164,7 @@ $(STATEDIR)/minicom.targetinstall: $(minicom_targetinstall_deps)
 	echo "Version: $(MINICOM_VERSION)" 			>>$(MINICOM_IPKG_TMP)/CONTROL/control
 	echo "Depends: ncurses" 				>>$(MINICOM_IPKG_TMP)/CONTROL/control
 	echo "Description: Minicom is a menu driven communications program. It emulates ANSI and VT102 terminals. It has a dialing directory and auto zmodem download."	>>$(MINICOM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MINICOM_IPKG_TMP)
+	@$(call makeipkg, $(MINICOM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -150,7 +150,7 @@ $(STATEDIR)/AtiCore.targetinstall: $(AtiCore_targetinstall_deps)
 	echo "Version: $(ATICORE_VERSION)" 					>>$(ATICORE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(ATICORE_IPKG_TMP)/CONTROL/control
 	echo "Description: ATI W100 graphics library"				>>$(ATICORE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ATICORE_IPKG_TMP)
+	@$(call makeipkg, $(ATICORE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

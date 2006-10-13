@@ -182,7 +182,7 @@ endif
 	echo "/sbin/depmod -a"											>>$(FUSE_IPKG_TMP)/CONTROL/postrm
 	chmod 755 $(FUSE_IPKG_TMP)/CONTROL/postinst $(FUSE_IPKG_TMP)/CONTROL/postrm
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(FUSE_IPKG_TMP)
+	@$(call makeipkg, $(FUSE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

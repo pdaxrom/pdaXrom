@@ -146,7 +146,7 @@ $(STATEDIR)/timidity-patches.targetinstall: $(timidity-patches_targetinstall_dep
 	echo "Version: $(TIMIDITY-PATCHES_VERSION)" 						>>$(TIMIDITY-PATCHES_IPKG_TMP)/CONTROL/control
 	echo "Depends: timidity" 								>>$(TIMIDITY-PATCHES_IPKG_TMP)/CONTROL/control
 	echo "Description: 10MB TiMidity voice patches"						>>$(TIMIDITY-PATCHES_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TIMIDITY-PATCHES_IPKG_TMP)
+	@$(call makeipkg, $(TIMIDITY-PATCHES_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

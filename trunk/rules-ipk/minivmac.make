@@ -152,7 +152,7 @@ $(STATEDIR)/minivmac.targetinstall: $(minivmac_targetinstall_deps)
 	echo "Version: $(MINIVMAC_VERSION)-$(MINIVMAC_VENDOR_VERSION)" 			>>$(MINIVMAC_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(MINIVMAC_IPKG_TMP)/CONTROL/control
 	echo "Description: Mini vMac emulates a Macintosh Plus, one of the earliest of Macintosh computers, sold between 1986 and 1990." >>$(MINIVMAC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MINIVMAC_IPKG_TMP)
+	@$(call makeipkg, $(MINIVMAC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

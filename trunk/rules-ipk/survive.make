@@ -220,7 +220,7 @@ ifdef PTXCONF_SURVIVE_CHKHINGE
 endif
 	chmod 755 $(SURVIVE_DIR)/root_tmp/CONTROL/postinst
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(SURVIVE_DIR)/root_tmp
+	@$(call makeipkg, $(SURVIVE_DIR)/root_tmp)
 	touch $@
 
 # ----------------------------------------------------------------------------

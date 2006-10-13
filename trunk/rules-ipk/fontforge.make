@@ -156,7 +156,7 @@ $(STATEDIR)/fontforge.targetinstall: $(fontforge_targetinstall_deps)
 	echo "Version: $(FONTFORGE_VERSION)-$(FONTFORGE_VENDOR_VERSION)" 		>>$(FONTFORGE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(FONTFORGE_IPKG_TMP)/CONTROL/control
 	echo "Description: FontForge is an outline font editor that lets you create your own Postscript, TrueType, OpenType, CID-keyed, multi-master, CFF, SVG, and bitmap (BDF) fonts, or edit existing ones." >>$(FONTFORGE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FONTFORGE_IPKG_TMP)
+	@$(call makeipkg, $(FONTFORGE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -163,7 +163,7 @@ $(STATEDIR)/yacas.targetinstall: $(yacas_targetinstall_deps)
 	echo "Version: $(YACAS_VERSION)-$(YACAS_VENDOR_VERSION)" 			>>$(YACAS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(YACAS_IPKG_TMP)/CONTROL/control
 	echo "Description:  YACAS is an easy to use, general purpose Computer Algebra System, a program for symbolic manipulation of mathematical expressions." >>$(YACAS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(YACAS_IPKG_TMP)
+	@$(call makeipkg, $(YACAS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

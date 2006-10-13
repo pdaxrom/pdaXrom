@@ -160,7 +160,7 @@ $(STATEDIR)/xine-lib.targetinstall: $(xine-lib_targetinstall_deps)
 	echo "Depends: " 								>>$(XINE-LIB_IPKG_TMP)/CONTROL/control
 	echo "Description: xine-lib is the xine core engine, it is needed for all frontends and applications that use xine.">>$(XINE-LIB_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(XINE-LIB_IPKG_TMP)
+	@$(call makeipkg, $(XINE-LIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

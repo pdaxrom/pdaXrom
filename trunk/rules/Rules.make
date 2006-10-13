@@ -19,7 +19,12 @@ XMKPACKAGES	= $(TOPDIR)/scripts/bin/mkPackages
 #
 # some convenience functions
 #
-
+makeipkg = \
+	mkdir -p $(FEEDDIR) ; \
+	cd $(FEEDDIR) ; \
+	rm -f $(STATEDIR)/virtual-image.install ; \
+	$(TOPDIR)/scripts/bin/makedep.sh $1 $(TOPDIR)/state ; \
+	D2ROX=$(TOPDIR)/scripts/bin/desktop2rox $(TOPDIR)/scripts/bin/mkipkg $1
 #
 #
 #

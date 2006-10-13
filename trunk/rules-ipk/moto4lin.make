@@ -156,7 +156,7 @@ $(STATEDIR)/moto4lin.targetinstall: $(moto4lin_targetinstall_deps)
 	echo "Version: $(MOTO4LIN_VERSION)-$(MOTO4LIN_VENDOR_VERSION)" 			>>$(MOTO4LIN_IPKG_TMP)/CONTROL/control
 	echo "Depends: libusb, qt-mt" 							>>$(MOTO4LIN_IPKG_TMP)/CONTROL/control
 	echo "Description: Moto4lin is file manager and seem editor for Motorola P2K phones, such as C380.">>$(MOTO4LIN_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MOTO4LIN_IPKG_TMP)
+	@$(call makeipkg, $(MOTO4LIN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

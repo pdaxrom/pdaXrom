@@ -160,7 +160,7 @@ $(STATEDIR)/sysfsutils.targetinstall: $(sysfsutils_targetinstall_deps)
 	echo "Version: $(SYSFSUTILS_VERSION)-$(SYSFSUTILS_VENDOR_VERSION)" 		>>$(SYSFSUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(SYSFSUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: System Utilities Based on Sysfs"				>>$(SYSFSUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SYSFSUTILS_IPKG_TMP)
+	@$(call makeipkg, $(SYSFSUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

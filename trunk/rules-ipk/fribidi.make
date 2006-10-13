@@ -161,7 +161,7 @@ $(STATEDIR)/fribidi.targetinstall: $(fribidi_targetinstall_deps)
 	echo "Version: $(FRIBIDI_VERSION)" 		>>$(FRIBIDI_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(FRIBIDI_IPKG_TMP)/CONTROL/control
 	echo "Description: A Free Implementation of the Unicode Bidirectional Algorithm">>$(FRIBIDI_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FRIBIDI_IPKG_TMP)
+	@$(call makeipkg, $(FRIBIDI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

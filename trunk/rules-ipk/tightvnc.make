@@ -154,7 +154,7 @@ $(STATEDIR)/tightvnc.targetinstall: $(tightvnc_targetinstall_deps)
 	echo "Version: $(TIGHTVNC_VERSION)-$(TIGHTVNC_VENDOR_VERSION)" 			>>$(TIGHTVNC_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(TIGHTVNC_IPKG_TMP)/CONTROL/control
 	echo "Description: TightVNC client. TightVNC is a free remote control software package derived from the popular VNC software." >>$(TIGHTVNC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TIGHTVNC_IPKG_TMP)
+	@$(call makeipkg, $(TIGHTVNC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

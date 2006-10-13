@@ -152,7 +152,7 @@ $(STATEDIR)/Xsettings-client.targetinstall: $(Xsettings-client_targetinstall_dep
 	echo "Version: $(XSETTINGS-CLIENT_VERSION)" 		>>$(XSETTINGS-CLIENT_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree"		 		>>$(XSETTINGS-CLIENT_IPKG_TMP)/CONTROL/control
 	echo "Description: X11 settings client library"		>>$(XSETTINGS-CLIENT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XSETTINGS-CLIENT_IPKG_TMP)
+	@$(call makeipkg, $(XSETTINGS-CLIENT_IPKG_TMP))
 
 	touch $@
 

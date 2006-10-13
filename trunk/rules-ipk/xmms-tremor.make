@@ -153,7 +153,7 @@ $(STATEDIR)/xmms-tremor.targetinstall: $(xmms-tremor_targetinstall_deps)
 	echo "Version: $(XMMS-TREMOR_VERSION)" 		>>$(XMMS-TREMOR_IPKG_TMP)/CONTROL/control
 	echo "Depends: tremor, xmms" 			>>$(XMMS-TREMOR_IPKG_TMP)/CONTROL/control
 	echo "Description: Tremor Ogg/Vorbis xmms plugin.">>$(XMMS-TREMOR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XMMS-TREMOR_IPKG_TMP)
+	@$(call makeipkg, $(XMMS-TREMOR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

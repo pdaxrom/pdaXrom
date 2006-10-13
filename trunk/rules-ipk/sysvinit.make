@@ -130,7 +130,7 @@ $(STATEDIR)/sysvinit.targetinstall: $(sysvinit_targetinstall_deps)
 	echo "Version: $(SYSVINIT_VERSION)" 					>>$(SYSVINIT_DIR)/ipkg_tmp/CONTROL/control
 	echo "Depends: " 							>>$(SYSVINIT_DIR)/ipkg_tmp/CONTROL/control
 	echo "Description: System-V like init"					>>$(SYSVINIT_DIR)/ipkg_tmp/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SYSVINIT_DIR)/ipkg_tmp
+	@$(call makeipkg, $(SYSVINIT_DIR)/ipkg_tmp)
 	touch $@
 
 # ----------------------------------------------------------------------------

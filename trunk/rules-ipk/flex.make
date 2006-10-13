@@ -150,7 +150,7 @@ $(STATEDIR)/flex.targetinstall: $(flex_targetinstall_deps)
 	echo "Version: $(XCHAIN_FLEX254_VERSION)" 	>>$(FLEX_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(FLEX_IPKG_TMP)/CONTROL/control
 	echo "Description: fast lexical analyzer generator.">>$(FLEX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FLEX_IPKG_TMP)
+	@$(call makeipkg, $(FLEX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

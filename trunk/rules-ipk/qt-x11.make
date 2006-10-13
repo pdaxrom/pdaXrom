@@ -146,7 +146,7 @@ $(STATEDIR)/qt-x11.targetinstall: $(qt-x11_targetinstall_deps)
 	echo "Version: $(QT-X11_VERSION)" 		>>$(QT-X11_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(QT-X11_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(QT-X11_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QT-X11_IPKG_TMP)
+	@$(call makeipkg, $(QT-X11_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

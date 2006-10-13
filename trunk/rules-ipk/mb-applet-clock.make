@@ -158,7 +158,7 @@ $(STATEDIR)/mb-applet-clock.targetinstall: $(mb-applet-clock_targetinstall_deps)
 	echo "Version: $(MB-APPLET-CLOCK_VERSION)" 		>>$(MB-APPLET-CLOCK_IPKG_TMP)/CONTROL/control
 	echo "Depends: matchbox-panel" 				>>$(MB-APPLET-CLOCK_IPKG_TMP)/CONTROL/control
 	echo "Description: Matchbox datetime applet"		>>$(MB-APPLET-CLOCK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-CLOCK_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-CLOCK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

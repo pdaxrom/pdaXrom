@@ -165,7 +165,7 @@ $(STATEDIR)/bluez-sdp.targetinstall: $(bluez-sdp_targetinstall_deps)
 	$(CROSSSTRIP) $(BLUEZ-SDP_IPKG_TMP)/usr/bin/sdptool
 	$(CROSSSTRIP) $(BLUEZ-SDP_IPKG_TMP)/usr/lib/libsdp.so.2.0.1
 	$(CROSSSTRIP) $(BLUEZ-SDP_IPKG_TMP)/usr/sbin/sdpd
-	cd $(FEEDDIR) && $(XMKIPKG) $(BLUEZ-SDP_IPKG_TMP)
+	@$(call makeipkg, $(BLUEZ-SDP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

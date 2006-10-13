@@ -167,7 +167,7 @@ $(STATEDIR)/screen.targetinstall: $(screen_targetinstall_deps)
 	echo "Version: $(SCREEN_VERSION)-$(SCREEN_VENDOR_VERSION)" 			>>$(SCREEN_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(SCREEN_DEPLIST)" 						>>$(SCREEN_IPKG_TMP)/CONTROL/control
 	echo "Description: Screen is a full-screen window manager that multiplexes a physical terminal between several processes, typically interactive shells." >>$(SCREEN_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCREEN_IPKG_TMP)
+	@$(call makeipkg, $(SCREEN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

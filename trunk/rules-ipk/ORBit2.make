@@ -176,7 +176,7 @@ else
 	echo "Depends: glib2, popt" 							>>$(ORBIT2_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: High-performance CORBA Object Request Broker"		>>$(ORBIT2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ORBIT2_IPKG_TMP)
+	@$(call makeipkg, $(ORBIT2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

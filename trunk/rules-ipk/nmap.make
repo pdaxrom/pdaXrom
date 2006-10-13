@@ -184,7 +184,7 @@ $(STATEDIR)/nmap.targetinstall: $(nmap_targetinstall_deps)
 	echo "Version: $(NMAP_VERSION)-$(NMAP_VENDOR_VERSION)" 				>>$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Depends: openssl, pcre" 							>>$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Description: Nmap ("Network Mapper") is a free open source utility for network exploration or security auditing."	>>$(NMAP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NMAP_IPKG_TMP)
+	@$(call makeipkg, $(NMAP_IPKG_TMP))
 
 ifdef PTXCONF_XFREE430	
 	rm -rf $(NMAP_IPKG_TMP)
@@ -207,7 +207,7 @@ ifdef PTXCONF_XFREE430
 	echo "Version: $(NMAP_VERSION)-$(NMAP_VENDOR_VERSION)" 				>>$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk, nmap" 							>>$(NMAP_IPKG_TMP)/CONTROL/control
 	echo "Description: Nmap Gtk frontend."						>>$(NMAP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NMAP_IPKG_TMP)
+	@$(call makeipkg, $(NMAP_IPKG_TMP))
 endif
 
 	touch $@

@@ -141,7 +141,7 @@ $(STATEDIR)/bash.targetinstall: $(STATEDIR)/bash.compile
 	echo "Version: $(BASH_VERSION)" 					>>$(BASH_DIR)/ipk/CONTROL/control
 	echo "Depends: ncurses" 						>>$(BASH_DIR)/ipk/CONTROL/control
 	echo "Description: An sh-compatible command language interpreter."	>>$(BASH_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BASH_DIR)/ipk
+	@$(call makeipkg, $(BASH_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

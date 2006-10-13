@@ -152,7 +152,7 @@ $(STATEDIR)/padXwin.targetinstall: $(padXwin_targetinstall_deps)
 	echo "Version: $(PADXWIN_VERSION)-$(PADXWIN_VENDOR_VERSION)" 			>>$(PADXWIN_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk" 								>>$(PADXWIN_IPKG_TMP)/CONTROL/control
 	echo "Description: keypad plugin"						>>$(PADXWIN_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PADXWIN_IPKG_TMP)
+	@$(call makeipkg, $(PADXWIN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

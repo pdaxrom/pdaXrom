@@ -161,7 +161,7 @@ $(STATEDIR)/SDL_ttf.targetinstall: $(SDL_ttf_targetinstall_deps)
 	echo "Version: $(SDL_TTF_VERSION)" 					>>$(SDL_TTF_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl, freetype, libz" 					>>$(SDL_TTF_IPKG_TMP)/CONTROL/control
 	echo "Description: This is a sample library which allows you to use TrueType fonts in your SDL applications." >>$(SDL_TTF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDL_TTF_IPKG_TMP)
+	@$(call makeipkg, $(SDL_TTF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -155,7 +155,7 @@ $(STATEDIR)/pekwm.targetinstall: $(pekwm_targetinstall_deps)
 	echo "Version: $(PEKWM_VERSION)-$(PEKWM_VENDOR_VERSION)" 			>>$(PEKWM_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(PEKWM_IPKG_TMP)/CONTROL/control
 	echo "Description: Simply flexible window manager"				>>$(PEKWM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PEKWM_IPKG_TMP)
+	@$(call makeipkg, $(PEKWM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

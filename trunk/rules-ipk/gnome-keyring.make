@@ -169,7 +169,7 @@ $(STATEDIR)/gnome-keyring.targetinstall: $(gnome-keyring_targetinstall_deps)
 	echo "Version: $(GNOME-KEYRING_VERSION)" 	>>$(GNOME-KEYRING_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(GNOME-KEYRING_IPKG_TMP)/CONTROL/control
 	echo "Description: gnome-keyring is a program that keep password and other secrets for users.">>$(GNOME-KEYRING_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-KEYRING_IPKG_TMP)
+	@$(call makeipkg, $(GNOME-KEYRING_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

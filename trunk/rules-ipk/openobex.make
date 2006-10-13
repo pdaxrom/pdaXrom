@@ -162,7 +162,7 @@ $(STATEDIR)/openobex.targetinstall: $(openobex_targetinstall_deps)
 	echo "Version: $(OPENOBEX_VERSION)" 			>>$(OPENOBEX_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(OPENOBEX_IPKG_TMP)/CONTROL/control
 	echo "Description: This library tries to implement a generic OBEX Session Protocol. It does not implement the OBEX Application FrameWork.">>$(OPENOBEX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENOBEX_IPKG_TMP)
+	@$(call makeipkg, $(OPENOBEX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

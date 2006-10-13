@@ -197,7 +197,7 @@ ifdef PTXCONF_OPENSSL_SHARED
 	echo "Version: $(OPENSSL_VERSION)" 		>>$(OPENSSL_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(OPENSSL_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(OPENSSL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENSSL_IPKG_TMP)
+	@$(call makeipkg, $(OPENSSL_IPKG_TMP))
 endif
 	touch $@
 

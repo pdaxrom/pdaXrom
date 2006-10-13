@@ -166,7 +166,7 @@ $(STATEDIR)/console-tools.targetinstall: $(console-tools_targetinstall_deps)
 	echo "Version: $(CONSOLE-TOOLS_VERSION)" 				>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: The Linux Console Tools (libraries)"			>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CONSOLE-TOOLS_IPKG_TMP)
+	@$(call makeipkg, $(CONSOLE-TOOLS_IPKG_TMP))
 
 	rm -rf $(CONSOLE-TOOLS_IPKG_TMP)
 	mkdir -p $(CONSOLE-TOOLS_IPKG_TMP)/usr/bin
@@ -181,7 +181,7 @@ $(STATEDIR)/console-tools.targetinstall: $(console-tools_targetinstall_deps)
 	echo "Version: $(CONSOLE-TOOLS_VERSION)" 				>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: console-tools-libs" 					>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: The Linux Console Tools (loadkeys)"			>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CONSOLE-TOOLS_IPKG_TMP)
+	@$(call makeipkg, $(CONSOLE-TOOLS_IPKG_TMP))
 
 	rm -rf $(CONSOLE-TOOLS_IPKG_TMP)
 	mkdir -p $(CONSOLE-TOOLS_IPKG_TMP)/usr/bin
@@ -196,7 +196,7 @@ $(STATEDIR)/console-tools.targetinstall: $(console-tools_targetinstall_deps)
 	echo "Version: $(CONSOLE-TOOLS_VERSION)" 				>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: console-tools-libs" 					>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: The Linux Console Tools (consolechars)"		>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CONSOLE-TOOLS_IPKG_TMP)
+	@$(call makeipkg, $(CONSOLE-TOOLS_IPKG_TMP))
 
 	rm -rf $(CONSOLE-TOOLS_IPKG_TMP)
 	mkdir -p $(CONSOLE-TOOLS_IPKG_TMP)/usr/bin
@@ -213,7 +213,7 @@ $(STATEDIR)/console-tools.targetinstall: $(console-tools_targetinstall_deps)
 	echo "Version: $(CONSOLE-TOOLS_VERSION)" 				>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: console-tools-libs, console-tools-loadkeys, console-tools-consolechars" >>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: The Linux Console Tools"				>>$(CONSOLE-TOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CONSOLE-TOOLS_IPKG_TMP)
+	@$(call makeipkg, $(CONSOLE-TOOLS_IPKG_TMP))
 
 	touch $@
 

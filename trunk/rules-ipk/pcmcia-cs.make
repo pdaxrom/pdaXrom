@@ -228,7 +228,7 @@ endif
 	echo "chmod +s /sbin/cardctl"			>>$(PCMCIA-CS_DIR)/ipkg_tmp/CONTROL/postinst
 	chmod 755 $(PCMCIA-CS_DIR)/ipkg_tmp/CONTROL/postinst
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(PCMCIA-CS_DIR)/ipkg_tmp
+	@$(call makeipkg, $(PCMCIA-CS_DIR)/ipkg_tmp)
 	touch $@
 
 # ----------------------------------------------------------------------------

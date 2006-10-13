@@ -156,7 +156,7 @@ $(STATEDIR)/groff.targetinstall: $(groff_targetinstall_deps)
 	echo "Version: $(GROFF_VERSION)" 						>>$(GROFF_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(GROFF_IPKG_TMP)/CONTROL/control
 	echo "Description: THE groff (GNU Troff) software is a typesetting package which reads plain text mixed with formatting commands and produces formatted output." >>$(GROFF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GROFF_IPKG_TMP)
+	@$(call makeipkg, $(GROFF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

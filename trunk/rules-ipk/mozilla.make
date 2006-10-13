@@ -206,7 +206,7 @@ $(STATEDIR)/mozilla.targetinstall: $(mozilla_targetinstall_deps)
 	echo "Version: $(MOZILLA_VERSION)" 					>>$(MOZILLA_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2"	 						>>$(MOZILLA_IPKG_TMP)/CONTROL/control
 	echo "Description: Web-browser built for 2004, advanced e-mail and newsgroup client, IRC chat client, and HTML editing made simple -- all your Internet needs in one application.">>$(MOZILLA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MOZILLA_IPKG_TMP)
+	@$(call makeipkg, $(MOZILLA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -137,7 +137,7 @@ $(STATEDIR)/devfsd.targetinstall: $(devfsd_targetinstall_deps)
 	echo "Version: $(DEVFSD_VERSION)" 					>>$(DEVFSD_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(DEVFSD_DIR)/ipk/CONTROL/control
 	echo "Description: optional daemon for managing devfs (the Linux Device Filesystem)">>$(DEVFSD_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DEVFSD_DIR)/ipk
+	@$(call makeipkg, $(DEVFSD_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

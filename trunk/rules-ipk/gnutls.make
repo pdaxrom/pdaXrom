@@ -184,7 +184,7 @@ $(STATEDIR)/gnutls.targetinstall: $(gnutls_targetinstall_deps)
 	echo "Version: $(GNUTLS_VERSION)" 			>>$(GNUTLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgcrypt, openssl" 			>>$(GNUTLS_IPKG_TMP)/CONTROL/control
 	echo "Description: This is a TLS (Transport Layer Security) 1.0 and SSL (Secure Sockets Layer) 3.0 implementation for the GNU project.">>$(GNUTLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNUTLS_IPKG_TMP)
+	@$(call makeipkg, $(GNUTLS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

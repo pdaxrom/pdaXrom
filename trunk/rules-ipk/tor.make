@@ -157,7 +157,7 @@ $(STATEDIR)/tor.targetinstall: $(tor_targetinstall_deps)
 	echo "Version: $(TOR_VERSION)-$(TOR_VENDOR_VERSION)" 				>>$(TOR_IPKG_TMP)/CONTROL/control
 	echo "Depends: libevent, openssl, tsocks" 					>>$(TOR_IPKG_TMP)/CONTROL/control
 	echo "Description: Tor is a toolset for a wide range of organizations and people that want to improve their safety and security on the Internet." >>$(TOR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TOR_IPKG_TMP)
+	@$(call makeipkg, $(TOR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

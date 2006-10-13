@@ -172,7 +172,7 @@ $(STATEDIR)/quake2.targetinstall: $(quake2_targetinstall_deps)
 	echo "cd /usr/share/quake2"		>> $(QUAKE2_IPKG_TMP)/usr/bin/quake2
 	echo "./quake2"				>> $(QUAKE2_IPKG_TMP)/usr/bin/quake2
 	chmod 755 $(QUAKE2_IPKG_TMP)/usr/bin/quake2
-	cd $(FEEDDIR) && $(XMKIPKG) $(QUAKE2_IPKG_TMP)
+	@$(call makeipkg, $(QUAKE2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

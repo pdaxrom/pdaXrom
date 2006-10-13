@@ -148,7 +148,7 @@ $(STATEDIR)/NVIDIA_nforce.targetinstall: $(NVIDIA_nforce_targetinstall_deps)
 	echo "Version: $(NVIDIA_NFORCE_VERSION)"				 		>>$(NVIDIA_NFORCE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 									>>$(NVIDIA_NFORCE_IPKG_TMP)/CONTROL/control
 	echo "Description: Nvidia NForce kernel modules"					>>$(NVIDIA_NFORCE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NVIDIA_NFORCE_IPKG_TMP)
+	@$(call makeipkg, $(NVIDIA_NFORCE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

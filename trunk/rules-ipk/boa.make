@@ -192,7 +192,7 @@ $(STATEDIR)/boa.targetinstall: $(boa_targetinstall_deps)
 	echo "/etc/rc.d/init.d/boa stop"					>>$(BOA_IPKG_TMP)/CONTROL/prerm
 	chmod 755 $(BOA_IPKG_TMP)/CONTROL/prerm
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(BOA_IPKG_TMP)
+	@$(call makeipkg, $(BOA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

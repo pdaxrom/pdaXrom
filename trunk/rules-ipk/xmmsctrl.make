@@ -148,7 +148,7 @@ $(STATEDIR)/xmmsctrl.targetinstall: $(xmmsctrl_targetinstall_deps)
 	echo "Version: $(XMMSCTRL_VERSION)" 							>>$(XMMSCTRL_IPKG_TMP)/CONTROL/control
 	echo "Depends: xmms"					 				>>$(XMMSCTRL_IPKG_TMP)/CONTROL/control
 	echo "Description: control xmms from the command line"					>>$(XMMSCTRL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XMMSCTRL_IPKG_TMP)
+	@$(call makeipkg, $(XMMSCTRL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -223,7 +223,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: " 				>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Interpreter and core modules">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -247,7 +247,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Codecs, Encodings & i18n Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -266,7 +266,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Threading & Synchronization Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -283,7 +283,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Distribution Utility">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -304,7 +304,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-io" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Option Parsing, Text Wrapping and Comma-Separated-Value Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -324,7 +324,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Curses Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -344,7 +344,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Persistence Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -369,7 +369,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-math" 	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Low-Level I/O"	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -387,7 +387,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-zlib" 	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python High Level Compression Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -408,7 +408,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-stringold" 	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Regular Expression APIs">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -426,7 +426,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-xml, python-netserver, python-lang">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python XMLRPC Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
@@ -445,7 +445,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-io" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Terminal Controlling Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -462,7 +462,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-io, python-re">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Email Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -483,7 +483,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Graphical Image Handling">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -500,7 +500,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Resource Control Interface">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -521,7 +521,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Math Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -540,7 +540,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Hotshot Profiler">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -561,7 +561,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Unix Administration Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	#rm -rf $(PYTHON_IPK_TMP_DIR);
 	#mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -578,7 +578,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	#echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	#echo "Depends: python-core, libgdbm" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	#echo "Description: Python GNU Database Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	#cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	#@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -595,7 +595,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python's fcntl Interface">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -624,7 +624,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-io, python-mime">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Internet Protocol Clients">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -641,7 +641,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Pretty-Print Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -661,7 +661,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-netclient" 	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Internet Protocol Servers">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -678,7 +678,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Compiler Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -695,7 +695,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python's syslog Interface">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -719,7 +719,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python HTML Processing">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -738,7 +738,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Readline Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -757,7 +757,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-lang, python-stringold, python-re">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Interactive Help Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -777,7 +777,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python basic XML support.">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -795,7 +795,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-io" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python MIME Handling APIs">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -812,7 +812,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-stringold, python-lang" >>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Unit Testing Framework">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -831,7 +831,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Deprecated String APIs">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -849,7 +849,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Bytecode Compilation Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -871,7 +871,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-re" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Shell-Like Functionality">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -888,7 +888,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core, python-io" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Memory-Mapped-File Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -905,7 +905,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python zlib Support.">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -924,7 +924,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python File-Based Database Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -958,7 +958,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Low-Level Language Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -977,7 +977,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Cryptographic and Hashing Support">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -1000,7 +1000,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python Audio Handling"	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -1019,7 +1019,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python TK/TCL support.">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -1037,7 +1037,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python DateTime support."	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
@@ -1054,9 +1054,9 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Version: $(PYTHON_VERSION)" 		>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python logging support."	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_IPK_TMP_DIR)
+	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYTHON_BUILDDIR)/python_ipk
+	@$(call makeipkg, $(PYTHON_BUILDDIR)/python_ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

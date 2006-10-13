@@ -178,7 +178,7 @@ $(STATEDIR)/libmikmod.targetinstall: $(libmikmod_targetinstall_deps)
 	echo "Version: $(LIBMIKMOD_VERSION)" 						>>$(LIBMIKMOD_IPKG_TMP)/CONTROL/control
 	echo "Depends: esound" 								>>$(LIBMIKMOD_IPKG_TMP)/CONTROL/control
 	echo "Description: MOD, XM player library"					>>$(LIBMIKMOD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBMIKMOD_IPKG_TMP)
+	@$(call makeipkg, $(LIBMIKMOD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -154,7 +154,7 @@ $(STATEDIR)/reiser4progs.targetinstall: $(reiser4progs_targetinstall_deps)
 	echo "Version: $(REISER4PROGS_VERSION)-$(REISER4PROGS_VENDOR_VERSION)" 		>>$(REISER4PROGS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libaal" 								>>$(REISER4PROGS_IPKG_TMP)/CONTROL/control
 	echo "Description: It contains the library for reiser4 filesystem access and manipulation and reiser4 utilities.">>$(REISER4PROGS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(REISER4PROGS_IPKG_TMP)
+	@$(call makeipkg, $(REISER4PROGS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

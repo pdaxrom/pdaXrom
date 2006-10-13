@@ -151,7 +151,7 @@ $(STATEDIR)/lilo.targetinstall: $(lilo_targetinstall_deps)
 	echo "Version: $(LILO_VERSION)" 					>>$(LILO_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(LILO_IPKG_TMP)/CONTROL/control
 	echo "Description: linux loader"					>>$(LILO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LILO_IPKG_TMP)
+	@$(call makeipkg, $(LILO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

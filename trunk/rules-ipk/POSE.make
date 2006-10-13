@@ -149,7 +149,7 @@ $(STATEDIR)/POSE.targetinstall: $(POSE_targetinstall_deps)
 	echo "Depends: " 								>>$(POSE_IPKG_TMP)/CONTROL/control
 	echo "Description: Palm OS emulator"						>>$(POSE_IPKG_TMP)/CONTROL/control
 	asasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(POSE_IPKG_TMP)
+	@$(call makeipkg, $(POSE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

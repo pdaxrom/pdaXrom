@@ -184,7 +184,7 @@ $(STATEDIR)/qt-embedded.targetinstall: $(qt-embedded_targetinstall_deps)
 	echo "Depends: " 							>>$(QT-EMBEDDED_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"			>>$(QT-EMBEDDED_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(QT-EMBEDDED_IPKG_TMP)
+	@$(call makeipkg, $(QT-EMBEDDED_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

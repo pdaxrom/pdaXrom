@@ -195,7 +195,7 @@ $(STATEDIR)/GConf.targetinstall: $(GConf_targetinstall_deps)
 	echo "fi"					>>$(GCONF_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(GCONF_IPKG_TMP)/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(GCONF_IPKG_TMP)
+	@$(call makeipkg, $(GCONF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

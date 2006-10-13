@@ -172,7 +172,7 @@ $(STATEDIR)/xchat.targetinstall: $(xchat_targetinstall_deps)
 	echo "Version: $(XCHAT_VERSION)-$(XCHAT_VENDOR_VERSION)" 			>>$(XCHAT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, openssl" 							>>$(XCHAT_IPKG_TMP)/CONTROL/control
 	echo "Description: X-Chat is an IRC client for UNIX operating systems."		>>$(XCHAT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XCHAT_IPKG_TMP)
+	@$(call makeipkg, $(XCHAT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

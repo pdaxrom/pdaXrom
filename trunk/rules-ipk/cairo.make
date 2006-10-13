@@ -166,7 +166,7 @@ $(STATEDIR)/cairo.targetinstall: $(cairo_targetinstall_deps)
 	echo "Version: $(CAIRO_VERSION)-$(CAIRO_VENDOR_VERSION)" 			>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(CAIRO_IPKG_TMP)/CONTROL/control
 	echo "Description: Cairo is a 2D graphics library with support for multiple output devices" >>$(CAIRO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CAIRO_IPKG_TMP)
+	@$(call makeipkg, $(CAIRO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

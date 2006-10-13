@@ -158,7 +158,7 @@ $(STATEDIR)/expat.targetinstall: $(expat_targetinstall_deps)
 	echo "Version: $(EXPAT_VERSION)" 				>>$(EXPAT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 						>>$(EXPAT_IPKG_TMP)/CONTROL/control
 	echo "Description: C library for parsing XML, written by James Clark.">>$(EXPAT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EXPAT_IPKG_TMP)
+	@$(call makeipkg, $(EXPAT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

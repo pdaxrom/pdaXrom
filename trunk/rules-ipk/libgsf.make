@@ -182,7 +182,7 @@ $(STATEDIR)/libgsf.targetinstall: $(libgsf_targetinstall_deps)
 	echo "Version: $(LIBGSF_VERSION)" 		>>$(LIBGSF_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 				>>$(LIBGSF_IPKG_TMP)/CONTROL/control
 	echo "Description: The G Structured File Library">>$(LIBGSF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGSF_IPKG_TMP)
+	@$(call makeipkg, $(LIBGSF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

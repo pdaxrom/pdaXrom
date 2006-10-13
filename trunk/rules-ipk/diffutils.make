@@ -150,7 +150,7 @@ $(STATEDIR)/diffutils.targetinstall: $(diffutils_targetinstall_deps)
 	echo "Version: $(DIFFUTILS_VERSION)" 		>>$(DIFFUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(DIFFUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: the GNU diff, diff3, sdiff, and cmp utilities.">>$(DIFFUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DIFFUTILS_IPKG_TMP)
+	@$(call makeipkg, $(DIFFUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -162,7 +162,7 @@ $(STATEDIR)/SDL_mixer.targetinstall: $(SDL_mixer_targetinstall_deps)
 	rm -rf $(SDL_MIXER_IPKG_TMP)/usr/lib/*.la
 	$(CROSSSTRIP) $(SDL_MIXER_IPKG_TMP)/usr/lib/libSDL_mixer-1.2.so.0.2.3
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDL_MIXER_IPKG_TMP)
+	@$(call makeipkg, $(SDL_MIXER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

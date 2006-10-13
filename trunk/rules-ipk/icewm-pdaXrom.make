@@ -147,7 +147,7 @@ $(STATEDIR)/icewm-pdaXrom.targetinstall: $(icewm-pdaXrom_targetinstall_deps)
 	echo "Version: $(ICEWM-PDAXROM_VERSION)-$(ICEWM-PDAXROM_VENDOR_VERSION)" 				>>$(ICEWM-PDAXROM_IPKG_TMP)/CONTROL/control
 	echo "Depends: icewm" 											>>$(ICEWM-PDAXROM_IPKG_TMP)/CONTROL/control
 	echo "Description: IceWM pdaXrom specific files"							>>$(ICEWM-PDAXROM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ICEWM-PDAXROM_IPKG_TMP)
+	@$(call makeipkg, $(ICEWM-PDAXROM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

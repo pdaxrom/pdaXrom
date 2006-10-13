@@ -187,7 +187,7 @@ $(STATEDIR)/bmp.targetinstall: $(bmp_targetinstall_deps)
 	echo "Version: $(BMP_VERSION)" 					>>$(BMP_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2"	 					>>$(BMP_IPKG_TMP)/CONTROL/control
 	echo "Description: A Cross platform Multimedia Player"		>>$(BMP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BMP_IPKG_TMP)
+	@$(call makeipkg, $(BMP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

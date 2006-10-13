@@ -154,7 +154,7 @@ $(STATEDIR)/sqlitebrowser.targetinstall: $(sqlitebrowser_targetinstall_deps)
 	echo "Version: $(SQLITEBROWSER_VERSION)-$(SQLITEBROWSER_VENDOR_VERSION)" 	>>$(SQLITEBROWSER_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt"								>>$(SQLITEBROWSER_IPKG_TMP)/CONTROL/control
 	echo "Description: SQLite Database Browser is a freeware, public domain, open source visual tool used to create, design and edit database files compatible with SQLite.">>$(SQLITEBROWSER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SQLITEBROWSER_IPKG_TMP)
+	@$(call makeipkg, $(SQLITEBROWSER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

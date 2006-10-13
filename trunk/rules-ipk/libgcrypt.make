@@ -166,7 +166,7 @@ $(STATEDIR)/libgcrypt.targetinstall: $(libgcrypt_targetinstall_deps)
 	echo "Version: $(LIBGCRYPT_VERSION)" 		>>$(LIBGCRYPT_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpg-error" 			>>$(LIBGCRYPT_IPKG_TMP)/CONTROL/control
 	echo "Description: Libgcrypt is a general purpose crypto library based on the code used in GnuPG.">>$(LIBGCRYPT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGCRYPT_IPKG_TMP)
+	@$(call makeipkg, $(LIBGCRYPT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -154,7 +154,7 @@ $(STATEDIR)/translucency.targetinstall: $(translucency_targetinstall_deps)
 	echo "Version: $(TRANSLUCENCY_VERSION)" 			>>$(TRANSLUCENCY_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 						>>$(TRANSLUCENCY_IPKG_TMP)/CONTROL/control
 	echo "Description: translucency kernel module"			>>$(TRANSLUCENCY_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TRANSLUCENCY_IPKG_TMP)
+	@$(call makeipkg, $(TRANSLUCENCY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -174,7 +174,7 @@ $(STATEDIR)/mutt.targetinstall: $(mutt_targetinstall_deps)
 	echo "Version: $(MUTT_VERSION)-$(MUTT_VENDOR_VERSION)" 				>>$(MUTT_IPKG_TMP)/CONTROL/control
 	echo "Depends: ncurses, openssl" 						>>$(MUTT_IPKG_TMP)/CONTROL/control
 	echo "Description: Mutt is a small but very powerful text-based mail client for Unix operating systems.">>$(MUTT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MUTT_IPKG_TMP)
+	@$(call makeipkg, $(MUTT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

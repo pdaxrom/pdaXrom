@@ -148,7 +148,7 @@ $(STATEDIR)/x11-fonts-misc.targetinstall: $(x11-fonts-misc_targetinstall_deps)
 	echo " xset fp+ /usr/X11R6/lib/X11/fonts/misc"	>>$(X11-FONTS-MISC_IPKG_TMP)/CONTROL/postinst
 	echo "fi"					>>$(X11-FONTS-MISC_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(X11-FONTS-MISC_IPKG_TMP)/CONTROL/postinst
-	cd $(FEEDDIR) && $(XMKIPKG) $(X11-FONTS-MISC_IPKG_TMP)
+	@$(call makeipkg, $(X11-FONTS-MISC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

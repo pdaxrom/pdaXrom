@@ -168,7 +168,7 @@ $(STATEDIR)/atk124.targetinstall: $(atk124_targetinstall_deps)
 	echo "Version: $(ATK124_VERSION)-$(ATK124_VENDOR_VERSION)" 			>>$(ATK124_IPKG_TMP)/CONTROL/control
 	echo "Depends: pango, xfree"		 					>>$(ATK124_IPKG_TMP)/CONTROL/control
 	echo "Description: ATK Library"							>>$(ATK124_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ATK124_IPKG_TMP)
+	@$(call makeipkg, $(ATK124_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -170,7 +170,7 @@ $(STATEDIR)/fcron.targetinstall: $(fcron_targetinstall_deps)
 	echo "Version: $(FCRON_VERSION)-$(FCRON_VENDOR_VERSION)" 			>>$(FCRON_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(FCRON_DEPLIST)" 						>>$(FCRON_IPKG_TMP)/CONTROL/control
 	echo "Description: Fcron is a periodical command scheduler which aims at replacing Vixie Cron, so it implements most of its functionalities." >>$(FCRON_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FCRON_IPKG_TMP)
+	@$(call makeipkg, $(FCRON_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

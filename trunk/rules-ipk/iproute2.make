@@ -161,7 +161,7 @@ $(STATEDIR)/iproute2.targetinstall: $(iproute2_targetinstall_deps)
 	echo "Version: $(IPROUTE2_VERSION)-$(IPROUTE2_VENDOR_VERSION)" 			>>$(IPROUTE2_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(IPROUTE2_IPKG_TMP)/CONTROL/control
 	echo "Description: IP routing utilites"						>>$(IPROUTE2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IPROUTE2_IPKG_TMP)
+	@$(call makeipkg, $(IPROUTE2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

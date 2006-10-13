@@ -170,7 +170,7 @@ $(STATEDIR)/openldap.targetinstall: $(openldap_targetinstall_deps)
 	echo "Version: $(OPENLDAP_VERSION)-$(OPENLDAP_VENDOR_VERSION)" 			>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(OPENLDAP_IPKG_TMP)/CONTROL/control
 	echo "Description: OpenLDAP Software is an open source implementation of the Lightweight Directory Access Protocol." >>$(OPENLDAP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENLDAP_IPKG_TMP)
+	@$(call makeipkg, $(OPENLDAP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

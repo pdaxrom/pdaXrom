@@ -170,7 +170,7 @@ $(STATEDIR)/gspcav1.targetinstall: $(gspcav1_targetinstall_deps)
 	echo "Version: $(GSPCAV1_VERSION)-$(GSPCAV1_VENDOR_VERSION)" 			>>$(GSPCAV1_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(GSPCAV1_DEPLIST)" 						>>$(GSPCAV1_IPKG_TMP)/CONTROL/control
 	echo "Description: Generic Softwares Package for Camera Adaptator (Spca5xx)"	>>$(GSPCAV1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GSPCAV1_IPKG_TMP)
+	@$(call makeipkg, $(GSPCAV1_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -148,7 +148,7 @@ $(STATEDIR)/stella.targetinstall: $(stella_targetinstall_deps)
 	echo "Version: $(STELLA_VERSION)-$(STELLA_VENDOR_VERSION)" 				>>$(STELLA_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl" 									>>$(STELLA_IPKG_TMP)/CONTROL/control
 	echo "Description: Atari 2600 emulator"							>>$(STELLA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(STELLA_IPKG_TMP)
+	@$(call makeipkg, $(STELLA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

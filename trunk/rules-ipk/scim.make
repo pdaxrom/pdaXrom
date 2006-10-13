@@ -194,7 +194,7 @@ $(STATEDIR)/scim.targetinstall: $(scim_targetinstall_deps)
 
 	chmod 755 $(SCIM_IPKG_TMP)/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCIM_IPKG_TMP)
+	@$(call makeipkg, $(SCIM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

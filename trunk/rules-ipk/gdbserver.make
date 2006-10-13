@@ -114,7 +114,7 @@ $(STATEDIR)/gdbserver.targetinstall: $(STATEDIR)/gdbserver.compile
 	echo "Version: $(GDB_VERSION)"	 			>>$(GDBSERVER_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(GDBSERVER_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU debugger server"			>>$(GDBSERVER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GDBSERVER_IPKG_TMP)
+	@$(call makeipkg, $(GDBSERVER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

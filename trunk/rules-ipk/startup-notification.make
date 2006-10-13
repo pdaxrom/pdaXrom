@@ -150,7 +150,7 @@ $(STATEDIR)/startup-notification.targetinstall: $(startup-notification_targetins
 	echo "Version: $(STARTUP-NOTIFICATION_VERSION)" >>$(STARTUP-NOTIFICATION_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 			>>$(STARTUP-NOTIFICATION_IPKG_TMP)/CONTROL/control
 	echo "Description: Startup notification library">>$(STARTUP-NOTIFICATION_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(STARTUP-NOTIFICATION_IPKG_TMP)
+	@$(call makeipkg, $(STARTUP-NOTIFICATION_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

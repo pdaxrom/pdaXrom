@@ -146,7 +146,7 @@ $(STATEDIR)/mb-applet-tasks.targetinstall: $(mb-applet-tasks_targetinstall_deps)
 	echo "Version: $(MB-APPLET-TASKS_VERSION)" 					>>$(MB-APPLET-TASKS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmatchbox, libwnck" 						>>$(MB-APPLET-TASKS_IPKG_TMP)/CONTROL/control
 	echo "Description: matchbox panel active tasks applet"				>>$(MB-APPLET-TASKS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-TASKS_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-TASKS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

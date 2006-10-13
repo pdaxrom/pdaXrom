@@ -182,7 +182,7 @@ $(STATEDIR)/pango12.targetinstall: $(pango12_targetinstall_deps)
 	echo "#!/bin/sh"								 >$(PANGO12_IPKG_TMP)/CONTROL/postinst
 	echo "/usr/bin/pango-querymodules > /etc/pango/pango.modules" 			>>$(PANGO12_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(PANGO12_IPKG_TMP)/CONTROL/postinst
-	cd $(FEEDDIR) && $(XMKIPKG) $(PANGO12_IPKG_TMP)
+	@$(call makeipkg, $(PANGO12_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

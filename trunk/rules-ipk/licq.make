@@ -203,7 +203,7 @@ $(STATEDIR)/licq.targetinstall: $(licq_targetinstall_deps)
 	echo "Version: $(LICQ_VERSION)" 				>>$(LICQ_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt, startup-notification, openssl" 		>>$(LICQ_IPKG_TMP)/CONTROL/control
 	echo "Description: An ICQ clone written in C and C++ using a plugin system to allow for many possible interfaces.">>$(LICQ_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LICQ_IPKG_TMP)
+	@$(call makeipkg, $(LICQ_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

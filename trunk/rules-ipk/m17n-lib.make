@@ -177,7 +177,7 @@ $(STATEDIR)/m17n-lib.targetinstall: $(m17n-lib_targetinstall_deps)
 	echo "Version: $(M17N-LIB_VERSION)-$(M17N-LIB_VENDOR_VERSION)" 			>>$(M17N-LIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, libxml2"		 					>>$(M17N-LIB_IPKG_TMP)/CONTROL/control
 	echo "Description: m17n is the abbreviation of multilingualization  which is coined from multi-lingual." >>$(M17N-LIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(M17N-LIB_IPKG_TMP)
+	@$(call makeipkg, $(M17N-LIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

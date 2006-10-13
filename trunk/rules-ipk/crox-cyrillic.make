@@ -145,7 +145,7 @@ $(STATEDIR)/crox-cyrillic.targetinstall: $(crox-cyrillic_targetinstall_deps)
 	echo " xset fp+ /usr/X11R6/lib/X11/fonts/misc"		>>$(CROX-CYRILLIC_IPKG_TMP)/CONTROL/postinst
 	echo "fi"						>>$(CROX-CYRILLIC_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(CROX-CYRILLIC_IPKG_TMP)/CONTROL/postinst
-	cd $(FEEDDIR) && $(XMKIPKG) $(CROX-CYRILLIC_IPKG_TMP)
+	@$(call makeipkg, $(CROX-CYRILLIC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -177,7 +177,7 @@ $(STATEDIR)/libgnomeprintui.targetinstall: $(libgnomeprintui_targetinstall_deps)
 	echo "Version: $(LIBGNOMEPRINTUI_VERSION)" 		>>$(LIBGNOMEPRINTUI_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnomeprint, libgnomecanvas" >>$(LIBGNOMEPRINTUI_IPKG_TMP)/CONTROL/control
 	echo "Description: UI for gnomeprint">>$(LIBGNOMEPRINTUI_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGNOMEPRINTUI_IPKG_TMP)
+	@$(call makeipkg, $(LIBGNOMEPRINTUI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

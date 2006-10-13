@@ -150,7 +150,7 @@ $(STATEDIR)/ttmkfdir.targetinstall: $(ttmkfdir_targetinstall_deps)
 	echo "Version: $(TTMKFDIR_VERSION)-$(TTMKFDIR_VENDOR_VERSION)" 			>>$(TTMKFDIR_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(TTMKFDIR_IPKG_TMP)/CONTROL/control
 	echo "Description: tool to create valid and complete fonts.scale file from TrueType fonts." >>$(TTMKFDIR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TTMKFDIR_IPKG_TMP)
+	@$(call makeipkg, $(TTMKFDIR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

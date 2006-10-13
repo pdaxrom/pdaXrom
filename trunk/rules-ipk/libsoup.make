@@ -168,7 +168,7 @@ $(STATEDIR)/libsoup.targetinstall: $(libsoup_targetinstall_deps)
 	echo "Version: $(LIBSOUP_VERSION)-$(LIBSOUP_VENDOR_VERSION)" 			>>$(LIBSOUP_IPKG_TMP)/CONTROL/control
 	echo "Depends: libxml2, gnutls" 						>>$(LIBSOUP_IPKG_TMP)/CONTROL/control
 	echo "Description: The libsoup package contains an HTTP library implementation in C">>$(LIBSOUP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBSOUP_IPKG_TMP)
+	@$(call makeipkg, $(LIBSOUP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

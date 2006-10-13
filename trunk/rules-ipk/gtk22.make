@@ -184,7 +184,7 @@ $(STATEDIR)/gtk22.targetinstall: $(gtk22_targetinstall_deps)
 	echo "/usr/bin/gtk-query-immodules-2.0 > /etc/gtk-2.0/gtk.immodules" 		>>$(GTK22_IPKG_TMP)/CONTROL/postinst
 	echo "/usr/bin/gdk-pixbuf-query-loaders > /etc/gtk-2.0/gdk-pixbuf.loaders"	>>$(GTK22_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(GTK22_IPKG_TMP)/CONTROL/postinst
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTK22_IPKG_TMP)
+	@$(call makeipkg, $(GTK22_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

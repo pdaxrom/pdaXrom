@@ -170,7 +170,7 @@ $(STATEDIR)/gtkhtml.targetinstall: $(gtkhtml_targetinstall_deps)
 	echo "Version: $(GTKHTML_VERSION)-$(GTKHTML_VENDOR_VERSION)" 			>>$(GTKHTML_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, gail, libsoup" 						>>$(GTKHTML_IPKG_TMP)/CONTROL/control
 	echo "Description: gtk html engine"						>>$(GTKHTML_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTKHTML_IPKG_TMP)
+	@$(call makeipkg, $(GTKHTML_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

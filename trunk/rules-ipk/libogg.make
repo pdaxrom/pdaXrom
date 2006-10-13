@@ -163,7 +163,7 @@ $(STATEDIR)/libogg.targetinstall: $(libogg_targetinstall_deps)
 	echo "Version: $(LIBOGG_VERSION)-$(LIBOGG_VENDOR_VERSION)" 			>>$(LIBOGG_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LIBOGG_IPKG_TMP)/CONTROL/control
 	echo "Description: ogg is a library for manipulating ogg bitstreams"		>>$(LIBOGG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBOGG_IPKG_TMP)
+	@$(call makeipkg, $(LIBOGG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -138,7 +138,7 @@ $(STATEDIR)/wget.targetinstall: $(wget_targetinstall_deps)
 	echo "Version: $(WGETA_VERSION)" 					>>$(WGETA_DIR)/ipkg_tmp/CONTROL/control
 	echo "Depends: " 							>>$(WGETA_DIR)/ipkg_tmp/CONTROL/control
 	echo "Description: free utility for non-interactive download of files from the Web." >>$(WGETA_DIR)/ipkg_tmp/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WGETA_DIR)/ipkg_tmp
+	@$(call makeipkg, $(WGETA_DIR)/ipkg_tmp)
 	touch $@
 
 # ----------------------------------------------------------------------------

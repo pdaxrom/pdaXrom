@@ -150,7 +150,7 @@ $(STATEDIR)/umake.targetinstall: $(umake_targetinstall_deps)
 	echo "Version: $(UMAKE_VERSION)" 		>>$(UMAKE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(UMAKE_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU make utility to maintain groups of programs.">>$(UMAKE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UMAKE_IPKG_TMP)
+	@$(call makeipkg, $(UMAKE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

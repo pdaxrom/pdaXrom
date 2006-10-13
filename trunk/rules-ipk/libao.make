@@ -166,7 +166,7 @@ $(STATEDIR)/libao.targetinstall: $(libao_targetinstall_deps)
 	echo "Version: $(LIBAO_VERSION)" 		>>$(LIBAO_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBAO_IPKG_TMP)/CONTROL/control
 	echo "Description: Cross-platform Audio Library">>$(LIBAO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBAO_IPKG_TMP)
+	@$(call makeipkg, $(LIBAO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

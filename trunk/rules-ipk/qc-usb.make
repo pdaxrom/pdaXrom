@@ -148,7 +148,7 @@ $(STATEDIR)/qc-usb.targetinstall: $(qc-usb_targetinstall_deps)
 	echo "Depends: " 								>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	echo "Description: Logitech QuickCam settings tool"				>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	asasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(QC-USB_IPKG_TMP)
+	@$(call makeipkg, $(QC-USB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

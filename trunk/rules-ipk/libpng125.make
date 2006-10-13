@@ -149,7 +149,7 @@ $(STATEDIR)/libpng125.targetinstall: $(libpng125_targetinstall_deps)
 	echo "Version: $(LIBPNG125_VERSION)" 			>>$(LIBPNG125_IPKG_TMP)/CONTROL/control
 	echo "Depends: "			 		>>$(LIBPNG125_IPKG_TMP)/CONTROL/control
 	echo "Description: Loads and saves PNG files"		>>$(LIBPNG125_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBPNG125_IPKG_TMP)
+	@$(call makeipkg, $(LIBPNG125_IPKG_TMP))
 
 	touch $@
 

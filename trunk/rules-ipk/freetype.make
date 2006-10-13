@@ -163,7 +163,7 @@ $(STATEDIR)/freetype.targetinstall: $(freetype_targetinstall_deps)
 	echo "Version: $(FREETYPE_VERSION)" 				>>$(FREETYPE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 						>>$(FREETYPE_IPKG_TMP)/CONTROL/control
 	echo "Description: Free and portable TrueType font rendering engine.">>$(FREETYPE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FREETYPE_IPKG_TMP)
+	@$(call makeipkg, $(FREETYPE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -151,7 +151,7 @@ $(STATEDIR)/kismet.targetinstall: $(kismet_targetinstall_deps)
 	echo "Version: $(KISMET_VERSION)" 		>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(KISMET_IPKG_TMP)/CONTROL/control
 	echo "Description:  802.11b network sniffer and analyser">>$(KISMET_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KISMET_IPKG_TMP)
+	@$(call makeipkg, $(KISMET_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

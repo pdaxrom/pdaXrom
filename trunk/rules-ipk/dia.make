@@ -154,7 +154,7 @@ $(STATEDIR)/dia.targetinstall: $(dia_targetinstall_deps)
 	echo "Version: $(DIA_VERSION)-$(DIA_VENDOR_VERSION)" 				>>$(DIA_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libxml2, expat" 						>>$(DIA_IPKG_TMP)/CONTROL/control
 	echo "Description: Dia is designed to be much like the commercial Windows program 'Visio'">>$(DIA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DIA_IPKG_TMP)
+	@$(call makeipkg, $(DIA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -148,7 +148,7 @@ $(STATEDIR)/hexedit.targetinstall: $(hexedit_targetinstall_deps)
 	echo "Version: $(HEXEDIT_VERSION)-$(HEXEDIT_VENDOR_VERSION)" 			>>$(HEXEDIT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(HEXEDIT_IPKG_TMP)/CONTROL/control
 	echo "Description: hexedit - view and edit files in hexadecimal or in ASCII"	>>$(HEXEDIT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HEXEDIT_IPKG_TMP)
+	@$(call makeipkg, $(HEXEDIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

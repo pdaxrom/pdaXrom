@@ -163,7 +163,7 @@ $(STATEDIR)/gnome-mime-data.targetinstall: $(gnome-mime-data_targetinstall_deps)
 	echo "Version: $(GNOME-MIME-DATA_VERSION)" 	>>$(GNOME-MIME-DATA_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(GNOME-MIME-DATA_IPKG_TMP)/CONTROL/control
 	echo "Description: This module contains the base MIME and Application database for GNOME.">>$(GNOME-MIME-DATA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-MIME-DATA_IPKG_TMP)
+	@$(call makeipkg, $(GNOME-MIME-DATA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

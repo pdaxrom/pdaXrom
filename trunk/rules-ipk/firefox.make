@@ -188,7 +188,7 @@ $(STATEDIR)/firefox.targetinstall: $(firefox_targetinstall_deps)
 	echo "Version: $(FIREFOX_VERSION)" 						>>$(FIREFOX_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2"		 						>>$(FIREFOX_IPKG_TMP)/CONTROL/control
 	echo "Description: Firefox is an award winning preview of next generation browsing technology from mozilla.org.">>$(FIREFOX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FIREFOX_IPKG_TMP)
+	@$(call makeipkg, $(FIREFOX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

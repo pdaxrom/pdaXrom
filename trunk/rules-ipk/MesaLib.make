@@ -164,7 +164,7 @@ $(STATEDIR)/MesaLib.targetinstall: $(MesaLib_targetinstall_deps)
 	echo "Version: $(MESALIB_VERSION)-$(MESALIB_VENDOR_VERSION)" 			>>$(MESALIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 							>>$(MESALIB_IPKG_TMP)/CONTROL/control
 	echo "Description: Mesa is a 3-D graphics library with an API which is very similar to that of OpenGL">>$(MESALIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MESALIB_IPKG_TMP)
+	@$(call makeipkg, $(MESALIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -155,7 +155,7 @@ $(STATEDIR)/xmms-mad.targetinstall: $(xmms-mad_targetinstall_deps)
 	echo "Version: $(XMMS-MAD_VERSION)" 		>>$(XMMS-MAD_IPKG_TMP)/CONTROL/control
 	echo "Depends: xmms, libmad, libid3tag" 	>>$(XMMS-MAD_IPKG_TMP)/CONTROL/control
 	echo "Description: xmms-mad is an input plugin for xmms that uses libmad to decode MPEG layer 1/2/3 files and streams.">>$(XMMS-MAD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XMMS-MAD_IPKG_TMP)
+	@$(call makeipkg, $(XMMS-MAD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

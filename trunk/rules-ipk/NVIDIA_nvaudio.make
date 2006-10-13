@@ -151,7 +151,7 @@ $(STATEDIR)/NVIDIA_nvaudio.targetinstall: $(NVIDIA_nvaudio_targetinstall_deps)
 	echo "Version: $(NVIDIA_NVAUDIO_VERSION)"				 	>>$(NVIDIA_NVAUDIO_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(NVIDIA_NVAUDIO_IPKG_TMP)/CONTROL/control
 	echo "Description: NVIDIA NForce audiomixer"					>>$(NVIDIA_NVAUDIO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NVIDIA_NVAUDIO_IPKG_TMP)
+	@$(call makeipkg, $(NVIDIA_NVAUDIO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

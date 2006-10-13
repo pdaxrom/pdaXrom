@@ -149,7 +149,7 @@ $(STATEDIR)/pxa-overclock.targetinstall: $(pxa-overclock_targetinstall_deps)
 	echo "Version: $(PXA-OVERCLOCK_VERSION)" 				>>$(PXA-OVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt, startup-notification" 				>>$(PXA-OVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Description: PXA overclock tool"					>>$(PXA-OVERCLOCK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PXA-OVERCLOCK_IPKG_TMP)
+	@$(call makeipkg, $(PXA-OVERCLOCK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

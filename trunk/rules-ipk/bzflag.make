@@ -154,7 +154,7 @@ $(STATEDIR)/bzflag.targetinstall: $(bzflag_targetinstall_deps)
 	echo "Version: $(BZFLAG_VERSION)-$(BZFLAG_VENDOR_VERSION)" 						>>$(BZFLAG_IPKG_TMP)/CONTROL/control
 	echo "Depends: mesa3d, curl" 										>>$(BZFLAG_IPKG_TMP)/CONTROL/control
 	echo "Description: BZFlag is a free multiplayer multiplatform 3D tank battle game."			>>$(BZFLAG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BZFLAG_IPKG_TMP)
+	@$(call makeipkg, $(BZFLAG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

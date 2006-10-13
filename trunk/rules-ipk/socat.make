@@ -158,7 +158,7 @@ $(STATEDIR)/socat.targetinstall: $(socat_targetinstall_deps)
 	echo "Version: $(SOCAT_VERSION)-$(SOCAT_VENDOR_VERSION)" 			>>$(SOCAT_IPKG_TMP)/CONTROL/control
 	echo "Depends: readline, ncurses, openssl" 					>>$(SOCAT_IPKG_TMP)/CONTROL/control
 	echo "Description: Multipurpose relay"						>>$(SOCAT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SOCAT_IPKG_TMP)
+	@$(call makeipkg, $(SOCAT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

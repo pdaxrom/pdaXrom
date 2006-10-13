@@ -163,7 +163,7 @@ $(STATEDIR)/pptp.targetinstall: $(pptp_targetinstall_deps)
 	echo "Version: $(PPTP_VERSION)-$(PPTP_VENDOR_VERSION)" 							>>$(PPTP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 											>>$(PPTP_IPKG_TMP)/CONTROL/control
 	echo "Description: PPTP Client is a Linux, FreeBSD, NetBSD and OpenBSD client for the proprietary Microsoft Point-to-Point Tunneling Protocol, PPTP." >>$(PPTP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PPTP_IPKG_TMP)
+	@$(call makeipkg, $(PPTP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

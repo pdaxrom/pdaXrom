@@ -150,7 +150,7 @@ $(STATEDIR)/gtk2hack.targetinstall: $(gtk2hack_targetinstall_deps)
 	echo "Depends: gtk2" 								>>$(GTK2HACK_IPKG_TMP)/CONTROL/control
 	echo "Description: Gtk2Hack is a nice graphical frontend (window port in nethack terminology) for the popular rogue-like role playing game nethack using the modern GTK2 toolkit." >>$(GTK2HACK_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTK2HACK_IPKG_TMP)
+	@$(call makeipkg, $(GTK2HACK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

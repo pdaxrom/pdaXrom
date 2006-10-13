@@ -158,7 +158,7 @@ $(STATEDIR)/ROX-Session.targetinstall: $(ROX-Session_targetinstall_deps)
 	echo "Version: $(ROX-SESSION_VERSION)" 		>>$(ROX-SESSION_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox, rox-lib, dbus, pygtk, python-re, python-math" >>$(ROX-SESSION_IPKG_TMP)/CONTROL/control
 	echo "Description: ROX Session Manager"		>>$(ROX-SESSION_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-SESSION_IPKG_TMP)
+	@$(call makeipkg, $(ROX-SESSION_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

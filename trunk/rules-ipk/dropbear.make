@@ -165,7 +165,7 @@ $(STATEDIR)/dropbear.targetinstall: $(dropbear_targetinstall_deps)
 	echo "#!/bin/sh"				 >$(DROPBEAR_IPKG_TMP)/CONTROL/postinst
 	echo "/etc/rc.d/init.d/dropbear start" 		>>$(DROPBEAR_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(DROPBEAR_IPKG_TMP)/CONTROL/postinst	
-	cd $(FEEDDIR) && $(XMKIPKG) $(DROPBEAR_IPKG_TMP)
+	@$(call makeipkg, $(DROPBEAR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

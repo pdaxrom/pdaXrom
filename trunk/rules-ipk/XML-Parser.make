@@ -162,7 +162,7 @@ $(STATEDIR)/XML-Parser.targetinstall: $(XML-Parser_targetinstall_deps)
 	echo "Version: $(XML-PARSER_VERSION)" 					>>$(XML-PARSER_IPKG_TMP)/CONTROL/control
 	echo "Depends: perl, expat" 						>>$(XML-PARSER_IPKG_TMP)/CONTROL/control
 	echo "Description: XML::Parser"						>>$(XML-PARSER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XML-PARSER_IPKG_TMP)
+	@$(call makeipkg, $(XML-PARSER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

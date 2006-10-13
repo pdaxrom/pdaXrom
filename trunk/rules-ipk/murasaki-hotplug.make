@@ -151,7 +151,7 @@ $(STATEDIR)/murasaki-hotplug.targetinstall: $(murasaki-hotplug_targetinstall_dep
 	echo "Version: $(MURASAKI-HOTPLUG_VERSION)-$(MURASAKI-HOTPLUG_VENDOR_VERSION)" 	>>$(MURASAKI-HOTPLUG_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(MURASAKI-HOTPLUG_IPKG_TMP)/CONTROL/control
 	echo "Description: Another hotplug stuff"					>>$(MURASAKI-HOTPLUG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MURASAKI-HOTPLUG_IPKG_TMP)
+	@$(call makeipkg, $(MURASAKI-HOTPLUG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -197,7 +197,7 @@ $(STATEDIR)/gnome-vfs.targetinstall: $(gnome-vfs_targetinstall_deps)
 	echo "Version: $(GNOME-VFS_VERSION)" 		>>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, dbus-glib, bzip2, gnome-mime-data, gconf, libbonobo, orbit2">>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the GNOME Virtual File System.">>$(GNOME-VFS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-VFS_IPKG_TMP)
+	@$(call makeipkg, $(GNOME-VFS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

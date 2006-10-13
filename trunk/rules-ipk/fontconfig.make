@@ -168,7 +168,7 @@ $(STATEDIR)/fontconfig.targetinstall: $(fontconfig_targetinstall_deps)
 	echo "Version: $(FONTCONFIG_VERSION)" 				>>$(FONTCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Depends: expat, freetype" 				>>$(FONTCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Description: Font configuration and customization library">>$(FONTCONFIG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FONTCONFIG_IPKG_TMP)
+	@$(call makeipkg, $(FONTCONFIG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

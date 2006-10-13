@@ -150,7 +150,7 @@ $(STATEDIR)/ddcxinfo-kanotix.targetinstall: $(ddcxinfo-kanotix_targetinstall_dep
 	echo "Version: $(DDCXINFO-KANOTIX_VERSION)-$(DDCXINFO-KANOTIX_VENDOR_VERSION)" 	>>$(DDCXINFO-KANOTIX_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(DDCXINFO-KANOTIX_IPKG_TMP)/CONTROL/control
 	echo "Description: VBE/DDC stuff"						>>$(DDCXINFO-KANOTIX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DDCXINFO-KANOTIX_IPKG_TMP)
+	@$(call makeipkg, $(DDCXINFO-KANOTIX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

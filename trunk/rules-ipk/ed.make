@@ -148,7 +148,7 @@ $(STATEDIR)/ed.targetinstall: $(ed_targetinstall_deps)
 	echo "Version: $(ED_VERSION)-$(ED_VENDOR_VERSION)" 				>>$(ED_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(ED_IPKG_TMP)/CONTROL/control
 	echo "Description: line-oriented text editor. It is used to create, display, modify and otherwise manipulate text files, both interactively and via shell scripts." >>$(ED_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ED_IPKG_TMP)
+	@$(call makeipkg, $(ED_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

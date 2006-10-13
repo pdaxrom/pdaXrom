@@ -170,7 +170,7 @@ $(STATEDIR)/libmatchbox.targetinstall: $(libmatchbox_targetinstall_deps)
 	echo "Version: $(LIBMATCHBOX_VERSION)-$(LIBMATCHBOX_VENDOR_VERSION)"	 	>>$(LIBMATCHBOX_ROOTDIR)/CONTROL/control
 	echo "Depends: matchbox-common, x11settings-client">>$(LIBMATCHBOX_ROOTDIR)/CONTROL/control
 	echo "Description: Matchbox library"		>>$(LIBMATCHBOX_ROOTDIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBMATCHBOX_ROOTDIR)
+	@$(call makeipkg, $(LIBMATCHBOX_ROOTDIR))
 	touch $@
 
 # ----------------------------------------------------------------------------

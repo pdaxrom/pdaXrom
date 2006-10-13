@@ -187,7 +187,7 @@ $(STATEDIR)/gpe-cvs.targetinstall: $(gpe-cvs_targetinstall_deps)
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: Common icons used by GPE programs"				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 
 	rm -rf $(GPE-CVS_IPKG_TMP)
 	$(GPE-CVS_PATH) $(GPE-CVS_ENV) $(MAKE) -C $(GPE-CVS_DIR)/base/libgpewidget DESTDIR=$(GPE-CVS_IPKG_TMP) install
@@ -203,7 +203,7 @@ $(STATEDIR)/gpe-cvs.targetinstall: $(gpe-cvs_targetinstall_deps)
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, gpe-icons" 						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE Widget Library"						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 	
 	rm -rf $(GPE-CVS_IPKG_TMP)
 	$(GPE-CVS_PATH) $(GPE-CVS_ENV) $(MAKE) -C $(GPE-CVS_DIR)/base/libdisplaymigration DESTDIR=$(GPE-CVS_IPKG_TMP) install
@@ -218,7 +218,7 @@ $(STATEDIR)/gpe-cvs.targetinstall: $(gpe-cvs_targetinstall_deps)
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libgcrypt" 						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: Display migration support for GTK"				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 
 ifdef PTXCONF_GPE-EDIT
 	rm -rf $(GPE-CVS_IPKG_TMP)
@@ -237,7 +237,7 @@ ifdef PTXCONF_GPE-EDIT
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget, libdisplaymigration" 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE Text Editor"						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 
 ifdef PTXCONF_GPE-WORD
@@ -255,7 +255,7 @@ ifdef PTXCONF_GPE-WORD
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget, libdisplaymigration" 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE Word Processor"						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 
 ifdef PTXCONF_GPE-GALLERY
@@ -274,7 +274,7 @@ ifdef PTXCONF_GPE-GALLERY
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget, libdisplaymigration" 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE Image Gallery"						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 
 ifdef PTXCONF_GPE-CALCULATOR
@@ -293,7 +293,7 @@ ifdef PTXCONF_GPE-CALCULATOR
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget, libdisplaymigration" 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE Calculator"						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 
 ifdef PTXCONF_GPE-CONF
@@ -313,7 +313,7 @@ ifdef PTXCONF_GPE-CONF
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget, x11settings-client" 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE System settings"						>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 
 ifdef PTXCONF_GPE-CLOCK
@@ -333,7 +333,7 @@ ifdef PTXCONF_GPE-CLOCK
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget"			 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE Clock"							>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 
 ifdef PTXCONF_GPE-IRC
@@ -353,7 +353,7 @@ ifdef PTXCONF_GPE-IRC
 	echo "Version: $(GPE-CVS_VERSION)-$(GPE-CVS_VENDOR_VERSION)" 			>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgpewidget, sqlite"		 				>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: GPE IRC"							>>$(GPE-CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPE-CVS_IPKG_TMP)
+	@$(call makeipkg, $(GPE-CVS_IPKG_TMP))
 endif
 	touch $@
 

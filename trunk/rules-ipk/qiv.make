@@ -152,7 +152,7 @@ $(STATEDIR)/qiv.targetinstall: $(qiv_targetinstall_deps)
 	echo "Version: $(QIV_VERSION)-$(QIV_VENDOR_VERSION)" 							>>$(QIV_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk, imlib" 										>>$(QIV_IPKG_TMP)/CONTROL/control
 	echo "Description: Quick image viewer"									>>$(QIV_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QIV_IPKG_TMP)
+	@$(call makeipkg, $(QIV_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

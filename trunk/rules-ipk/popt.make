@@ -137,7 +137,7 @@ $(STATEDIR)/popt.targetinstall: $(popt_targetinstall_deps)
 	echo "Version: $(POPT_VERSION)" 					>>$(POPT_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(POPT_DIR)/ipk/CONTROL/control
 	echo "Description: The popt library exists essentially for parsing command line options." >>$(POPT_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(POPT_DIR)/ipk
+	@$(call makeipkg, $(POPT_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

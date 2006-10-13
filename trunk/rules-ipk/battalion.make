@@ -185,7 +185,7 @@ else
 	echo "Depends: xfree" 									>>$(BATTALION_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: battalion was a game written in 1994 on a Silicon Graphics Indy in GL">>$(BATTALION_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BATTALION_IPKG_TMP)
+	@$(call makeipkg, $(BATTALION_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

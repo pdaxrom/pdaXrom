@@ -169,7 +169,7 @@ $(STATEDIR)/scim-pinyin.targetinstall: $(scim-pinyin_targetinstall_deps)
 	echo "Depends: scim" 								>>$(SCIM-PINYIN_IPKG_TMP)/CONTROL/control
 	echo "Description: smart pinyin input method"					>>$(SCIM-PINYIN_IPKG_TMP)/CONTROL/control
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCIM-PINYIN_IPKG_TMP)
+	@$(call makeipkg, $(SCIM-PINYIN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

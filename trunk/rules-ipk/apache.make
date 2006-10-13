@@ -226,7 +226,7 @@ endif
 
 	chmod 755 $(APACHE_IPKG_TMP)/CONTROL/prerm $(APACHE_IPKG_TMP)/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(APACHE_IPKG_TMP)
+	@$(call makeipkg, $(APACHE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

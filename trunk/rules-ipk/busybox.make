@@ -155,7 +155,7 @@ $(STATEDIR)/busybox.targetinstall: $(busybox_targetinstall_deps)
 	###echo "chmod u+s /bin/ping"			>>$(BUSYBOX_DIR)/ipk/CONTROL/postinst
 	chmod 755 $(BUSYBOX_DIR)/ipk/CONTROL/postinst
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(BUSYBOX_DIR)/ipk
+	@$(call makeipkg, $(BUSYBOX_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -154,7 +154,7 @@ $(STATEDIR)/gnuplot.targetinstall: $(gnuplot_targetinstall_deps)
 	echo "Version: $(GNUPLOT_VERSION)-$(GNUPLOT_VENDOR_VERSION)" 			>>$(GNUPLOT_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(GNUPLOT_IPKG_TMP)/CONTROL/control
 	echo "Description: Gnuplot  is a portable command-line driven interactive data and function plotting utility for UNIX, IBM OS/2, MS Windows, DOS, Macintosh, VMS, Atari and many other platforms." >>$(GNUPLOT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNUPLOT_IPKG_TMP)
+	@$(call makeipkg, $(GNUPLOT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

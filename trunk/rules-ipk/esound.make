@@ -169,7 +169,7 @@ $(STATEDIR)/esound.targetinstall: $(esound_targetinstall_deps)
 	echo "Version: $(ESOUND_VERSION)-$(ESOUND_VENDOR_VERSION)" 			>>$(ESOUND_IPKG_TMP)/CONTROL/control
 	echo "Depends: audiofile" 							>>$(ESOUND_IPKG_TMP)/CONTROL/control
 	echo "Description: Enlightened Sound Daemon"					>>$(ESOUND_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ESOUND_IPKG_TMP)
+	@$(call makeipkg, $(ESOUND_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

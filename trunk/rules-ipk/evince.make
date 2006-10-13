@@ -183,7 +183,7 @@ $(STATEDIR)/evince.targetinstall: $(evince_targetinstall_deps)
 	echo "Version: $(EVINCE_VERSION)-$(EVINCE_VENDOR_VERSION)" 			>>$(EVINCE_IPKG_TMP)/CONTROL/control
 	echo "Depends: poppler, gnome-doc-utils, tiff, dbus-glib" 			>>$(EVINCE_IPKG_TMP)/CONTROL/control
 	echo "Description: Evince is a document viewer for multiple document formats like pdf, postscript, and many others."	>>$(EVINCE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EVINCE_IPKG_TMP)
+	@$(call makeipkg, $(EVINCE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------
