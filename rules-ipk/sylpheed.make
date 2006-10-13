@@ -184,7 +184,7 @@ $(STATEDIR)/sylpheed.targetinstall: $(sylpheed_targetinstall_deps)
 	echo "Version: $(SYLPHEED_VERSION)" 			>>$(SYLPHEED_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, openssl" 				>>$(SYLPHEED_IPKG_TMP)/CONTROL/control
 	echo "Description: Fast GTK2 mail client"		>>$(SYLPHEED_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SYLPHEED_IPKG_TMP)
+	@$(call makeipkg, $(SYLPHEED_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

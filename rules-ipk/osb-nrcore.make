@@ -168,7 +168,7 @@ $(STATEDIR)/osb-nrcore.targetinstall: $(osb-nrcore_targetinstall_deps)
 	echo "Version: $(OSB-NRCORE_VERSION)-$(OSB-NRCORE_VENDOR_VERSION)" 			>>$(OSB-NRCORE_IPKG_TMP)/CONTROL/control
 	echo "Depends: osb-jscore" 								>>$(OSB-NRCORE_IPKG_TMP)/CONTROL/control
 	echo "Description: OSB HTML Rendering engine"						>>$(OSB-NRCORE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OSB-NRCORE_IPKG_TMP)
+	@$(call makeipkg, $(OSB-NRCORE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

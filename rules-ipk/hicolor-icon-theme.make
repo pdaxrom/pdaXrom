@@ -164,7 +164,7 @@ $(STATEDIR)/hicolor-icon-theme.targetinstall: $(hicolor-icon-theme_targetinstall
 	echo "Version: $(HICOLOR-ICON-THEME_VERSION)-$(HICOLOR-ICON-THEME_VENDOR_VERSION)" >>$(HICOLOR-ICON-THEME_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(HICOLOR-ICON-THEME_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the default fallback theme used by implementations of the icon theme specification."	>>$(HICOLOR-ICON-THEME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HICOLOR-ICON-THEME_IPKG_TMP)
+	@$(call makeipkg, $(HICOLOR-ICON-THEME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

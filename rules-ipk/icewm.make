@@ -230,7 +230,7 @@ $(STATEDIR)/icewm.targetinstall: $(icewm_targetinstall_deps)
 	echo "touch /usr/share/icewm/genpref"									>>$(ICEWM_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(ICEWM_IPKG_TMP)/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(ICEWM_IPKG_TMP)
+	@$(call makeipkg, $(ICEWM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

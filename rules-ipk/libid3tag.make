@@ -161,7 +161,7 @@ $(STATEDIR)/libid3tag.targetinstall: $(libid3tag_targetinstall_deps)
 	echo "Version: $(LIBID3TAG_VERSION)" 		>>$(LIBID3TAG_IPKG_TMP)/CONTROL/control
 	echo "Depends: libz" 				>>$(LIBID3TAG_IPKG_TMP)/CONTROL/control
 	echo "Description: libid3tag is a library for reading and (eventually) writing ID3 tags, both ID3v1 and the various versions of ID3v2.">>$(LIBID3TAG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBID3TAG_IPKG_TMP)
+	@$(call makeipkg, $(LIBID3TAG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

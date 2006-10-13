@@ -160,7 +160,7 @@ $(STATEDIR)/syslinux.targetinstall: $(syslinux_targetinstall_deps)
 	echo "Version: $(SYSLINUX_VERSION)-$(SYSLINUX_VENDOR_VERSION)" 			>>$(SYSLINUX_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(SYSLINUX_IPKG_TMP)/CONTROL/control
 	echo "Description: The SYSLINUX Project covers lightweight bootloaders for floppy media (SYSLINUX), network booting (PXELINUX), and bootable "El Torito" CD-ROMs (ISOLINUX)." >>$(SYSLINUX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SYSLINUX_IPKG_TMP)
+	@$(call makeipkg, $(SYSLINUX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

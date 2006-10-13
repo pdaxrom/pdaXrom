@@ -170,7 +170,7 @@ $(STATEDIR)/l7-protocols.targetinstall: $(l7-protocols_targetinstall_deps)
 	echo "Version: $(L7-PROTOCOLS_VERSION)-$(L7-PROTOCOLS_VENDOR_VERSION)" 			>>$(L7-PROTOCOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(L7-PROTOCOLS_DEPLIST)" 						>>$(L7-PROTOCOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(L7-PROTOCOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(L7-PROTOCOLS_IPKG_TMP)
+	@$(call makeipkg, $(L7-PROTOCOLS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

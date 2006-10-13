@@ -161,7 +161,7 @@ $(STATEDIR)/libgpg-error.targetinstall: $(libgpg-error_targetinstall_deps)
 	echo "Version: $(LIBGPG-ERROR_VERSION)" 	>>$(LIBGPG-ERROR_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBGPG-ERROR_IPKG_TMP)/CONTROL/control
 	echo "Description: This is a library that defines common error values for all GnuPG components.">>$(LIBGPG-ERROR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGPG-ERROR_IPKG_TMP)
+	@$(call makeipkg, $(LIBGPG-ERROR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

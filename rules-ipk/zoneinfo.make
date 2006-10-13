@@ -146,7 +146,7 @@ $(STATEDIR)/zoneinfo.targetinstall: $(zoneinfo_targetinstall_deps)
 	echo "Version: $(ZONEINFO_VERSION)" 					>>$(ZONEINFO_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(ZONEINFO_IPKG_TMP)/CONTROL/control
 	echo "Description: time zones"						>>$(ZONEINFO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZONEINFO_IPKG_TMP)
+	@$(call makeipkg, $(ZONEINFO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -166,7 +166,7 @@ $(STATEDIR)/cdrtools.targetinstall: $(cdrtools_targetinstall_deps)
 	echo "Version: $(CDRTOOLS_VERSION)" 					>>$(CDRTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(CDRTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: command line cdrw utils"				>>$(CDRTOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CDRTOOLS_IPKG_TMP)
+	@$(call makeipkg, $(CDRTOOLS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

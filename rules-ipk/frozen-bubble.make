@@ -170,7 +170,7 @@ $(STATEDIR)/frozen-bubble.targetinstall: $(frozen-bubble_targetinstall_deps)
 	echo "Version: $(FROZEN-BUBBLE_VERSION)" 				>>$(FROZEN-BUBBLE_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl-perl" 						>>$(FROZEN-BUBBLE_IPKG_TMP)/CONTROL/control
 	echo "Description: Highly addictive game.  Requires perl and perl-sdl"	>>$(FROZEN-BUBBLE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FROZEN-BUBBLE_IPKG_TMP)
+	@$(call makeipkg, $(FROZEN-BUBBLE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

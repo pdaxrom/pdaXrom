@@ -179,7 +179,7 @@ $(STATEDIR)/SDL_perl.targetinstall: $(SDL_perl_targetinstall_deps)
 	echo "Version: $(SDL_PERL_VERSION)" 					>>$(SDL_PERL_IPKG_TMP)/CONTROL/control
 	echo "Depends: perl, sdl, sdl-image, sdl-mixer, sdl-net, sdl-ttf, mesa3d, libjpeg, libpng" >>$(SDL_PERL_IPKG_TMP)/CONTROL/control
 	echo "Description: SDL_perl Multimedia Perl Extension"			>>$(SDL_PERL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDL_PERL_IPKG_TMP)
+	@$(call makeipkg, $(SDL_PERL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

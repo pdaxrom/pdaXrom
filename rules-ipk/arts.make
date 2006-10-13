@@ -196,7 +196,7 @@ $(STATEDIR)/arts.targetinstall: $(arts_targetinstall_deps)
 	echo "Depends: " 								>>$(ARTS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(ARTS_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(ARTS_IPKG_TMP)
+	@$(call makeipkg, $(ARTS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

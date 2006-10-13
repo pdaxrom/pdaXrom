@@ -175,7 +175,7 @@ $(STATEDIR)/bluez-utils.targetinstall: $(bluez-utils_targetinstall_deps)
 	ln -sf ../init.d/bluetooth $(BLUEZ-UTILS_IPKG_TMP)/etc/rc.d/rc5.d/S50bluetooth
 	ln -sf ../init.d/bluetooth $(BLUEZ-UTILS_IPKG_TMP)/etc/rc.d/rc6.d/K40bluetooth
 	rm -rf $(BLUEZ-UTILS_IPKG_TMP)/usr/share/man
-	cd $(FEEDDIR) && $(XMKIPKG) $(BLUEZ-UTILS_IPKG_TMP)
+	@$(call makeipkg, $(BLUEZ-UTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

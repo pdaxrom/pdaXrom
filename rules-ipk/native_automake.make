@@ -151,7 +151,7 @@ $(STATEDIR)/native_automake.targetinstall: $(native_automake_targetinstall_deps)
 	echo "Version: $(NATIVE_AUTOMAKE_VERSION)-$(NATIVE_AUTOMAKE_VENDOR_VERSION)" 			>>$(NATIVE_AUTOMAKE_IPKG_TMP)/CONTROL/control
 	echo "Depends: autoconf" 									>>$(NATIVE_AUTOMAKE_IPKG_TMP)/CONTROL/control
 	echo "Description: This is Automake, a Makefile generator."					>>$(NATIVE_AUTOMAKE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NATIVE_AUTOMAKE_IPKG_TMP)
+	@$(call makeipkg, $(NATIVE_AUTOMAKE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

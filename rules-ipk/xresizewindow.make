@@ -150,7 +150,7 @@ $(STATEDIR)/xresizewindow.targetinstall: $(xresizewindow_targetinstall_deps)
 	echo "Version: $(XRESIZEWINDOW_VERSION)" 		>>$(XRESIZEWINDOW_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 				>>$(XRESIZEWINDOW_IPKG_TMP)/CONTROL/control
 	echo "Description: move and resize app windows"		>>$(XRESIZEWINDOW_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XRESIZEWINDOW_IPKG_TMP)
+	@$(call makeipkg, $(XRESIZEWINDOW_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

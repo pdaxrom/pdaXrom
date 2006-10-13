@@ -152,7 +152,7 @@ $(STATEDIR)/vpnd.targetinstall: $(vpnd_targetinstall_deps)
 	echo "Version: $(VPND_VERSION)-$(VPND_VENDOR_VERSION)" 				>>$(VPND_IPKG_TMP)/CONTROL/control
 	echo "Depends: libz" 								>>$(VPND_IPKG_TMP)/CONTROL/control
 	echo "Description: The virtual private network daemon vpnd is a daemon which connects two networks on network level either via TCP/IP or a (virtual) leased line attached to a serial interface. All data transfered between the two networks are encrypted using the unpatented free Blowfish encryption algorithm." >>$(VPND_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VPND_IPKG_TMP)
+	@$(call makeipkg, $(VPND_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

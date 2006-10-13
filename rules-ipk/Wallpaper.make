@@ -146,7 +146,7 @@ $(STATEDIR)/Wallpaper.targetinstall: $(Wallpaper_targetinstall_deps)
 	echo "Version: $(WALLPAPER_VERSION)" 		>>$(WALLPAPER_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(WALLPAPER_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(WALLPAPER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WALLPAPER_IPKG_TMP)
+	@$(call makeipkg, $(WALLPAPER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

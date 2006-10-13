@@ -158,7 +158,7 @@ $(STATEDIR)/obexftp.targetinstall: $(obexftp_targetinstall_deps)
 	echo "Version: $(OBEXFTP_VERSION)" 			>>$(OBEXFTP_IPKG_TMP)/CONTROL/control
 	echo "Depends: openobex" 				>>$(OBEXFTP_IPKG_TMP)/CONTROL/control
 	echo "Description: ObexFTP implements the Object Exchange (OBEX) protocols file transfer feature.">>$(OBEXFTP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OBEXFTP_IPKG_TMP)
+	@$(call makeipkg, $(OBEXFTP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

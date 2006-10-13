@@ -165,7 +165,7 @@ $(STATEDIR)/scilab.targetinstall: $(scilab_targetinstall_deps)
 	echo "Depends: libgtkhtml" 							>>$(SCILAB_IPKG_TMP)/CONTROL/control
 	echo "Description: "				>>$(SCILAB_IPKG_TMP)/CONTROL/control
 	sasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCILAB_IPKG_TMP)
+	@$(call makeipkg, $(SCILAB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

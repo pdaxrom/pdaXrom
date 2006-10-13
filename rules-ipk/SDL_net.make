@@ -161,7 +161,7 @@ $(STATEDIR)/SDL_net.targetinstall: $(SDL_net_targetinstall_deps)
 	rm -rf $(SDL_NET_IPKG_TMP)/usr/lib/*.la
 	$(CROSSSTRIP) $(SDL_NET_IPKG_TMP)/usr/lib/libSDL_net-1.2.so.0.0.5
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SDL_NET_IPKG_TMP)
+	@$(call makeipkg, $(SDL_NET_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

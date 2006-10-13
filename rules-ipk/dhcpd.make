@@ -163,7 +163,7 @@ $(STATEDIR)/dhcpd.targetinstall: $(dhcpd_targetinstall_deps)
 	echo "Version: $(DHCPD_VERSION)" 						>>$(DHCPD_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(DHCPD_IPKG_TMP)/CONTROL/control
 	echo "Description: Internet Software Consortium DHCP package"			>>$(DHCPD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DHCPD_IPKG_TMP)
+	@$(call makeipkg, $(DHCPD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

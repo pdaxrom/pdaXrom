@@ -167,7 +167,7 @@ $(STATEDIR)/pycairo.targetinstall: $(pycairo_targetinstall_deps)
 	echo "Version: $(PYCAIRO_VERSION)-$(PYCAIRO_VENDOR_VERSION)" 			>>$(PYCAIRO_IPKG_TMP)/CONTROL/control
 	echo "Depends: cairo" 								>>$(PYCAIRO_IPKG_TMP)/CONTROL/control
 	echo "Description: python cairo binding"					>>$(PYCAIRO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYCAIRO_IPKG_TMP)
+	@$(call makeipkg, $(PYCAIRO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -180,7 +180,7 @@ $(STATEDIR)/dosbox.targetinstall: $(dosbox_targetinstall_deps)
 	echo "Version: $(DOSBOX_VERSION)-$(DOSBOX_VENDOR_VERSION)" 			>>$(DOSBOX_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl, sdl-net" 							>>$(DOSBOX_IPKG_TMP)/CONTROL/control
 	echo "Description: a x86 emulator with DOS."					>>$(DOSBOX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DOSBOX_IPKG_TMP)
+	@$(call makeipkg, $(DOSBOX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

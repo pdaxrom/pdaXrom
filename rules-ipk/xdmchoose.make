@@ -153,7 +153,7 @@ $(STATEDIR)/xdmchoose.targetinstall: $(xdmchoose_targetinstall_deps)
 	echo "Version: $(XDMCHOOSE_VERSION)-$(XDMCHOOSE_VENDOR_VERSION)" 					>>$(XDMCHOOSE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 										>>$(XDMCHOOSE_IPKG_TMP)/CONTROL/control
 	echo "Description: A replacement chooser for XDM"							>>$(XDMCHOOSE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XDMCHOOSE_IPKG_TMP)
+	@$(call makeipkg, $(XDMCHOOSE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

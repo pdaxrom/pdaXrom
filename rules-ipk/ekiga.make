@@ -178,7 +178,7 @@ $(STATEDIR)/ekiga.targetinstall: $(ekiga_targetinstall_deps)
 	echo "Version: $(EKIGA_VERSION)-$(EKIGA_VENDOR_VERSION)" 			>>$(EKIGA_IPKG_TMP)/CONTROL/control
 	echo "Depends: opal, pwlib, openldap, evolution-data-server" 			>>$(EKIGA_IPKG_TMP)/CONTROL/control
 	echo "Description: Ekiga (formely known as GnomeMeeting) is an open source VoIP and video conferencing application for GNOME." >>$(EKIGA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EKIGA_IPKG_TMP)
+	@$(call makeipkg, $(EKIGA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

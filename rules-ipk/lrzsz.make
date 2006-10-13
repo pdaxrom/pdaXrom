@@ -156,7 +156,7 @@ $(STATEDIR)/lrzsz.targetinstall: $(lrzsz_targetinstall_deps)
 	echo "Version: $(LRZSZ_VERSION)-$(LRZSZ_VENDOR_VERSION)" 			>>$(LRZSZ_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LRZSZ_IPKG_TMP)/CONTROL/control
 	echo "Description: Unix communication package providing the XMODEM, YMODEM ZMODEM file transfer protocols." >>$(LRZSZ_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LRZSZ_IPKG_TMP)
+	@$(call makeipkg, $(LRZSZ_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

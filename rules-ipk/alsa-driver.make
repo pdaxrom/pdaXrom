@@ -159,7 +159,7 @@ $(STATEDIR)/alsa-driver.targetinstall: $(alsa-driver_targetinstall_deps)
 	echo "Depends: " 									>>$(ALSA-DRIVER_IPKG_TMP)/CONTROL/control
 	echo "Description: ALSA kernel drivers"							>>$(ALSA-DRIVER_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(ALSA-DRIVER_IPKG_TMP)
+	@$(call makeipkg, $(ALSA-DRIVER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -148,7 +148,7 @@ $(STATEDIR)/starplot.targetinstall: $(starplot_targetinstall_deps)
 	echo "Depends: " 											>>$(STARPLOT_IPKG_TMP)/CONTROL/control
 	echo "Description: StarPlot is a program for Unix that allows you to view charts of the relative 3-dimensional positions of stars in space." >>$(STARPLOT_IPKG_TMP)/CONTROL/control
 	asasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(STARPLOT_IPKG_TMP)
+	@$(call makeipkg, $(STARPLOT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

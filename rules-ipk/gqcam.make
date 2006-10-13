@@ -149,7 +149,7 @@ $(STATEDIR)/gqcam.targetinstall: $(gqcam_targetinstall_deps)
 	echo "Version: $(GQCAM_VERSION)-$(GQCAM_VENDOR_VERSION)" 			>>$(GQCAM_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk" 								>>$(GQCAM_IPKG_TMP)/CONTROL/control
 	echo "Description: GTK webcam frontend"						>>$(GQCAM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GQCAM_IPKG_TMP)
+	@$(call makeipkg, $(GQCAM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

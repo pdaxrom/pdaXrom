@@ -153,7 +153,7 @@ $(STATEDIR)/alsamixergui.targetinstall: $(alsamixergui_targetinstall_deps)
 	echo "Depends: " 								>>$(ALSAMIXERGUI_IPKG_TMP)/CONTROL/control
 	echo "Description: FLTK Alsamixer frontend"					>>$(ALSAMIXERGUI_IPKG_TMP)/CONTROL/control
 	asdas
-	cd $(FEEDDIR) && $(XMKIPKG) $(ALSAMIXERGUI_IPKG_TMP)
+	@$(call makeipkg, $(ALSAMIXERGUI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

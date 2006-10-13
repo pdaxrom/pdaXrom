@@ -174,7 +174,7 @@ $(STATEDIR)/mc.targetinstall: $(mc_targetinstall_deps)
 	echo "Version: $(MC_VERSION)" 			>>$(MC_IPKG_TMP)/CONTROL/control
 	echo "Depends: glib2" 				>>$(MC_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU Midnight Commander is a file manager for free operating systems.">>$(MC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MC_IPKG_TMP)
+	@$(call makeipkg, $(MC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

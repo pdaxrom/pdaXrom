@@ -152,7 +152,7 @@ endif
 	echo "Version: $(INPUTCONFIG_VERSION)-$(INPUTCONFIG_VENDOR_VERSION)" 				>>$(INPUTCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(INPUTCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Description:  Keyboard settings"								>>$(INPUTCONFIG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(INPUTCONFIG_IPKG_TMP)
+	@$(call makeipkg, $(INPUTCONFIG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

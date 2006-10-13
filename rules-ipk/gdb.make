@@ -177,7 +177,7 @@ $(STATEDIR)/gdb.targetinstall: $(gdb_targetinstall_deps)
 	echo "Version: $(GDB_VERSION)"	 			>>$(GDB_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(GDB_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU debugger"			>>$(GDB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GDB_IPKG_TMP)
+	@$(call makeipkg, $(GDB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

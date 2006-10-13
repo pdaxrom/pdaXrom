@@ -174,7 +174,7 @@ $(STATEDIR)/ROX-CLib.targetinstall: $(ROX-CLib_targetinstall_deps)
 	echo "Version: $(ROX-CLIB_VERSION)"		 		>>$(ROX-CLIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: libxml2, glib2, gtk2" 				>>$(ROX-CLIB_IPKG_TMP)/CONTROL/control
 	echo "Description: C library for ROX apps"			>>$(ROX-CLIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-CLIB_IPKG_TMP)
+	@$(call makeipkg, $(ROX-CLIB_IPKG_TMP))
 	rm -rf $(ROX-CLIB_IPKG_TMP)
 	touch $@
 

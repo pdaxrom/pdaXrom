@@ -155,7 +155,7 @@ $(STATEDIR)/native_binutils.targetinstall: $(native_binutils_targetinstall_deps)
 	echo "Version: $(BINUTILSX_VERSION)" 		>>$(NATIVE_BINUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(NATIVE_BINUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU development tools"	>>$(NATIVE_BINUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NATIVE_BINUTILS_IPKG_TMP)
+	@$(call makeipkg, $(NATIVE_BINUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

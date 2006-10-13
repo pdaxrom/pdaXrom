@@ -176,7 +176,7 @@ $(STATEDIR)/libgnomecanvas.targetinstall: $(libgnomecanvas_targetinstall_deps)
 	echo "Version: $(LIBGNOMECANVAS_VERSION)" 	>>$(LIBGNOMECANVAS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libart-lgpl" 			>>$(LIBGNOMECANVAS_IPKG_TMP)/CONTROL/control
 	echo "Description: The GNOME canvas is an engine for structured graphics that offers a rich imaging model, high performance rendering, and a powerful, high-level API.">>$(LIBGNOMECANVAS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGNOMECANVAS_IPKG_TMP)
+	@$(call makeipkg, $(LIBGNOMECANVAS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

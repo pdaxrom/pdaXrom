@@ -184,9 +184,9 @@ $(STATEDIR)/vim.targetinstall: $(vim_targetinstall_deps)
 	echo "Version: $(VIM_VERSION)" 							>>$(VIM_IPKG_TMP)/syntax_tmp/CONTROL/control
 	echo "Depends: vim" 								>>$(VIM_IPKG_TMP)/syntax_tmp/CONTROL/control
 	echo "Description: Vi IMproved - syntax highlighting files"			>>$(VIM_IPKG_TMP)/syntax_tmp/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VIM_IPKG_TMP)/main_tmp
-	cd $(FEEDDIR) && $(XMKIPKG) $(VIM_IPKG_TMP)/help_tmp
-	cd $(FEEDDIR) && $(XMKIPKG) $(VIM_IPKG_TMP)/syntax_tmp
+	@$(call makeipkg, $(VIM_IPKG_TMP)/main_tmp)
+	@$(call makeipkg, $(VIM_IPKG_TMP)/help_tmp)
+	@$(call makeipkg, $(VIM_IPKG_TMP)/syntax_tmp)
 	touch $@
 
 # ----------------------------------------------------------------------------

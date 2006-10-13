@@ -158,7 +158,7 @@ $(STATEDIR)/galculator.targetinstall: $(galculator_targetinstall_deps)
 	echo "Version: $(GALCULATOR_VERSION)-$(GALCULATOR_VENDOR_VERSION)" 		>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libglade" 							>>$(GALCULATOR_IPKG_TMP)/CONTROL/control
 	echo "Description: galculator is a GTK 2 based calculator with ordinary notation/reverse polish notation, a formula entry mode, different number bases (DEC, HEX, OCT, BIN) and different units of angular measure (DEG, RAD, GRAD).">>$(GALCULATOR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GALCULATOR_IPKG_TMP)
+	@$(call makeipkg, $(GALCULATOR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

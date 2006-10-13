@@ -228,7 +228,7 @@ endif
 	echo "Depends: gtk2, libglade, libgsf, libgnomeprint, libgnomeprintui, goffice, libgnomeui, gnome-keyring" >>$(GNUMERIC_IPKG_TMP)/CONTROL/control
 	###echo "Depends: gtk2, libglade, libgsf, libgnome, libgnomeui, libgnomeprint, libgnomeprintui" >>$(GNUMERIC_IPKG_TMP)/CONTROL/control
 	echo "Description: The Gnumeric spreadsheet is a versatile application developed as part of the GNOME Office project.">>$(GNUMERIC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNUMERIC_IPKG_TMP)
+	@$(call makeipkg, $(GNUMERIC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

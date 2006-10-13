@@ -156,7 +156,7 @@ $(STATEDIR)/mb-applet-power.targetinstall: $(mb-applet-power_targetinstall_deps)
 	echo "Version: $(MB-APPLET-POWER_VERSION)" 			>>$(MB-APPLET-POWER_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmatchbox" 					>>$(MB-APPLET-POWER_IPKG_TMP)/CONTROL/control
 	echo "Description: matchbox power applet"			>>$(MB-APPLET-POWER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-POWER_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-POWER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

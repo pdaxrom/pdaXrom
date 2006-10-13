@@ -172,7 +172,7 @@ $(STATEDIR)/opal.targetinstall: $(opal_targetinstall_deps)
 	echo "Version: $(OPAL_VERSION)-$(OPAL_VENDOR_VERSION)" 				>>$(OPAL_IPKG_TMP)/CONTROL/control
 	echo "Depends: pwlib, libspeex" 						>>$(OPAL_IPKG_TMP)/CONTROL/control
 	echo "Description: Open Phone Abstraction Library"				>>$(OPAL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPAL_IPKG_TMP)
+	@$(call makeipkg, $(OPAL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

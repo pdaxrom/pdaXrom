@@ -158,7 +158,7 @@ $(STATEDIR)/gammu.targetinstall: $(gammu_targetinstall_deps)
 	echo "Version: $(GAMMU_VERSION)-$(GAMMU_VENDOR_VERSION)" 			>>$(GAMMU_IPKG_TMP)/CONTROL/control
 	echo "Depends: bluez-sdp" 							>>$(GAMMU_IPKG_TMP)/CONTROL/control
 	echo "Description: This is package with different tools and drivers for Nokia and other mobile phones released under GNU GPL/LGPL license (see /copying file)."	>>$(GAMMU_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GAMMU_IPKG_TMP)
+	@$(call makeipkg, $(GAMMU_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

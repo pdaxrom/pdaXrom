@@ -150,7 +150,7 @@ $(STATEDIR)/gpaint.targetinstall: $(gpaint_targetinstall_deps)
 	echo "Depends: " 							>>$(GPAINT_IPKG_TMP)/CONTROL/control
 	echo "Description: This is gpaint (GNU Paint), a small-scale painting program for GNOME, the GNU Desktop.">>$(GPAINT_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPAINT_IPKG_TMP)
+	@$(call makeipkg, $(GPAINT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

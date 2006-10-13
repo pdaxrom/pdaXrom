@@ -148,7 +148,7 @@ $(STATEDIR)/upatch.targetinstall: $(upatch_targetinstall_deps)
 	echo "Version: $(UPATCH_VERSION)" 		>>$(UPATCH_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(UPATCH_IPKG_TMP)/CONTROL/control
 	echo "Description: apply a diff file to an original.">>$(UPATCH_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UPATCH_IPKG_TMP)
+	@$(call makeipkg, $(UPATCH_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -149,7 +149,7 @@ $(STATEDIR)/xmmspipe.targetinstall: $(xmmspipe_targetinstall_deps)
 	echo "Version: $(XMMSPIPE_VERSION)" 						>>$(XMMSPIPE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xmms" 								>>$(XMMSPIPE_IPKG_TMP)/CONTROL/control
 	echo "Description: Control xmms by sending string to a named pipe (FIFO)"	>>$(XMMSPIPE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XMMSPIPE_IPKG_TMP)
+	@$(call makeipkg, $(XMMSPIPE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -150,7 +150,7 @@ $(STATEDIR)/jpeg.targetinstall: $(jpeg_targetinstall_deps)
 	echo "Version: $(JPEG_VERSION)" 			>>$(JPEG_IPKG_TMP)/CONTROL/control
 	echo "Depends: "			 		>>$(JPEG_IPKG_TMP)/CONTROL/control
 	echo "Description: Read and saves JPEG files."		>>$(JPEG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(JPEG_IPKG_TMP)
+	@$(call makeipkg, $(JPEG_IPKG_TMP))
 	
 	touch $@
 

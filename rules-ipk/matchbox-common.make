@@ -137,7 +137,7 @@ $(STATEDIR)/matchbox-common.targetinstall: $(matchbox-common_targetinstall_deps)
 	echo "Version: $(MATCHBOX-COMMON_VERSION)" 	>>$(MATCHBOX-COMMON_ROOTDIR)/CONTROL/control
 	echo "Depends: "		 		>>$(MATCHBOX-COMMON_ROOTDIR)/CONTROL/control
 	echo "Description: Matchbox common data"	>>$(MATCHBOX-COMMON_ROOTDIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MATCHBOX-COMMON_ROOTDIR)
+	@$(call makeipkg, $(MATCHBOX-COMMON_ROOTDIR))
 	touch $@
 
 # ----------------------------------------------------------------------------

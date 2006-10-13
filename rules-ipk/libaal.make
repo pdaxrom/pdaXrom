@@ -159,7 +159,7 @@ $(STATEDIR)/libaal.targetinstall: $(libaal_targetinstall_deps)
 	echo "Version: $(LIBAAL_VERSION)-$(LIBAAL_VENDOR_VERSION)" 			>>$(LIBAAL_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LIBAAL_IPKG_TMP)/CONTROL/control
 	echo "Description: This is a library, that provides application abstraction mechanism.">>$(LIBAAL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBAAL_IPKG_TMP)
+	@$(call makeipkg, $(LIBAAL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

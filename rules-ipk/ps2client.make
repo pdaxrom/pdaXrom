@@ -168,7 +168,7 @@ $(STATEDIR)/ps2client.targetinstall: $(ps2client_targetinstall_deps)
 	echo "Version: $(PS2CLIENT_VERSION)-$(PS2CLIENT_VENDOR_VERSION)" 		>>$(PS2CLIENT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(PS2CLIENT_IPKG_TMP)/CONTROL/control
 	echo "Description: These programs, ps2client & fsclient, are command line tools used for interacting with a ps2 system running ps2link and/or ps2netfs.">>$(PS2CLIENT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PS2CLIENT_IPKG_TMP)
+	@$(call makeipkg, $(PS2CLIENT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

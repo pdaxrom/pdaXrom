@@ -146,7 +146,7 @@ $(STATEDIR)/termcap.targetinstall: $(termcap_targetinstall_deps)
 	echo "Version: $(TERMCAP_VERSION)" 					>>$(TERMCAP_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(TERMCAP_DIR)/ipk/CONTROL/control
 	echo "Description: GNU termcap library"					>>$(TERMCAP_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TERMCAP_DIR)/ipk
+	@$(call makeipkg, $(TERMCAP_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

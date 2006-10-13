@@ -218,7 +218,7 @@ $(STATEDIR)/native_gcc.targetinstall: $(native_gcc_targetinstall_deps)
 	echo "Version: $(GCC_VERSION)"	 		>>$(NATIVE_GCC_IPKG_TMP)/CONTROL/control
 	echo "Depends: binutils" 			>>$(NATIVE_GCC_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU C/C++ Compilers"		>>$(NATIVE_GCC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NATIVE_GCC_IPKG_TMP)
+	@$(call makeipkg, $(NATIVE_GCC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

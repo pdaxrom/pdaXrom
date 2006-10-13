@@ -149,7 +149,7 @@ $(STATEDIR)/mikmod.targetinstall: $(mikmod_targetinstall_deps)
 	echo "Version: $(MIKMOD_VERSION)" 							>>$(MIKMOD_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmikmod" 								>>$(MIKMOD_IPKG_TMP)/CONTROL/control
 	echo "Description: MOD, XM player"							>>$(MIKMOD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MIKMOD_IPKG_TMP)
+	@$(call makeipkg, $(MIKMOD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

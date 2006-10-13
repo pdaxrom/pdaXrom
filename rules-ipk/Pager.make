@@ -147,7 +147,7 @@ $(STATEDIR)/Pager.targetinstall: $(Pager_targetinstall_deps)
 	echo "Depends: " 				>>$(PAGER_IPKG_TMP)/CONTROL/control
 	echo "Description: ">>$(PAGER_IPKG_TMP)/CONTROL/control
 	sdfsdf
-	cd $(FEEDDIR) && $(XMKIPKG) $(PAGER_IPKG_TMP)
+	@$(call makeipkg, $(PAGER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

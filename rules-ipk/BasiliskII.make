@@ -153,7 +153,7 @@ $(STATEDIR)/BasiliskII.targetinstall: $(BasiliskII_targetinstall_deps)
 	echo "Depends: " 								>>$(BASILISKII_IPKG_TMP)/CONTROL/control
 	echo "Description: Basilisk II is an Open Source 680x0 Macintosh emulator developed by Christian Bauer." >>$(BASILISKII_IPKG_TMP)/CONTROL/control
 	asasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(BASILISKII_IPKG_TMP)
+	@$(call makeipkg, $(BASILISKII_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

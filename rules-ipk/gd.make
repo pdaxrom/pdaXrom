@@ -160,7 +160,7 @@ $(STATEDIR)/gd.targetinstall: $(gd_targetinstall_deps)
 	echo "Version: $(GD_VERSION)-$(GD_VENDOR_VERSION)"			 				>>$(GD_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 										>>$(GD_IPKG_TMP)/CONTROL/control
 	echo "Description: An ANSI C library for the dynamic creation of images. GD creates PNG, JPEG and GIF images, among other formats.">>$(GD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GD_IPKG_TMP)
+	@$(call makeipkg, $(GD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

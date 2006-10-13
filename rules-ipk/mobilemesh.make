@@ -147,7 +147,7 @@ $(STATEDIR)/mobilemesh.targetinstall: $(mobilemesh_targetinstall_deps)
 	echo "Version: $(MOBILEMESH_VERSION)-$(MOBILEMESH_VENDOR_VERSION)" 		>>$(MOBILEMESH_IPKG_TMP)/CONTROL/control
 	echo "Depends: iproute2, openssl" 						>>$(MOBILEMESH_IPKG_TMP)/CONTROL/control
 	echo "Description: Mobile ad hoc networking allows users to exchange information in a wireless environment without the need for a fixed infrastructure." >>$(MOBILEMESH_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MOBILEMESH_IPKG_TMP)
+	@$(call makeipkg, $(MOBILEMESH_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

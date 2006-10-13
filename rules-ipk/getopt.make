@@ -152,7 +152,7 @@ $(STATEDIR)/getopt.targetinstall: $(getopt_targetinstall_deps)
 	echo "Version: $(GETOPT_VERSION)-$(GETOPT_VENDOR_VERSION)" 			>>$(GETOPT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(GETOPT_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU getopt"							>>$(GETOPT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GETOPT_IPKG_TMP)
+	@$(call makeipkg, $(GETOPT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

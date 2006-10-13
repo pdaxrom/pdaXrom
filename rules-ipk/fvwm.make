@@ -171,7 +171,7 @@ $(STATEDIR)/fvwm.targetinstall: $(fvwm_targetinstall_deps)
 	echo "Version: $(FVWM_VERSION)-$(FVWM_VENDOR_VERSION)" 							>>$(FVWM_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, imlib" 										>>$(FVWM_IPKG_TMP)/CONTROL/control
 	echo "Description: FVWM is an extremely powerful ICCCM-compliant multiple virtual desktop window manager for the X  Window system." >>$(FVWM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FVWM_IPKG_TMP)
+	@$(call makeipkg, $(FVWM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

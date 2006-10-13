@@ -178,7 +178,7 @@ $(STATEDIR)/poppler.targetinstall: $(poppler_targetinstall_deps)
 	echo "Version: $(POPPLER_VERSION)-$(POPPLER_VENDOR_VERSION)" 			>>$(POPPLER_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, cairo" 							>>$(POPPLER_IPKG_TMP)/CONTROL/control
 	echo "Description: Poppler is a PDF rendering library based on the xpdf-3.0 code base."		>>$(POPPLER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(POPPLER_IPKG_TMP)
+	@$(call makeipkg, $(POPPLER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

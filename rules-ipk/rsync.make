@@ -152,7 +152,7 @@ $(STATEDIR)/rsync.targetinstall: $(rsync_targetinstall_deps)
 	echo "Version: $(RSYNC_VERSION)-$(RSYNC_VENDOR_VERSION)" 						>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 											>>$(RSYNC_IPKG_TMP)/CONTROL/control
 	echo "Description: rsync is an open source utility that provides fast incremental file transfer."	>>$(RSYNC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(RSYNC_IPKG_TMP)
+	@$(call makeipkg, $(RSYNC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

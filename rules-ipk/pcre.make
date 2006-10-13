@@ -165,7 +165,7 @@ $(STATEDIR)/pcre.targetinstall: $(pcre_targetinstall_deps)
 	echo "Version: $(PCRE_VERSION)" 					>>$(PCRE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(PCRE_IPKG_TMP)/CONTROL/control
 	echo "Description: Perl-compatible regular expression library."		>>$(PCRE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PCRE_IPKG_TMP)
+	@$(call makeipkg, $(PCRE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -161,7 +161,7 @@ $(STATEDIR)/sox.targetinstall: $(sox_targetinstall_deps)
 	echo "Version: $(SOX_VERSION)" 			>>$(SOX_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmad" 				>>$(SOX_IPKG_TMP)/CONTROL/control
 	echo "Description: SoX (also known as Sound eXchange) translates sound files between different file formats, and optionally applies various sound effects.">>$(SOX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SOX_IPKG_TMP)
+	@$(call makeipkg, $(SOX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

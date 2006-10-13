@@ -217,7 +217,7 @@ $(STATEDIR)/vlc.targetinstall: $(vlc_targetinstall_deps)
 	echo "Version: $(VLC_VERSION)-$(VLC_VENDOR_VERSION)" 					>>$(VLC_IPKG_TMP)/CONTROL/control
 	echo "Depends: wxwidgets, libz, libffmpeg, xfree, sdl, freetype, fribidi, libdvbpsi3, libmpeg2" 	>>$(VLC_IPKG_TMP)/CONTROL/control
 	echo "Description: videolan client"							>>$(VLC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VLC_IPKG_TMP)
+	@$(call makeipkg, $(VLC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -201,7 +201,7 @@ $(STATEDIR)/e2fsprogs.targetinstall: $(STATEDIR)/e2fsprogs.compile
 	echo "Version: $(E2FSPROGS_VERSION)" 					>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
 	echo "Description: EXT2 Filesystem Utilities"				>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(E2FSPROGS_BUILD_DIR)/ipk
+	@$(call makeipkg, $(E2FSPROGS_BUILD_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

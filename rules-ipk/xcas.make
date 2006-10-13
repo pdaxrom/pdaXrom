@@ -150,7 +150,7 @@ $(STATEDIR)/xcas.targetinstall: $(xcas_targetinstall_deps)
 	echo "Depends: fltk" 									>>$(XCAS_IPKG_TMP)/CONTROL/control
 	echo "Description: GIAC/XCAS/wxCAS is a free computer algebra system for Windows, Mac OS X and Linux/Unix." >>$(XCAS_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(XCAS_IPKG_TMP)
+	@$(call makeipkg, $(XCAS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

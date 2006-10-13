@@ -159,7 +159,7 @@ $(STATEDIR)/gpsd.targetinstall: $(gpsd_targetinstall_deps)
 	echo "Version: $(GPSD_VERSION)-$(GPSD_VENDOR_VERSION)" 				>>$(GPSD_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, ncurses" 						>>$(GPSD_IPKG_TMP)/CONTROL/control
 	echo "Description: gpsd is a service daemon that monitors a GPS attached to a host computer through a serial or USB port, making its data on the location/course/velocity of the sensor available to be queried on TCP port 2947 of the host computer." >>$(GPSD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPSD_IPKG_TMP)
+	@$(call makeipkg, $(GPSD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

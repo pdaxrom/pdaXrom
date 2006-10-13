@@ -158,7 +158,7 @@ $(STATEDIR)/bluez-libs.targetinstall: $(bluez-libs_targetinstall_deps)
 	rm -rf $(BLUEZ-LIBS_IPKG_TMP)/usr/lib/*.la
 	rm -rf $(BLUEZ-LIBS_IPKG_TMP)/usr/lib/*.a
 	$(CROSSSTRIP) $(BLUEZ-LIBS_IPKG_TMP)/usr/lib/libbluetooth.so.1.0.3
-	cd $(FEEDDIR) && $(XMKIPKG) $(BLUEZ-LIBS_IPKG_TMP)
+	@$(call makeipkg, $(BLUEZ-LIBS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

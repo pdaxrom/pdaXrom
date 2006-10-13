@@ -165,7 +165,7 @@ $(STATEDIR)/ubzip2.targetinstall: $(ubzip2_targetinstall_deps)
 	echo "Version: $(UBZIP2_VERSION)" 		>>$(UBZIP2_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(UBZIP2_IPKG_TMP)/CONTROL/control
 	echo "Description: a block-sorting file compressor">>$(UBZIP2_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(UBZIP2_IPKG_TMP)
+	@$(call makeipkg, $(UBZIP2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

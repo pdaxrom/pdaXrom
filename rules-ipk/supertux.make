@@ -157,7 +157,7 @@ $(STATEDIR)/supertux.targetinstall: $(supertux_targetinstall_deps)
 	echo "Version: $(SUPERTUX_VERSION)-$(SUPERTUX_VENDOR_VERSION)" 			>>$(SUPERTUX_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl-image, sdl-mixer" 						>>$(SUPERTUX_IPKG_TMP)/CONTROL/control
 	echo "Description: SuperTux is a classic 2D jump'n run sidescroller game in a style similar to the original SuperMario games." >>$(SUPERTUX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SUPERTUX_IPKG_TMP)
+	@$(call makeipkg, $(SUPERTUX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

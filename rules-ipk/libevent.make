@@ -160,7 +160,7 @@ $(STATEDIR)/libevent.targetinstall: $(libevent_targetinstall_deps)
 	echo "Version: $(LIBEVENT_VERSION)-$(LIBEVENT_VENDOR_VERSION)" 			>>$(LIBEVENT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LIBEVENT_IPKG_TMP)/CONTROL/control
 	echo "Description: The libevent API provides a mechanism to execute a callback function when a specific event occurs on a file descriptor or after a timeout has been reached."	>>$(LIBEVENT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBEVENT_IPKG_TMP)
+	@$(call makeipkg, $(LIBEVENT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

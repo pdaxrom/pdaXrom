@@ -157,7 +157,7 @@ $(STATEDIR)/mtPaint.targetinstall: $(mtPaint_targetinstall_deps)
 	echo "Version: $(MTPAINT_VERSION)-$(MTPAINT_VENDOR_VERSION)" 			>>$(MTPAINT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libungif, libjpeg, libtiff" 				>>$(MTPAINT_IPKG_TMP)/CONTROL/control
 	echo "Description: mtPaint is a simple painting program"			>>$(MTPAINT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MTPAINT_IPKG_TMP)
+	@$(call makeipkg, $(MTPAINT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

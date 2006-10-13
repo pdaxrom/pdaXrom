@@ -163,7 +163,7 @@ $(STATEDIR)/prboom.targetinstall: $(prboom_targetinstall_deps)
 	$(CROSSSTRIP) $(PRBOOM_IPKG_TMP)/usr/games/prboom
 	$(CROSSSTRIP) $(PRBOOM_IPKG_TMP)/usr/games/prboom-game-server
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(PRBOOM_IPKG_TMP)
+	@$(call makeipkg, $(PRBOOM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

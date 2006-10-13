@@ -163,7 +163,7 @@ $(STATEDIR)/xawtv.targetinstall: $(xawtv_targetinstall_deps)
 	echo "Version: $(XAWTV_VERSION)-$(XAWTV_VENDOR_VERSION)" 			>>$(XAWTV_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 							>>$(XAWTV_IPKG_TMP)/CONTROL/control
 	echo "Description: v4l applications"						>>$(XAWTV_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XAWTV_IPKG_TMP)
+	@$(call makeipkg, $(XAWTV_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

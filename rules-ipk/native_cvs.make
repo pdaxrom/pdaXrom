@@ -151,7 +151,7 @@ $(STATEDIR)/native_cvs.targetinstall: $(native_cvs_targetinstall_deps)
 	echo "Version: $(NATIVE_CVS_VERSION)-$(NATIVE_CVS_VENDOR_VERSION)" 					>>$(NATIVE_CVS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 											>>$(NATIVE_CVS_IPKG_TMP)/CONTROL/control
 	echo "Description: The Concurrent Versions System"							>>$(NATIVE_CVS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NATIVE_CVS_IPKG_TMP)
+	@$(call makeipkg, $(NATIVE_CVS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

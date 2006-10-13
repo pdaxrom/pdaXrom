@@ -159,7 +159,7 @@ $(STATEDIR)/gpdf.targetinstall: $(gpdf_targetinstall_deps)
 	echo "Version: $(GPDF_VERSION)-$(GPDF_VENDOR_VERSION)" 				>>$(GPDF_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libbonobo, libgnomecanvas, libgnomeprintui, libgnomeui" 	>>$(GPDF_IPKG_TMP)/CONTROL/control
 	echo "Description: GNOME PDF viewer"						>>$(GPDF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPDF_IPKG_TMP)
+	@$(call makeipkg, $(GPDF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

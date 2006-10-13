@@ -145,7 +145,7 @@ $(STATEDIR)/LookAndFeel.targetinstall: $(LookAndFeel_targetinstall_deps)
 	echo "Version: $(LOOKANDFEEL_VERSION)" 		>>$(LOOKANDFEEL_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox-session" 			>>$(LOOKANDFEEL_IPKG_TMP)/CONTROL/control
 	echo "Description: LookAndFeel is a small Python application that lets you set things like the default font, theme, cursor blink rate, mouse speed, etc.">>$(LOOKANDFEEL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LOOKANDFEEL_IPKG_TMP)
+	@$(call makeipkg, $(LOOKANDFEEL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

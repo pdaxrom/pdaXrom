@@ -166,7 +166,7 @@ $(STATEDIR)/net-snmp.targetinstall: $(net-snmp_targetinstall_deps)
 	echo "Version: $(NET-SNMP_VERSION)-$(NET-SNMP_VENDOR_VERSION)" 			>>$(NET-SNMP_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(NET-SNMP_DEPLIST)" 						>>$(NET-SNMP_IPKG_TMP)/CONTROL/control
 	echo "Description: net-snmp provides tools and libraries relating to the Simple Network Management Protocol" >>$(NET-SNMP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NET-SNMP_IPKG_TMP)
+	@$(call makeipkg, $(NET-SNMP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

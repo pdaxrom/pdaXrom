@@ -172,7 +172,7 @@ $(STATEDIR)/mpeg2dec.targetinstall: $(mpeg2dec_targetinstall_deps)
 	echo "Version: $(MPEG2DEC_VERSION)" 							>>$(MPEG2DEC_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 									>>$(MPEG2DEC_IPKG_TMP)/CONTROL/control
 	echo "Description: mpeg2 decoder"							>>$(MPEG2DEC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MPEG2DEC_IPKG_TMP)
+	@$(call makeipkg, $(MPEG2DEC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

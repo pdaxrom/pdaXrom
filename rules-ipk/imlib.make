@@ -182,7 +182,7 @@ $(STATEDIR)/imlib.targetinstall: $(imlib_targetinstall_deps)
 	echo "Version: $(IMLIB_VERSION)-$(IMLIB_VENDOR_VERSION)" 						>>$(IMLIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: libjpeg, libtiff, libungif, libpng, libz" 						>>$(IMLIB_IPKG_TMP)/CONTROL/control
 	echo "Description: Imlib is a general Image loading and rendering library designed to make the task of loading images, and obtaining X-Windows drawables a simple task, as well as a quick one. " >>$(IMLIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IMLIB_IPKG_TMP)
+	@$(call makeipkg, $(IMLIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

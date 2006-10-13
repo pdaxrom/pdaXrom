@@ -149,7 +149,7 @@ $(STATEDIR)/pyldin.targetinstall: $(pyldin_targetinstall_deps)
 	echo "Version: $(PYLDIN_VERSION)" 										>>$(PYLDIN_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl"					 							>>$(PYLDIN_IPKG_TMP)/CONTROL/control
 	echo "Description: Pyldin-601 emulator, old bulgarian computer based on MC6800 CPU and sashz floppy archive."	>>$(PYLDIN_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYLDIN_IPKG_TMP)
+	@$(call makeipkg, $(PYLDIN_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

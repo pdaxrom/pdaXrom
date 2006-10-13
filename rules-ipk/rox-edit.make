@@ -148,7 +148,7 @@ $(STATEDIR)/rox-edit.targetinstall: $(rox-edit_targetinstall_deps)
 	echo "Version: $(ROX-EDIT_VERSION)" 		>>$(ROX-EDIT_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox, pygtk, rox-lib" 		>>$(ROX-EDIT_IPKG_TMP)/CONTROL/control
 	echo "Description: A simple text editor for ROX by Thomas Leonard">>$(ROX-EDIT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-EDIT_IPKG_TMP)
+	@$(call makeipkg, $(ROX-EDIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

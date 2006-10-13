@@ -195,7 +195,7 @@ $(STATEDIR)/linphone.targetinstall: $(linphone_targetinstall_deps)
 	echo "Version: $(LINPHONE_VERSION)-$(LINPHONE_VENDOR_VERSION)" 			>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(LINPHONE_DEPLIST)" 						>>$(LINPHONE_IPKG_TMP)/CONTROL/control
 	echo "Description: Linphone is a web phone - it let you phone to your friends anywhere in the whole world, freely, simply by using the internet." >>$(LINPHONE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LINPHONE_IPKG_TMP)
+	@$(call makeipkg, $(LINPHONE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

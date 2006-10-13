@@ -160,7 +160,7 @@ $(STATEDIR)/mixmos.targetinstall: $(mixmos_targetinstall_deps)
 	echo "Version: $(MIXMOS_VERSION)-$(MIXMOS_VENDOR_VERSION)" 					>>$(MIXMOS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 										>>$(MIXMOS_IPKG_TMP)/CONTROL/control
 	echo "Description: It's attempt to create a nice and useful soundcard volume control program."	>>$(MIXMOS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MIXMOS_IPKG_TMP)
+	@$(call makeipkg, $(MIXMOS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

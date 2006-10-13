@@ -154,7 +154,7 @@ $(STATEDIR)/pcmciautils.targetinstall: $(pcmciautils_targetinstall_deps)
 	echo "Version: $(PCMCIAUTILS_VERSION)-$(PCMCIAUTILS_VENDOR_VERSION)" 		>>$(PCMCIAUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: sysfsutils" 							>>$(PCMCIAUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: pcmcia utils"						>>$(PCMCIAUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PCMCIAUTILS_IPKG_TMP)
+	@$(call makeipkg, $(PCMCIAUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

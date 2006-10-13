@@ -151,7 +151,7 @@ $(STATEDIR)/tvtime.targetinstall: $(tvtime_targetinstall_deps)
 	echo "Version: $(TVTIME_VERSION)-$(TVTIME_VENDOR_VERSION)" 				>>$(TVTIME_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 									>>$(TVTIME_IPKG_TMP)/CONTROL/control
 	echo "Description: high quality television application for use with video capture cards on Linux systems." >>$(TVTIME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TVTIME_IPKG_TMP)
+	@$(call makeipkg, $(TVTIME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -151,7 +151,7 @@ $(STATEDIR)/xkeymouse.targetinstall: $(xkeymouse_targetinstall_deps)
 	echo "Version: $(XKEYMOUSE_VERSION)" 		>>$(XKEYMOUSE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 			>>$(XKEYMOUSE_IPKG_TMP)/CONTROL/control
 	echo "Description:  xkeymouse maps keyboard events">>$(XKEYMOUSE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XKEYMOUSE_IPKG_TMP)
+	@$(call makeipkg, $(XKEYMOUSE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

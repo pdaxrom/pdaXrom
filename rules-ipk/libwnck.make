@@ -170,7 +170,7 @@ $(STATEDIR)/libwnck.targetinstall: $(libwnck_targetinstall_deps)
 	echo "Version: $(LIBWNCK_VERSION)" 						>>$(LIBWNCK_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, startup-notification" 					>>$(LIBWNCK_IPKG_TMP)/CONTROL/control
 	echo "Description: Window Navigator Construction Kit, i.e. a library to use for writing pagers and taskslists and stuff.">>$(LIBWNCK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBWNCK_IPKG_TMP)
+	@$(call makeipkg, $(LIBWNCK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

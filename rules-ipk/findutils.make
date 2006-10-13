@@ -157,7 +157,7 @@ $(STATEDIR)/findutils.targetinstall: $(findutils_targetinstall_deps)
 	echo "Version: $(FINDUTILS_VERSION)" 		>>$(FINDUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(FINDUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: The GNU Find Utilities are the basic directory searching utilities of the GNU operating system.">>$(FINDUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FINDUTILS_IPKG_TMP)
+	@$(call makeipkg, $(FINDUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

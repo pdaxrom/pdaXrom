@@ -177,7 +177,7 @@ $(STATEDIR)/evolution-data-server.targetinstall: $(evolution-data-server_targeti
 	echo "Version: $(EVOLUTION-DATA-SERVER_VERSION)-$(EVOLUTION-DATA-SERVER_VENDOR_VERSION)" >>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
 	echo "Depends: libsoup, orbit2, libbonobo, gconf" 		 		>>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
 	echo "Description:  The Evolution Data Server package provides a unified backend for programs that work with contacts, tasks, and calendar information." >>$(EVOLUTION-DATA-SERVER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EVOLUTION-DATA-SERVER_IPKG_TMP)
+	@$(call makeipkg, $(EVOLUTION-DATA-SERVER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

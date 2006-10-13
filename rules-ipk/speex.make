@@ -178,7 +178,7 @@ $(STATEDIR)/speex.targetinstall: $(speex_targetinstall_deps)
 	echo "Version: $(SPEEX_VERSION)-$(SPEEX_VENDOR_VERSION)" 			>>$(SPEEX_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(SPEEX_IPKG_TMP)/CONTROL/control
 	echo "Description: Speex is an Open Source/Free Software patent-free audio compression format designed for speech." >>$(SPEEX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SPEEX_IPKG_TMP)
+	@$(call makeipkg, $(SPEEX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

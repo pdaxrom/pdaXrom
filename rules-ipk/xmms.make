@@ -202,7 +202,7 @@ endif
 	echo "Version: $(XMMS_VERSION)$(XMMS_VERSION_VENDOR)" 		>>$(XMMS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk"	 					>>$(XMMS_IPKG_TMP)/CONTROL/control
 	echo "Description: X Multimedia System"				>>$(XMMS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XMMS_IPKG_TMP)
+	@$(call makeipkg, $(XMMS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

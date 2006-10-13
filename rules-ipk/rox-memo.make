@@ -149,7 +149,7 @@ $(STATEDIR)/rox-memo.targetinstall: $(rox-memo_targetinstall_deps)
 	echo "Version: $(ROX-MEMO_VERSION)" 		>>$(ROX-MEMO_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox, pygtk, rox-lib" 		>>$(ROX-MEMO_IPKG_TMP)/CONTROL/control
 	echo "Description: Shows the time and lets you set memos and alarms">>$(ROX-MEMO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-MEMO_IPKG_TMP)
+	@$(call makeipkg, $(ROX-MEMO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

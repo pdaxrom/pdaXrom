@@ -154,7 +154,7 @@ $(STATEDIR)/mb-applet-keyrus.targetinstall: $(mb-applet-keyrus_targetinstall_dep
 	echo "Version: $(MB-APPLET-KEYRUS_VERSION)" 			>>$(MB-APPLET-KEYRUS_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmatchbox" 					>>$(MB-APPLET-KEYRUS_IPKG_TMP)/CONTROL/control
 	echo "Description: keymap layout switcher"			>>$(MB-APPLET-KEYRUS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-KEYRUS_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-KEYRUS_IPKG_TMP))
 	#hack hack
 	cp -a $(TOPDIR)/config/pdaXrom/x11-keymaps/* $(TOPDIR)/bootdisk/feed/
 	touch $@

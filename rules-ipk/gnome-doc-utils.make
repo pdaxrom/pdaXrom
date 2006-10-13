@@ -164,7 +164,7 @@ $(STATEDIR)/gnome-doc-utils.targetinstall: $(gnome-doc-utils_targetinstall_deps)
 	echo "Version: $(GNOME-DOC-UTILS_VERSION)-$(GNOME-DOC-UTILS_VENDOR_VERSION)" 	>>$(GNOME-DOC-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(GNOME-DOC-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: GNOME Documentation Utilities"				>>$(GNOME-DOC-UTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-DOC-UTILS_IPKG_TMP)
+	@$(call makeipkg, $(GNOME-DOC-UTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

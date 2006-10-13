@@ -170,7 +170,7 @@ $(STATEDIR)/shared-mime-info.targetinstall: $(shared-mime-info_targetinstall_dep
 	###echo "/usr/bin/update-mime-database /usr/share/mime"	>>$(SHARED-MIME-INFO_IPKG_TMP)/CONTROL/postinst
 	###chmod 755 $(SHARED-MIME-INFO_IPKG_TMP)/CONTROL/postinst
 	$(SHARED-MIME-INFO_PATH) update-mime-database $(SHARED-MIME-INFO_IPKG_TMP)/usr/share/mime
-	cd $(FEEDDIR) && $(XMKIPKG) $(SHARED-MIME-INFO_IPKG_TMP)
+	@$(call makeipkg, $(SHARED-MIME-INFO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

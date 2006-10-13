@@ -150,7 +150,7 @@ $(STATEDIR)/pkgconfig.targetinstall: $(pkgconfig_targetinstall_deps)
 	echo "Version: $(PKGCONFIG_VERSION)" 		>>$(PKGCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(PKGCONFIG_IPKG_TMP)/CONTROL/control
 	echo "Description: pkg-config is a script to make putting together all the build flags when compiling/linking a lot easier.">>$(PKGCONFIG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PKGCONFIG_IPKG_TMP)
+	@$(call makeipkg, $(PKGCONFIG_IPKG_TMP))
 	cp -a $(PKGCONFIG_DIR)/pkg.m4 $(PTXCONF_PREFIX)/share/aclocal/
 	touch $@
 

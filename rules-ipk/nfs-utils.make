@@ -167,7 +167,7 @@ $(STATEDIR)/nfs-utils.targetinstall: $(nfs-utils_targetinstall_deps)
 	echo "Version: $(NFS-UTILS_VERSION)-$(NFS-UTILS_VENDOR_VERSION)" 					>>$(NFS-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: portmap" 										>>$(NFS-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: nfs-utils provides the required support programs for using the Linux kernel's NFS support, either as a client or as a server (or as both).">>$(NFS-UTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NFS-UTILS_IPKG_TMP)
+	@$(call makeipkg, $(NFS-UTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

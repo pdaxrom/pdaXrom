@@ -174,7 +174,7 @@ $(STATEDIR)/ethereal.targetinstall: $(ethereal_targetinstall_deps)
 	echo "Version: $(ETHEREAL_VERSION)-$(ETHEREAL_VENDOR_VERSION)" 			>>$(ETHEREAL_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, pcre" 							>>$(ETHEREAL_IPKG_TMP)/CONTROL/control
 	echo "Description: Ethereal is used by network professionals around the world for troubleshooting, analysis, software and protocol development, and education." >>$(ETHEREAL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ETHEREAL_IPKG_TMP)
+	@$(call makeipkg, $(ETHEREAL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

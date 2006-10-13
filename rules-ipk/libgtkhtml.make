@@ -166,7 +166,7 @@ $(STATEDIR)/libgtkhtml.targetinstall: $(libgtkhtml_targetinstall_deps)
 	echo "Version: $(LIBGTKHTML_VERSION)-$(LIBGTKHTML_VENDOR_VERSION)" 		>>$(LIBGTKHTML_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(LIBGTKHTML_IPKG_TMP)/CONTROL/control
 	echo "Description: GTK2 HTML support"						>>$(LIBGTKHTML_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGTKHTML_IPKG_TMP)
+	@$(call makeipkg, $(LIBGTKHTML_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

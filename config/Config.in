@@ -411,6 +411,7 @@ endmenu
 menu "Office              "
 source "rules-ipk/abiword.in"
 source "rules-ipk/criawips.in"
+source "rules-ipk/cups.in"
 source "rules-ipk/dia.in"
 source "rules-ipk/JustReader.in"
 #source "rules-ipk/evince.in"

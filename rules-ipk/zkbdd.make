@@ -154,7 +154,7 @@ $(STATEDIR)/zkbdd.targetinstall: $(zkbdd_targetinstall_deps)
 	echo "Version: $(ZKBDD_VERSION)-$(ZKBDD_VENDOR_VERSION)" 			>>$(ZKBDD_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(ZKBDD_IPKG_TMP)/CONTROL/control
 	echo "Description: IR Keyboard Drivers for the Sharp Zaurus"			>>$(ZKBDD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZKBDD_IPKG_TMP)
+	@$(call makeipkg, $(ZKBDD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

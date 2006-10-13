@@ -147,7 +147,7 @@ $(STATEDIR)/hdparm.targetinstall: $(hdparm_targetinstall_deps)
 	echo "Version: $(HDPARM_VERSION)-$(HDPARM_VENDOR_VERSION)" 					>>$(HDPARM_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 										>>$(HDPARM_IPKG_TMP)/CONTROL/control
 	echo "Description: get/set hard disk parameters for Linux IDE drives."				>>$(HDPARM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HDPARM_IPKG_TMP)
+	@$(call makeipkg, $(HDPARM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -168,7 +168,7 @@ $(STATEDIR)/bmon.targetinstall: $(bmon_targetinstall_deps)
 	echo "Version: $(BMON_VERSION)-$(BMON_VENDOR_VERSION)" 				>>$(BMON_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(BMON_DEPLIST)" 						>>$(BMON_IPKG_TMP)/CONTROL/control
 	echo "Description: Portable bandwidth monitor and rate estimator"		>>$(BMON_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BMON_IPKG_TMP)
+	@$(call makeipkg, $(BMON_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

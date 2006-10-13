@@ -155,7 +155,7 @@ $(STATEDIR)/scite.targetinstall: $(scite_targetinstall_deps)
 	echo "Version: $(SCITE_VERSION_MAJOR).$(SCITE_VERSION_MINOR)">>$(SCITE_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 					>>$(SCITE_IPKG_TMP)/CONTROL/control
 	echo "Description: SciTE is a SCIntilla based Text Editor.">>$(SCITE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCITE_IPKG_TMP)
+	@$(call makeipkg, $(SCITE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

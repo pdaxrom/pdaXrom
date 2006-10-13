@@ -154,7 +154,7 @@ $(STATEDIR)/Battery-Status.targetinstall: $(Battery-Status_targetinstall_deps)
 	echo "Version: $(BATTERY-STATUS_VERSION)" 	>>$(BATTERY-STATUS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 				>>$(BATTERY-STATUS_IPKG_TMP)/CONTROL/control
 	echo "Description: Applet that shows the status of you laptop battery.">>$(BATTERY-STATUS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BATTERY-STATUS_IPKG_TMP)
+	@$(call makeipkg, $(BATTERY-STATUS_IPKG_TMP))
 	rm -rf $(BATTERY-STATUS_IPKG_TMP)
 	touch $@
 

@@ -147,7 +147,7 @@ $(STATEDIR)/lzma.targetinstall: $(lzma_targetinstall_deps)
 	echo "Version: $(LZMA_VERSION)-$(LZMA_VENDOR_VERSION)" 			>>$(LZMA_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LZMA_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(LZMA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LZMA_IPKG_TMP)
+	@$(call makeipkg, $(LZMA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

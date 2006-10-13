@@ -167,7 +167,7 @@ $(STATEDIR)/dbus-glib.targetinstall: $(dbus-glib_targetinstall_deps)
 	echo "Version: $(DBUS-GLIB_VERSION)-$(DBUS-GLIB_VENDOR_VERSION)" 		>>$(DBUS-GLIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: dbus" 								>>$(DBUS-GLIB_IPKG_TMP)/CONTROL/control
 	echo "Description: glib dbus binding"						>>$(DBUS-GLIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DBUS-GLIB_IPKG_TMP)
+	@$(call makeipkg, $(DBUS-GLIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

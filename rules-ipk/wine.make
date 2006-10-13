@@ -166,7 +166,7 @@ $(STATEDIR)/wine.targetinstall: $(wine_targetinstall_deps)
 	echo "Version: $(WINE_VERSION)-$(WINE_VENDOR_VERSION)" 							>>$(WINE_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 										>>$(WINE_IPKG_TMP)/CONTROL/control
 	echo "Description: Wine Windows Emulator"								>>$(WINE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WINE_IPKG_TMP)
+	@$(call makeipkg, $(WINE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

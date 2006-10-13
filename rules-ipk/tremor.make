@@ -178,7 +178,7 @@ $(STATEDIR)/tremor.targetinstall: $(tremor_targetinstall_deps)
 	echo "Version: 1.0.2"		 		>>$(TREMOR_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(TREMOR_IPKG_TMP)/CONTROL/control
 	echo "Description: The Tremor decoder, an integer-only, fully Ogg Vorbis compliant software decoder library.">>$(TREMOR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TREMOR_IPKG_TMP)
+	@$(call makeipkg, $(TREMOR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

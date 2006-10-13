@@ -152,7 +152,7 @@ $(STATEDIR)/siefs.targetinstall: $(siefs_targetinstall_deps)
 	echo "Version: $(SIEFS_VERSION)-$(SIEFS_VENDOR_VERSION)" 						>>$(SIEFS_IPKG_TMP)/CONTROL/control
 	echo "Depends: fuse"			 								>>$(SIEFS_IPKG_TMP)/CONTROL/control
 	echo "Description: SieFS is a virtual filesystem for accessing Siemens mobile phones' memory (flexmem or MultiMediaCard) from Linux. Now you can mount your phone (by datacable or IRDA) and work with it like with any other removable storage." >>$(SIEFS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SIEFS_IPKG_TMP)
+	@$(call makeipkg, $(SIEFS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -172,7 +172,7 @@ $(STATEDIR)/scim-m17n.targetinstall: $(scim-m17n_targetinstall_deps)
 	echo "Depends: scim, m17n-lib" 							>>$(SCIM-M17N_IPKG_TMP)/CONTROL/control
 	echo "Description: smart m17n input method"					>>$(SCIM-M17N_IPKG_TMP)/CONTROL/control
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(SCIM-M17N_IPKG_TMP)
+	@$(call makeipkg, $(SCIM-M17N_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

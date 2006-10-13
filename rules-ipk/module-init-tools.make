@@ -172,7 +172,7 @@ ifdef PTXCONF_MODUTILS
 	chmod 755 $(MODULE-INIT-TOOLS_IPKG_TMP)/CONTROL/postrm
 	chmod 755 $(MODULE-INIT-TOOLS_IPKG_TMP)/CONTROL/preinst
 endif
-	cd $(FEEDDIR) && $(XMKIPKG) $(MODULE-INIT-TOOLS_IPKG_TMP)
+	@$(call makeipkg, $(MODULE-INIT-TOOLS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

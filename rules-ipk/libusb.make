@@ -161,7 +161,7 @@ $(STATEDIR)/libusb.targetinstall: $(libusb_targetinstall_deps)
 	echo "Version: $(LIBUSB_VERSION)-$(LIBUSB_VENDOR_VERSION)" 			>>$(LIBUSB_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LIBUSB_IPKG_TMP)/CONTROL/control
 	echo "Description: libusb is a library which allows userspace application access to USB devices." >>$(LIBUSB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBUSB_IPKG_TMP)
+	@$(call makeipkg, $(LIBUSB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

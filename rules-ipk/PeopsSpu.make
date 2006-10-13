@@ -151,7 +151,7 @@ $(STATEDIR)/PeopsSpu.targetinstall: $(PeopsSpu_targetinstall_deps)
 	echo "Version: $(PEOPSSPU_VERSION)-$(PEOPSSPU_VENDOR_VERSION)" 			>>$(PEOPSSPU_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk" 								>>$(PEOPSSPU_IPKG_TMP)/CONTROL/control
 	echo "Description: Peops SPU"							>>$(PEOPSSPU_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PEOPSSPU_IPKG_TMP)
+	@$(call makeipkg, $(PEOPSSPU_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

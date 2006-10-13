@@ -146,7 +146,7 @@ $(STATEDIR)/zip.targetinstall: $(zip_targetinstall_deps)
 	echo "Version: $(ZIP_VERSION)" 						>>$(ZIP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(ZIP_IPKG_TMP)/CONTROL/control
 	echo "Description: compression and file packaging utility."		>>$(ZIP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ZIP_IPKG_TMP)
+	@$(call makeipkg, $(ZIP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

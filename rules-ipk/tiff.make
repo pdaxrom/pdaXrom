@@ -167,7 +167,7 @@ $(STATEDIR)/tiff.targetinstall: $(tiff_targetinstall_deps)
 	echo "Version: $(TIFF_VERSION)-$(TIFF_VENDOR_VERSION)" 				>>$(TIFF_IPKG_TMP)/CONTROL/control
 	echo "Depends: libz, libjpeg" 							>>$(TIFF_IPKG_TMP)/CONTROL/control
 	echo "Description: libtiff is a set of C functions (a library) that support the manipulation of TIFF image files." >>$(TIFF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TIFF_IPKG_TMP)
+	@$(call makeipkg, $(TIFF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

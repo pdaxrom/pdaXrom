@@ -162,7 +162,7 @@ $(STATEDIR)/eXit.targetinstall: $(eXit_targetinstall_deps)
 	echo "Version: $(EXIT_VERSION)" 			>>$(EXIT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 					>>$(EXIT_IPKG_TMP)/CONTROL/control
 	echo "Description: x11 killer app"			>>$(EXIT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EXIT_IPKG_TMP)
+	@$(call makeipkg, $(EXIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

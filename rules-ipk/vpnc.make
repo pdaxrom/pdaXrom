@@ -155,7 +155,7 @@ $(STATEDIR)/vpnc.targetinstall: $(vpnc_targetinstall_deps)
 	echo "Version: $(VPNC_VERSION)-$(VPNC_VENDOR_VERSION)" 				>>$(VPNC_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgcrypt" 							>>$(VPNC_IPKG_TMP)/CONTROL/control
 	echo "Description: client for cisco3000 VPN Concentrator"			>>$(VPNC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VPNC_IPKG_TMP)
+	@$(call makeipkg, $(VPNC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

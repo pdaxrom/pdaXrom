@@ -160,7 +160,7 @@ $(STATEDIR)/Linux-PAM.targetinstall: $(Linux-PAM_targetinstall_deps)
 	echo "Version: $(LINUX-PAM_VERSION)-$(LINUX-PAM_VENDOR_VERSION)" 		>>$(LINUX-PAM_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LINUX-PAM_IPKG_TMP)/CONTROL/control
 	echo "Description: Linux-PAM is a free implementation of the following DCE-RFC from Sunsoft." >>$(LINUX-PAM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LINUX-PAM_IPKG_TMP)
+	@$(call makeipkg, $(LINUX-PAM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

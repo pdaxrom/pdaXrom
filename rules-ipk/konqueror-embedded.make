@@ -166,7 +166,7 @@ $(STATEDIR)/konqueror-embedded.targetinstall: $(konqueror-embedded_targetinstall
 	echo "Depends: openssl, pcre, qt-mt" 					>>$(KONQUEROR-EMBEDDED_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE Web Browser Konqueror, embedded version"		>>$(KONQUEROR-EMBEDDED_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(KONQUEROR-EMBEDDED_IPKG_TMP)
+	@$(call makeipkg, $(KONQUEROR-EMBEDDED_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

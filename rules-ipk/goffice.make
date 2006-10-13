@@ -171,7 +171,7 @@ $(STATEDIR)/goffice.targetinstall: $(goffice_targetinstall_deps)
 	echo "Version: $(GOFFICE_VERSION)-$(GOFFICE_VENDOR_VERSION)" 			>>$(GOFFICE_IPKG_TMP)/CONTROL/control
 	echo "Depends: glib2, libgsf, gtk2, libglade, libgnomeprint, libart-lgpl, libxml2" 	>>$(GOFFICE_IPKG_TMP)/CONTROL/control
 	echo "Description: GNOME Office library"					>>$(GOFFICE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GOFFICE_IPKG_TMP)
+	@$(call makeipkg, $(GOFFICE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

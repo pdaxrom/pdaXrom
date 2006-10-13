@@ -183,7 +183,7 @@ $(STATEDIR)/xpdf.targetinstall: $(xpdf_targetinstall_deps)
 	echo "Version: $(XPDF_VERSION)-$(XPDF_VENDOR_VERSION)" 		>>$(XPDF_IPKG_TMP)/CONTROL/control
 	echo "Depends: lesstif" 					>>$(XPDF_IPKG_TMP)/CONTROL/control
 	echo "Description: Xpdf is an open source viewer for Portable Document Format (PDF) files.">>$(XPDF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XPDF_IPKG_TMP)
+	@$(call makeipkg, $(XPDF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

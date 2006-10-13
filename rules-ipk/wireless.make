@@ -136,7 +136,7 @@ $(STATEDIR)/wireless.targetinstall: $(STATEDIR)/wireless.install
 	echo "Version: $(WIRELESS_VERSION)" 					>>$(WIRELESS_DIR)/ipkg_tmp/CONTROL/control
 	echo "Depends: " 							>>$(WIRELESS_DIR)/ipkg_tmp/CONTROL/control
 	echo "Description: Tools for the Linux Standard Wireless Extension Subsystem" >>$(WIRELESS_DIR)/ipkg_tmp/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WIRELESS_DIR)/ipkg_tmp
+	@$(call makeipkg, $(WIRELESS_DIR)/ipkg_tmp)
 
 	touch $@
 

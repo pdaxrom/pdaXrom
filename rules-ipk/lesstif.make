@@ -173,7 +173,7 @@ $(STATEDIR)/lesstif.targetinstall: $(lesstif_targetinstall_deps)
 	echo "Version: $(LESSTIF_VERSION)" 			>>$(LESSTIF_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 				>>$(LESSTIF_IPKG_TMP)/CONTROL/control
 	echo "Description: LessTif is the Hungry Programmers' version of OSF/Motif(R). It aims to be source compatible meaning that the same source code should compile with both and work exactly the same!">>$(LESSTIF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LESSTIF_IPKG_TMP)
+	@$(call makeipkg, $(LESSTIF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

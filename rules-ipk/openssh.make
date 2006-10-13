@@ -211,7 +211,7 @@ $(STATEDIR)/openssh.targetinstall: $(openssh_targetinstall_deps)
 	ln -sf ../init.d/ssh $(OPENSSH_IPKG_TMP)/etc/rc.d/rc5.d/S17ssh
 	ln -sf ../init.d/ssh $(OPENSSH_IPKG_TMP)/etc/rc.d/rc4.d/S17ssh
 	ln -sf ../init.d/ssh $(OPENSSH_IPKG_TMP)/etc/rc.d/rc3.d/S17ssh
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENSSH_IPKG_TMP)
+	@$(call makeipkg, $(OPENSSH_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -159,7 +159,7 @@ $(STATEDIR)/e-uae.targetinstall: $(e-uae_targetinstall_deps)
 	echo "Version: $(E-UAE_VERSION)-$(E-UAE_VENDOR_VERSION)" 			>>$(E-UAE_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, sdl" 							>>$(E-UAE_IPKG_TMP)/CONTROL/control
 	echo "Description: Amiga emulator"						>>$(E-UAE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(E-UAE_IPKG_TMP)
+	@$(call makeipkg, $(E-UAE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

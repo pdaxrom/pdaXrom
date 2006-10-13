@@ -153,7 +153,7 @@ $(STATEDIR)/libiconv.targetinstall: $(libiconv_targetinstall_deps)
 	echo "Version: $(LIBICONV_VERSION)" 		>>$(LIBICONV_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(LIBICONV_IPKG_TMP)/CONTROL/control
 	echo "Description: character set conversion library">>$(LIBICONV_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBICONV_IPKG_TMP)
+	@$(call makeipkg, $(LIBICONV_IPKG_TMP))
 
 	touch $@
 

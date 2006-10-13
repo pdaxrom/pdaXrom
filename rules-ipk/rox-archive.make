@@ -149,7 +149,7 @@ $(STATEDIR)/rox-archive.targetinstall: $(rox-archive_targetinstall_deps)
 	echo "Version: $(ROX-ARCHIVE_VERSION)" 		>>$(ROX-ARCHIVE_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox, pygtk, rox-lib" 		>>$(ROX-ARCHIVE_IPKG_TMP)/CONTROL/control
 	echo "Description: ROX Create or read archive files.">>$(ROX-ARCHIVE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-ARCHIVE_IPKG_TMP)
+	@$(call makeipkg, $(ROX-ARCHIVE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -164,7 +164,7 @@ $(STATEDIR)/sendmail.targetinstall: $(sendmail_targetinstall_deps)
 	echo "Version: $(SENDMAIL_VERSION)-$(SENDMAIL_VENDOR_VERSION)" 			>>$(SENDMAIL_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(SENDMAIL_IPKG_TMP)/CONTROL/control
 	echo "Description: Sendmail is a Mail Transfer Agent, which is the program that moves mail from one machine to another.">>$(SENDMAIL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SENDMAIL_IPKG_TMP)
+	@$(call makeipkg, $(SENDMAIL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

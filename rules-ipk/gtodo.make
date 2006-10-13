@@ -163,7 +163,7 @@ $(STATEDIR)/gtodo.targetinstall: $(gtodo_targetinstall_deps)
 	echo "Version: $(GTODO_VERSION)-$(GTODO_VENDOR_VERSION)" 						>>$(GTODO_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libxml2, gconf, gnome-vfs" 							>>$(GTODO_IPKG_TMP)/CONTROL/control
 	echo "Description: Todo list manager"									>>$(GTODO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GTODO_IPKG_TMP)
+	@$(call makeipkg, $(GTODO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

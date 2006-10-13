@@ -163,7 +163,7 @@ $(STATEDIR)/ede.targetinstall: $(ede_targetinstall_deps)
 	echo "Version: $(EDE_VERSION)-$(EDE_VENDOR_VERSION)" 				>>$(EDE_IPKG_TMP)/CONTROL/control
 	echo "Depends: efltk" 								>>$(EDE_IPKG_TMP)/CONTROL/control
 	echo "Description: Equinox Desktop Environment (shortly EDE) is small desktop environment, builted to be simple and fast." >>$(EDE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(EDE_IPKG_TMP)
+	@$(call makeipkg, $(EDE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

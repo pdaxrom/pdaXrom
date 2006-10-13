@@ -183,7 +183,7 @@ endif
 	echo "Version: $(OPENBOX_VERSION)-$(OPENBOX_VENDOR_VERSION)" 		>>$(OPENBOX_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, glib2, startup-notification, libxml2"		>>$(OPENBOX_IPKG_TMP)/CONTROL/control
 	echo "Description: Window manager"					>>$(OPENBOX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OPENBOX_IPKG_TMP)
+	@$(call makeipkg, $(OPENBOX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

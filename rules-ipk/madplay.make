@@ -155,7 +155,7 @@ $(STATEDIR)/madplay.targetinstall: $(madplay_targetinstall_deps)
 	echo "Version: $(MADPLAY_VERSION)" 		>>$(MADPLAY_IPKG_TMP)/CONTROL/control
 	echo "Depends: libmad, libid3tag" 		>>$(MADPLAY_IPKG_TMP)/CONTROL/control
 	echo "Description: command-line MPEG audio decoder and player based on the MAD library (libmad).">>$(MADPLAY_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MADPLAY_IPKG_TMP)
+	@$(call makeipkg, $(MADPLAY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

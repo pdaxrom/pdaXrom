@@ -152,7 +152,7 @@ $(STATEDIR)/hostap-utils.targetinstall: $(hostap-utils_targetinstall_deps)
 	echo "Version: $(HOSTAP-UTILS_VERSION)-$(HOSTAP-UTILS_VENDOR_VERSION)" 		>>$(HOSTAP-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: hostap-driver" 							>>$(HOSTAP-UTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: hostap wireless utils"					>>$(HOSTAP-UTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HOSTAP-UTILS_IPKG_TMP)
+	@$(call makeipkg, $(HOSTAP-UTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

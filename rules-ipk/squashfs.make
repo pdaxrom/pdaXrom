@@ -146,7 +146,7 @@ $(STATEDIR)/squashfs.targetinstall: $(squashfs_targetinstall_deps)
 	echo "Version: $(SQUASHFS_VERSION)" 		>>$(SQUASHFS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(SQUASHFS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(SQUASHFS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SQUASHFS_IPKG_TMP)
+	@$(call makeipkg, $(SQUASHFS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -119,7 +119,7 @@ $(STATEDIR)/hotplug.targetinstall: $(hotplug_targetinstall_deps)
 	echo "Version: 2004-01-05"	 					>>$(HOTPLUG_DIR)/ipkg_tmp/CONTROL/control
 	echo "Depends: " 							>>$(HOTPLUG_DIR)/ipkg_tmp/CONTROL/control
 	echo "Description: This package contains the scripts necessary for hotplug Linux support, and lets you plug in new devices and use them immediately.">>$(HOTPLUG_DIR)/ipkg_tmp/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(HOTPLUG_DIR)/ipkg_tmp
+	@$(call makeipkg, $(HOTPLUG_DIR)/ipkg_tmp)
 	touch $@
 
 # ----------------------------------------------------------------------------

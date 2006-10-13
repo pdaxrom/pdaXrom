@@ -145,7 +145,7 @@ $(STATEDIR)/MIME-Editor.targetinstall: $(MIME-Editor_targetinstall_deps)
 	echo "Version: $(MIME-EDITOR_VERSION)" 		>>$(MIME-EDITOR_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox, pygtk, rox-lib" 		>>$(MIME-EDITOR_IPKG_TMP)/CONTROL/control
 	echo "Description: MIME database editor">>$(MIME-EDITOR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MIME-EDITOR_IPKG_TMP)
+	@$(call makeipkg, $(MIME-EDITOR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

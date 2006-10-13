@@ -174,7 +174,7 @@ $(STATEDIR)/pygobject.targetinstall: $(pygobject_targetinstall_deps)
 	echo "Version: $(PYGOBJECT_VERSION)-$(PYGOBJECT_VENDOR_VERSION)" 		>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
 	echo "Depends: glib2"	 							>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
 	echo "Description: python glib binding"						>>$(PYGOBJECT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PYGOBJECT_IPKG_TMP)
+	@$(call makeipkg, $(PYGOBJECT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

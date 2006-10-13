@@ -155,7 +155,7 @@ $(STATEDIR)/yudit.targetinstall: $(yudit_targetinstall_deps)
 	echo "Version: $(YUDIT_VERSION)-$(YUDIT_VENDOR_VERSION)" 			>>$(YUDIT_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 							>>$(YUDIT_IPKG_TMP)/CONTROL/control
 	echo "Description: Yudit is a free (Y)unicode text editor for all unices."	>>$(YUDIT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(YUDIT_IPKG_TMP)
+	@$(call makeipkg, $(YUDIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

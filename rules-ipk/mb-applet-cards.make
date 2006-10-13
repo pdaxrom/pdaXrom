@@ -158,7 +158,7 @@ $(STATEDIR)/mb-applet-cards.targetinstall: $(mb-applet-cards_targetinstall_deps)
 	echo "Version: $(MB-APPLET-CARDS_VERSION)" 		>>$(MB-APPLET-CARDS_IPKG_TMP)/CONTROL/control
 	echo "Depends: matchbox-panel" 				>>$(MB-APPLET-CARDS_IPKG_TMP)/CONTROL/control
 	echo "Description: matchbox card monitor applet"	>>$(MB-APPLET-CARDS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MB-APPLET-CARDS_IPKG_TMP)
+	@$(call makeipkg, $(MB-APPLET-CARDS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

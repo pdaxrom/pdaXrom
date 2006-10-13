@@ -164,7 +164,7 @@ $(STATEDIR)/perl.targetinstall: $(perl_targetinstall_deps)
 	echo "Version: $(PERL_VERSION)" 		>>$(PERL_IPKG_TMP)/CONTROL/control
 	echo "Depends: gdbm" 				>>$(PERL_IPKG_TMP)/CONTROL/control
 	echo "Description: Perl is a stable, cross platform programming language.">>$(PERL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PERL_IPKG_TMP)
+	@$(call makeipkg, $(PERL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

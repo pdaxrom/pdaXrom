@@ -160,7 +160,7 @@ $(STATEDIR)/aMule.targetinstall: $(aMule_targetinstall_deps)
 	echo "Version: $(AMULE_VERSION)-$(AMULE_VENDOR_VERSION)" 						>>$(AMULE_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgd, wxwidgets, libcurl" 								>>$(AMULE_IPKG_TMP)/CONTROL/control
 	echo "Description: eMule p2p client"									>>$(AMULE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(AMULE_IPKG_TMP)
+	@$(call makeipkg, $(AMULE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

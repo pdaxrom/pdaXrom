@@ -185,7 +185,7 @@ $(STATEDIR)/php.targetinstall: $(php_targetinstall_deps)
 
 	chmod 755 $(PHP_IPKG_TMP)/CONTROL/postinst $(PHP_IPKG_TMP)/CONTROL/prerm
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(PHP_IPKG_TMP)
+	@$(call makeipkg, $(PHP_IPKG_TMP))
 
 	#mkdir -p $(PHP_IPKG_TMP)/CONTROL
 	#echo "Package: php" 								 >$(PHP_IPKG_TMP)/CONTROL/control

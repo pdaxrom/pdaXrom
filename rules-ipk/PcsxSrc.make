@@ -163,7 +163,7 @@ $(STATEDIR)/PcsxSrc.targetinstall: $(PcsxSrc_targetinstall_deps)
 	echo "Version: $(PCSXSRC_VERSION)-$(PCSXSRC_VENDOR_VERSION)" 			>>$(PCSXSRC_IPKG_TMP)/CONTROL/control
 	echo "Depends: peopssoftgpu, peopsspu, cdriso, padxwin, gtk" 			>>$(PCSXSRC_IPKG_TMP)/CONTROL/control
 	echo "Description: PlayStation Emulation for the PC"				>>$(PCSXSRC_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PCSXSRC_IPKG_TMP)
+	@$(call makeipkg, $(PCSXSRC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

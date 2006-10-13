@@ -151,7 +151,7 @@ $(STATEDIR)/pciutils.targetinstall: $(pciutils_targetinstall_deps)
 	echo "Version: $(PCIUTILS_VERSION)-$(PCIUTILS_VENDOR_VERSION)" 			>>$(PCIUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(PCIUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: The PCI Utilities package contains a library for portable access to PCI bus configuration space and several utilities based on this library." >>$(PCIUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PCIUTILS_IPKG_TMP)
+	@$(call makeipkg, $(PCIUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -161,7 +161,7 @@ $(STATEDIR)/camstream.targetinstall: $(camstream_targetinstall_deps)
 	echo "Depends: qt-mt" 								>>$(CAMSTREAM_IPKG_TMP)/CONTROL/control
 	echo "Description: CamStream is (going to be) a collection of tools for webcams and other video-devices, enhancing your Linux system with multimedia video.">>$(CAMSTREAM_IPKG_TMP)/CONTROL/control
 	asasdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(CAMSTREAM_IPKG_TMP)
+	@$(call makeipkg, $(CAMSTREAM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

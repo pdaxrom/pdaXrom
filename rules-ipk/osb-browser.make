@@ -154,7 +154,7 @@ $(STATEDIR)/osb-browser.targetinstall: $(osb-browser_targetinstall_deps)
 	echo "Version: $(OSB-BROWSER_VERSION)-$(OSB-BROWSER_VENDOR_VERSION)" 			>>$(OSB-BROWSER_IPKG_TMP)/CONTROL/control
 	echo "Depends: osb-nrcit, libglade" 							>>$(OSB-BROWSER_IPKG_TMP)/CONTROL/control
 	echo "Description: OSB Internet Browser"						>>$(OSB-BROWSER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OSB-BROWSER_IPKG_TMP)
+	@$(call makeipkg, $(OSB-BROWSER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -149,7 +149,7 @@ $(STATEDIR)/cpuoverclock.targetinstall: $(cpuoverclock_targetinstall_deps)
 	echo "Version: $(CPUOVERCLOCK_VERSION)-$(CPUOVERCLOCK_VENDOR_VERSION)" 		>>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml" >>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
 	echo "Description: CPU overclock utility"					>>$(CPUOVERCLOCK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CPUOVERCLOCK_IPKG_TMP)
+	@$(call makeipkg, $(CPUOVERCLOCK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

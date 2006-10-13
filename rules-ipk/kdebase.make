@@ -203,7 +203,7 @@ $(STATEDIR)/kdebase.targetinstall: $(kdebase_targetinstall_deps)
 	echo "Version: $(KDEBASE_VERSION)-$(KDEBASE_VENDOR_VERSION)" 						>>$(KDEBASE_IPKG_TMP)/CONTROL/control
 	echo "Depends: kdelibs" 										>>$(KDEBASE_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE core applications and files"							>>$(KDEBASE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDEBASE_IPKG_TMP)
+	@$(call makeipkg, $(KDEBASE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

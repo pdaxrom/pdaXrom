@@ -155,7 +155,7 @@ $(STATEDIR)/xkbd.targetinstall: $(xkbd_targetinstall_deps)
 	echo "Version: $(XKBD_VERSION)" 			>>$(XKBD_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, xresizewindow" 		>>$(XKBD_IPKG_TMP)/CONTROL/control
 	echo "Description: A small, highly configurable virtual on-screen keyboard for X11 based on xlib.">>$(XKBD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XKBD_IPKG_TMP)
+	@$(call makeipkg, $(XKBD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

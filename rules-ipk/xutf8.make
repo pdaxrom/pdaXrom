@@ -161,7 +161,7 @@ else
 	echo "Depends: xfree" 					>>$(XUTF8_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: X11 UTF-8 support"			>>$(XUTF8_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XUTF8_IPKG_TMP)
+	@$(call makeipkg, $(XUTF8_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

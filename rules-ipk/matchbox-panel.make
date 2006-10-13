@@ -167,7 +167,7 @@ endif
 	echo "Version: $(MATCHBOX-PANEL_VENDOR-VERSION)" 					>>$(MATCHBOX-PANEL_ROOTDIR)/CONTROL/control
 	echo "Depends: matchbox-common, libmatchbox"						>>$(MATCHBOX-PANEL_ROOTDIR)/CONTROL/control
 	echo "Description: Matchbox panel"							>>$(MATCHBOX-PANEL_ROOTDIR)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MATCHBOX-PANEL_ROOTDIR)
+	@$(call makeipkg, $(MATCHBOX-PANEL_ROOTDIR))
 	touch $@
 
 # ----------------------------------------------------------------------------

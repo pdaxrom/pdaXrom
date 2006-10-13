@@ -180,7 +180,7 @@ $(STATEDIR)/gnome-desktop.targetinstall: $(gnome-desktop_targetinstall_deps)
 	echo "Version: $(GNOME-DESKTOP_VERSION)" 	>>$(GNOME-DESKTOP_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnomeui, gnome-vfs, libgnomecanvas">>$(GNOME-DESKTOP_IPKG_TMP)/CONTROL/control
 	echo "Description: The gnome desktop programs for the GNOME GUI desktop environment.">>$(GNOME-DESKTOP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-DESKTOP_IPKG_TMP)
+	@$(call makeipkg, $(GNOME-DESKTOP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

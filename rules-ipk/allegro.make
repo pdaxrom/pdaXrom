@@ -174,7 +174,7 @@ $(STATEDIR)/allegro.targetinstall: $(allegro_targetinstall_deps)
 	echo "Version: $(ALLEGRO_VERSION)-$(ALLEGRO_VENDOR_VERSION)" 			>>$(ALLEGRO_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 								>>$(ALLEGRO_IPKG_TMP)/CONTROL/control
 	echo "Description: Allegro is a game programming library for C/C++"		>>$(ALLEGRO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ALLEGRO_IPKG_TMP)
+	@$(call makeipkg, $(ALLEGRO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

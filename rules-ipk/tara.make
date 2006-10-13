@@ -157,7 +157,7 @@ else
 	echo "Depends: "		 				>>$(TARA_DIR)/ipk/CONTROL/control
 endif
 	echo "Description: generated with pdaXrom builder"		>>$(TARA_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TARA_DIR)/ipk
+	@$(call makeipkg, $(TARA_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

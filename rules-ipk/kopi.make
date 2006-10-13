@@ -163,7 +163,7 @@ $(STATEDIR)/kopi.targetinstall: $(kopi_targetinstall_deps)
 	echo "Version: $(KOPI_VERSION)-$(KOPI_VENDOR_VERSION)" 				>>$(KOPI_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt" 								>>$(KOPI_IPKG_TMP)/CONTROL/control
 	echo "Description: KOrganizer"							>>$(KOPI_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KOPI_IPKG_TMP)
+	@$(call makeipkg, $(KOPI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

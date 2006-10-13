@@ -164,7 +164,7 @@ $(STATEDIR)/usbutils.targetinstall: $(usbutils_targetinstall_deps)
 	echo "Version: $(USBUTILS_VERSION)-$(USBUTILS_VENDOR_VERSION)" 			>>$(USBUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: hwdata" 								>>$(USBUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: USB utilities"						>>$(USBUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(USBUTILS_IPKG_TMP)
+	@$(call makeipkg, $(USBUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

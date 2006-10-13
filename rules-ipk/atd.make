@@ -148,7 +148,7 @@ $(STATEDIR)/atd.targetinstall: $(atd_targetinstall_deps)
 	echo "Version: $(ATD_VERSION)-$(ATD_VENDOR_VERSION)" 				>>$(ATD_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(ATD_IPKG_TMP)/CONTROL/control
 	echo "Description: run jobs queued for later execution."			>>$(ATD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ATD_IPKG_TMP)
+	@$(call makeipkg, $(ATD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

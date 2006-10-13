@@ -185,7 +185,7 @@ $(STATEDIR)/libgnome.targetinstall: $(libgnome_targetinstall_deps)
 	echo "Version: $(LIBGNOME_VERSION)" 		>>$(LIBGNOME_IPKG_TMP)/CONTROL/control
 	echo "Depends: esound, gconf, libbonobo, gnome-vfs" >>$(LIBGNOME_IPKG_TMP)/CONTROL/control
 	echo "Description: This is the non-gui part of the library formerly known as gnome-libs.">>$(LIBGNOME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGNOME_IPKG_TMP)
+	@$(call makeipkg, $(LIBGNOME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

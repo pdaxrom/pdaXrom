@@ -151,7 +151,7 @@ $(STATEDIR)/bison.targetinstall: $(bison_targetinstall_deps)
 	echo "Version: $(BISON_VERSION)" 		>>$(BISON_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(BISON_IPKG_TMP)/CONTROL/control
 	echo "Description: Bison is a general-purpose parser generator that converts a grammar description for an LALR context-free grammar into a C program to parse that grammar.">>$(BISON_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BISON_IPKG_TMP)
+	@$(call makeipkg, $(BISON_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

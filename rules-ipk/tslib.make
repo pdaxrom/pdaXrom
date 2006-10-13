@@ -163,7 +163,7 @@ $(STATEDIR)/tslib.targetinstall: $(tslib_targetinstall_deps)
 	echo "Version: $(TSLIB_VERSION)" 		>>$(TSLIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(TSLIB_IPKG_TMP)/CONTROL/control
 	echo "Description: touchscreen interface library.">>$(TSLIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TSLIB_IPKG_TMP)
+	@$(call makeipkg, $(TSLIB_IPKG_TMP))
 
 	touch $@
 

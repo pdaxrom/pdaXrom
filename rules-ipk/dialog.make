@@ -150,7 +150,7 @@ $(STATEDIR)/dialog.targetinstall: $(dialog_targetinstall_deps)
 	echo "Version: $(DIALOG_VERSION)-$(DIALOG_VENDOR_VERSION)" 						>>$(DIALOG_IPKG_TMP)/CONTROL/control
 	echo "Depends: ncurses" 										>>$(DIALOG_IPKG_TMP)/CONTROL/control
 	echo "Description:  Dialog is a utility to create nice user interfaces to shell scripts, or other scripting languages, such as perl. It is non-graphical (it uses curses) so it can be run in the console or an xterm." >>$(DIALOG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DIALOG_IPKG_TMP)
+	@$(call makeipkg, $(DIALOG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

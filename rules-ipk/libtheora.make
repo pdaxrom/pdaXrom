@@ -174,7 +174,7 @@ $(STATEDIR)/libtheora.targetinstall: $(libtheora_targetinstall_deps)
 	echo "Version: $(LIBTHEORA_VERSION)-$(LIBTHEORA_VENDOR_VERSION)" 		>>$(LIBTHEORA_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(LIBTHEORA_DEPLIST)" 						>>$(LIBTHEORA_IPKG_TMP)/CONTROL/control
 	echo "Description: Theora is an open video codec being developed by the Xiph.org" >>$(LIBTHEORA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBTHEORA_IPKG_TMP)
+	@$(call makeipkg, $(LIBTHEORA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

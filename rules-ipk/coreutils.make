@@ -269,7 +269,7 @@ endif
 	echo "Version: $(COREUTILS_VERSION)" 					>>$(COREUTILS_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(COREUTILS_DIR)/ipk/CONTROL/control
 	echo "Description: A collection of core GNU utilities."			>>$(COREUTILS_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(COREUTILS_DIR)/ipk
+	@$(call makeipkg, $(COREUTILS_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

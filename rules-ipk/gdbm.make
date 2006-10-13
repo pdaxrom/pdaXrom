@@ -157,7 +157,7 @@ $(STATEDIR)/gdbm.targetinstall: $(gdbm_targetinstall_deps)
 	echo "Version: $(GDBM_VERSION)" 		>>$(GDBM_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(GDBM_IPKG_TMP)/CONTROL/control
 	echo "Description: GNU dbm is a set of database routines that use extendible hashing and works similar to the standard UNIX dbm routines.">>$(GDBM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GDBM_IPKG_TMP)
+	@$(call makeipkg, $(GDBM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -167,7 +167,7 @@ $(STATEDIR)/curl.targetinstall: $(curl_targetinstall_deps)
 	echo "Version: $(CURL_VERSION)-$(CURL_VENDOR_VERSION)" 						>>$(CURL_IPKG_TMP)/CONTROL/control
 	echo "Depends: openssl, libz" 									>>$(CURL_IPKG_TMP)/CONTROL/control
 	echo "Description:  Curl is a command line tool for transferring files with URL syntax, supporting FTP, FTPS, HTTP, HTTPS, GOPHER, TELNET, DICT, FILE and LDAP. Curl supports HTTPS certificates, HTTP POST, HTTP PUT, FTP uploading, kerberos, HTTP form based upload, proxies, cookies, user+password authentication, file transfer resume, http proxy tunneling and a busload of other useful tricks." >>$(CURL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CURL_IPKG_TMP)
+	@$(call makeipkg, $(CURL_IPKG_TMP))
 
 	rm -rf $(CURL_IPKG_TMP)
 	$(CURL_PATH) $(MAKE) -C $(CURL_DIR) DESTDIR=$(CURL_IPKG_TMP) install
@@ -187,7 +187,7 @@ $(STATEDIR)/curl.targetinstall: $(curl_targetinstall_deps)
 	echo "Version: $(CURL_VERSION)-$(CURL_VENDOR_VERSION)" 						>>$(CURL_IPKG_TMP)/CONTROL/control
 	echo "Depends: libcurl" 									>>$(CURL_IPKG_TMP)/CONTROL/control
 	echo "Description:  Curl is a command line tool for transferring files with URL syntax, supporting FTP, FTPS, HTTP, HTTPS, GOPHER, TELNET, DICT, FILE and LDAP. Curl supports HTTPS certificates, HTTP POST, HTTP PUT, FTP uploading, kerberos, HTTP form based upload, proxies, cookies, user+password authentication, file transfer resume, http proxy tunneling and a busload of other useful tricks." >>$(CURL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CURL_IPKG_TMP)
+	@$(call makeipkg, $(CURL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

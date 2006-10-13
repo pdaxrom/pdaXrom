@@ -138,7 +138,7 @@ $(STATEDIR)/setserial.targetinstall: $(setserial_targetinstall_deps)
 	echo "Version: $(SETSERIAL_VERSION)" 					>>$(SETSERIAL_DIR)/ipkg/CONTROL/control
 	echo "Depends: " 							>>$(SETSERIAL_DIR)/ipkg/CONTROL/control
 	echo "Description: compression and file packaging utility."		>>$(SETSERIAL_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SETSERIAL_DIR)/ipkg
+	@$(call makeipkg, $(SETSERIAL_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

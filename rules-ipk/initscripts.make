@@ -163,7 +163,7 @@ endif
 	echo "Version: $(INITSCRIPTS_VERSION)" 					>>$(INITSCRIPTS_DIR)/ipkg/CONTROL/control
 	echo "Depends: popt" 							>>$(INITSCRIPTS_DIR)/ipkg/CONTROL/control
 	echo "Description: SysV init scripts"					>>$(INITSCRIPTS_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(INITSCRIPTS_DIR)/ipkg
+	@$(call makeipkg, $(INITSCRIPTS_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

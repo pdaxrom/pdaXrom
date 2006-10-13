@@ -163,7 +163,7 @@ $(STATEDIR)/xdtv.targetinstall: $(xdtv_targetinstall_deps)
 	echo "Version: $(XDTV_VERSION)-$(XDTV_VENDOR_VERSION)" 				>>$(XDTV_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, libffmpeg" 						>>$(XDTV_IPKG_TMP)/CONTROL/control
 	echo "Description: XdTV is a software that allows you to watch TV."		>>$(XDTV_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XDTV_IPKG_TMP)
+	@$(call makeipkg, $(XDTV_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

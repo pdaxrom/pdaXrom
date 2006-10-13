@@ -154,7 +154,7 @@ $(STATEDIR)/xmmsmplayer.targetinstall: $(xmmsmplayer_targetinstall_deps)
 	echo "Version: $(XMMSMPLAYER_VERSION)" 					>>$(XMMSMPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Depends: xmms, mplayer" 						>>$(XMMSMPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Description: This an xmms plugin that allows you to use xmms as a front-end for MPlayer.">>$(XMMSMPLAYER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XMMSMPLAYER_IPKG_TMP)
+	@$(call makeipkg, $(XMMSMPLAYER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

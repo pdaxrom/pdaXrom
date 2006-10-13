@@ -160,7 +160,7 @@ $(STATEDIR)/dosfstools.targetinstall: $(dosfstools_targetinstall_deps)
 	echo "Version: $(DOSFSTOOLS_VERSION)" 		>>$(DOSFSTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(DOSFSTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: Utilities to create and check MS-DOS FAT filesystems.">>$(DOSFSTOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DOSFSTOOLS_IPKG_TMP)
+	@$(call makeipkg, $(DOSFSTOOLS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -165,7 +165,7 @@ $(STATEDIR)/kermit.targetinstall: $(kermit_targetinstall_deps)
 	echo "Version: $(KERMIT_VERSION)-$(KERMIT_VENDOR_VERSION)" 			>>$(KERMIT_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(KERMIT_IPKG_TMP)/CONTROL/control
 	echo "Description: Kermit software offers interactive and scripted file transfer and management, terminal emulation, Unicode-aware character-set conversion, and/or Internet security" >>$(KERMIT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KERMIT_IPKG_TMP)
+	@$(call makeipkg, $(KERMIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -171,7 +171,7 @@ $(STATEDIR)/subversion.targetinstall: $(subversion_targetinstall_deps)
 	echo "Version: $(SUBVERSION_VERSION)-$(SUBVERSION_VENDOR_VERSION)" 		>>$(SUBVERSION_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(SUBVERSION_IPKG_TMP)/CONTROL/control
 	echo "Description: version control system"					>>$(SUBVERSION_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SUBVERSION_IPKG_TMP)
+	@$(call makeipkg, $(SUBVERSION_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

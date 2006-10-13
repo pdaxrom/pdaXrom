@@ -151,7 +151,7 @@ $(STATEDIR)/u-boot.targetinstall: $(u-boot_targetinstall_deps)
 	#echo "Version: $(U-BOOT_VERSION)-$(U-BOOT_VENDOR_VERSION)" 			>>$(U-BOOT_IPKG_TMP)/CONTROL/control
 	#echo "Depends: " 								>>$(U-BOOT_IPKG_TMP)/CONTROL/control
 	#echo "Description: generated with pdaXrom builder"				>>$(U-BOOT_IPKG_TMP)/CONTROL/control
-	#cd $(FEEDDIR) && $(XMKIPKG) $(U-BOOT_IPKG_TMP)
+	#@$(call makeipkg, $(U-BOOT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

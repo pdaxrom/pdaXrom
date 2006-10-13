@@ -162,7 +162,7 @@ $(STATEDIR)/ufo2000.targetinstall: $(ufo2000_targetinstall_deps)
 	echo "cd /usr/share/ufo2000"							>>$(UFO2000_IPKG_TMP)/usr/bin/runufo
 	echo "./ufo2000"								>>$(UFO2000_IPKG_TMP)/usr/bin/runufo
 	
-	cd $(FEEDDIR) && $(XMKIPKG) $(UFO2000_IPKG_TMP)
+	@$(call makeipkg, $(UFO2000_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

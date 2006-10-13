@@ -149,7 +149,7 @@ $(STATEDIR)/fbpanel-pdaXrom.targetinstall: $(fbpanel-pdaXrom_targetinstall_deps)
 	#echo "Version: $(FBPANEL-PDAXROM_VERSION)-$(FBPANEL-PDAXROM_VENDOR_VERSION)" 		>>$(FBPANEL-PDAXROM_IPKG_TMP)/CONTROL/control
 	#echo "Depends: fbpanel" 								>>$(FBPANEL-PDAXROM_IPKG_TMP)/CONTROL/control
 	#echo "Description: fbpanel pdaXrom vendor files"					>>$(FBPANEL-PDAXROM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FBPANEL-PDAXROM_IPKG_TMP)
+	@$(call makeipkg, $(FBPANEL-PDAXROM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -190,7 +190,7 @@ else
 	echo "Depends: " 								>>$(GLIB22_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: GLib is the low-level core library that forms the basis for projects such as GTK+ and GNOME.">>$(GLIB22_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GLIB22_IPKG_TMP)
+	@$(call makeipkg, $(GLIB22_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

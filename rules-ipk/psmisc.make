@@ -154,7 +154,7 @@ endif
 	echo "Version: $(PSMISC_VERSION)" 					>>$(PSMISC_DIR)/ipkg/CONTROL/control
 	echo "Depends: " 							>>$(PSMISC_DIR)/ipkg/CONTROL/control
 	echo "Description: procfs tools"					>>$(PSMISC_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PSMISC_DIR)/ipkg
+	@$(call makeipkg, $(PSMISC_DIR)/ipkg)
 	touch $@
 
 # ----------------------------------------------------------------------------

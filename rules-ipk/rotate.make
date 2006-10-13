@@ -130,7 +130,7 @@ rotate_targetinstall_deps = $(STATEDIR)/rotate.compile
 
 $(STATEDIR)/rotate.targetinstall: $(rotate_targetinstall_deps)
 	@$(call targetinfo, $@)
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROTATE_DIR)
+	@$(call makeipkg, $(ROTATE_DIR))
 	touch $@
 
 # ----------------------------------------------------------------------------

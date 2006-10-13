@@ -165,7 +165,7 @@ $(STATEDIR)/ppp.targetinstall: $(STATEDIR)/ppp.compile
 	echo "chmod +s /usr/sbin/pppd"						>>$(PPP_DIR)/ipkg/CONTROL/postinst
 	chmod 755 $(PPP_DIR)/ipkg/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(PPP_DIR)/ipkg
+	@$(call makeipkg, $(PPP_DIR)/ipkg)
 
 	rm -rf $(PPP_DIR)/ipkg/
 	mkdir -p $(PPP_DIR)/ipkg/usr/bin
@@ -182,7 +182,7 @@ $(STATEDIR)/ppp.targetinstall: $(STATEDIR)/ppp.compile
 	echo "Version: $(PPP_VERSION)" 						>>$(PPP_DIR)/ipkg/CONTROL/control
 	echo "Depends: ppp" 							>>$(PPP_DIR)/ipkg/CONTROL/control
 	echo "Description: print PPP statistics"				>>$(PPP_DIR)/ipkg/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PPP_DIR)/ipkg
+	@$(call makeipkg, $(PPP_DIR)/ipkg)
 
 	touch $@
 

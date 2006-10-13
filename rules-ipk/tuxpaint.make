@@ -152,7 +152,7 @@ $(STATEDIR)/tuxpaint.targetinstall: $(tuxpaint_targetinstall_deps)
 	echo "Version: $(TUXPAINT_VERSION)" 					>>$(TUXPAINT_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl, sdl-ttf, sdl-mixer, sdl-image" 			>>$(TUXPAINT_IPKG_TMP)/CONTROL/control
 	echo "Description: Tux Paint is a free drawing program designed for young children (kids ages 3 and up)." >>$(TUXPAINT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TUXPAINT_IPKG_TMP)
+	@$(call makeipkg, $(TUXPAINT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

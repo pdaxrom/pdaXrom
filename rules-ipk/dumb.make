@@ -151,7 +151,7 @@ $(STATEDIR)/dumb.targetinstall: $(dumb_targetinstall_deps)
 	echo "Depends: " 								>>$(DUMB_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(DUMB_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(DUMB_IPKG_TMP)
+	@$(call makeipkg, $(DUMB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

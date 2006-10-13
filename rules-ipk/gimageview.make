@@ -161,7 +161,7 @@ $(STATEDIR)/gimageview.targetinstall: $(gimageview_targetinstall_deps)
 	echo "Depends: gtk2, libz, libpng" 									>>$(GIMAGEVIEW_IPKG_TMP)/CONTROL/control
 	echo "Description: GImageView is a yet another image viewer which solves hopless situation under displaying a lot of images." >>$(GIMAGEVIEW_IPKG_TMP)/CONTROL/control
 	sasdads
-	cd $(FEEDDIR) && $(XMKIPKG) $(GIMAGEVIEW_IPKG_TMP)
+	@$(call makeipkg, $(GIMAGEVIEW_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

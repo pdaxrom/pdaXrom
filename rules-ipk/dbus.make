@@ -193,7 +193,7 @@ $(STATEDIR)/dbus.targetinstall: $(dbus_targetinstall_deps)
 	#echo "Version: $(DBUS_VERSION)" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
 	#echo "Depends: python-core, dbus" 		>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
 	#echo "Description: D-BUS python binding."	>>$(DBUS_IPKG_TMP)-pyhton/CONTROL/control
-	#cd $(FEEDDIR) && $(XMKIPKG) $(DBUS_IPKG_TMP)-pyhton
+	#@$(call makeipkg, $(DBUS_IPKG_TMP))
 	
 	mkdir -p $(DBUS_IPKG_TMP)/CONTROL
 	echo "Package: dbus" 				 >$(DBUS_IPKG_TMP)/CONTROL/control
@@ -211,7 +211,7 @@ $(STATEDIR)/dbus.targetinstall: $(dbus_targetinstall_deps)
 	ln -sf ../init.d/messagebus $(DBUS_IPKG_TMP)/etc/rc.d/rc5.d/S60messagebus
 	ln -sf ../init.d/messagebus $(DBUS_IPKG_TMP)/etc/rc.d/rc4.d/S60messagebus
 	ln -sf ../init.d/messagebus $(DBUS_IPKG_TMP)/etc/rc.d/rc3.d/S60messagebus
-	cd $(FEEDDIR) && $(XMKIPKG) $(DBUS_IPKG_TMP)
+	@$(call makeipkg, $(DBUS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

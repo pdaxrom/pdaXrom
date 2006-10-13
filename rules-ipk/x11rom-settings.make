@@ -277,7 +277,7 @@ $(STATEDIR)/x11rom-settings.targetinstall: $(x11rom-settings_targetinstall_deps)
 	echo "Version: $(X11ROM-SETTINGS_VERSION)" 	>>$(X11ROM-SETTINGS_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt"	 			>>$(X11ROM-SETTINGS_IPKG_TMP)/CONTROL/control
 	echo "Description: pdaXrom settings tools"	>>$(X11ROM-SETTINGS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(X11ROM-SETTINGS_IPKG_TMP)
+	@$(call makeipkg, $(X11ROM-SETTINGS_IPKG_TMP))
 
 	touch $@
 

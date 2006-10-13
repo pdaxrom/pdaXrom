@@ -356,7 +356,7 @@ endif
 	echo "Version: $(XFREE430_VERSION)" 		>>$(XFREE430_IPKG_TMP)-addon/CONTROL/control
 	echo "Depends: xfree"	 		>>$(XFREE430_IPKG_TMP)-addon/CONTROL/control
 	echo "Description:  not necessary X11 apps"	>>$(XFREE430_IPKG_TMP)-addon/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XFREE430_IPKG_TMP)-addon
+	@$(call makeipkg, $(XFREE430_IPKG_TMP))
 
 	###
 	rm -rf $(XFREE430_IPKG_TMP)-addon
@@ -379,7 +379,7 @@ endif
 	echo "Version: $(XFREE430_VERSION)" 		>>$(XFREE430_IPKG_TMP)-addon/CONTROL/control
 	echo "Depends: xfree"	 		>>$(XFREE430_IPKG_TMP)-addon/CONTROL/control
 	echo "Description: xkb utilities"		>>$(XFREE430_IPKG_TMP)-addon/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XFREE430_IPKG_TMP)-addon
+	@$(call makeipkg, $(XFREE430_IPKG_TMP))
 	###
 
 	mkdir -p $(XFREE430_IPKG_TMP)/CONTROL
@@ -435,7 +435,7 @@ else
 endif
 endif
 	echo "Description:  X11 Server, apps and libraries">>$(XFREE430_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XFREE430_IPKG_TMP)
+	@$(call makeipkg, $(XFREE430_IPKG_TMP))
 
 	touch $@
 

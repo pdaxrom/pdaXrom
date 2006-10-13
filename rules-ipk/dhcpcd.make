@@ -137,7 +137,7 @@ $(STATEDIR)/dhcpcd.targetinstall: $(dhcpcd_targetinstall_deps)
 	echo "Version: $(DHCPCD_VERSION)" 					>>$(DHCPCD_DIR)/ipk/CONTROL/control
 	echo "Depends: " 							>>$(DHCPCD_DIR)/ipk/CONTROL/control
 	echo "Description: RFC2131,RFC2132, and RFC1541 compliant DHCP client daemon.">>$(DHCPCD_DIR)/ipk/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DHCPCD_DIR)/ipk
+	@$(call makeipkg, $(DHCPCD_DIR)/ipk)
 	touch $@
 
 # ----------------------------------------------------------------------------

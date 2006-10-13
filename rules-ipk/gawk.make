@@ -156,7 +156,7 @@ $(STATEDIR)/gawk.targetinstall: $(gawk_targetinstall_deps)
 	echo "Version: $(GAWK_VERSION)" 		>>$(GAWK_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(GAWK_IPKG_TMP)/CONTROL/control
 	echo "Description: Pattern scanning and processing language.">>$(GAWK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GAWK_IPKG_TMP)
+	@$(call makeipkg, $(GAWK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

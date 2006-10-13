@@ -245,7 +245,7 @@ $(STATEDIR)/ffmpeg.targetinstall: $(ffmpeg_targetinstall_deps)
 	echo "Version: $(FFMPEG_VERSION)" 						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
 	echo "Depends: libz$(FFMPEG_LIBSO)" 						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
 	echo "Description: Multimedia system"						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FFMPEG_IPKG_TMP)
+	@$(call makeipkg, $(FFMPEG_IPKG_TMP))
 
 	rm -rf $(FFMPEG_IPKG_TMP)
 	$(INSTALL) -D -m 755 $(FFMPEG_DIR)/ffmpeg $(FFMPEG_IPKG_TMP)/usr/bin/ffmpeg
@@ -260,7 +260,7 @@ $(STATEDIR)/ffmpeg.targetinstall: $(ffmpeg_targetinstall_deps)
 	echo "Version: $(FFMPEG_VERSION)" 						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
 	echo "Depends: libffmpeg" 							>>$(FFMPEG_IPKG_TMP)/CONTROL/control
 	echo "Description: Multimedia system"						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FFMPEG_IPKG_TMP)
+	@$(call makeipkg, $(FFMPEG_IPKG_TMP))
 
 	rm -rf $(FFMPEG_IPKG_TMP)
 	$(INSTALL) -D -m 755 $(FFMPEG_DIR)/ffplay $(FFMPEG_IPKG_TMP)/usr/bin/ffplay
@@ -275,7 +275,7 @@ $(STATEDIR)/ffmpeg.targetinstall: $(ffmpeg_targetinstall_deps)
 	echo "Version: $(FFMPEG_VERSION)" 						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
 	echo "Depends: libffmpeg" 							>>$(FFMPEG_IPKG_TMP)/CONTROL/control
 	echo "Description: Multimedia system"						>>$(FFMPEG_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FFMPEG_IPKG_TMP)
+	@$(call makeipkg, $(FFMPEG_IPKG_TMP))
 
 	touch $@
 

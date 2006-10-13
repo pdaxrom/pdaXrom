@@ -192,7 +192,7 @@ else
 	echo "Depends: qt-mt, startup-notification, gpsd" 				>>$(QPEGPS_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: qpeGPS is a program for displaying a moving map centered at the position read from a GPS device. It's an open source project aimed at users of Linux PDA's." >>$(QPEGPS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QPEGPS_IPKG_TMP)
+	@$(call makeipkg, $(QPEGPS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -150,7 +150,7 @@ $(STATEDIR)/iputils.targetinstall: $(iputils_targetinstall_deps)
 	echo "Version: $(IPUTILS_VERSION)-$(IPUTILS_VENDOR_VERSION)" 			>>$(IPUTILS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(IPUTILS_IPKG_TMP)/CONTROL/control
 	echo "Description: IP utilities"						>>$(IPUTILS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IPUTILS_IPKG_TMP)
+	@$(call makeipkg, $(IPUTILS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

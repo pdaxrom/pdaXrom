@@ -144,7 +144,7 @@ $(STATEDIR)/datentime.targetinstall: $(datentime_targetinstall_deps)
 	echo "Version: $(DATENTIME_VERSION)-$(DATENTIME_VENDOR_VERSION)" 	>>$(DATENTIME_IPKG_TMP)/CONTROL/control
 	echo "Depends: pygtk, python-core, python-codecs, python-fcntl, python-io, python-math, python-stringold, python-xml, python-unixadmin" >>$(DATENTIME_IPKG_TMP)/CONTROL/control
 	echo "Description: Date & Time settings"				>>$(DATENTIME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DATENTIME_IPKG_TMP)
+	@$(call makeipkg, $(DATENTIME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

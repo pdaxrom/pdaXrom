@@ -158,7 +158,7 @@ $(STATEDIR)/xdemineur.targetinstall: $(xdemineur_targetinstall_deps)
 	echo "Version: $(XDEMINEUR_VERSION)" 			>>$(XDEMINEUR_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree" 				>>$(XDEMINEUR_IPKG_TMP)/CONTROL/control
 	echo "Description: Yet another minesweeper for X"	>>$(XDEMINEUR_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XDEMINEUR_IPKG_TMP)
+	@$(call makeipkg, $(XDEMINEUR_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

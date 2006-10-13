@@ -182,7 +182,7 @@ $(STATEDIR)/vte.targetinstall: $(vte_targetinstall_deps)
 	echo "Version: $(VTE_VERSION)-$(VTE_VENDOR_VERSION)" 				>>$(VTE_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(VTE_IPKG_TMP)/CONTROL/control
 	echo "Description: vte terminal widget"						>>$(VTE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(VTE_IPKG_TMP)
+	@$(call makeipkg, $(VTE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

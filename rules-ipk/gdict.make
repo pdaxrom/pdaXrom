@@ -154,7 +154,7 @@ $(STATEDIR)/gdict.targetinstall: $(gdict_targetinstall_deps)
 	echo "Version: $(GDICT_VERSION)-$(GDICT_VENDOR_VERSION)" 			>>$(GDICT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 								>>$(GDICT_IPKG_TMP)/CONTROL/control
 	echo "Description: Dictionary for UNIX"						>>$(GDICT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GDICT_IPKG_TMP)
+	@$(call makeipkg, $(GDICT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

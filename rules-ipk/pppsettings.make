@@ -147,7 +147,7 @@ $(STATEDIR)/pppsettings.targetinstall: $(pppsettings_targetinstall_deps)
 	echo "Version: $(PPPSETTINGS_VERSION)-$(PPPSETTINGS_VENDOR_VERSION)" 	>>$(PPPSETTINGS_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt, startup-notification" 				>>$(PPPSETTINGS_IPKG_TMP)/CONTROL/control
 	echo "Description: PPP settings tools and dialer"			>>$(PPPSETTINGS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PPPSETTINGS_IPKG_TMP)
+	@$(call makeipkg, $(PPPSETTINGS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

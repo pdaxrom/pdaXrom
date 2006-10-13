@@ -177,7 +177,7 @@ $(STATEDIR)/kdeedu.targetinstall: $(kdeedu_targetinstall_deps)
 	echo "Version: $(KDEEDU_VERSION)-$(KDEEDU_VENDOR_VERSION)" 			>>$(KDEEDU_IPKG_TMP)/CONTROL/control
 	echo "Depends: kdelibs" 							>>$(KDEEDU_IPKG_TMP)/CONTROL/control
 	echo "Description: KDE education"						>>$(KDEEDU_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KDEEDU_IPKG_TMP)
+	@$(call makeipkg, $(KDEEDU_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

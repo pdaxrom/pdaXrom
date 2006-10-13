@@ -167,7 +167,7 @@ $(STATEDIR)/tk.targetinstall: $(tk_targetinstall_deps)
 	echo "Version: $(TK_VERSION)" 			>>$(TK_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(TK_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(TK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TK_IPKG_TMP)
+	@$(call makeipkg, $(TK_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

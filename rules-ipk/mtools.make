@@ -152,7 +152,7 @@ $(STATEDIR)/mtools.targetinstall: $(mtools_targetinstall_deps)
 	echo "Version: $(MTOOLS_VERSION)-$(MTOOLS_VENDOR_VERSION)" 						>>$(MTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 											>>$(MTOOLS_IPKG_TMP)/CONTROL/control
 	echo "Description: Mtools is a collection of utilities to access MS-DOS disks from Unix without mounting them. It supports Win'95 style long file names, OS/2 Xdf disks and 2m disks (store up to 1992k on a high density 3 1/2 disk)."	>>$(MTOOLS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MTOOLS_IPKG_TMP)
+	@$(call makeipkg, $(MTOOLS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

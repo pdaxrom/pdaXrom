@@ -164,7 +164,7 @@ $(STATEDIR)/audiofile.targetinstall: $(audiofile_targetinstall_deps)
 	echo "Version: $(AUDIOFILE_VERSION)" 		>>$(AUDIOFILE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(AUDIOFILE_IPKG_TMP)/CONTROL/control
 	echo "Description: The Audio File Library provides a uniform programming interface to standard digital audio file formats.">>$(AUDIOFILE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(AUDIOFILE_IPKG_TMP)
+	@$(call makeipkg, $(AUDIOFILE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

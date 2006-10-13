@@ -168,7 +168,7 @@ $(STATEDIR)/gnome-icon-theme.targetinstall: $(gnome-icon-theme_targetinstall_dep
 	echo "Version: $(GNOME-ICON-THEME_VERSION)" 		>>$(GNOME-ICON-THEME_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 					>>$(GNOME-ICON-THEME_IPKG_TMP)/CONTROL/control
 	echo "Description: The base GNOME icon theme"		>>$(GNOME-ICON-THEME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GNOME-ICON-THEME_IPKG_TMP)
+	@$(call makeipkg, $(GNOME-ICON-THEME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

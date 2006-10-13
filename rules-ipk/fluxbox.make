@@ -176,7 +176,7 @@ else
 	echo "Depends: xfree, libz" 									>>$(FLUXBOX_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: Fluxbox is yet another windowmanager for X."						>>$(FLUXBOX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FLUXBOX_IPKG_TMP)
+	@$(call makeipkg, $(FLUXBOX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

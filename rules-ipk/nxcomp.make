@@ -153,7 +153,7 @@ $(STATEDIR)/nxcomp.targetinstall: $(nxcomp_targetinstall_deps)
 	echo "Depends: " 				>>$(NXCOMP_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder">>$(NXCOMP_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(NXCOMP_IPKG_TMP)
+	@$(call makeipkg, $(NXCOMP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

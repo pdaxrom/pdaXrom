@@ -172,7 +172,7 @@ $(STATEDIR)/libbonobo.targetinstall: $(libbonobo_targetinstall_deps)
 	echo "Version: $(LIBBONOBO_VERSION)-$(LIBBONOBO_VENDOR_VERSION)" 		>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, orbit2" 							>>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
 	echo "Description: Bonobo is a set of language and system independant CORBA interfaces for creating reusable components, controls and creating compound documents.">>$(LIBBONOBO_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBBONOBO_IPKG_TMP)
+	@$(call makeipkg, $(LIBBONOBO_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

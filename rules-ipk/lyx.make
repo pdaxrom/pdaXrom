@@ -162,7 +162,7 @@ $(STATEDIR)/lyx.targetinstall: $(lyx_targetinstall_deps)
 	echo "Version: $(LYX_VERSION)-$(LYX_VENDOR_VERSION)" 				>>$(LYX_IPKG_TMP)/CONTROL/control
 	echo "Depends: qt-mt" 								>>$(LYX_IPKG_TMP)/CONTROL/control
 	echo "Description: The Document Processor"					>>$(LYX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LYX_IPKG_TMP)
+	@$(call makeipkg, $(LYX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

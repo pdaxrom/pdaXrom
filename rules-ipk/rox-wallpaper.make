@@ -144,7 +144,7 @@ $(STATEDIR)/rox-wallpaper.targetinstall: $(rox-wallpaper_targetinstall_deps)
 	echo "Version: $(ROX-WALLPAPER_VERSION)" 	>>$(ROX-WALLPAPER_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox-session" 			>>$(ROX-WALLPAPER_IPKG_TMP)/CONTROL/control
 	echo "Description: Choose a random image for your desktop background">>$(ROX-WALLPAPER_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-WALLPAPER_IPKG_TMP)
+	@$(call makeipkg, $(ROX-WALLPAPER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

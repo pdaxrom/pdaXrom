@@ -171,7 +171,7 @@ $(STATEDIR)/osb-nrcit.targetinstall: $(osb-nrcit_targetinstall_deps)
 	echo "Version: $(OSB-NRCIT_VERSION)-$(OSB-NRCIT_VENDOR_VERSION)" 			>>$(OSB-NRCIT_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, librsvg, gnome-vfs, openssl, libcurl, osb-nrcore" 			>>$(OSB-NRCIT_IPKG_TMP)/CONTROL/control
 	echo "Description: OSB HTML Rendering engine browser interface"				>>$(OSB-NRCIT_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(OSB-NRCIT_IPKG_TMP)
+	@$(call makeipkg, $(OSB-NRCIT_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -218,7 +218,7 @@ $(STATEDIR)/mysql.targetinstall: $(mysql_targetinstall_deps)
 
 	chmod 755 $(MYSQL_IPKG_TMP)/CONTROL/prerm $(MYSQL_IPKG_TMP)/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(MYSQL_IPKG_TMP)
+	@$(call makeipkg, $(MYSQL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -163,7 +163,7 @@ $(STATEDIR)/libglade.targetinstall: $(libglade_targetinstall_deps)
 	echo "Version: $(LIBGLADE_VERSION)" 		>>$(LIBGLADE_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 				>>$(LIBGLADE_IPKG_TMP)/CONTROL/control
 	echo "Description: This library allows you to load glade interface files in a program at runtime.">>$(LIBGLADE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBGLADE_IPKG_TMP)
+	@$(call makeipkg, $(LIBGLADE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

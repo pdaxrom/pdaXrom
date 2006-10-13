@@ -149,7 +149,7 @@ $(STATEDIR)/ntp.targetinstall: $(ntp_targetinstall_deps)
 	echo "Version: $(NTP_VERSION)-$(NTP_VENDOR_VERSION)" 			>>$(NTP_IPKG_TMP)/CONTROL/control
 	echo "Depends: timezones" 						>>$(NTP_IPKG_TMP)/CONTROL/control
 	echo "Description: Network time protocol support"			>>$(NTP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NTP_IPKG_TMP)
+	@$(call makeipkg, $(NTP_IPKG_TMP))
 
 	rm -rf $(NTP_IPKG_TMP)
 	$(INSTALL) -D -m 755 $(NTP_DIR)/ntpd/ntpd $(NTP_IPKG_TMP)/usr/bin/ntpd
@@ -185,7 +185,7 @@ $(STATEDIR)/ntp.targetinstall: $(ntp_targetinstall_deps)
 
 	chmod 755 $(NTP_IPKG_TMP)/CONTROL/postinst
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(NTP_IPKG_TMP)
+	@$(call makeipkg, $(NTP_IPKG_TMP))
 
 	touch $@
 

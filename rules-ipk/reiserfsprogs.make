@@ -148,7 +148,7 @@ $(STATEDIR)/reiserfsprogs.targetinstall: $(reiserfsprogs_targetinstall_deps)
 	echo "Version: $(REISERFSPROGS_VERSION)-$(REISERFSPROGS_VENDOR_VERSION)" 			>>$(REISERFSPROGS_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 										>>$(REISERFSPROGS_IPKG_TMP)/CONTROL/control
 	echo "Description: The reiserfsprogs package contains programs for creating (mkreiserfs), checking and correcting any inconsistencies (reiserfsck) and resizing (resize_reiserfs) of a reiserfs filesystem." >>$(REISERFSPROGS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(REISERFSPROGS_IPKG_TMP)
+	@$(call makeipkg, $(REISERFSPROGS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

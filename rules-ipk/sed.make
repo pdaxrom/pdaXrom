@@ -150,7 +150,7 @@ $(STATEDIR)/sed.targetinstall: $(sed_targetinstall_deps)
 	echo "Version: $(SED_VERSION)" 			>>$(SED_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(SED_IPKG_TMP)/CONTROL/control
 	echo "Description: a stream editor.">>$(SED_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SED_IPKG_TMP)
+	@$(call makeipkg, $(SED_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

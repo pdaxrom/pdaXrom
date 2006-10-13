@@ -167,7 +167,7 @@ $(STATEDIR)/iptables.targetinstall: $(iptables_targetinstall_deps)
 	echo "Version: $(IPTABLES_VERSION)" 		>>$(IPTABLES_IPKG_TMP)/CONTROL/control
 	echo "Depends: "		 		>>$(IPTABLES_IPKG_TMP)/CONTROL/control
 	echo "Description: administration tool for IPv4 packet filtering and NAT">>$(IPTABLES_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(IPTABLES_IPKG_TMP)
+	@$(call makeipkg, $(IPTABLES_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -148,7 +148,7 @@ $(STATEDIR)/m17n-db.targetinstall: $(m17n-db_targetinstall_deps)
 	echo "Version: $(M17N-DB_VERSION)-$(M17N-DB_VENDOR_VERSION)" 			>>$(M17N-DB_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(M17N-DB_IPKG_TMP)/CONTROL/control
 	echo "Description: m17n database"						>>$(M17N-DB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(M17N-DB_IPKG_TMP)
+	@$(call makeipkg, $(M17N-DB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -168,7 +168,7 @@ $(STATEDIR)/gal.targetinstall: $(gal_targetinstall_deps)
 	echo "Version: $(GAL_VERSION)-$(GAL_VENDOR_VERSION)" 				>>$(GAL_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnomeui, libgnomeprintui" 					>>$(GAL_IPKG_TMP)/CONTROL/control
 	echo "Description: The GAL package contains library functions that came from Evolution  and Gnumeric." >>$(GAL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GAL_IPKG_TMP)
+	@$(call makeipkg, $(GAL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

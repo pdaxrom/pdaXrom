@@ -164,7 +164,7 @@ $(STATEDIR)/libIDL082.targetinstall: $(libIDL082_targetinstall_deps)
 	echo "Version: $(LIBIDL082_VERSION)" 						>>$(LIBIDL082_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(LIBIDL082_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(LIBIDL082_IPKG_TMP)/CONTROL/control
-	###cd $(FEEDDIR) && $(XMKIPKG) $(LIBIDL082_IPKG_TMP)
+	###@$(call makeipkg, $(LIBIDL082_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

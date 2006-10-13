@@ -184,7 +184,7 @@ else
 	echo "Depends: xfree, libz" 										>>$(BLACKBOX_IPKG_TMP)/CONTROL/control
 endif
 	echo "Description: BlackBox window manager"								>>$(BLACKBOX_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(BLACKBOX_IPKG_TMP)
+	@$(call makeipkg, $(BLACKBOX_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

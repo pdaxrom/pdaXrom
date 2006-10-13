@@ -163,7 +163,7 @@ $(STATEDIR)/flite.targetinstall: $(flite_targetinstall_deps)
 	echo "Version: $(FLITE_VERSION)-$(FLITE_VENDOR_VERSION)" 			>>$(FLITE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(FLITE_IPKG_TMP)/CONTROL/control
 	echo "Description: a small run-time speech synthesis engine"			>>$(FLITE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(FLITE_IPKG_TMP)
+	@$(call makeipkg, $(FLITE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

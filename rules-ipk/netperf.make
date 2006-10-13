@@ -166,7 +166,7 @@ $(STATEDIR)/netperf.targetinstall: $(netperf_targetinstall_deps)
 	echo "Version: $(NETPERF_VERSION)-$(NETPERF_VENDOR_VERSION)" 			>>$(NETPERF_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(NETPERF_DEPLIST)" 						>>$(NETPERF_IPKG_TMP)/CONTROL/control
 	echo "Description: network benchmarking"					>>$(NETPERF_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(NETPERF_IPKG_TMP)
+	@$(call makeipkg, $(NETPERF_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

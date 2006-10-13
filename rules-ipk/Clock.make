@@ -153,7 +153,7 @@ $(STATEDIR)/Clock.targetinstall: $(Clock_targetinstall_deps)
 	echo "Version: $(CLOCK_VERSION)" 		>>$(CLOCK_IPKG_TMP)/CONTROL/control
 	echo "Depends: rox, rox-clib" 			>>$(CLOCK_IPKG_TMP)/CONTROL/control
 	echo "Description: Display the time."		>>$(CLOCK_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CLOCK_IPKG_TMP)
+	@$(call makeipkg, $(CLOCK_IPKG_TMP))
 	rm -rf $(CLOCK_IPKG_TMP)
 	touch $@
 

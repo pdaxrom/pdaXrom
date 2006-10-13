@@ -158,7 +158,7 @@ $(STATEDIR)/readline.targetinstall: $(readline_targetinstall_deps)
 	echo "Version: $(READLINE_VERSION)" 		>>$(READLINE_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(READLINE_IPKG_TMP)/CONTROL/control
 	echo "Description: The GNU Readline library provides a set of functions for use by applications that allow users to edit command lines as they are typed in.">>$(READLINE_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(READLINE_IPKG_TMP)
+	@$(call makeipkg, $(READLINE_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

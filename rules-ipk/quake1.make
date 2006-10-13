@@ -152,7 +152,7 @@ $(STATEDIR)/quake1.targetinstall: $(quake1_targetinstall_deps)
 	echo "Version: $(QUAKE1_VERSION)" 				>>$(QUAKE1_IPKG_TMP)/CONTROL/control
 	echo "Depends: sdl" 						>>$(QUAKE1_IPKG_TMP)/CONTROL/control
 	echo "Description: Popular 3D shooter."				>>$(QUAKE1_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(QUAKE1_IPKG_TMP)
+	@$(call makeipkg, $(QUAKE1_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

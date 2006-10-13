@@ -155,7 +155,7 @@ $(STATEDIR)/cfxga.targetinstall: $(cfxga_targetinstall_deps)
 	echo "/sbin/depmod -a"											>>$(CFXGA_IPKG_TMP)/CONTROL/postrm
 	chmod 755 $(CFXGA_IPKG_TMP)/CONTROL/postinst $(CFXGA_IPKG_TMP)/CONTROL/postrm
 
-	cd $(FEEDDIR) && $(XMKIPKG) $(CFXGA_IPKG_TMP)
+	@$(call makeipkg, $(CFXGA_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

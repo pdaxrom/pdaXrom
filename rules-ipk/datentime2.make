@@ -148,7 +148,7 @@ $(STATEDIR)/datentime2.targetinstall: $(datentime2_targetinstall_deps)
 	echo "Depends: gtk2, libgpewidget" 						>>$(DATENTIME2_IPKG_TMP)/CONTROL/control
 	echo "Description: Date and Time settings"					>>$(DATENTIME2_IPKG_TMP)/CONTROL/control
 	asasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(DATENTIME2_IPKG_TMP)
+	@$(call makeipkg, $(DATENTIME2_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

@@ -153,7 +153,7 @@ $(STATEDIR)/wxbasic.targetinstall: $(wxbasic_targetinstall_deps)
 	echo "Depends: wxwidgets" 							>>$(WXBASIC_IPKG_TMP)/CONTROL/control
 	echo "Description: wxBasic programming language"				>>$(WXBASIC_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(WXBASIC_IPKG_TMP)
+	@$(call makeipkg, $(WXBASIC_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

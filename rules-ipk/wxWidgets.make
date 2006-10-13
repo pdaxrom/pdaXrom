@@ -176,7 +176,7 @@ $(STATEDIR)/wxWidgets.targetinstall: $(wxWidgets_targetinstall_deps)
 	echo "Version: $(WXWIDGETS_VERSION)-$(WXWIDGETS_VENDOR_VERSION)" 				>>$(WXWIDGETS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2" 										>>$(WXWIDGETS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"						>>$(WXWIDGETS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(WXWIDGETS_IPKG_TMP)
+	@$(call makeipkg, $(WXWIDGETS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

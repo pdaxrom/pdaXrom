@@ -158,7 +158,7 @@ $(STATEDIR)/tftp.targetinstall: $(tftp_targetinstall_deps)
 	echo "Version: $(TFTP_VERSION)-$(TFTP_VENDOR_VERSION)" 			>>$(TFTP_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(TFTP_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(TFTP_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TFTP_IPKG_TMP)
+	@$(call makeipkg, $(TFTP_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

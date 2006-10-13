@@ -155,7 +155,7 @@ $(STATEDIR)/hostap-driver.targetinstall: $(hostap-driver_targetinstall_deps)
 	echo "/etc/rc.d/init.d/pcmcia stop"						>>$(HOSTAP-DRIVER_IPKG_TMP)/CONTROL/postinst
 	echo "/etc/rc.d/init.d/pcmcia start"						>>$(HOSTAP-DRIVER_IPKG_TMP)/CONTROL/postinst
 	chmod 755 $(HOSTAP-DRIVER_IPKG_TMP)/CONTROL/postinst
-	cd $(FEEDDIR) && $(XMKIPKG) $(HOSTAP-DRIVER_IPKG_TMP)
+	@$(call makeipkg, $(HOSTAP-DRIVER_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

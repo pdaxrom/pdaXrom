@@ -188,7 +188,7 @@ $(STATEDIR)/gaim.targetinstall: $(gaim_targetinstall_deps)
 	echo "Version: $(GAIM_VERSION)" 		>>$(GAIM_IPKG_TMP)/CONTROL/control
 	echo "Depends: libao, audiofile, gnutls, gtk2" 	>>$(GAIM_IPKG_TMP)/CONTROL/control
 	echo "Description: IM client that supports many protocols.">>$(GAIM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GAIM_IPKG_TMP)
+	@$(call makeipkg, $(GAIM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

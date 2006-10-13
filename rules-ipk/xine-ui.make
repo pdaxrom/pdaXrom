@@ -147,7 +147,7 @@ $(STATEDIR)/xine-ui.targetinstall: $(xine-ui_targetinstall_deps)
 	echo "Version: $(XINE-UI_VERSION)-$(XINE-UI_VENDOR_VERSION)" 			>>$(XINE-UI_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 								>>$(XINE-UI_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"				>>$(XINE-UI_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(XINE-UI_IPKG_TMP)
+	@$(call makeipkg, $(XINE-UI_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

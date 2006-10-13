@@ -148,7 +148,7 @@ $(STATEDIR)/gpm.targetinstall: $(gpm_targetinstall_deps)
 	echo "Depends: " 								>>$(GPM_IPKG_TMP)/CONTROL/control
 	echo "Description: gpm means general purpose mouse and is the mouse support for linux in the console." >>$(GPM_IPKG_TMP)/CONTROL/control
 	asdasd
-	cd $(FEEDDIR) && $(XMKIPKG) $(GPM_IPKG_TMP)
+	@$(call makeipkg, $(GPM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

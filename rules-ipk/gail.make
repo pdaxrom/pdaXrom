@@ -172,7 +172,7 @@ $(STATEDIR)/gail.targetinstall: $(gail_targetinstall_deps)
 	echo "Version: $(GAIL_VERSION)-$(GAIL_VENDOR_VERSION)" 						>>$(GAIL_IPKG_TMP)/CONTROL/control
 	echo "Depends: libgnomecanvas, gtk2" 								>>$(GAIL_IPKG_TMP)/CONTROL/control
 	echo "Description: GNOME Accessibility Implementation Library"					>>$(GAIL_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(GAIL_IPKG_TMP)
+	@$(call makeipkg, $(GAIL_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

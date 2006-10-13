@@ -185,7 +185,7 @@ $(STATEDIR)/librsvg.targetinstall: $(librsvg_targetinstall_deps)
 	echo "#!/bin/sh"								 >$(LIBRSVG_IPKG_TMP)/CONTROL/postrm
 	echo "/usr/bin/gdk-pixbuf-query-loaders > /etc/gtk-2.0/gdk-pixbuf.loaders"	>>$(LIBRSVG_IPKG_TMP)/CONTROL/postrm
 	chmod 755 $(LIBRSVG_IPKG_TMP)/CONTROL/postinst $(LIBRSVG_IPKG_TMP)/CONTROL/postrm
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBRSVG_IPKG_TMP)
+	@$(call makeipkg, $(LIBRSVG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

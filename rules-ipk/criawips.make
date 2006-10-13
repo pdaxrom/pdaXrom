@@ -168,7 +168,7 @@ $(STATEDIR)/criawips.targetinstall: $(criawips_targetinstall_deps)
 	echo "Version: $(CRIAWIPS_VERSION)-$(CRIAWIPS_VENDOR_VERSION)" 						>>$(CRIAWIPS_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libglade, libgsf, libgnome, libgnomeui" 						>>$(CRIAWIPS_IPKG_TMP)/CONTROL/control
 	echo "Description: The criawips project aims to create a full featured presentation application that integrated smoothly into the GNOME desktop environment." >>$(CRIAWIPS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(CRIAWIPS_IPKG_TMP)
+	@$(call makeipkg, $(CRIAWIPS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

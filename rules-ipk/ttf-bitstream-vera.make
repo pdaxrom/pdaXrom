@@ -136,7 +136,7 @@ $(STATEDIR)/ttf-bitstream-vera.targetinstall: $(ttf-bitstream-vera_targetinstall
 	echo "Version: $(TTF-BITSTREAM-VERA_VERSION)" 	>>$(TTF-BITSTREAM-VERA_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(TTF-BITSTREAM-VERA_IPKG_TMP)/CONTROL/control
 	echo "Description:  ttf fonts"			>>$(TTF-BITSTREAM-VERA_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TTF-BITSTREAM-VERA_IPKG_TMP)
+	@$(call makeipkg, $(TTF-BITSTREAM-VERA_IPKG_TMP))
 
 	touch $@
 

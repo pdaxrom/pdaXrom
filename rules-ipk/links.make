@@ -204,7 +204,7 @@ endif
 	echo "Version: $(LINKS_VERSION)" 				>>$(LINKS_IPKG_TMP)/CONTROL/control
 	echo "Depends: $(LINKS_DEPLIST)" 				>>$(LINKS_IPKG_TMP)/CONTROL/control
 	echo "Description: generated with pdaXrom builder"		>>$(LINKS_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LINKS_IPKG_TMP)
+	@$(call makeipkg, $(LINKS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

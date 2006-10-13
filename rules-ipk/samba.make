@@ -234,7 +234,7 @@ $(STATEDIR)/samba.targetinstall: $(samba_targetinstall_deps)
 	echo "Version: $(SAMBA_VERSION)" 		>>$(SAMBA_IPKG_TMP)-common/CONTROL/control
 	echo "Depends: "	 			>>$(SAMBA_IPKG_TMP)-common/CONTROL/control
 	echo "Description: common samba files"          >>$(SAMBA_IPKG_TMP)-common/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SAMBA_IPKG_TMP)-common
+	@$(call makeipkg, $(SAMBA_IPKG_TMP)-common)
 	
 	echo "Package: samba-client" 			 >$(SAMBA_IPKG_TMP)-client/CONTROL/control
 	echo "Source: $(SAMBA_URL)" 			>>$(SAMBA_IPKG_TMP)-client/CONTROL/control
@@ -245,7 +245,7 @@ $(STATEDIR)/samba.targetinstall: $(samba_targetinstall_deps)
 	echo "Version: $(SAMBA_VERSION)" 		>>$(SAMBA_IPKG_TMP)-client/CONTROL/control
 	echo "Depends: samba-common, readline" 		>>$(SAMBA_IPKG_TMP)-client/CONTROL/control
 	echo "Description: ftp-like client to access SMB/CIFS resources  on servers">>$(SAMBA_IPKG_TMP)-client/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SAMBA_IPKG_TMP)-client
+	@$(call makeipkg, $(SAMBA_IPKG_TMP)-client)
 
 	echo "Package: samba-mount" 			 >$(SAMBA_IPKG_TMP)-mount/CONTROL/control
 	echo "Source: $(SAMBA_URL)" 			>>$(SAMBA_IPKG_TMP)-mount/CONTROL/control
@@ -256,7 +256,7 @@ $(STATEDIR)/samba.targetinstall: $(samba_targetinstall_deps)
 	echo "Version: $(SAMBA_VERSION)" 		>>$(SAMBA_IPKG_TMP)-mount/CONTROL/control
 	echo "Depends: samba-common"	 		>>$(SAMBA_IPKG_TMP)-mount/CONTROL/control
 	echo "Description: mount an smbfs filesystem">>$(SAMBA_IPKG_TMP)-mount/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SAMBA_IPKG_TMP)-mount
+	@$(call makeipkg, $(SAMBA_IPKG_TMP)-mount)
 
 	echo "Package: samba-server" 			 >$(SAMBA_IPKG_TMP)-server/CONTROL/control
 	echo "Source: $(SAMBA_URL)" 			>>$(SAMBA_IPKG_TMP)-server/CONTROL/control
@@ -267,7 +267,7 @@ $(STATEDIR)/samba.targetinstall: $(samba_targetinstall_deps)
 	echo "Version: $(SAMBA_VERSION)" 		>>$(SAMBA_IPKG_TMP)-server/CONTROL/control
 	echo "Depends: samba-common" 			>>$(SAMBA_IPKG_TMP)-server/CONTROL/control
 	echo "Description: server to provide SMB/CIFS and NetBIOS name server to provide NetBIOS over IP naming services to clients">>$(SAMBA_IPKG_TMP)-server/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(SAMBA_IPKG_TMP)-server
+	@$(call makeipkg, $(SAMBA_IPKG_TMP)-server)
 
 	for codep in 1125 1251 437 737 775 850 852 857 861 866 932 936 949 950 ISO8859-1 ISO8859-13 ISO8859-15 ISO8859-2 ISO8859-5 ISO8859-7 ISO8859-9 KOI8-R KOI8-U; do \
 	    rm -rf $(SAMBA_IPKG_TMP)-codep ;				\
@@ -283,7 +283,7 @@ $(STATEDIR)/samba.targetinstall: $(samba_targetinstall_deps)
 	    echo "Version: $(SAMBA_VERSION)" 							>>$(SAMBA_IPKG_TMP)-codep/CONTROL/control ; \
 	    echo "Depends: "	 								>>$(SAMBA_IPKG_TMP)-codep/CONTROL/control ; \
 	    echo "Description: codepage $$codep for samba"     					>>$(SAMBA_IPKG_TMP)-codep/CONTROL/control ; \
-	    cd $(FEEDDIR) && $(XMKIPKG) $(SAMBA_IPKG_TMP)-codep;		\
+	    @$(call makeipkg, $(SAMBA_IPKG_TMP)-codep) ;		\
 	done
 	touch $@
 

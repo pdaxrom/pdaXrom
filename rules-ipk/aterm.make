@@ -158,7 +158,7 @@ $(STATEDIR)/aterm.targetinstall: $(aterm_targetinstall_deps)
 	echo "Version: $(ATERM_VERSION)" 		>>$(ATERM_IPKG_TMP)/CONTROL/control
 	echo "Depends: xfree, libjpeg, libpng" 	>>$(ATERM_IPKG_TMP)/CONTROL/control
 	echo "Description: aterm is based upon rxvt v.2.4.8 with add ons of Alfredo Kojima's NeXT-ish scrollbars.">>$(ATERM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ATERM_IPKG_TMP)
+	@$(call makeipkg, $(ATERM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

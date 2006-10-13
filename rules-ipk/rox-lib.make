@@ -141,7 +141,7 @@ $(STATEDIR)/rox-lib.targetinstall: $(rox-lib_targetinstall_deps)
 	echo "Version: $(ROX-LIB_VERSION)" 		>>$(ROX-LIB_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 				>>$(ROX-LIB_IPKG_TMP)/CONTROL/control
 	echo "Description: Shared library for ROX"	>>$(ROX-LIB_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(ROX-LIB_IPKG_TMP)
+	@$(call makeipkg, $(ROX-LIB_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

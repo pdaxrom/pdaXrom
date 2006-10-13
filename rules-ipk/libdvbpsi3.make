@@ -157,7 +157,7 @@ $(STATEDIR)/libdvbpsi3.targetinstall: $(libdvbpsi3_targetinstall_deps)
 	echo "Version: $(LIBDVBPSI3_VERSION)" 					>>$(LIBDVBPSI3_IPKG_TMP)/CONTROL/control
 	echo "Depends: " 							>>$(LIBDVBPSI3_IPKG_TMP)/CONTROL/control
 	echo "Description: simple library designed for decoding and generation MPEG TS and DVB PSI tables.">>$(LIBDVBPSI3_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(LIBDVBPSI3_IPKG_TMP)
+	@$(call makeipkg, $(LIBDVBPSI3_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

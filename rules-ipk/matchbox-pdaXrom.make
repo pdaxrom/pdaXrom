@@ -143,7 +143,7 @@ $(STATEDIR)/matchbox-pdaXrom.targetinstall: $(matchbox-pdaXrom_targetinstall_dep
 	#echo "Version: $(MATCHBOX-PDAXROM_VERSION)-$(MATCHBOX-PDAXROM_VENDOR_VERSION)" 		>>$(MATCHBOX-PDAXROM_IPKG_TMP)/CONTROL/control
 	#echo "Depends: python-unixadmin, python-lang" 							>>$(MATCHBOX-PDAXROM_IPKG_TMP)/CONTROL/control
 	#echo "Description: pdaXrom matchbox config files"						>>$(MATCHBOX-PDAXROM_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(MATCHBOX-PDAXROM_IPKG_TMP)
+	@$(call makeipkg, $(MATCHBOX-PDAXROM_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

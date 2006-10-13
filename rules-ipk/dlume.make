@@ -153,7 +153,7 @@ $(STATEDIR)/dlume.targetinstall: $(dlume_targetinstall_deps)
 	echo "Version: $(DLUME_VERSION)" 		>>$(DLUME_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk2, libxml2" 			>>$(DLUME_IPKG_TMP)/CONTROL/control
 	echo "Description: Dlume is handy and easy to use addressbook.">>$(DLUME_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DLUME_IPKG_TMP)
+	@$(call makeipkg, $(DLUME_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

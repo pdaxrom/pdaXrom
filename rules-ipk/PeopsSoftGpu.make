@@ -156,7 +156,7 @@ $(STATEDIR)/PeopsSoftGpu.targetinstall: $(PeopsSoftGpu_targetinstall_deps)
 	echo "Version: $(PEOPSSOFTGPU_VERSION)-$(PEOPSSOFTGPU_VENDOR_VERSION)" 		>>$(PEOPSSOFTGPU_IPKG_TMP)/CONTROL/control
 	echo "Depends: gtk" 								>>$(PEOPSSOFTGPU_IPKG_TMP)/CONTROL/control
 	echo "Description: Software GPU"						>>$(PEOPSSOFTGPU_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(PEOPSSOFTGPU_IPKG_TMP)
+	@$(call makeipkg, $(PEOPSSOFTGPU_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

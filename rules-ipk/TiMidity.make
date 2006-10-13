@@ -160,7 +160,7 @@ $(STATEDIR)/TiMidity.targetinstall: $(TiMidity_targetinstall_deps)
 	echo "Version: $(TIMIDITY_VERSION)" 					>>$(TIMIDITY_IPKG_TMP)/CONTROL/control
 	echo "Depends: esound, gtk2" 						>>$(TIMIDITY_IPKG_TMP)/CONTROL/control
 	echo "Description: Midi player"						>>$(TIMIDITY_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(TIMIDITY_IPKG_TMP)
+	@$(call makeipkg, $(TIMIDITY_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

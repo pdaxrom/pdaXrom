@@ -161,7 +161,7 @@ $(STATEDIR)/ddd.targetinstall: $(ddd_targetinstall_deps)
 	echo "Version: $(DDD_VERSION)-$(DDD_VENDOR_VERSION)" 				>>$(DDD_IPKG_TMP)/CONTROL/control
 	echo "Depends: lesstif" 							>>$(DDD_IPKG_TMP)/CONTROL/control
 	echo "Description: Data display debugger"					>>$(DDD_IPKG_TMP)/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(DDD_IPKG_TMP)
+	@$(call makeipkg, $(DDD_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------

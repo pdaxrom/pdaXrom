@@ -152,7 +152,7 @@ $(STATEDIR)/slang.targetinstall: $(slang_targetinstall_deps)
 	echo "Depends: " 								>>$(SLANG_IPKG_TMP)/CONTROL/control
 	echo "Description:  S-Lang is a multi-platform programmer's library designed to allow a developer to create robust multi-platform software." >>$(SLANG_IPKG_TMP)/CONTROL/control
 	asdas
-	cd $(FEEDDIR) && $(XMKIPKG) $(SLANG_IPKG_TMP)
+	@$(call makeipkg, $(SLANG_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------
