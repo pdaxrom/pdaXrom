@@ -130,7 +130,7 @@ cups_install: $(STATEDIR)/cups.install
 $(STATEDIR)/cups.install: $(STATEDIR)/cups.compile
 	@$(call targetinfo, $@)
 	rm -rf $(CUPS_IPKG_TMP)
-	$(CUPS_PATH) $(MAKE) -C $(CUPS_DIR) DESTDIR=$(CUPS_IPKG_TMP) install
+	$(CUPS_PATH) $(MAKE) -C $(CUPS_DIR) DSTROOT=$(CUPS_IPKG_TMP) install
 	@$(call copyincludes, $(CUPS_IPKG_TMP))
 	@$(call copylibraries,$(CUPS_IPKG_TMP))
 	@$(call copymiscfiles,$(CUPS_IPKG_TMP))
