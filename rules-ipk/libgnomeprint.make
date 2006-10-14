@@ -76,6 +76,10 @@ libgnomeprint_prepare_deps = \
 	$(STATEDIR)/libart_lgpl.install \
 	$(STATEDIR)/virtual-xchain.install
 
+ifdef PTXCONF_CUPS
+libgnomeprint_prepare_deps += $(STATEDIR)/libgnomecups.install
+endif
+
 LIBGNOMEPRINT_PATH	=  PATH=$(CROSS_PATH)
 LIBGNOMEPRINT_ENV 	=  $(CROSS_ENV)
 LIBGNOMEPRINT_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
@@ -147,7 +151,13 @@ $(STATEDIR)/libgnomeprint.install: $(STATEDIR)/libgnomeprint.compile
 libgnomeprint_targetinstall: $(STATEDIR)/libgnomeprint.targetinstall
 
 libgnomeprint_targetinstall_deps = $(STATEDIR)/libgnomeprint.compile \
+	$(STATEDIR)/libxml2.targetinstall \
+	$(STATEDIR)/glib22.targetinstall \
 	$(STATEDIR)/libart_lgpl.targetinstall
+
+ifdef PTXCONF_CUPS
+libgnomeprint_targetinstall_deps += $(STATEDIR)/libgnomecups.targetinstall
+endif
 
 $(STATEDIR)/libgnomeprint.targetinstall: $(libgnomeprint_targetinstall_deps)
 	@$(call targetinfo, $@)
