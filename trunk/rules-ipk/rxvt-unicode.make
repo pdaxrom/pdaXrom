@@ -192,7 +192,7 @@ $(STATEDIR)/rxvt-unicode.targetinstall: $(rxvt-unicode_targetinstall_deps)
 	echo "Version: $(RXVT-UNICODE_VERSION)-$(RXVT-UNICODE_VENDOR_VERSION)" 				>>$(RXVT-UNICODE_IPKG_TMP)-d/CONTROL/control
 	echo "Depends: rxvt-unicode" 									>>$(RXVT-UNICODE_IPKG_TMP)-d/CONTROL/control
 	echo "Description: rxvt-unicode daemon."							>>$(RXVT-UNICODE_IPKG_TMP)-d/CONTROL/control
-	@$(call makeipkg, $(RXVT-UNICODE_IPKG_TMP))
+	@$(call makeipkg, $(RXVT-UNICODE_IPKG_TMP)-d)
 
 	mkdir -p $(RXVT-UNICODE_IPKG_TMP)/CONTROL
 	echo "Package: rxvt-unicode" 									 >$(RXVT-UNICODE_IPKG_TMP)/CONTROL/control

@@ -179,7 +179,7 @@ $(STATEDIR)/lame.targetinstall: $(lame_targetinstall_deps)
 	echo "Version: $(LAME_VERSION)" 					>>$(LAME_IPKG_TMP)-gtk/CONTROL/control
 	echo "Depends: lame, gtk" 						>>$(LAME_IPKG_TMP)-gtk/CONTROL/control
 	echo "Description: LAME GTK frontend"					>>$(LAME_IPKG_TMP)-gtk/CONTROL/control
-	@$(call makeipkg, $(LAME_IPKG_TMP))
+	@$(call makeipkg, $(LAME_IPKG_TMP)-gtk)
 	touch $@
 
 # ----------------------------------------------------------------------------

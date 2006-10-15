@@ -20,8 +20,8 @@ endif
 # Paths and names
 #
 WINE_VENDOR_VERSION	= 1
-#WINE_VERSION		= 0.9.7
-WINE_VERSION		= 0.9.16
+#WINE_VERSION		= 0.9.16
+WINE_VERSION		= 0.9.23
 WINE			= wine-$(WINE_VERSION)
 WINE_SUFFIX		= tar.bz2
 WINE_URL		= http://ibiblio.org/pub/linux/system/emulators/wine/$(WINE).$(WINE_SUFFIX)
