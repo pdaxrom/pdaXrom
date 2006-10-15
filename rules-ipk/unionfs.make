@@ -119,7 +119,8 @@ $(STATEDIR)/unionfs.compile: $(unionfs_compile_deps)
 		KVERS=`ls $(KERNEL_DIR)/ipkg_tmp/lib/modules` \
 		EXTRACFLAGS=-DUNIONFS_UNSUPPORTED $(CROSS_ENV_CC) \
 		PREFIX=$(UNIONFS_IPKG_TMP)/usr \
-		MODPREFIX=$(UNIONFS_IPKG_TMP)
+		MODPREFIX=$(UNIONFS_IPKG_TMP) \
+		UNIONFS_DEBUG_CFLAG=
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -156,7 +157,8 @@ $(STATEDIR)/unionfs.targetinstall: $(unionfs_targetinstall_deps)
 		KVERS=`ls $(KERNEL_DIR)/ipkg_tmp/lib/modules` \
 		EXTRACFLAGS=-DUNIONFS_UNSUPPORTED $(CROSS_ENV_CC) \
 		PREFIX=$(UNIONFS_IPKG_TMP)/usr \
-		MODPREFIX=$(UNIONFS_IPKG_TMP)
+		MODPREFIX=$(UNIONFS_IPKG_TMP) \
+		UNIONFS_DEBUG_CFLAG=
 
 	PATH=$(CROSS_PATH) 						\
 	FEEDDIR=$(FEEDDIR) 						\

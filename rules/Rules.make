@@ -85,7 +85,7 @@ removedevfiles = \
 # cross strip binaries
 #
 stripfiles = \
-	for FILE in `find $(1)/ -type f -not -name \*.o`; do	\
+	for FILE in `find $(1)/ -type f -not -name \*.o -not -name \*.ko`; do	\
 	    ZZZ=`file $$FILE | grep 'ELF 32-bit'`;		\
 	    if [  "$$ZZZ" != "" ]; then				\
 		$(CROSSSTRIP) $$FILE;				\
