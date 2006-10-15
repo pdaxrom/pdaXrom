@@ -1,9 +1,9 @@
 # -*-makefile-*-
-# $Id: e2fsprogs.make,v 1.11 2003/12/23 10:50:30 robert Exp $
+# $Id: template,v 1.10 2004/01/24 15:50:34 mkl Exp $
 #
-# Copyright (C) 2002, 2003 by Pengutronix e.K., Hildesheim, Germany
-#
-# See CREDITS for details about who has contributed to this project. 
+# Copyright (C) 2004 by Alexander Chukov <sash@pdaXrom.org>
+#          
+# See CREDITS for details about who has contributed to this project.
 #
 # For further information about the PTXdist project and license conditions
 # see the README file.
@@ -17,15 +17,17 @@ PACKAGES += e2fsprogs
 endif
 
 #
-# Paths and names 
+# Paths and names
 #
-E2FSPROGS_VERSION		= 1.34
+E2FSPROGS_VENDOR_VERSION	= 1
+E2FSPROGS_VERSION		= 1.39
 E2FSPROGS			= e2fsprogs-$(E2FSPROGS_VERSION)
 E2FSPROGS_SUFFIX		= tar.gz
-E2FSPROGS_URL			= http://cesnet.dl.sourceforge.net/sourceforge/e2fsprogs/$(E2FSPROGS).$(E2FSPROGS_SUFFIX)
+E2FSPROGS_URL			= http://mesh.dl.sourceforge.net/sourceforge/e2fsprogs/$(E2FSPROGS).$(E2FSPROGS_SUFFIX)
 E2FSPROGS_SOURCE		= $(SRCDIR)/$(E2FSPROGS).$(E2FSPROGS_SUFFIX)
 E2FSPROGS_DIR			= $(BUILDDIR)/$(E2FSPROGS)
 E2FSPROGS_BUILD_DIR		= $(BUILDDIR)/$(E2FSPROGS)-build
+E2FSPROGS_IPKG_TMP		= $(E2FSPROGS_BUILD_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -33,7 +35,9 @@ E2FSPROGS_BUILD_DIR		= $(BUILDDIR)/$(E2FSPROGS)-build
 
 e2fsprogs_get: $(STATEDIR)/e2fsprogs.get
 
-$(STATEDIR)/e2fsprogs.get: $(E2FSPROGS_SOURCE)
+e2fsprogs_get_deps = $(E2FSPROGS_SOURCE)
+
+$(STATEDIR)/e2fsprogs.get: $(e2fsprogs_get_deps)
 	@$(call targetinfo, $@)
 	@$(call get_patches, $(E2FSPROGS))
 	touch $@
@@ -48,12 +52,13 @@ $(E2FSPROGS_SOURCE):
 
 e2fsprogs_extract: $(STATEDIR)/e2fsprogs.extract
 
-$(STATEDIR)/e2fsprogs.extract: $(STATEDIR)/e2fsprogs.get
+e2fsprogs_extract_deps = $(STATEDIR)/e2fsprogs.get
+
+$(STATEDIR)/e2fsprogs.extract: $(e2fsprogs_extract_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(E2FSPROGS_DIR))
 	@$(call extract, $(E2FSPROGS_SOURCE))
 	@$(call patchin, $(E2FSPROGS))
-	chmod +w $(E2FSPROGS_DIR)/po/*.po
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -62,23 +67,44 @@ $(STATEDIR)/e2fsprogs.extract: $(STATEDIR)/e2fsprogs.get
 
 e2fsprogs_prepare: $(STATEDIR)/e2fsprogs.prepare
 
-E2FSPROGS_AUTOCONF	=  --prefix=/
-E2FSPROGS_AUTOCONF	+= --build=$(GNU_HOST)
-E2FSPROGS_AUTOCONF	+= --host=$(PTXCONF_GNU_TARGET)
-E2FSPROGS_AUTOCONF	+= --with-cc=$(PTXCONF_GNU_TARGET)-gcc
-E2FSPROGS_AUTOCONF	+= --with-linker=$(PTXCONF_GNU_TARGET)-ld
-E2FSPROGS_AUTOCONF	+= --enable-elf-shlibs --enable-dynamic-e2fsck --disable-nls --enable-compression
-
-E2FSPROGS_PATH		=  PATH=$(CROSS_PATH)
-E2FSPROGS_ENV		=  $(CROSS_ENV) 
-E2FSPROGS_ENV		+= BUILD_CC=$(HOSTCC)
-
+#
+# dependencies
+#
 e2fsprogs_prepare_deps = \
-	$(STATEDIR)/virtual-xchain.install \
-	$(STATEDIR)/e2fsprogs.extract
+	$(STATEDIR)/e2fsprogs.extract \
+	$(STATEDIR)/virtual-xchain.install
+
+E2FSPROGS_PATH	=  PATH=$(CROSS_PATH)
+E2FSPROGS_ENV 	=  $(CROSS_ENV)
+E2FSPROGS_ENV	+= BUILD_CC=$(HOSTCC)
+E2FSPROGS_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
+#ifdef PTXCONF_XFREE430
+#E2FSPROGS_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
+#endif
+
+#
+# autoconf
+#
+E2FSPROGS_AUTOCONF = \
+	--build=$(GNU_HOST) \
+	--host=$(PTXCONF_GNU_TARGET) \
+	--prefix=/ \
+	--sysconfdir=/etc \
+	--with-cc=$(PTXCONF_GNU_TARGET)-gcc \
+	--with-linker=$(PTXCONF_GNU_TARGET)-ld \
+	--enable-elf-shlibs \
+	--enable-dynamic-e2fsck \
+	--enable-compression \
+	--disable-nls
+
+ifdef PTXCONF_XFREE430
+E2FSPROGS_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
+E2FSPROGS_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
+endif
 
 $(STATEDIR)/e2fsprogs.prepare: $(e2fsprogs_prepare_deps)
 	@$(call targetinfo, $@)
+	@$(call clean, $(E2FSPROGS_DIR)/config.cache)
 	mkdir -p $(E2FSPROGS_BUILD_DIR) && \
 	cd $(E2FSPROGS_BUILD_DIR) && \
 		$(E2FSPROGS_PATH) $(E2FSPROGS_ENV) \
@@ -93,15 +119,8 @@ e2fsprogs_compile: $(STATEDIR)/e2fsprogs.compile
 
 e2fsprogs_compile_deps = $(STATEDIR)/e2fsprogs.prepare
 
-$(STATEDIR)/e2fsprogs.compile: $(e2fsprogs_compile_deps) 
+$(STATEDIR)/e2fsprogs.compile: $(e2fsprogs_compile_deps)
 	@$(call targetinfo, $@)
-#
-# in the util dir are tools that are compiled for the host system
-# these tools are needed later in the compile progress
-#
-# it's not good to pass target CFLAGS to the host compiler :)
-# so override these
-#
 	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)/util BUILD_CC=gcc
 	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) BUILD_CC=gcc
 	touch $@
@@ -114,11 +133,15 @@ e2fsprogs_install: $(STATEDIR)/e2fsprogs.install
 
 $(STATEDIR)/e2fsprogs.install: $(STATEDIR)/e2fsprogs.compile
 	@$(call targetinfo, $@)
-	###$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) DESTDIR=$(CROSS_LIB_DIR) install
+	rm -rf $(E2FSPROGS_IPKG_TMP)
+	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) DESTDIR=$(E2FSPROGS_IPKG_TMP) install
+
 	install -m 644 -D $(E2FSPROGS_DIR)/lib/uuid/uuid.h		$(CROSS_LIB_DIR)/include/uuid/uuid.h
 	install -m 755    $(E2FSPROGS_BUILD_DIR)/lib/libuuid.so.1.2	$(CROSS_LIB_DIR)/lib
 	ln -sf libuuid.so.1.2 $(CROSS_LIB_DIR)/lib/libuuid.so.1
 	ln -sf libuuid.so.1.2 $(CROSS_LIB_DIR)/lib/libuuid.so
+
+	rm -rf $(E2FSPROGS_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -127,81 +150,42 @@ $(STATEDIR)/e2fsprogs.install: $(STATEDIR)/e2fsprogs.compile
 
 e2fsprogs_targetinstall: $(STATEDIR)/e2fsprogs.targetinstall
 
-$(STATEDIR)/e2fsprogs.targetinstall: $(STATEDIR)/e2fsprogs.compile
+e2fsprogs_targetinstall_deps = $(STATEDIR)/e2fsprogs.compile
+
+E2FSPROGS_DEPLIST = 
+
+$(STATEDIR)/e2fsprogs.targetinstall: $(e2fsprogs_targetinstall_deps)
 	@$(call targetinfo, $@)
-	install -d $(E2FSPROGS_BUILD_DIR)/ipk/bin
-	install -d $(E2FSPROGS_BUILD_DIR)/ipk/lib
-	install -d $(E2FSPROGS_BUILD_DIR)/ipk/sbin
-	install -d $(E2FSPROGS_BUILD_DIR)/ipk/usr/bin
-	install -d $(E2FSPROGS_BUILD_DIR)/ipk/usr/sbin
-	install $(E2FSPROGS_BUILD_DIR)/lib/libblkid.so.1.0 $(E2FSPROGS_BUILD_DIR)/ipk/lib/libblkid.so.1.0
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/libblkid.so.1.0
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/lib && ln -sf libblkid.so.1.0 libblkid.so.1
-	install $(E2FSPROGS_BUILD_DIR)/lib/libcom_err.so.2.1 $(E2FSPROGS_BUILD_DIR)/ipk/lib/libcom_err.so.2.1
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/libcom_err.so.2.1
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/lib && ln -sf libcom_err.so.2.1 libcom_err.so.2
-	install $(E2FSPROGS_BUILD_DIR)/lib/libe2p.so.2.3 $(E2FSPROGS_BUILD_DIR)/ipk/lib/libe2p.so.2.3
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/libe2p.so.2.3
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/lib && ln -sf libe2p.so.2.3 libe2p.so.2
-	install $(E2FSPROGS_BUILD_DIR)/lib/libext2fs.so.2.4 $(E2FSPROGS_BUILD_DIR)/ipk/lib/libext2fs.so.2.4
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/libext2fs.so.2.4
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/lib && ln -sf libext2fs.so.2.4 libext2fs.so.2
-	install $(E2FSPROGS_BUILD_DIR)/lib/libss.so.2.0 $(E2FSPROGS_BUILD_DIR)/ipk/lib/libss.so.2.0
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/libss.so.2.0
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/lib && ln -sf libss.so.2.0 libss.so.2
-	install $(E2FSPROGS_BUILD_DIR)/lib/libuuid.so.1.2 $(E2FSPROGS_BUILD_DIR)/ipk/lib/libuuid.so.1.2
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/libuuid.so.1.2
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/lib && ln -sf libuuid.so.1.2 libuuid.so.1
-	install -m 755 -d $(E2FSPROGS_BUILD_DIR)/ipk/lib/evms
-	install $(E2FSPROGS_BUILD_DIR)/lib/evms/libe2fsim.1.2.1.so $(E2FSPROGS_BUILD_DIR)/ipk/lib/evms/libe2fsim.1.2.1.so
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/lib/evms/libe2fsim.1.2.1.so
-	install $(E2FSPROGS_BUILD_DIR)/debugfs/debugfs	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/debugfs
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/debugfs
-	install $(E2FSPROGS_BUILD_DIR)/e2fsck/e2fsck	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/e2fsck
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/e2fsck
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/sbin && ln -sf e2fsck fsck.ext2
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/sbin && ln -sf e2fsck fsck.ext3
-	install $(E2FSPROGS_BUILD_DIR)/resize/resize2fs	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/resize2fs
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/resize2fs
-	install $(E2FSPROGS_BUILD_DIR)/misc/mke2fs	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/mke2fs
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/mke2fs
-	install $(E2FSPROGS_BUILD_DIR)/misc/badblocks	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/badblocks
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/badblocks
-	install $(E2FSPROGS_BUILD_DIR)/misc/tune2fs	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/tune2fs
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/tune2fs
-	install $(E2FSPROGS_BUILD_DIR)/misc/dumpe2fs	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/dumpe2fs
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/dumpe2fs
-	install $(E2FSPROGS_BUILD_DIR)/misc/blkid	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/blkid
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/blkid
-	install $(E2FSPROGS_BUILD_DIR)/misc/logsave	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/logsave
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/logsave
-	install $(E2FSPROGS_BUILD_DIR)/misc/e2image	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/e2image
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/e2image
-	install $(E2FSPROGS_BUILD_DIR)/misc/fsck	$(E2FSPROGS_BUILD_DIR)/ipk/sbin/fsck
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/sbin/fsck
-	install $(E2FSPROGS_BUILD_DIR)/misc/mklost+found $(E2FSPROGS_BUILD_DIR)/ipk/usr/sbin/mklost+found
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/usr/sbin/mklost+found
-	install $(E2FSPROGS_BUILD_DIR)/misc/chattr	$(E2FSPROGS_BUILD_DIR)/ipk/bin/chattr
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/bin/chattr
-	install $(E2FSPROGS_BUILD_DIR)/misc/lsattr	$(E2FSPROGS_BUILD_DIR)/ipk/bin/lsattr
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/bin/lsattr
-	install $(E2FSPROGS_BUILD_DIR)/misc/uuidgen	$(E2FSPROGS_BUILD_DIR)/ipk/bin/uuidgen
-	$(CROSSSTRIP) -R .note -R .comment $(E2FSPROGS_BUILD_DIR)/ipk/bin/uuidgen
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/sbin && ln -sf mke2fs mkfs.ext2
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/sbin && ln -sf mke2fs mkfs.ext3
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/sbin && ln -sf tune2fs e2label
-	cd $(E2FSPROGS_BUILD_DIR)/ipk/sbin && ln -sf tune2fs findfs
-	mkdir -p $(E2FSPROGS_BUILD_DIR)/ipk/CONTROL
-	echo "Package: e2fsprogs" 						 >$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Source: $(E2FSPROGS_URL)"						>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Priority: optional" 						>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Section: Utilities" 						>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 			>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 					>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Version: $(E2FSPROGS_VERSION)" 					>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Depends: " 							>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	echo "Description: EXT2 Filesystem Utilities"				>>$(E2FSPROGS_BUILD_DIR)/ipk/CONTROL/control
-	@$(call makeipkg, $(E2FSPROGS_BUILD_DIR)/ipk)
+	$(E2FSPROGS_PATH) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) DESTDIR=$(E2FSPROGS_IPKG_TMP) install
+
+	ln -sf mke2fs 	$(E2FSPROGS_IPKG_TMP)/sbin/mkfs.ext2
+	ln -sf mke2fs 	$(E2FSPROGS_IPKG_TMP)/sbin/mkfs.ext3
+	ln -sf tune2fs 	$(E2FSPROGS_IPKG_TMP)/sbin/e2label
+	ln -sf tune2fs 	$(E2FSPROGS_IPKG_TMP)/sbin/findfs
+	ln -sf e2fsck 	$(E2FSPROGS_IPKG_TMP)/sbin/fsck.ext2
+	ln -sf e2fsck 	$(E2FSPROGS_IPKG_TMP)/sbin/fsck.ext3
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(E2FSPROGS_VERSION)-$(E2FSPROGS_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh e2fsprogs $(E2FSPROGS_IPKG_TMP)
+
+	@$(call removedevfiles, $(E2FSPROGS_IPKG_TMP))
+	@$(call stripfiles, $(E2FSPROGS_IPKG_TMP))
+	mkdir -p $(E2FSPROGS_IPKG_TMP)/CONTROL
+	echo "Package: e2fsprogs" 							 >$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Source: $(E2FSPROGS_URL)"							>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Section: Utilities" 							>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Version: $(E2FSPROGS_VERSION)-$(E2FSPROGS_VENDOR_VERSION)" 		>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Depends: $(E2FSPROGS_DEPLIST)" 						>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	echo "Description: Ext2/3 system utilities"					>>$(E2FSPROGS_IPKG_TMP)/CONTROL/control
+	@$(call makeipkg, $(E2FSPROGS_IPKG_TMP))
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -224,7 +208,9 @@ $(STATEDIR)/e2fsprogs.imageinstall: $(e2fsprogs_imageinstall_deps)
 # Clean
 # ----------------------------------------------------------------------------
 
-e2fsprogs_clean: 
-	rm -rf $(STATEDIR)/e2fsprogs.* $(E2FSPROGS_DIR) $(E2FSPROGS_BUILD_DIR)
-
+e2fsprogs_clean:
+	rm -rf $(STATEDIR)/e2fsprogs.*
+	rm -rf $(E2FSPROGS_DIR)
+	rm -rf $(E2FSPROGS_BUILD_DIR)
+	
 # vim: syntax=make

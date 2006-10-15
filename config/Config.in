@@ -253,6 +253,7 @@ menu "Libraries           "
 menu "Modules"
 source "rules-ipk/ovlfs.in"
 source "rules-ipk/translucency.in"
+source "rules-ipk/unionfs.in"
 endmenu
 source "rules-ipk/ncurses.in"
 source "rules-ipk/termcap.in"
