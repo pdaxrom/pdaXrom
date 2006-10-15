@@ -11,7 +11,7 @@ echo "$OLDEPS" | sed 's/\ //g' ; \
 for file in $LIBS; do \
     grep -h "$file" $2/*.libs | cut -d':' -f1 ; \
 done ; \
-} | sort | uniq | grep -v $APP | tr '\n' ',' | sed 's/,$//g' | sed 's/^,//g'`
+} | sort | uniq | awk -v lala=$APP '{ if ( $1 != lala ) { print $1 } }' | tr '\n' ',' | sed 's/,$//g' | sed 's/^,//g'`
 
 sed -i "s/^Depends:.*/Depends: $DEPS/" $1/CONTROL/control
 
