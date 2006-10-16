@@ -19,7 +19,7 @@ if [ $# -lt 1 ]; then
 fi
 
 echo "Install syslinux on the $DEVICE"
-${TOPDIR}/linux/syslinux /tmp/
+cp -f ${TOPDIR}/linux/syslinux /tmp/
 chmod 755 /tmp/syslinux
 /tmp/syslinux ${DEVICE}
 mkdir -p ${MNTPNT}

@@ -76,8 +76,11 @@ python_prepare_deps = \
 	$(STATEDIR)/virtual-xchain.install \
 	$(STATEDIR)/zlib.install \
 	$(STATEDIR)/readline.install \
-	$(STATEDIR)/tk.install \
 	$(STATEDIR)/python.extract
+
+ifdef PTXCONF_XFREE430
+python_prepare_deps += $(STATEDIR)/tk.install
+endif
 
 PYTHON_PATH	=  PATH=$(CROSS_PATH)
 PYTHON_ENV	=  $(CROSS_ENV)
@@ -124,7 +127,6 @@ python_compile: $(STATEDIR)/python.compile
 
 python_compile_deps = \
 	$(STATEDIR)/xchain-python.compile \
-	$(STATEDIR)/tk.install \
 	$(STATEDIR)/python.prepare
 
 $(STATEDIR)/python.compile: $(python_compile_deps)
@@ -1002,6 +1004,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Description: Python Audio Handling"	>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
 
+ifdef PTXCONF_XFREE430
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/usr/lib/python2.4/;
@@ -1020,6 +1023,7 @@ $(STATEDIR)/python.targetinstall: $(STATEDIR)/python.compile
 	echo "Depends: python-core" 			>>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	echo "Description: Python TK/TCL support.">>$(PYTHON_IPK_TMP_DIR)/CONTROL/control
 	@$(call makeipkg, $(PYTHON_IPK_TMP_DIR))
+endif
 
 	rm -rf $(PYTHON_IPK_TMP_DIR);
 	mkdir -p $(PYTHON_IPK_TMP_DIR)/CONTROL;
