@@ -20,10 +20,10 @@ endif
 # Paths and names
 #
 CUPS_VENDOR_VERSION	= 1
-CUPS_VERSION		= 1.2rc2
+CUPS_VERSION		= 1.2.4
 CUPS			= cups-$(CUPS_VERSION)
 CUPS_SUFFIX		= tar.bz2
-CUPS_URL		= ftp://ftp.easysw.com/pub/cups/1.2/$(CUPS)-source.$(CUPS_SUFFIX)
+CUPS_URL		= http://ftp.funet.fi/pub/mirrors/ftp.easysw.com/pub/cups/1.2.4/$(CUPS)-source.$(CUPS_SUFFIX)
 CUPS_SOURCE		= $(SRCDIR)/$(CUPS)-source.$(CUPS_SUFFIX)
 CUPS_DIR		= $(BUILDDIR)/$(CUPS)
 CUPS_IPKG_TMP		= $(CUPS_DIR)/ipkg_tmp
@@ -93,7 +93,8 @@ CUPS_AUTOCONF = \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
 	--sysconfdir=/etc \
-	--localstatedir=/var
+	--localstatedir=/var \
+	--disable-gnutls
 
 ifdef PTXCONF_XFREE430
 CUPS_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
