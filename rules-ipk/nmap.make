@@ -226,8 +226,10 @@ nmap_imageinstall_deps = $(STATEDIR)/nmap.targetinstall \
 $(STATEDIR)/nmap.imageinstall: $(nmap_imageinstall_deps)
 	@$(call targetinfo, $@)
 	cd $(FEEDDIR) && $(XIPKG) install nmap
+ifdef PTXCONF_XFREE430
 ifdef PTXCONF_NMAP_INSTALL_NMAPFE
 	cd $(FEEDDIR) && $(XIPKG) install nmapfe
+endif
 endif
 	touch $@
 

@@ -93,7 +93,8 @@ OPENLDAP_AUTOCONF = \
 	--enable-dynamic \
 	--enable-bdb=no \
 	--enable-hdb=no \
-	--libexecdir=/usr/sbin
+	--libexecdir=/usr/sbin \
+	--localstatedir=/var
 
 ifdef PTXCONF_XFREE430
 OPENLDAP_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
