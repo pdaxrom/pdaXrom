@@ -101,6 +101,10 @@ LIBGNOMEPRINT_AUTOCONF = \
 	--libexecdir=/usr/bin \
 	--disable-debug
 
+ifndef PTXCONF_CUPS
+LIBGNOMEPRINT_AUTOCONF += --without-cups
+endif
+
 ifdef PTXCONF_XFREE430
 LIBGNOMEPRINT_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
 LIBGNOMEPRINT_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib

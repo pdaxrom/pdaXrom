@@ -296,6 +296,7 @@ endmenu
 menu "Drivers             "
 source "rules-ipk/cfxga.in"
 source "rules-ipk/gspcav1.in"
+source "rules-ipk/qc-usb.in"
 endmenu
 source "rules-ipk/alsa-utils.in"
 source "rules-ipk/bmp.in"

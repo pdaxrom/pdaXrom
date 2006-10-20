@@ -20,13 +20,13 @@ endif
 # Paths and names
 #
 QC-USB_VENDOR_VERSION	= 1
-QC-USB_VERSION		= 0.6.3
-QC-USB			= qc-usb-$(QC-USB_VERSION)
+QC-USB_VERSION	= 0.6.4
+QC-USB		= qc-usb-$(QC-USB_VERSION)
 QC-USB_SUFFIX		= tar.gz
-QC-USB_URL		= http://citkit.dl.sourceforge.net/sourceforge/qce-ga/$(QC-USB).$(QC-USB_SUFFIX)
+QC-USB_URL		= http://belnet.dl.sourceforge.net/sourceforge/qce-ga/$(QC-USB).$(QC-USB_SUFFIX)
 QC-USB_SOURCE		= $(SRCDIR)/$(QC-USB).$(QC-USB_SUFFIX)
 QC-USB_DIR		= $(BUILDDIR)/$(QC-USB)
-QC-USB_IPKG_TMP		= $(QC-USB_DIR)/ipkg_tmp
+QC-USB_IPKG_TMP	= $(QC-USB_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -87,7 +87,8 @@ QC-USB_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 QC-USB_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
-	--prefix=/usr
+	--prefix=/usr \
+	--sysconfdir=/etc
 
 ifdef PTXCONF_XFREE430
 QC-USB_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -112,7 +113,7 @@ qc-usb_compile_deps = $(STATEDIR)/qc-usb.prepare
 
 $(STATEDIR)/qc-usb.compile: $(qc-usb_compile_deps)
 	@$(call targetinfo, $@)
-	$(QC-USB_PATH) $(QC-USB_ENV) $(MAKE) -C $(QC-USB_DIR) show
+	$(QC-USB_PATH) $(MAKE) -C $(QC-USB_DIR) LINUX_DIR=$(KERNEL_DIR) $(CROSS_ENV_CC) all
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -123,7 +124,12 @@ qc-usb_install: $(STATEDIR)/qc-usb.install
 
 $(STATEDIR)/qc-usb.install: $(STATEDIR)/qc-usb.compile
 	@$(call targetinfo, $@)
-	$(QC-USB_PATH) $(MAKE) -C $(QC-USB_DIR) install
+	#rm -rf $(QC-USB_IPKG_TMP)
+	#$(QC-USB_PATH) $(MAKE) -C $(QC-USB_DIR) DESTDIR=$(QC-USB_IPKG_TMP) install
+	#@$(call copyincludes, $(QC-USB_IPKG_TMP))
+	#@$(call copylibraries,$(QC-USB_IPKG_TMP))
+	#@$(call copymiscfiles,$(QC-USB_IPKG_TMP))
+	#rm -rf $(QC-USB_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -134,20 +140,37 @@ qc-usb_targetinstall: $(STATEDIR)/qc-usb.targetinstall
 
 qc-usb_targetinstall_deps = $(STATEDIR)/qc-usb.compile
 
+QC-USB_DEPLIST = 
+
 $(STATEDIR)/qc-usb.targetinstall: $(qc-usb_targetinstall_deps)
 	@$(call targetinfo, $@)
-	$(QC-USB_PATH) $(MAKE) -C $(QC-USB_DIR) DESTDIR=$(QC-USB_IPKG_TMP) install
+	#$(QC-USB_PATH) $(MAKE) -C $(QC-USB_DIR) PREFIX=$(QC-USB_IPKG_TMP)/usr install \
+	#	MODULE_DIR=
+
+	#install -D $(QC-USB_DIR)/show 		$(QC-USB_IPKG_TMP)/usr/bin/qcshow
+	install -D $(QC-USB_DIR)/qcset 		$(QC-USB_IPKG_TMP)/usr/bin/qcset
+	install -D $(QC-USB_DIR)/quickcam.ko 	$(QC-USB_IPKG_TMP)/lib/modules/`grep "UTS_RELEASE" $(KERNEL_DIR)/include/linux/version.h | cut -d" " -f3 | sed 's/\"//g'`/kernel/drivers/usb/media/quickcam.ko
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(QC-USB_VERSION)-$(QC-USB_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh qc-usb $(QC-USB_IPKG_TMP)
+
+	@$(call removedevfiles, $(QC-USB_IPKG_TMP))
+	@$(call stripfiles, $(QC-USB_IPKG_TMP))
 	mkdir -p $(QC-USB_IPKG_TMP)/CONTROL
 	echo "Package: qc-usb" 								 >$(QC-USB_IPKG_TMP)/CONTROL/control
-	echo "Source: $(QC-USB_URL)"						>>$(QC-USB_IPKG_TMP)/CONTROL/control
+	echo "Source: $(QC-USB_URL)"							>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	echo "Priority: optional" 							>>$(QC-USB_IPKG_TMP)/CONTROL/control
-	echo "Section: Multimedia" 							>>$(QC-USB_IPKG_TMP)/CONTROL/control
+	echo "Section: System"	 							>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	echo "Version: $(QC-USB_VERSION)-$(QC-USB_VENDOR_VERSION)" 			>>$(QC-USB_IPKG_TMP)/CONTROL/control
-	echo "Depends: " 								>>$(QC-USB_IPKG_TMP)/CONTROL/control
-	echo "Description: Logitech QuickCam settings tool"				>>$(QC-USB_IPKG_TMP)/CONTROL/control
-	asasd
+	echo "Depends: $(QC-USB_DEPLIST)" 						>>$(QC-USB_IPKG_TMP)/CONTROL/control
+	echo "Description: Logitech QuickCam module and tool"				>>$(QC-USB_IPKG_TMP)/CONTROL/control
 	@$(call makeipkg, $(QC-USB_IPKG_TMP))
 	touch $@
 

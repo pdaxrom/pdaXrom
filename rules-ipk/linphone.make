@@ -74,6 +74,9 @@ linphone_prepare_deps = \
 	$(STATEDIR)/linphone.extract \
 	$(STATEDIR)/speex.install \
 	$(STATEDIR)/libosip2.install \
+	$(STATEDIR)/libgnome.install \
+	$(STATEDIR)/libgnomeui.install \
+	$(STATEDIR)/ffmpeg.install \
 	$(STATEDIR)/virtual-xchain.install
 
 ifdef PTXCONF_LINPHONE-VIDEO
@@ -148,6 +151,9 @@ linphone_targetinstall: $(STATEDIR)/linphone.targetinstall
 
 linphone_targetinstall_deps = $(STATEDIR)/linphone.compile \
 	$(STATEDIR)/speex.targetinstall \
+	$(STATEDIR)/libgnome.targetinstall \
+	$(STATEDIR)/libgnomeui.targetinstall \
+	$(STATEDIR)/ffmpeg.targetinstall \
 	$(STATEDIR)/libosip2.targetinstall
 
 LINPHONE_DEPLIST = "glib2, libspeex, libosip2, readline, libgnomeui"
