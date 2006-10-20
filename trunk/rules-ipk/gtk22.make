@@ -102,6 +102,10 @@ GTK22_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
 GTK22_AUTOCONF += --x-libraries=$(CROSS_LIB_DIR)/lib
 endif
 
+ifndef PTXCONF_CUPS
+GTK22_ENV += ac_cv_path_CUPS_CONFIG=no
+endif
+
 $(STATEDIR)/gtk22.prepare: $(gtk22_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(GTK22_DIR)/config.cache)
