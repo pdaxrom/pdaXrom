@@ -4,5 +4,5 @@ config SIEFS
 
 config SIEFS_INSTALL
 	bool
-	prompt "install in ROM"
+	prompt "Install to filesystem"
 	depends on SIEFS

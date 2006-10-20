@@ -1,7 +1,7 @@
 # -*-makefile-*-
 # $Id: template,v 1.10 2004/01/24 15:50:34 mkl Exp $
 #
-# Copyright (C) 2004 by Alexander Chukov <sash@pdaXrom.org>
+# Copyright (C) 2006 by Alexander Chukov <sash@pdaXrom.org>
 #          
 # See CREDITS for details about who has contributed to this project.
 #
@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 SIEFS_VENDOR_VERSION	= 1
-SIEFS_VERSION		= 0.4
+SIEFS_VERSION		= 0.5
 SIEFS			= siefs-$(SIEFS_VERSION)
 SIEFS_SUFFIX		= tar.gz
 SIEFS_URL		= http://chaos.allsiemens.com/download/$(SIEFS).$(SIEFS_SUFFIX)
@@ -76,10 +76,10 @@ siefs_prepare_deps = \
 
 SIEFS_PATH	=  PATH=$(CROSS_PATH)
 SIEFS_ENV 	=  $(CROSS_ENV)
-SIEFS_ENV	+= CFLAGS="-O2 -fomit-frame-pointer -D_FILE_OFFSET_BITS=64"
-SIEFS_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+#SIEFS_ENV	+=
+SIEFS_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#SIEFS_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#SIEFS_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
 
 #
@@ -103,6 +103,7 @@ $(STATEDIR)/siefs.prepare: $(siefs_prepare_deps)
 	cd $(SIEFS_DIR) && \
 		$(SIEFS_PATH) $(SIEFS_ENV) \
 		./configure $(SIEFS_AUTOCONF)
+	sed -i "s/FUSEINST.*/FUSEINST \"\/usr\"/" $(SIEFS_DIR)/config.h
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -115,7 +116,7 @@ siefs_compile_deps = $(STATEDIR)/siefs.prepare
 
 $(STATEDIR)/siefs.compile: $(siefs_compile_deps)
 	@$(call targetinfo, $@)
-	$(SIEFS_PATH) $(MAKE) -C $(SIEFS_DIR) CFLAGS="-O2 -fomit-frame-pointer -D_FILE_OFFSET_BITS=64"
+	$(SIEFS_PATH) $(MAKE) -C $(SIEFS_DIR)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -126,6 +127,12 @@ siefs_install: $(STATEDIR)/siefs.install
 
 $(STATEDIR)/siefs.install: $(STATEDIR)/siefs.compile
 	@$(call targetinfo, $@)
+	rm -rf $(SIEFS_IPKG_TMP)
+	$(SIEFS_PATH) $(MAKE) -C $(SIEFS_DIR) DESTDIR=$(SIEFS_IPKG_TMP) install
+	@$(call copyincludes, $(SIEFS_IPKG_TMP))
+	@$(call copylibraries,$(SIEFS_IPKG_TMP))
+	@$(call copymiscfiles,$(SIEFS_IPKG_TMP))
+	rm -rf $(SIEFS_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -137,21 +144,32 @@ siefs_targetinstall: $(STATEDIR)/siefs.targetinstall
 siefs_targetinstall_deps = $(STATEDIR)/siefs.compile \
 	$(STATEDIR)/fuse.targetinstall
 
+SIEFS_DEPLIST = 
+
 $(STATEDIR)/siefs.targetinstall: $(siefs_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(SIEFS_PATH) $(MAKE) -C $(SIEFS_DIR) DESTDIR=$(SIEFS_IPKG_TMP) install
-	rm -f $(SIEFS_IPKG_TMP)/usr/bin/vmo2wav
-	$(CROSSSTRIP) $(SIEFS_IPKG_TMP)/usr/bin/*
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(SIEFS_VERSION)-$(SIEFS_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh siefs $(SIEFS_IPKG_TMP)
+
+	@$(call removedevfiles, $(SIEFS_IPKG_TMP))
+	@$(call stripfiles, $(SIEFS_IPKG_TMP))
 	mkdir -p $(SIEFS_IPKG_TMP)/CONTROL
-	echo "Package: siefs" 											 >$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Source: $(SIEFS_URL)"						>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 										>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Section: Kernel"	 										>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 							>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 									>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Version: $(SIEFS_VERSION)-$(SIEFS_VENDOR_VERSION)" 						>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Depends: fuse"			 								>>$(SIEFS_IPKG_TMP)/CONTROL/control
-	echo "Description: SieFS is a virtual filesystem for accessing Siemens mobile phones' memory (flexmem or MultiMediaCard) from Linux. Now you can mount your phone (by datacable or IRDA) and work with it like with any other removable storage." >>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Package: siefs" 								 >$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Source: $(SIEFS_URL)"							>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Section: System" 								>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Version: $(SIEFS_VERSION)-$(SIEFS_VENDOR_VERSION)" 			>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Depends: $(SIEFS_DEPLIST)" 						>>$(SIEFS_IPKG_TMP)/CONTROL/control
+	echo "Description: SieFS is a virtual filesystem for accessing Siemens mobile phones' memory (flexmem or MultiMediaCard) from Linux." >>$(SIEFS_IPKG_TMP)/CONTROL/control
 	@$(call makeipkg, $(SIEFS_IPKG_TMP))
 	touch $@
 
