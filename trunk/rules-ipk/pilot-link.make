@@ -169,7 +169,7 @@ $(STATEDIR)/pilot-link.targetinstall: $(pilot-link_targetinstall_deps)
 	echo "Version: $(PILOT-LINK_VERSION)-$(PILOT-LINK_VENDOR_VERSION)" 		>>$(PILOT-LINK_IPKG_TMP)-libpisock/CONTROL/control
 	echo "Depends: libpisync" 							>>$(PILOT-LINK_IPKG_TMP)-libpisock/CONTROL/control
 	echo "Description: pilot-link is a suite of tools used to connect your Palm or PalmOS compatible handheld with Unix, Linux, and any other POSIX-compatible machine." >>$(PILOT-LINK_IPKG_TMP)-libpisock/CONTROL/control
-	@$(call makeipkg, $(PILOT-LINK_IPKG_TMP))
+	@$(call makeipkg, $(PILOT-LINK_IPKG_TMP)-libpisock)
 
 	mkdir -p $(PILOT-LINK_IPKG_TMP)-libpisync/CONTROL
 	mkdir -p $(PILOT-LINK_IPKG_TMP)-libpisync/usr/lib
@@ -183,7 +183,7 @@ $(STATEDIR)/pilot-link.targetinstall: $(pilot-link_targetinstall_deps)
 	echo "Version: $(PILOT-LINK_VERSION)-$(PILOT-LINK_VENDOR_VERSION)" 		>>$(PILOT-LINK_IPKG_TMP)-libpisync/CONTROL/control
 	echo "Depends: libpisock"	 						>>$(PILOT-LINK_IPKG_TMP)-libpisync/CONTROL/control
 	echo "Description: pilot-link is a suite of tools used to connect your Palm or PalmOS compatible handheld with Unix, Linux, and any other POSIX-compatible machine." >>$(PILOT-LINK_IPKG_TMP)-libpisync/CONTROL/control
-	@$(call makeipkg, $(PILOT-LINK_IPKG_TMP))
+	@$(call makeipkg, $(PILOT-LINK_IPKG_TMP)-libpisync)
 	
 	mkdir -p $(PILOT-LINK_IPKG_TMP)/CONTROL
 	echo "Package: pilot-link" 							 >$(PILOT-LINK_IPKG_TMP)/CONTROL/control

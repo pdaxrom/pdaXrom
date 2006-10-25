@@ -1,6 +1,6 @@
-diff --new-file -urp linux-2.4.28/fs/Config.in linux-2.4.28-squashfs3.0/fs/Config.in
+diff --new-file -urp linux-2.4.28/fs/Config.in linux-2.4.28-squashfs3.1/fs/Config.in
 --- linux-2.4.28/fs/Config.in	2004-11-17 11:54:21.000000000 +0000
-+++ linux-2.4.28-squashfs3.0/fs/Config.in	2006-03-07 21:12:35.000000000 +0000
++++ linux-2.4.28-squashfs3.1/fs/Config.in	2006-08-11 09:21:45.000000000 +0100
 @@ -51,6 +51,14 @@ if [ "$CONFIG_JFFS2_FS" = "y" -o "$CONFI
     int 'JFFS2 debugging verbosity (0 = quiet, 2 = noisy)' CONFIG_JFFS2_FS_DEBUG 0
  fi
@@ -16,9 +16,9 @@ diff --new-file -urp linux-2.4.28/fs/Config.in linux-2.4.28-squashfs3.0/fs/Confi
  bool 'Virtual memory file system support (former shm fs)' CONFIG_TMPFS
  define_bool CONFIG_RAMFS y
  
-diff --new-file -urp linux-2.4.28/fs/Makefile linux-2.4.28-squashfs3.0/fs/Makefile
+diff --new-file -urp linux-2.4.28/fs/Makefile linux-2.4.28-squashfs3.1/fs/Makefile
 --- linux-2.4.28/fs/Makefile	2004-02-18 13:36:31.000000000 +0000
-+++ linux-2.4.28-squashfs3.0/fs/Makefile	2006-03-07 21:12:35.000000000 +0000
++++ linux-2.4.28-squashfs3.1/fs/Makefile	2006-08-11 09:21:45.000000000 +0100
 @@ -65,6 +65,7 @@ subdir-$(CONFIG_REISERFS_FS)	+= reiserfs
  subdir-$(CONFIG_DEVPTS_FS)	+= devpts
  subdir-$(CONFIG_SUN_OPENPROMFS)	+= openpromfs
@@ -27,10 +27,10 @@ diff --new-file -urp linux-2.4.28/fs/Makefile linux-2.4.28-squashfs3.0/fs/Makefi
  subdir-$(CONFIG_JFS_FS)		+= jfs
  subdir-$(CONFIG_XFS_FS)		+= xfs
  
-diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/fs/squashfs/inode.c
+diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.1/fs/squashfs/inode.c
 --- linux-2.4.28/fs/squashfs/inode.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/fs/squashfs/inode.c	2006-03-07 21:12:35.000000000 +0000
-@@ -0,0 +1,2028 @@
++++ linux-2.4.28-squashfs3.1/fs/squashfs/inode.c	2006-08-20 01:07:25.000000000 +0100
+@@ -0,0 +1,2029 @@
 +/*
 + * Squashfs - a compressed read only filesystem for Linux
 + *
@@ -59,13 +59,13 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +#include <linux/module.h>
 +#include <linux/errno.h>
 +#include <linux/slab.h>
++#include <linux/zlib.h>
 +#include <linux/fs.h>
 +#include <linux/smp_lock.h>
 +#include <linux/locks.h>
 +#include <linux/init.h>
 +#include <linux/dcache.h>
 +#include <linux/wait.h>
-+#include <linux/zlib.h>
 +#include <linux/blkdev.h>
 +#include <linux/vmalloc.h>
 +#include <asm/uaccess.h>
@@ -85,8 +85,6 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +static long long read_blocklist(struct inode *inode, int index,
 +				int readahead_blks, char *block_list,
 +				unsigned short **block_p, unsigned int *bsize);
-+
-+static z_stream stream;
 +
 +static DECLARE_FSTYPE_DEV(squashfs_fs_type, "squashfs", squashfs_read_super);
 +
@@ -262,20 +260,20 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +	if (compressed) {
 +		int zlib_err;
 +
-+		stream.next_in = c_buffer;
-+		stream.avail_in = c_byte;
-+		stream.next_out = buffer;
-+		stream.avail_out = msblk->read_size;
++		msblk->stream.next_in = c_buffer;
++		msblk->stream.avail_in = c_byte;
++		msblk->stream.next_out = buffer;
++		msblk->stream.avail_out = msblk->read_size;
 +
-+		if (((zlib_err = zlib_inflateInit(&stream)) != Z_OK) ||
-+				((zlib_err = zlib_inflate(&stream, Z_FINISH))
++		if (((zlib_err = zlib_inflateInit(&msblk->stream)) != Z_OK) ||
++				((zlib_err = zlib_inflate(&msblk->stream, Z_FINISH))
 +				 != Z_STREAM_END) || ((zlib_err =
-+				zlib_inflateEnd(&stream)) != Z_OK)) {
++				zlib_inflateEnd(&msblk->stream)) != Z_OK)) {
 +			ERROR("zlib_fs returned unexpected result 0x%x\n",
 +				zlib_err);
 +			bytes = 0;
 +		} else
-+			bytes = stream.total_out;
++			bytes = msblk->stream.total_out;
 +		
 +		up(&msblk->read_data_mutex);
 +	}
@@ -969,7 +967,12 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +	struct squashfs_super_block *sblk = &msblk->sblk;
 +	int i;
 +	struct inode *root;
-+	
++
++	if (!(msblk->stream.workspace = vmalloc(zlib_inflate_workspacesize()))) {
++		ERROR("Failed to allocate zlib workspace\n");
++		goto failed_mount;
++	}
++
 +	msblk->devblksize = get_hardsect_size(dev);
 +	if(msblk->devblksize < BLOCK_SIZE)
 +		msblk->devblksize = BLOCK_SIZE;
@@ -1144,6 +1147,7 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +	kfree(msblk->read_data);
 +	kfree(msblk->block_cache);
 +	kfree(msblk->fragment_index_2);
++	vfree(msblk->stream.workspace);
 +	return NULL;
 +}
 +
@@ -1766,7 +1770,7 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +	struct squashfs_super_block *sblk = &msblk->sblk;
 +	long long next_block = SQUASHFS_I(i)->start_block +
 +		sblk->directory_table_start;
-+	int next_offset = SQUASHFS_I(i)->offset, length = 0, dirs_read = 0,
++	int next_offset = SQUASHFS_I(i)->offset, length = 0,
 +		dir_count;
 +	struct squashfs_dir_header dirh;
 +	char buffer[sizeof(struct squashfs_dir_entry) + SQUASHFS_NAME_LEN + 1];
@@ -1799,7 +1803,6 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +				goto finish;
 +		}
 +		file->f_pos += size;
-+		dirs_read++;
 +	}
 +
 +	length = get_dir_index_using_offset(i->i_sb, &next_block, &next_offset,
@@ -1880,12 +1883,11 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +				goto finish;
 +			}
 +			file->f_pos = length;
-+			dirs_read++;
 +		}
 +	}
 +
 +finish:
-+	return dirs_read;
++	return 0;
 +
 +failed_read:
 +	ERROR("Unable to read directory block [%llx:%x]\n", next_block,
@@ -2021,6 +2023,8 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +		kfree(sbi->uid);
 +		kfree(sbi->fragment_index);
 +		kfree(sbi->fragment_index_2);
++		kfree(sbi->meta_index);
++		vfree(sbi->stream.workspace);
 +		sbi->block_cache = NULL;
 +		sbi->uid = NULL;
 +		sbi->read_data = NULL;
@@ -2028,26 +2032,23 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +		sbi->fragment = NULL;
 +		sbi->fragment_index = NULL;
 +		sbi->fragment_index_2 = NULL;
++		sbi->meta_index = NULL;
++		sbi->stream.workspace = NULL;
 +}
 +
 +
 +static int __init init_squashfs_fs(void)
 +{
 +
-+	printk(KERN_INFO "squashfs: version 3.0 (2006/03/15) "
++	printk(KERN_INFO "squashfs: version 3.1 (2006/08/19) "
 +		"Phillip Lougher\n");
 +
-+	if (!(stream.workspace = vmalloc(zlib_inflate_workspacesize()))) {
-+		ERROR("Failed to allocate zlib workspace\n");
-+		return -ENOMEM;
-+	}
 +	return register_filesystem(&squashfs_fs_type);
 +}
 +
 +
 +static void __exit exit_squashfs_fs(void)
 +{
-+	vfree(stream.workspace);
 +	unregister_filesystem(&squashfs_fs_type);
 +}
 +
@@ -2056,12 +2057,12 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/inode.c linux-2.4.28-squashfs3.0/f
 +
 +module_init(init_squashfs_fs);
 +module_exit(exit_squashfs_fs);
-+MODULE_DESCRIPTION("squashfs, a compressed read-only filesystem");
++MODULE_DESCRIPTION("squashfs 3.1, a compressed read-only filesystem");
 +MODULE_AUTHOR("Phillip Lougher <phillip@lougher.org.uk>");
 +MODULE_LICENSE("GPL");
-diff --new-file -urp linux-2.4.28/fs/squashfs/Makefile linux-2.4.28-squashfs3.0/fs/squashfs/Makefile
+diff --new-file -urp linux-2.4.28/fs/squashfs/Makefile linux-2.4.28-squashfs3.1/fs/squashfs/Makefile
 --- linux-2.4.28/fs/squashfs/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/fs/squashfs/Makefile	2006-03-07 21:12:35.000000000 +0000
++++ linux-2.4.28-squashfs3.1/fs/squashfs/Makefile	2006-08-11 09:21:45.000000000 +0100
 @@ -0,0 +1,11 @@
 +#
 +# Makefile for the linux squashfs routines.
@@ -2074,9 +2075,9 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/Makefile linux-2.4.28-squashfs3.0/
 +obj-m := $(O_TARGET)
 +
 +include $(TOPDIR)/Rules.make
-diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs2_0.c linux-2.4.28-squashfs3.0/fs/squashfs/squashfs2_0.c
+diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs2_0.c linux-2.4.28-squashfs3.1/fs/squashfs/squashfs2_0.c
 --- linux-2.4.28/fs/squashfs/squashfs2_0.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/fs/squashfs/squashfs2_0.c	2006-03-07 21:12:35.000000000 +0000
++++ linux-2.4.28-squashfs3.1/fs/squashfs/squashfs2_0.c	2006-08-20 01:07:25.000000000 +0100
 @@ -0,0 +1,751 @@
 +/*
 + * Squashfs - a compressed read only filesystem for Linux
@@ -2106,6 +2107,7 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs2_0.c linux-2.4.28-squashf
 +#include <linux/module.h>
 +#include <linux/errno.h>
 +#include <linux/slab.h>
++#include <linux/zlib.h>
 +#include <linux/fs.h>
 +#include <linux/smp_lock.h>
 +#include <linux/locks.h>
@@ -2607,7 +2609,7 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs2_0.c linux-2.4.28-squashf
 +	struct squashfs_super_block *sblk = &msblk->sblk;
 +	long long next_block = SQUASHFS_I(i)->start_block +
 +		sblk->directory_table_start;
-+	int next_offset = SQUASHFS_I(i)->offset, length = 0, dirs_read = 0,
++	int next_offset = SQUASHFS_I(i)->offset, length = 0,
 +		dir_count;
 +	struct squashfs_dir_header_2 dirh;
 +	char buffer[sizeof(struct squashfs_dir_entry_2) + SQUASHFS_NAME_LEN + 1];
@@ -2692,12 +2694,11 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs2_0.c linux-2.4.28-squashf
 +				goto finish;
 +			}
 +			file->f_pos = length;
-+			dirs_read++;
 +		}
 +	}
 +
 +finish:
-+	return dirs_read;
++	return 0;
 +
 +failed_read:
 +	ERROR("Unable to read directory block [%llx:%x]\n", next_block,
@@ -2829,9 +2830,9 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs2_0.c linux-2.4.28-squashf
 +
 +	return 1;
 +}
-diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs.h linux-2.4.28-squashfs3.0/fs/squashfs/squashfs.h
+diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs.h linux-2.4.28-squashfs3.1/fs/squashfs/squashfs.h
 --- linux-2.4.28/fs/squashfs/squashfs.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/fs/squashfs/squashfs.h	2006-03-07 21:12:35.000000000 +0000
++++ linux-2.4.28-squashfs3.1/fs/squashfs/squashfs.h	2006-08-11 09:21:45.000000000 +0100
 @@ -0,0 +1,85 @@
 +/*
 + * Squashfs - a compressed read only filesystem for Linux
@@ -2918,9 +2919,9 @@ diff --new-file -urp linux-2.4.28/fs/squashfs/squashfs.h linux-2.4.28-squashfs3.
 +	return 0;
 +}
 +#endif
-diff --new-file -urp linux-2.4.28/include/linux/fs.h linux-2.4.28-squashfs3.0/include/linux/fs.h
+diff --new-file -urp linux-2.4.28/include/linux/fs.h linux-2.4.28-squashfs3.1/include/linux/fs.h
 --- linux-2.4.28/include/linux/fs.h	2004-11-17 11:54:22.000000000 +0000
-+++ linux-2.4.28-squashfs3.0/include/linux/fs.h	2006-03-07 21:12:36.000000000 +0000
++++ linux-2.4.28-squashfs3.1/include/linux/fs.h	2006-08-11 09:21:45.000000000 +0100
 @@ -324,6 +324,7 @@ extern void set_bh_page(struct buffer_he
  #include <linux/usbdev_fs_i.h>
  #include <linux/jffs2_fs_i.h>
@@ -2953,9 +2954,9 @@ diff --new-file -urp linux-2.4.28/include/linux/fs.h linux-2.4.28-squashfs3.0/in
  		void			*generic_sbp;
  	} u;
  	/*
-diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs.h linux-2.4.28-squashfs3.0/include/linux/squashfs_fs.h
+diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs.h linux-2.4.28-squashfs3.1/include/linux/squashfs_fs.h
 --- linux-2.4.28/include/linux/squashfs_fs.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/include/linux/squashfs_fs.h	2006-03-07 21:12:36.000000000 +0000
++++ linux-2.4.28-squashfs3.1/include/linux/squashfs_fs.h	2006-08-11 09:21:45.000000000 +0100
 @@ -0,0 +1,915 @@
 +#ifndef SQUASHFS_FS
 +#define SQUASHFS_FS
@@ -3872,9 +3873,9 @@ diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs.h linux-2.4.28-squas
 +
 +#endif
 +#endif
-diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_i.h linux-2.4.28-squashfs3.0/include/linux/squashfs_fs_i.h
+diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_i.h linux-2.4.28-squashfs3.1/include/linux/squashfs_fs_i.h
 --- linux-2.4.28/include/linux/squashfs_fs_i.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/include/linux/squashfs_fs_i.h	2006-03-07 21:12:36.000000000 +0000
++++ linux-2.4.28-squashfs3.1/include/linux/squashfs_fs_i.h	2006-08-11 09:21:45.000000000 +0100
 @@ -0,0 +1,44 @@
 +#ifndef SQUASHFS_FS_I
 +#define SQUASHFS_FS_I
@@ -3920,10 +3921,10 @@ diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_i.h linux-2.4.28-squ
 +	} u;
 +};
 +#endif
-diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_sb.h linux-2.4.28-squashfs3.0/include/linux/squashfs_fs_sb.h
+diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_sb.h linux-2.4.28-squashfs3.1/include/linux/squashfs_fs_sb.h
 --- linux-2.4.28/include/linux/squashfs_fs_sb.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-2.4.28-squashfs3.0/include/linux/squashfs_fs_sb.h	2006-03-07 21:12:36.000000000 +0000
-@@ -0,0 +1,74 @@
++++ linux-2.4.28-squashfs3.1/include/linux/squashfs_fs_sb.h	2006-08-20 01:07:25.000000000 +0100
+@@ -0,0 +1,76 @@
 +#ifndef SQUASHFS_FS_SB
 +#define SQUASHFS_FS_SB
 +/*
@@ -3950,6 +3951,7 @@ diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_sb.h linux-2.4.28-sq
 + */
 +
 +#include <linux/squashfs_fs.h>
++#include <linux/zlib.h>
 +
 +struct squashfs_cache {
 +	long long	block;
@@ -3990,17 +3992,18 @@ diff --new-file -urp linux-2.4.28/include/linux/squashfs_fs_sb.h linux-2.4.28-sq
 +	wait_queue_head_t	waitq;
 +	wait_queue_head_t	fragment_wait_queue;
 +	struct meta_index	*meta_index;
-+	struct inode		*(*iget)(struct super_block *s,  squashfs_inode_t \
++	z_stream		stream;
++	struct inode		*(*iget)(struct super_block *s,  squashfs_inode_t
 +				inode);
-+	long long		(*read_blocklist)(struct inode *inode, int \
-+				index, int readahead_blks, char *block_list, \
++	long long		(*read_blocklist)(struct inode *inode, int
++				index, int readahead_blks, char *block_list,
 +				unsigned short **block_p, unsigned int *bsize);
 +	int			(*read_fragment_index_table)(struct super_block *s);
 +};
 +#endif
-diff --new-file -urp linux-2.4.28/init/do_mounts.c linux-2.4.28-squashfs3.0/init/do_mounts.c
+diff --new-file -urp linux-2.4.28/init/do_mounts.c linux-2.4.28-squashfs3.1/init/do_mounts.c
 --- linux-2.4.28/init/do_mounts.c	2003-11-28 18:26:21.000000000 +0000
-+++ linux-2.4.28-squashfs3.0/init/do_mounts.c	2006-03-07 21:12:36.000000000 +0000
++++ linux-2.4.28-squashfs3.1/init/do_mounts.c	2006-08-20 01:07:25.000000000 +0100
 @@ -15,6 +15,7 @@
  #include <linux/minix_fs.h>
  #include <linux/ext2_fs.h>
@@ -4033,7 +4036,7 @@ diff --new-file -urp linux-2.4.28/init/do_mounts.c linux-2.4.28-squashfs3.0/init
  	cramfsb = (struct cramfs_super *) buf;
  	memset(buf, 0xe5, size);
  
-@@ -535,6 +539,15 @@ identify_ramdisk_image(int fd, int start
+@@ -535,6 +539,18 @@ identify_ramdisk_image(int fd, int start
  		goto done;
  	}
  
@@ -4042,16 +4045,19 @@ diff --new-file -urp linux-2.4.28/init/do_mounts.c linux-2.4.28-squashfs3.0/init
 +		printk(KERN_NOTICE
 +		       "RAMDISK: squashfs filesystem found at block %d\n",
 +		       start_block);
-+		nblocks = (squashfsb->bytes_used+BLOCK_SIZE-1)>>BLOCK_SIZE_BITS;
++		if (squashfsb->s_major < 3)
++			nblocks = (squashfsb->bytes_used_2+BLOCK_SIZE-1)>>BLOCK_SIZE_BITS;
++		else
++			nblocks = (squashfsb->bytes_used+BLOCK_SIZE-1)>>BLOCK_SIZE_BITS;
 +		goto done;
 +	}
 +
  	/*
  	 * Read block 1 to test for minix and ext2 superblock
  	 */
-diff --new-file -urp linux-2.4.28/lib/Config.in linux-2.4.28-squashfs3.0/lib/Config.in
+diff --new-file -urp linux-2.4.28/lib/Config.in linux-2.4.28-squashfs3.1/lib/Config.in
 --- linux-2.4.28/lib/Config.in	2003-11-28 18:26:21.000000000 +0000
-+++ linux-2.4.28-squashfs3.0/lib/Config.in	2006-03-07 21:12:36.000000000 +0000
++++ linux-2.4.28-squashfs3.1/lib/Config.in	2006-08-11 09:21:45.000000000 +0100
 @@ -10,6 +10,7 @@ tristate 'CRC32 functions' CONFIG_CRC32
  # Do we need the compression support?
  #
