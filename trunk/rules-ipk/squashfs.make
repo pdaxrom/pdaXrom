@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-SQUASHFS_VERSION	= 3.1
+SQUASHFS_VERSION	= 3.1-r2
 SQUASHFS		= squashfs$(SQUASHFS_VERSION)
 SQUASHFS_SUFFIX		= tar.gz
 SQUASHFS_URL		= http://mesh.dl.sourceforge.net/sourceforge/squashfs/$(SQUASHFS).$(SQUASHFS_SUFFIX)
