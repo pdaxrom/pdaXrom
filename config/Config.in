@@ -413,7 +413,6 @@ endmenu
 menu "Office              "
 source "rules-ipk/abiword.in"
 source "rules-ipk/criawips.in"
-source "rules-ipk/cups.in"
 source "rules-ipk/dia.in"
 source "rules-ipk/JustReader.in"
 #source "rules-ipk/evince.in"
@@ -448,6 +447,11 @@ menu "Navigation          "
 source "rules-ipk/qpegps.in"
 source "rules-ipk/gpsdrive.in"
 endmenu
+endmenu
+
+menu "Printing            "
+source "rules-ipk/cups.in"
+source "rules-ipk/LPRng.in"
 endmenu
 
 menu "Utils               "
