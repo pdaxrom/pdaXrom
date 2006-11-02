@@ -200,6 +200,16 @@ ifdef PTXCONF_SURVIVE_NANDLOGICAL
 	install $(SURVIVE_DIR)/nandlogical $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
 	$(CROSSSTRIP) -R .note -R .comment $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
 endif
+ifdef PTXCONF_SURVIVE_NETSCRIPTS
+	install -m 644 -D $(SURVIVE_DIR)/eth0.conf $(SURVIVE_DIR)/root_tmp/etc/sysconfig/netconfig/eth0.conf
+	install -m 755 -D $(SURVIVE_DIR)/ifup	$(SURVIVE_DIR)/root_tmp/sbin/ifup
+	install -m 755 -D $(SURVIVE_DIR)/ifdown	$(SURVIVE_DIR)/root_tmp/sbin/ifdown
+	install -m 755 -D $(SURVIVE_DIR)/network $(SURVIVE_DIR)/root_tmp/etc/rc.d/init.d/network
+	mkdir -p $(SURVIVE_DIR)/root_tmp/etc/rc.d/{rc0.d,rc5.d,rc6.d}
+	ln -sf ../init.d/network $(SURVIVE_DIR)/root_tmp/etc/rc.d/rc5.d/S50network
+	ln -sf ../init.d/network $(SURVIVE_DIR)/root_tmp/etc/rc.d/rc0.d/K50network
+	ln -sf ../init.d/network $(SURVIVE_DIR)/root_tmp/etc/rc.d/rc6.d/K50network
+endif
 	mkdir -p $(SURVIVE_DIR)/root_tmp/CONTROL
 	echo "Package: embedix-utils" 						 >$(SURVIVE_DIR)/root_tmp/CONTROL/control
 	echo "Source: $(SURVIVE_URL)"						>>$(SURVIVE_DIR)/root_tmp/CONTROL/control

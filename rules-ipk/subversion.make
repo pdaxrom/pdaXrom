@@ -71,7 +71,13 @@ subversion_prepare: $(STATEDIR)/subversion.prepare
 #
 subversion_prepare_deps = \
 	$(STATEDIR)/subversion.extract \
+	$(STATEDIR)/openssl.install \
+	$(STATEDIR)/zlib.install \
 	$(STATEDIR)/virtual-xchain.install
+
+ifdef PTXCONF_GDBM
+subversion_prepare_deps += $(STATEDIR)/gdbm.install
+endif
 
 SUBVERSION_PATH	=  PATH=$(CROSS_PATH)
 SUBVERSION_ENV 	=  $(CROSS_ENV)
@@ -92,6 +98,10 @@ SUBVERSION_AUTOCONF = \
 	--with-zlib \
 	--with-ssl \
 	--with-editor=/usr/bin/mcedit
+
+ifndef PTXCONF_GDBM
+SUBVERSION_AUTOCONF += --without-gdbm
+endif
 
 ifdef PTXCONF_XFREE430
 SUBVERSION_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -136,7 +146,13 @@ $(STATEDIR)/subversion.install: $(STATEDIR)/subversion.compile
 
 subversion_targetinstall: $(STATEDIR)/subversion.targetinstall
 
-subversion_targetinstall_deps = $(STATEDIR)/subversion.compile
+subversion_targetinstall_deps = $(STATEDIR)/subversion.compile \
+	$(STATEDIR)/openssl.targetinstall \
+	$(STATEDIR)/zlib.targetinstall
+
+ifdef PTXCONF_GDBM
+subversion_targetinstall_deps += $(STATEDIR)/gdbm.targetinstall
+endif
 
 $(STATEDIR)/subversion.targetinstall: $(subversion_targetinstall_deps)
 	@$(call targetinfo, $@)
