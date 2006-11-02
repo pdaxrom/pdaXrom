@@ -55,4 +55,9 @@ config SURVIVE_NANDLOGICAL
 	prompt "nandlogical"
 	depends on SURVIVE
 
+config SURVIVE_NETSCRIPTS
+	bool
+	prompt "network scripts"
+	depends on SURVIVE
+
 endmenu

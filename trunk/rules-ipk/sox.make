@@ -1,7 +1,7 @@
 # -*-makefile-*-
 # $Id: template,v 1.10 2004/01/24 15:50:34 mkl Exp $
 #
-# Copyright (C) 2004 by Alexander Chukov <sash@pdaXrom.org>
+# Copyright (C) 2006 by Alexander Chukov <sash@pdaXrom.org>
 #          
 # See CREDITS for details about who has contributed to this project.
 #
@@ -19,13 +19,14 @@ endif
 #
 # Paths and names
 #
-SOX_VERSION	= 12.17.4
-SOX		= sox-$(SOX_VERSION)
-SOX_SUFFIX	= tar.gz
-SOX_URL		= http://heanet.dl.sourceforge.net/sourceforge/sox/$(SOX).$(SOX_SUFFIX)
-SOX_SOURCE	= $(SRCDIR)/$(SOX).$(SOX_SUFFIX)
-SOX_DIR		= $(BUILDDIR)/$(SOX)
-SOX_IPKG_TMP	= $(SOX_DIR)/ipkg_tmp
+SOX_VENDOR_VERSION	= 1
+SOX_VERSION		= 12.18.2
+SOX			= sox-$(SOX_VERSION)
+SOX_SUFFIX		= tar.gz
+SOX_URL			= http://heanet.dl.sourceforge.net/sourceforge/sox/$(SOX).$(SOX_SUFFIX)
+SOX_SOURCE		= $(SRCDIR)/$(SOX).$(SOX_SUFFIX)
+SOX_DIR			= $(BUILDDIR)/$(SOX)
+SOX_IPKG_TMP		= $(SOX_DIR)/ipkg_tmp
 
 # ----------------------------------------------------------------------------
 # Get
@@ -70,17 +71,19 @@ sox_prepare: $(STATEDIR)/sox.prepare
 #
 sox_prepare_deps = \
 	$(STATEDIR)/sox.extract \
+	$(STATEDIR)/alsa-lib.install \
 	$(STATEDIR)/libmad.install \
+	$(STATEDIR)/lame.install \
+	$(STATEDIR)/libvorbis.install \
 	$(STATEDIR)/virtual-xchain.install
 
 SOX_PATH	=  PATH=$(CROSS_PATH)
 SOX_ENV 	=  $(CROSS_ENV)
 #SOX_ENV	+=
-SOX_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+SOX_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 #ifdef PTXCONF_XFREE430
-#SOX_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/lib
+#SOX_ENV	+= LDFLAGS=-Wl,-rpath-link,$(CROSS_LIB_DIR)/X11R6/lib
 #endif
-SOX_ENV	+= CFLAGS="-O2 -fomit-frame-pointer"
 
 #
 # autoconf
@@ -89,9 +92,9 @@ SOX_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
 	--prefix=/usr \
-	--disable-gsm
-#	--enable-shared \
-#	--disable-static
+	--sysconfdir=/etc \
+	--enable-shared \
+	--disable-static
 
 ifdef PTXCONF_XFREE430
 SOX_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
@@ -101,9 +104,6 @@ endif
 $(STATEDIR)/sox.prepare: $(sox_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(SOX_DIR)/config.cache)
-	#cd $(SOX_DIR) && aclocal
-	#cd $(SOX_DIR) && automake --add-missing
-	#cd $(SOX_DIR) && autoconf
 	cd $(SOX_DIR) && \
 		$(SOX_PATH) $(SOX_ENV) \
 		./configure $(SOX_AUTOCONF)
@@ -130,7 +130,12 @@ sox_install: $(STATEDIR)/sox.install
 
 $(STATEDIR)/sox.install: $(STATEDIR)/sox.compile
 	@$(call targetinfo, $@)
-	#$(SOX_PATH) $(MAKE) -C $(SOX_DIR) install
+	rm -rf $(SOX_IPKG_TMP)
+	$(SOX_PATH) $(MAKE) -C $(SOX_DIR) DESTDIR=$(SOX_IPKG_TMP) install
+	@$(call copyincludes, $(SOX_IPKG_TMP))
+	@$(call copylibraries,$(SOX_IPKG_TMP))
+	@$(call copymiscfiles,$(SOX_IPKG_TMP))
+	rm -rf $(SOX_IPKG_TMP)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -139,28 +144,38 @@ $(STATEDIR)/sox.install: $(STATEDIR)/sox.compile
 
 sox_targetinstall: $(STATEDIR)/sox.targetinstall
 
-sox_targetinstall_deps = \
-	$(STATEDIR)/sox.compile \
+sox_targetinstall_deps = $(STATEDIR)/sox.compile \
+	$(STATEDIR)/alsa-lib.targetinstall \
+	$(STATEDIR)/libvorbis.targetinstall \
+	$(STATEDIR)/lame.targetinstall \
 	$(STATEDIR)/libmad.targetinstall
 
+SOX_DEPLIST = 
 
 $(STATEDIR)/sox.targetinstall: $(sox_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(SOX_PATH) $(MAKE) -C $(SOX_DIR) prefix=$(SOX_IPKG_TMP)/usr install
-	$(CROSSSTRIP) $(SOX_IPKG_TMP)/usr/bin/sox
-	$(CROSSSTRIP) $(SOX_IPKG_TMP)/usr/bin/soxmix
-	ln -sf play $(SOX_IPKG_TMP)/usr/bin/rec
-	rm -rf $(SOX_IPKG_TMP)/usr/man
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(SOX_VERSION)-$(SOX_VENDOR_VERSION)	 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh sox $(SOX_IPKG_TMP)
+
+	@$(call removedevfiles, $(SOX_IPKG_TMP))
+	@$(call stripfiles, $(SOX_IPKG_TMP))
 	mkdir -p $(SOX_IPKG_TMP)/CONTROL
-	echo "Package: sox" 				>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Source: $(SOX_URL)"						>>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Section: pdaXrom" 			>>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" >>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Version: $(SOX_VERSION)" 			>>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Depends: libmad" 				>>$(SOX_IPKG_TMP)/CONTROL/control
-	echo "Description: SoX (also known as Sound eXchange) translates sound files between different file formats, and optionally applies various sound effects.">>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Package: sox" 								 >$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Source: $(SOX_URL)"							>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 							>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Section: Multimedia" 							>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 						>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Version: $(SOX_VERSION)-$(SOX_VENDOR_VERSION)" 				>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Depends: $(SOX_DEPLIST)" 							>>$(SOX_IPKG_TMP)/CONTROL/control
+	echo "Description: SoX (also known as Sound eXchange) translates sound files between different file formats, and optionally applies various sound effects" >>$(SOX_IPKG_TMP)/CONTROL/control
 	@$(call makeipkg, $(SOX_IPKG_TMP))
 	touch $@
 

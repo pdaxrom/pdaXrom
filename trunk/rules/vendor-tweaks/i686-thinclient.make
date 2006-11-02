@@ -72,8 +72,8 @@ ifneq ("none", $(PTXCONF_ETC_NAME))
 	perl -i -p -e "s,\@CROSS_LIB_DIR@,$(NATIVE_LIB_DIR),g"		$(ROOTFS_DIR)/ipkg/etc/profile
 endif
 
-	ln -sf /etc/sysconfig/netconfig/ifup   $(ROOTFS_DIR)/ipkg/sbin/ifup
-	ln -sf /etc/sysconfig/netconfig/ifdown $(ROOTFS_DIR)/ipkg/sbin/ifdown
+	###ln -sf /etc/sysconfig/netconfig/ifup   $(ROOTFS_DIR)/ipkg/sbin/ifup
+	###ln -sf /etc/sysconfig/netconfig/ifdown $(ROOTFS_DIR)/ipkg/sbin/ifdown
 
 ifdef PTXCONF_QTOPIA-FREE_BOOTING
 	$(INSTALL) -D -m 644 $(TOPDIR)/config/pdaXrom/inittab-qtopia	$(ROOTFS_DIR)/ipkg/etc/inittab

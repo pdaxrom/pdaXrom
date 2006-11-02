@@ -80,8 +80,8 @@ ifdef PTXCONF_CONSOLE-TOOLS_INSTALL
 	cp -a $(TOPDIR)/config/pics/Cyr_a8x16.psfu.gz $(ROOTFS_DIR)/ipkg/usr/share/kbd/consolefonts/
 endif
 
-	ln -sf /etc/sysconfig/netconfig/ifup   $(ROOTFS_DIR)/ipkg/sbin/ifup
-	ln -sf /etc/sysconfig/netconfig/ifdown $(ROOTFS_DIR)/ipkg/sbin/ifdown
+	###ln -sf /etc/sysconfig/netconfig/ifup   $(ROOTFS_DIR)/ipkg/sbin/ifup
+	###ln -sf /etc/sysconfig/netconfig/ifdown $(ROOTFS_DIR)/ipkg/sbin/ifdown
 
 	echo $(PROJECT) $(FULLVERSION) \"$(CODENAMEX)\" "(`date +"%H:%M %d/%m/%y"`)" > $(ROOTFS_DIR)/ipkg/etc/.buildver
 	echo $(PROJECT) $(FULLVERSION) \"$(CODENAMEX)\"> $(ROOTFS_DIR)/ipkg/etc/issue
@@ -96,6 +96,7 @@ endif
 
 	cp -a $(TOPDIR)/config/pdaXrom-x86/matchbox-fix/* 	$(ROOTFS_DIR)/ipkg/
 	cp -a $(TOPDIR)/config/pdaXrom/useradd 			$(ROOTFS_DIR)/ipkg/usr/sbin/
+	cp -a $(TOPDIR)/config/pdaXrom/sethwclock 		$(ROOTFS_DIR)/ipkg/usr/bin/
 
 	mkdir -p $(ROOTFS_DIR)/ipkg/CONTROL
 	echo "Package: vendor-tweaks" 						 >$(ROOTFS_DIR)/ipkg/CONTROL/control

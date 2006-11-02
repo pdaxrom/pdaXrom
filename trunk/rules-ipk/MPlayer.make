@@ -131,6 +131,10 @@ MPLAYER_AUTOCONF = \
 	--disable-gl \
 	--disable-gif
 
+ifdef PTXCONF_ARCH_X86
+MPLAYER_AUTOCONF += --with-win32libdir=/usr/lib/codecs
+endif
+
 ifdef PTXCONF_ARCH_PPC
 MPLAYER_AUTOCONF += --enable-big-endian
 else
@@ -249,6 +253,7 @@ ifdef PTXCONF_ARCH_ARM
 else
 	echo "zoom = yes" 							 >$(MPLAYER_IPKG_TMP)/usr/share/mplayer/mplayer.conf
 endif
+	mkdir -p $(MPLAYER_IPKG_TMP)/usr/lib/codecs
 	mkdir -p $(MPLAYER_IPKG_TMP)/CONTROL
 	echo "Package: mplayer" 						 >$(MPLAYER_IPKG_TMP)/CONTROL/control
 	echo "Source: $(MPLAYER_URL)"						>>$(MPLAYER_IPKG_TMP)/CONTROL/control
