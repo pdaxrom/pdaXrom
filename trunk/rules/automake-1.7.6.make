@@ -109,7 +109,11 @@ $(STATEDIR)/automake176.install: $(STATEDIR)/automake176.compile
 	cp  -a $(PTXCONF_PREFIX)/share/aclocal-1.9/* $(PTXCONF_PREFIX)/share/aclocal/
 	rm -rf $(PTXCONF_PREFIX)/share/aclocal-1.9
 	ln -sf aclocal $(PTXCONF_PREFIX)/share/aclocal-1.9
+ifdef NATIVE_SDK_NOT_FOUND
+	cp -a $(NATIVE_SDK_FILES_PREFIX)/share/aclocal/pkg.m4 $(PTXCONF_PREFIX)/share/aclocal-1.9/
+else
 	cp -a $(NATIVE_SDK_FILES_PREFIX)/../share/aclocal/pkg.m4 $(PTXCONF_PREFIX)/share/aclocal-1.9/
+endif
 	touch $@
 
 # ----------------------------------------------------------------------------

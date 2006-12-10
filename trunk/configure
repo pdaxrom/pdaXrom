@@ -43,7 +43,7 @@ CONFIG=$1
 
 TARGET=`_rev $CONFIG | cut -d'-' -f2-`
 TARGET=`_rev $TARGET`
-SUBTARGET=`_rev $CONFIG | cut -d'-' -f0`
+SUBTARGET=`_rev $CONFIG | cut -d'-' -f1`
 SUBTARGET=`_rev $SUBTARGET`
 
 if [ ! -e $SPATH/config-sys/${TARGET}/config_${SUBTARGET} ]; then
