@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 HWDATA_VENDOR_VERSION	= 1
-HWDATA_VERSION		= 0.148
+HWDATA_VERSION		= 0.177
 HWDATA			= hwdata-$(HWDATA_VERSION)
 HWDATA_SUFFIX		= tar.gz
 HWDATA_URL		= http://www.pdaXrom.org/src/$(HWDATA).$(HWDATA_SUFFIX)
@@ -139,6 +139,7 @@ $(STATEDIR)/hwdata.targetinstall: $(hwdata_targetinstall_deps)
 	$(HWDATA_PATH) $(MAKE) -C $(HWDATA_DIR) DESTDIR=$(HWDATA_IPKG_TMP) install
 	rm -rf $(HWDATA_IPKG_TMP)/etc/hotplug
 	rm -rf $(HWDATA_IPKG_TMP)/etc/pcmcia
+	rm -rf $(HWDATA_IPKG_TMP)/etc/modprobe.d
 	rm -rf $(HWDATA_IPKG_TMP)/usr/X11R6
 	mkdir -p $(HWDATA_IPKG_TMP)/CONTROL
 	echo "Package: hwdata" 								 >$(HWDATA_IPKG_TMP)/CONTROL/control

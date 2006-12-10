@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.18-mm3
-# Tue Nov  7 22:00:12 2006
+# Mon Nov  6 19:12:29 2006
 #
 CONFIG_ARM=y
 # CONFIG_GENERIC_TIME is not set
@@ -221,23 +221,6 @@ CONFIG_ZBOOT_ROM_TEXT=0x0
 CONFIG_ZBOOT_ROM_BSS=0x0
 CONFIG_CMDLINE="console=ttyS0,115200n8 console=tty1 noinitrd root=/dev/mtdblock5 rootfstype=jffs2 rw fbcon=rotate:1"
 # CONFIG_XIP_KERNEL is not set
-
-#
-# CPU Frequency scaling
-#
-CONFIG_CPU_FREQ=y
-CONFIG_CPU_FREQ_TABLE=y
-# CONFIG_CPU_FREQ_DEBUG is not set
-CONFIG_CPU_FREQ_STAT=y
-# CONFIG_CPU_FREQ_STAT_DETAILS is not set
-CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
-# CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE is not set
-CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
-# CONFIG_CPU_FREQ_GOV_POWERSAVE is not set
-# CONFIG_CPU_FREQ_GOV_USERSPACE is not set
-# CONFIG_CPU_FREQ_GOV_ONDEMAND is not set
-# CONFIG_CPU_FREQ_GOV_CONSERVATIVE is not set
-CONFIG_DVFM=y
 
 #
 # Floating point emulation
