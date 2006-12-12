@@ -120,8 +120,8 @@ fontconfig_compile_deps = $(STATEDIR)/fontconfig.prepare
 
 $(STATEDIR)/fontconfig.compile: $(fontconfig_compile_deps)
 	@$(call targetinfo, $@)
-	cd $(FONTCONFIG_DIR)/fc-lang && $(FONTCONFIG_PATH) gcc fc-lang.c -o fc-lang.host -I. -I.. -I../src `freetype-config --cflags`
-	cd $(FONTCONFIG_DIR)/fc-glyphname && $(FONTCONFIG_PATH) gcc fc-glyphname.c -o fc-glyphname.host -I. -I.. -I../src `freetype-config --cflags`
+	cd $(FONTCONFIG_DIR)/fc-lang && $(FONTCONFIG_PATH) gcc fc-lang.c -o fc-lang.host -I. -I.. -I../src -I$(PTXCONF_PREFIX)/include -I$(PTXCONF_PREFIX)/include/freetype2
+	cd $(FONTCONFIG_DIR)/fc-glyphname && $(FONTCONFIG_PATH) gcc fc-glyphname.c -o fc-glyphname.host -I. -I.. -I../src -I$(PTXCONF_PREFIX)/include -I$(PTXCONF_PREFIX)/include/freetype2
 	$(FONTCONFIG_PATH) $(MAKE) -C $(FONTCONFIG_DIR)
 	touch $@
 
