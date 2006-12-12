@@ -70,6 +70,7 @@ freetype_prepare: $(STATEDIR)/freetype.prepare
 #
 freetype_prepare_deps = \
 	$(STATEDIR)/freetype.extract \
+	$(STATEDIR)/xchain-freetype.install \
 	$(STATEDIR)/glib22.install \
 	$(STATEDIR)/expat.install \
 	$(STATEDIR)/virtual-xchain.install

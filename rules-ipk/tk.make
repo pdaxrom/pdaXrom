@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-TK_VERSION	= 8.4.6
+TK_VERSION	= 8.4.14
 TK		= tk$(TK_VERSION)
 TK_SUFFIX	= tar.gz
 TK_URL		= http://heanet.dl.sourceforge.net/sourceforge/tcl/$(TK)-src.$(TK_SUFFIX)
@@ -151,22 +151,30 @@ tk_targetinstall_deps = $(STATEDIR)/tk.compile
 $(STATEDIR)/tk.targetinstall: $(tk_targetinstall_deps)
 	@$(call targetinfo, $@)
 	$(TK_PATH) $(MAKE) -C $(TK_DIR)/linux INSTALL_ROOT=$(TK_IPKG_TMP) install
-	rm -rf $(TK_IPKG_TMP)/usr/man
-	rm -rf $(TK_IPKG_TMP)/usr/include
-	rm -rf $(TK_IPKG_TMP)/usr/lib/*.a
-	rm -rf $(TK_IPKG_TMP)/usr/lib/*.sh
-	$(CROSSSTRIP) $(TK_IPKG_TMP)/usr/bin/wish8.4
-	$(CROSSSTRIP) $(TK_IPKG_TMP)/usr/lib/libtk8.4.so
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(TK_VERSION)	 					\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh tk $(TK_IPKG_TMP)
+
+	@$(call removedevfiles, $(TK_IPKG_TMP))
+	@$(call stripfiles, 	$(TK_IPKG_TMP))
+
+	#rm -rf $(TK_IPKG_TMP)/usr/lib/*.sh
+
 	mkdir -p $(TK_IPKG_TMP)/CONTROL
-	echo "Package: tk" 				>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Source: $(TK_URL)"						>>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Section: pdaXrom" 			>>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" >>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Version: $(TK_VERSION)" 			>>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Depends: " 				>>$(TK_IPKG_TMP)/CONTROL/control
-	echo "Description: generated with pdaXrom builder">>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Package: tk" 					>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Source: $(TK_URL)"				>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 				>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Section: Languages" 				>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>"	>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 			>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Version: $(TK_VERSION)" 				>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Depends: " 					>>$(TK_IPKG_TMP)/CONTROL/control
+	echo "Description: generated with pdaXrom builder"	>>$(TK_IPKG_TMP)/CONTROL/control
 	@$(call makeipkg, $(TK_IPKG_TMP))
 	touch $@
 

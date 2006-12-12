@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-TCL_VERSION	= 8.4.6
+TCL_VERSION	= 8.4.14
 TCL		= tcl$(TCL_VERSION)
 TCL_SUFFIX	= tar.gz
 TCL_URL		= http://heanet.dl.sourceforge.net/sourceforge/tcl/$(TCL)-src.$(TCL_SUFFIX)
@@ -153,26 +153,34 @@ $(STATEDIR)/tcl.targetinstall: $(tcl_targetinstall_deps)
 	@$(call targetinfo, $@)
 	rm -rf $(TCL_IPKG_TMP)
 	$(TCL_PATH) $(MAKE) -C $(TCL_DIR)/linux INSTALL_ROOT=$(TCL_IPKG_TMP) install
-	rm -rf $(TCL_IPKG_TMP)/usr/man
-	rm -rf $(TCL_IPKG_TMP)/usr/include
-	rm -rf $(TCL_IPKG_TMP)/usr/lib/*.a
-	rm -rf $(TCL_IPKG_TMP)/usr/lib/*.sh
-	$(CROSSSTRIP) $(TCL_IPKG_TMP)/usr/bin/tclsh8.4
-	$(CROSSSTRIP) $(TCL_IPKG_TMP)/usr/lib/libtcl8.4.so
+
+	PATH=$(CROSS_PATH) 						\
+	FEEDDIR=$(FEEDDIR) 						\
+	STRIP=$(PTXCONF_GNU_TARGET)-strip 				\
+	VERSION=$(TCL_VERSION)					 	\
+	ARCH=$(SHORT_TARGET) 						\
+	MKIPKG=$(TOPDIR)/scripts/bin/mkipkg 				\
+	$(TOPDIR)/scripts/bin/make-locale-ipks.sh tcl $(TCL_IPKG_TMP)
+
+	@$(call removedevfiles, $(TCL_IPKG_TMP))
+	@$(call stripfiles, 	$(TCL_IPKG_TMP))
+
+	#rm -rf $(TCL_IPKG_TMP)/usr/lib/*.sh
+	
 	mkdir -p $(TCL_IPKG_TMP)/CONTROL
-	echo "Package: tcl" 				>$(TCL_IPKG_TMP)/CONTROL/control
-	echo "Source: $(TCL_URL)"						>>$(TCL_IPKG_TMP)/CONTROL/control
-	echo "Priority: optional" 			>>$(TCL_IPKG_TMP)/CONTROL/control
-	echo "Section: pdaXrom" 			>>$(TCL_IPKG_TMP)/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" >>$(TCL_IPKG_TMP)/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 		>>$(TCL_IPKG_TMP)/CONTROL/control
-	echo "Version: $(TCL_VERSION)" 			>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Package: tcl" 					>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Source: $(TCL_URL)"				>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Priority: optional" 				>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Section: Languages" 				>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 	>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Architecture: $(SHORT_TARGET)" 			>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Version: $(TCL_VERSION)" 				>>$(TCL_IPKG_TMP)/CONTROL/control
 ifdef PTXCONF_XFREE430
-	echo "Depends: xfree" 			>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Depends: xfree" 					>>$(TCL_IPKG_TMP)/CONTROL/control
 else
-	echo "Depends: "	 			>>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Depends: "	 				>>$(TCL_IPKG_TMP)/CONTROL/control
 endif
-	echo "Description: generated with pdaXrom builder">>$(TCL_IPKG_TMP)/CONTROL/control
+	echo "Description: generated with pdaXrom builder"	>>$(TCL_IPKG_TMP)/CONTROL/control
 	@$(call makeipkg, $(TCL_IPKG_TMP))
 	touch $@
 
