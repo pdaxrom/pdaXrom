@@ -19,6 +19,7 @@ endif
 #
 # Paths and names
 #
+#PERL_VERSION		= 5.8.7
 PERL_VERSION		= 5.8.5
 PERL			= perl-$(PERL_VERSION)
 PERL_SUFFIX		= tar.bz2
@@ -73,6 +74,8 @@ perl_prepare_deps = \
 	$(STATEDIR)/perl.extract \
 	$(STATEDIR)/gdbm.install \
 	$(STATEDIR)/virtual-xchain.install
+
+##	$(STATEDIR)/xchain-perl.install
 
 PERL_PATH	=  PATH=$(CROSS_PATH)
 

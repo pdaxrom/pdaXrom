@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-FILE_VERSION		= 4.09
+FILE_VERSION		= 4.18
 FILE			= file-$(FILE_VERSION)
 FILE_SUFFIX		= tar.gz
 FILE_URL		= ftp://ftp.gw.com/mirrors/pub/unix/file/$(FILE).$(FILE_SUFFIX)
@@ -70,6 +70,7 @@ file_prepare: $(STATEDIR)/file.prepare
 #
 file_prepare_deps = \
 	$(STATEDIR)/file.extract \
+	$(STATEDIR)/xchain-file.install \
 	$(STATEDIR)/zlib.install \
 	$(STATEDIR)/virtual-xchain.install
 

@@ -96,7 +96,8 @@ ETHEREAL_AUTOCONF = \
 	--enable-shared \
 	--disable-static \
 	--disable-usr-local \
-	--sysconfdir=/etc
+	--sysconfdir=/etc \
+	--with-pcap=$(CROSS_LIB_DIR)
 
 ifdef PTXCONF_XFREE430
 ETHEREAL_AUTOCONF += --x-includes=$(CROSS_LIB_DIR)/include
