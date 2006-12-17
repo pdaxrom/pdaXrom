@@ -90,7 +90,7 @@ XCHAIN_BINUTILS_AUTOCONF = \
 	--enable-targets=$(PTXCONF_GNU_TARGET) \
 	$(BINUTILS_EXTRA_CONFIG) \
 	--disable-nls \
-	--enable-shared \
+	--disable-shared \
 	--enable-commonbfdlib \
 	--enable-install-libiberty \
 	--with-sysroot=$(CROSS_LIB_DIR) \
