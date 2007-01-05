@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 PCMCIAUTILS_VENDOR_VERSION	= 1
-PCMCIAUTILS_VERSION		= 013
+PCMCIAUTILS_VERSION		= 014
 PCMCIAUTILS			= pcmciautils-$(PCMCIAUTILS_VERSION)
 PCMCIAUTILS_SUFFIX		= tar.bz2
 PCMCIAUTILS_URL			= http://www.kernel.org/pub/linux/utils/kernel/pcmcia/$(PCMCIAUTILS).$(PCMCIAUTILS_SUFFIX)

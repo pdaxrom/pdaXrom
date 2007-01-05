@@ -20,10 +20,11 @@ endif
 # Paths and names
 #
 SYSFSUTILS_VENDOR_VERSION	= 1
-SYSFSUTILS_VERSION		= 1.3.0
+SYSFSUTILS_VERSION		= 2.1.0
 SYSFSUTILS			= sysfsutils-$(SYSFSUTILS_VERSION)
 SYSFSUTILS_SUFFIX		= tar.gz
-SYSFSUTILS_URL			= http://citkit.dl.sourceforge.net/sourceforge/linux-diag/$(SYSFSUTILS).$(SYSFSUTILS_SUFFIX)
+#SYSFSUTILS_URL			= http://citkit.dl.sourceforge.net/sourceforge/linux-diag/$(SYSFSUTILS).$(SYSFSUTILS_SUFFIX)
+SYSFSUTILS_URL	  		= http://superb-west.dl.sourceforge.net/sourceforge/linux-diag/		  			
 SYSFSUTILS_SOURCE		= $(SRCDIR)/$(SYSFSUTILS).$(SYSFSUTILS_SUFFIX)
 SYSFSUTILS_DIR			= $(BUILDDIR)/$(SYSFSUTILS)
 SYSFSUTILS_IPKG_TMP		= $(SYSFSUTILS_DIR)/ipkg_tmp
