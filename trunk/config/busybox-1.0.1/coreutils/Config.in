@@ -546,7 +546,6 @@ config BB_CONFIG_WC
 config BB_CONFIG_WHO
 	bool "who"
 	default n
-	select BB_CONFIG_FEATURE_U_W_TMP
 	help
 	  who is used to show who is logged on.
 
