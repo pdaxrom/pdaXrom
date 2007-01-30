@@ -1,0 +1,8 @@
+config XFCE4-APPFINDER
+	bool
+	prompt "xfce4-appfinder"
+
+config XFCE4-APPFINDER_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XFCE4-APPFINDER
