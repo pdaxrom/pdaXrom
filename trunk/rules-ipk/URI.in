@@ -1,0 +1,8 @@
+config URI
+	bool
+	prompt "URI"
+
+config URI_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on URI
