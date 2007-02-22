@@ -71,6 +71,7 @@ xfwm4_prepare: $(STATEDIR)/xfwm4.prepare
 #
 xfwm4_prepare_deps = \
 	$(STATEDIR)/xfwm4.extract \
+	$(STATEDIR)/gtk22.targetinstall \
 	$(STATEDIR)/virtual-xchain.install
 
 XFWM4_PATH	=  PATH=$(CROSS_PATH)

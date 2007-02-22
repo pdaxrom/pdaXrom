@@ -87,6 +87,7 @@ LIBXFCE4UTIL_ENV	+= PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig
 LIBXFCE4UTIL_AUTOCONF = \
 	--build=$(GNU_HOST) \
 	--host=$(PTXCONF_GNU_TARGET) \
+	--with-broken-putenv \
 	--prefix=/usr \
 	--sysconfdir=/etc
 
