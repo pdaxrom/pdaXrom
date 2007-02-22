@@ -255,8 +255,8 @@ PTXCONF_LIBSTDCXX_SHARED=y
 # PTXCONF_ROOTFS_TMP is not set
 # PTXCONF_ROOTFS_HOME is not set
 # PTXCONF_ROOTFS_VAR is not set
-PTXCONF_ETC_NAME="cacko-x11rom-akita-sysfs"
-PTXCONF_VENDORTWEAKS="cacko-akita-sysfs.make"
+PTXCONF_ETC_NAME="cacko-x11rom-corgi-sysfs"
+PTXCONF_VENDORTWEAKS="cacko-corgi-sysfs.make"
 PTXCONF_VENDORTWEAKS_USERCONFIG="sharp-corgi"
 
 #
