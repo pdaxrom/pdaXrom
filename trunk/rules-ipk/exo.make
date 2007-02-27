@@ -71,7 +71,6 @@ exo_prepare: $(STATEDIR)/exo.prepare
 #
 exo_prepare_deps = \
 	$(STATEDIR)/exo.extract \
-	$(STATEDIR)/libxfce4util.targetinstall \
 	$(STATEDIR)/virtual-xchain.install
 
 EXO_PATH	=  PATH=$(CROSS_PATH)
