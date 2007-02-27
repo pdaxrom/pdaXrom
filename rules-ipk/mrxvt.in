@@ -1,8 +1,0 @@
-config MRXVT
-	bool
-	prompt "mrxvt"
-
-config MRXVT_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on MRXVT
