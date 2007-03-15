@@ -137,7 +137,10 @@ endif
 	###cp -f $(TOPDIR)/config/bootdisk/.dev_default.tar $(ROOTDIR)/root/
 	cd $(ROOTDIR) && tar c home > 			 $(ROOTDIR)/root/.home_default.tar
 	cd $(ROOTDIR) && tar c var  > 			 $(ROOTDIR)/root/.var_default.tar
-
+	
+	## Copies edited gtkrc-2.0 to home dir
+	cp -f $(TOPDIR)/config/pdaXrom/home-matchbox/root/.gtkrc-2.0 $(ROOTDIR)/root/
+	
 	#test -f $(ROOTDIR)/usr/lib/ipkg/info/bluez-utils.postinst && rm -f $(ROOTDIR)/usr/lib/ipkg/info/bluez-utils.postinst
 
 	$(PTXCONF_PREFIX)/bin/mkfs.jffs2 --eraseblock=16384 --root=$(ROOTDIR) --little-endian --squash --faketime --devtable=$(TOPDIR)/config/bootdisk/device_table-sysfs.txt --pad -n --output=$(TOPDIR)/bootdisk/rootfs.img
