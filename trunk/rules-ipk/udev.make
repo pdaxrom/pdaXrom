@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 UDEV_VENDOR_VERSION	= 1
-UDEV_VERSION		= 083
+UDEV_VERSION		= 071
 UDEV			= udev-$(UDEV_VERSION)
 UDEV_SUFFIX		= tar.bz2
 UDEV_URL		= http://kernel.org/pub/linux/utils/kernel/hotplug/$(UDEV).$(UDEV_SUFFIX)
