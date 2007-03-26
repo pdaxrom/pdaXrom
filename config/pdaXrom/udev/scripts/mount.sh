@@ -61,7 +61,7 @@ UMOUNT="/bin/umount"
 
 if [ "$ACTION" = "add" ] && [ -n "$DEVNAME" ]; then
     if grep "^$DEVNAME" /etc/fstab >/dev/null ; then
-	mount $DEVNAME
+	[ $(grep -v noauto /etc/fstab |grep -c "^$DEVNAME") -ge 1 ] && mount $DEVNAME
 	exit 0
     fi
     get_mount_dir
