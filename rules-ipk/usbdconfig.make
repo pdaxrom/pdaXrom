@@ -19,7 +19,7 @@ endif
 #
 # Paths and names
 #
-USBDCONFIG_VERSION		= 1.1.1
+USBDCONFIG_VERSION		= 1.1.2
 USBDCONFIG			= usbdconfig-$(USBDCONFIG_VERSION)
 USBDCONFIG_SUFFIX		= tar.bz2
 USBDCONFIG_URL			= http://www.pdaXrom.org/src/$(USBDCONFIG).$(USBDCONFIG_SUFFIX)
