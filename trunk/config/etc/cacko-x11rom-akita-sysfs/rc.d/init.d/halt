@@ -30,6 +30,8 @@ halt -w
 
 # Sync the system clock.
 #sltime -set
+hwclock --systohc
+
 
 # Turn off swap, then unmount file systems.
 swapoff -a
