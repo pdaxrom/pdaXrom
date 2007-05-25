@@ -80,7 +80,7 @@ endif
 
 	install -m 755 -d $(ROOTFS_DIR)/ipkg/etc/sysconfig/netconfig
 	cp -a $(TOPDIR)/config/pdaXrom/{ifup,ifdown} $(ROOTFS_DIR)/ipkg/sbin/
-
+	cp -a $(TOPDIR)/config/pdaXrom/pdaxrom-installer.sh $(ROOTFS_DIR)/ipkg/usr/bin/
 	mkdir -p $(ROOTFS_DIR)/ipkg/CONTROL
 	echo "Package: vendor-tweaks" 						 >$(ROOTFS_DIR)/ipkg/CONTROL/control
 	echo "Priority: optional" 						>>$(ROOTFS_DIR)/ipkg/CONTROL/control

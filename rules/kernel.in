@@ -107,7 +107,15 @@ choice
 	config KERNEL_2_6_19
 		bool
 		prompt "2.6.19"
-		
+
+	config KERNEL_2_6_20
+	        bool
+	        prompt "2.6.20"
+	                                
+	config KERNEL_2_6_21
+                bool
+                prompt "2.6.21"
+                                		
 endchoice
 
 
