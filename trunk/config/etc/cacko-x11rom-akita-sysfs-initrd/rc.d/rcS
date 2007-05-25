@@ -54,11 +54,14 @@ sleep 1
 
 switchevd /dev/input/event0
 
-for dir in /mnt/*; do
-    for file in "$dir/autoboot.sh" "$dir/AUTOBOOT.SH" ; do
-	if [ -f "$file" ]; then
-	    echo "Bootscript $file, go..."
-	    /bin/sh "$file" `dirname "$file"`
-	fi
-    done
-done
+mount /mnt/cf
+
+#for dir in /mnt/*; do
+#    for file in "$dir/autoboot.sh" "$dir/AUTOBOOT.SH" ; do
+#	if [ -f "$file" ]; then
+#	    echo "Bootscript $file, go..."
+#	    /bin/sh "$file" `dirname "$file"`
+#	fi
+#    done
+#done
+pdaxrom-installer.sh
