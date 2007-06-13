@@ -13,6 +13,18 @@
 #
 # $XFree86: xc/programs/xinit/startx.cpp,v 3.16 2003/01/24 21:30:02 herrb Exp $
 
+echo Starting X
+
+HARDWARE=`cat /proc/cpuinfo | grep 'Hardware' | cut -d':' -f2 | cut -d' ' -f3`
+
+case "$HARDWARE" in
+  Akita|Spitz|Borzoi|Terrier)
+	RES=" -screen 480x640@270"
+	;;
+  *)
+	RES=""
+	;;
+esac
 
 userclientrc=$HOME/.xinitrc
 userserverrc=$HOME/.xserverrc
@@ -21,8 +33,8 @@ sysserverrc=/usr/X11R6/lib/X11/xinit/xserverrc
 defaultclient=/usr/X11R6/bin/xterm
 defaultserver=/usr/X11R6/bin/X
 defaultclientargs=""
-defaultserverargs=" -nolisten tcp"
-#defaultserverargs=" -nolisten tcp"
+#defaultserverargs=" -nolisten tcp $RES"
+defaultserverargs=" -nolisten tcp -kb $RES"
 clientargs=""
 serverargs=""
 
@@ -40,7 +52,8 @@ if [ -f /etc/sysconfig/x11 ]; then
     export X11_RIGHT_MOUSE_BUTTON X11_RIGHT_MOUSE_BUTTON_MOD X11_MIDDLE_MOUSE_BUTTON_MOD
 fi
 
-test -f /etc/sysconfig/keyboard/kernel.map -a -f /usr/bin/loadkeys && sudo /usr/bin/loadkeys /etc/sysconfig/keyboard/kernel.map
+test -f /etc/sysconfig/keyboard/${HARDWARE}/kernel.map -a -f /usr/bin/loadkeys && sudo /usr/bin/loadkeys /etc/sysconfig/keyboard/${HARDWARE}/kernel.map 2>/dev/null
+test -f /etc/sysconfig/keyboard/${HARDWARE}/keymap.map -a -f /usr/bin/loadkeys && sudo /usr/bin/loadkeys /etc/sysconfig/keyboard/${HARDWARE}/keymap.map 2>/dev/null
 
 sudo modprobe mousedev >/dev/null 2>/dev/null
 
@@ -171,28 +184,17 @@ EOF
     fi
 done
 
-
 xinit $client $clientargs -- $server $display $serverargs
 
 if [ x"$removelist" != x ]; then
     xauth remove $removelist
 fi
 
-
-
-
-
 if command -v deallocvt > /dev/null 2>&1; then
     deallocvt
 fi
 
-
-
-
-
-
-
-
-
-
-
+test -f /etc/sysconfig/keyboard/${HARDWARE}/kernel.map -a -f /usr/bin/loadkeys && sudo /usr/bin/loadkeys /etc/sysconfig/keyboard/${HARDWARE}/kernel.map 2>/dev/null
+test -f /etc/sysconfig/keyboard/${HARDWARE}/keymap.map -a -f /usr/bin/loadkeys && sudo /usr/bin/loadkeys /etc/sysconfig/keyboard/${HARDWARE}/keymap.map 2>/dev/null
+test -f /etc/sysconfig/keyboard/${HARDWARE}/keymap-sticky.map -a -f /usr/bin/loadkeys && sudo /usr/bin/loadkeys /etc/sysconfig/keyboard/${HARDWARE}/keymap-sticky.map 2>/dev/null
+echo Exiting X
