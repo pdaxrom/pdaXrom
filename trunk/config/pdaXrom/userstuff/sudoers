@@ -27,4 +27,5 @@ root	ALL=(ALL) ALL
 # Samples
 # %users  ALL=/sbin/mount /cdrom,/sbin/umount /cdrom
 # %users  localhost=/sbin/shutdown -h now
-%users ALL=NOPASSWD:/sbin/cardctl,/usr/bin/traceroute,/bin/ping,/sbin/hwclock,/usr/bin/cpuoverclock.py,/etc/sdcontrol,/usr/bin/rotate.sh,/usr/bin/datentime.py,/usr/lib/qt/bin/pppdialer,/usr/bin/apm,/usr/bin/loadkeys,/sbin/modprobe,/usr/lib/qt/bin/qclockchange,/usr/bin/ts_calibrate,/usr/bin/lightnpower.py
+%users ALL=(ALL)	NOPASSWD:/sbin/cardctl,/usr/bin/traceroute,/bin/ping,/sbin/hwclock,/usr/bin/cpuoverclock.py,/etc/sdcontrol,/usr/bin/rotate.sh,/usr/bin/datentime.py,/usr/lib/qt/bin/pppdialer,/usr/bin/apm,/usr/bin/loadkeys,/sbin/modprobe,/usr/lib/qt/bin/qclockchange,/usr/bin/ts_calibrate,/usr/bin/lightnpower.py,/bin/mount,/bin/umount,/sbin/pccardctl,/sbin/hwclock,/sbin/ifconfig,/sbin/insmod,/sbin/iwconfig,/sbin/mkswap,/sbin/poweroff,/sbin/reboot,/sbin/swapon,/sbin/swapoff,/sbin/shutdown,/usr/sbin/alsaconf,/usr/sbin/alsactl,/sbin/setfl,/usr/X11R6/bin/xrandr,/usr/X11R6/bin/xset
+zaurus ALL=(ALL)	NOPASSWD: ALL

@@ -10,6 +10,9 @@ export PATH
 mount -n -t proc none /proc
 mount -n -t sysfs none /sys
 
+# Disable kernel log to console
+echo "0 0 0 0" >/proc/sys/kernel/printk #Hdmod moved here to shutup kernel
+
 mount -t ramfs none /dev || mount -t tmpfs none /dev
 
 if [ -d /sys/block ]; then
@@ -29,20 +32,17 @@ if [ -d /sys/block ]; then
 	done
     fi
 
-    action "Starting udev daemon:" /sbin/udevd --daemon
+    action "Starting udev daemon:" /sbin/udevd --daemon 
     #echo "/sbin/udevsend" > /proc/sys/kernel/hotplug
     #action "Synthesizing the initial hotplug events:" udevsynthesize
 fi
 
-# Disable kernel log to console
-echo "0 0 0 0" >/proc/sys/kernel/printk
-
 if [ ! -f /etc/rc.d/rc.rofilesys -o ! -x /etc/rc.d/rc.rofilesys ];then   
-    action "Mounting filesystem:" mount -o remount -w /
-    action "Mounting local FS:" mount -a -t nonfs,noproc
+    action "Mounting filesystem:" mount -o remount -w / 
+    action "Mounting local FS:" mount -a -t nonfs,noproc 2>/dev/null >/dev/null #Hdmod
     # add swap
     for dev in `/sbin/fdisk -l | grep 'Linux swap' | cut -d ' ' -f 1`; do
-	action "Found swap on $dev, turn it on:" /sbin/swapon $dev
+	action "Found swap on $dev, turn it on:" /sbin/swapon $dev 2>/dev/null >/dev/null #Hdmod
 	break
     done
 
@@ -72,9 +72,9 @@ fi
 if [ -z "$SILENT" ] ; then
     echo -en $"Welcome to "
     [ "$BOOTUP" != "serial" ] && echo -en $"\\033[1;31m"
-    echo -en $"Zaurus"
+    echo -en $"pdaXrom"
     [ "$BOOTUP" != "serial" ] && echo -en $"\\033[0;39m"
-    echo $" pdaXrom!"
+    echo $" Zaurus edition!"
 fi
 
 # rebuild cache for shared libraries, don't update links.
@@ -164,7 +164,7 @@ fi
 if [ -f /home/root/zgcc-@GCC_VERSION@.img ]; then
     if [ ! -d @PTXCONF_PREFIX@ ]; then
 	mkdir -p @PTXCONF_PREFIX@
-    fi
+    fi	
     mount -o loop -t squashfs /home/root/zgcc-@GCC_VERSION@.img @PTXCONF_PREFIX@
 fi
 
