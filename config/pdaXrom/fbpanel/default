@@ -4,7 +4,7 @@
 
 Global {
     edge = bottom
-    allign = left
+    allign = center
     margin = 0
     widthtype = percent
     width = 100
@@ -56,7 +56,7 @@ Plugin {
             }
         }
         menu {
-            name = Applications
+            name = Utilities
             image = /usr/share/pixmaps/mbfolder_other.png
             include {
                 name = ~/.fbpanel/Applications.inc
@@ -87,6 +87,11 @@ Plugin {
             name = Exit
             image = /usr/share/pixmaps/cancel.png
             actionsn = eXit
+        }
+        item {
+            name = Reboot
+            image = /usr/share/pixmaps/reboot.png
+            actionsn = Reboot
         }
         item {
             name = Suspend
@@ -146,23 +151,15 @@ Plugin {
     type = tray
 }
 
-
-Plugin {
-    type = cards
-}
-
-
 Plugin {
     type = audio
 }
+
 
 Plugin {
     type = cpu
 }
 
-Plugin {
-    type = apm
-}
 
 Plugin {
     type = dclock
