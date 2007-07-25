@@ -1,0 +1,226 @@
+--- linux/arch/arm/mach-pxa/corgi_lcd.c~	2006-05-19 16:10:07.000000000 +0000
++++ linux/arch/arm/mach-pxa/corgi_lcd.c	2006-05-19 16:11:42.000000000 +0000
+@@ -172,9 +172,11 @@
+ }
+ 
+ static int lcd_inited;
++static int lcd_last_mode;
+ 
+ static void lcdtg_hw_init(int mode)
+ {
++	lcd_last_mode = mode;
+ 	if (!lcd_inited) {
+ 		int comadj;
+ 
+@@ -254,6 +256,12 @@
+ 	}
+ }
+ 
++void lcdtg_hw_reinit(void)
++{
++	lcd_inited = 0;
++	lcdtg_hw_init(lcd_last_mode);
++}
++
+ static void lcdtg_suspend(void)
+ {
+ 	/* 60Hz x 2 frame = 16.7msec x 2 = 33.4 msec */
+--- linux/drivers/misc/Kconfig~	2006-05-19 15:19:51.000000000 +0000
++++ linux/drivers/misc/Kconfig	2006-05-19 15:58:08.000000000 +0000
+@@ -28,6 +28,10 @@
+ 
+ 	  If unsure, say N.
+ 
++config SHARPSL_PARAM
++	bool "Device driver for SHARP SL parameters tuning"
++	depends on PXA_SHARPSL
++
+ config SGI_IOC4
+ 	tristate "SGI IOC4 Base IO support"
+ 	depends on PCI
+--- linux/drivers/misc/Makefile~	2006-05-19 15:19:47.000000000 +0000
++++ linux/drivers/misc/Makefile	2006-05-19 15:57:57.000000000 +0000
+@@ -5,6 +5,7 @@
+ 
+ obj-$(CONFIG_IBM_ASM)		+= ibmasm/
+ obj-$(CONFIG_HDPU_FEATURES)	+= hdpuftrs/
++obj-$(CONFIG_SHARPSL_PARAM)	+= sharpsl-param/
+ obj-$(CONFIG_MSI_LAPTOP)     += msi-laptop.o
+ obj-$(CONFIG_ASUS_LAPTOP)     += asus-laptop.o
+ obj-$(CONFIG_LKDTM)		+= lkdtm.o
+--- linux/drivers/misc/sharpsl-param/Makefile~	1970-01-01 00:00:00.000000000 +0000
++++ linux/drivers/misc/sharpsl-param/Makefile	2006-05-19 15:41:54.000000000 +0000
+@@ -0,0 +1 @@
++obj-$(CONFIG_SHARPSL_PARAM) := sharpsl_param.o
+--- linux/drivers/misc/sharpsl-param/sharpsl_param.c~	1970-01-01 00:00:00.000000000 +0000
++++ linux/drivers/misc/sharpsl-param/sharpsl_param.c	2006-05-19 21:19:10.000000000 +0000
+@@ -0,0 +1,169 @@
++/*
++ * SHARPSL parameters tuning
++ *
++ * Copyright (C) 2006 Alexander Chukov <sash@pdaXrom.org>
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/timer.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/apm_bios.h>
++#include <linux/delay.h>
++#include <linux/interrupt.h>
++#include <linux/platform_device.h>
++#include <linux/leds.h>
++
++#include <asm/hardware.h>
++#include <asm/mach-types.h>
++#include <asm/irq.h>
++#include <linux/apm-emulation.h>
++#include <asm/mach/sharpsl_param.h>
++
++extern void lcdtg_hw_reinit(void);
++
++static ssize_t show_comadj(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "%d\n", sharpsl_param.comadj);
++}
++
++static ssize_t store_comadj(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{        
++	unsigned long val;
++
++	val = simple_strtoul(buf, NULL, 0);   
++	
++	sharpsl_param.comadj = val;
++	
++	lcdtg_hw_reinit();
++	
++	return count;
++}   
++
++static ssize_t show_phadadj(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "%d\n", sharpsl_param.phadadj);
++}
++
++static ssize_t store_phadadj(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{        
++	unsigned long val;
++
++	val = simple_strtoul(buf, NULL, 0);   
++	
++	sharpsl_param.phadadj = val;
++
++	lcdtg_hw_reinit();
++	
++	return count;
++}   
++
++#if 0
++static ssize_t show_uuid(struct device *dev, struct device_attribute *attr, char *buf)
++{
++}
++static ssize_t store_uuid(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{        
++	return count;
++}   
++#endif
++
++static ssize_t show_touch(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "%d\n", sharpsl_param.touch_xp);
++}
++
++static ssize_t store_touch(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{        
++	unsigned long val;
++
++	val = simple_strtoul(buf, NULL, 0);   
++	
++	sharpsl_param.touch_xp = val;
++	
++	return count;
++}   
++
++static ssize_t show_adadj(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "%d\n", sharpsl_param.adadj);
++}
++
++static ssize_t store_adadj(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{        
++	unsigned long val;
++
++	val = simple_strtoul(buf, NULL, 0);   
++	
++	sharpsl_param.adadj = val;
++	
++	return count;
++}   
++
++DEVICE_ATTR(comadj, 0644, show_comadj, store_comadj);
++DEVICE_ATTR(phadadj,0644, show_phadadj,store_phadadj);
++//DEVICE_ATTR(uuid,   0644, show_uuid,   store_uuid);
++DEVICE_ATTR(touch,  0644, show_touch,  store_touch);
++DEVICE_ATTR(adadj,  0644, show_adadj,  store_adadj);
++
++static int __init sharpsl_param_probe(struct platform_device *pdev)
++{
++	device_create_file(&pdev->dev, &dev_attr_comadj);
++	device_create_file(&pdev->dev, &dev_attr_phadadj);
++//	device_create_file(&pdev->dev, &dev_attr_uuid);
++	device_create_file(&pdev->dev, &dev_attr_touch);
++	device_create_file(&pdev->dev, &dev_attr_adadj);
++
++	return 0;
++}
++
++static int sharpsl_param_remove(struct platform_device *pdev)
++{
++	device_remove_file(&pdev->dev, &dev_attr_comadj);
++	device_remove_file(&pdev->dev, &dev_attr_phadadj);
++//	device_remove_file(&pdev->dev, &dev_attr_uuid);
++	device_remove_file(&pdev->dev, &dev_attr_touch);
++	device_remove_file(&pdev->dev, &dev_attr_adadj);
++
++	return 0;
++}
++
++static struct platform_driver sharpsl_param_driver = {
++	.probe		= sharpsl_param_probe,
++	.remove		= sharpsl_param_remove,
++	.driver		= {
++		.name		= "sharpsl-param",
++	},
++};
++
++static struct platform_device *sharpsl_param_device;
++
++static int __init sharpsl_param_init(void)
++{
++	int ret;
++	
++	ret = platform_driver_register(&sharpsl_param_driver);
++	if (!ret) {
++	    sharpsl_param_device = platform_device_alloc("sharpsl-param", -1);
++	    if (!sharpsl_param_device) {
++ 		platform_driver_unregister(&sharpsl_param_driver);
++		return -ENOMEM;
++	    }
++
++    	    ret = platform_device_add(sharpsl_param_device);
++
++	    if (ret)
++		platform_device_put(sharpsl_param_device);
++	}
++	return ret;
++}
++
++static void __exit sharpsl_param_exit(void)
++{
++	platform_device_unregister(sharpsl_param_device);
++ 	platform_driver_unregister(&sharpsl_param_driver);
++}
++
++module_init(sharpsl_param_init);
++module_exit(sharpsl_param_exit);
