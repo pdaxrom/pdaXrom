@@ -1,0 +1,18 @@
+Index: drivers/mmc/mmc.c
+===================================================================
+--- linux-2.6.16.orig/drivers/mmc/mmc.c	2006-03-20 05:53:29.000000000 +0000
++++ drivers/mmc/mmc.c	2006-03-22 09:37:21.000000000 +0000
+@@ -609,9 +609,11 @@
+ 
+ 	scr_struct = UNSTUFF_BITS(resp, 60, 4);
+ 	if (scr_struct != 0) {
+-		printk("%s: unrecognised SCR structure version %d\n",
++		printk("%s: Warning - unrecognised SCR structure version %d\n",
+ 			mmc_hostname(card->host), scr_struct);
+-		mmc_card_set_bad(card);
++		//mmc_card_set_bad(card);
++		scr->bus_widths = 0;
++		scr->sda_vsn = 0;
+ 		return;
+ 	}
+ 

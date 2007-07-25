@@ -1,0 +1,336 @@
+Patch from Manuel Teira to extend hardware acceleration on the w100fb
+driver.
+
+--- linux-2.6.21.1/drivers/video/w100fb.h~w100-extaccel
++++ linux-2.6.21.1/drivers/video/w100fb.h
+@@ -133,6 +133,17 @@
+ #define mmSRC_OFFSET          0x11AC
+ #define mmSRC_PITCH           0x11B0
+ #define mmSRC_Y_X             0x1034
++#define mmHOST_DATA0          0x13C0
++#define mmHOST_DATA1          0x13C4
++#define mmHOST_DATA2          0x13C8
++#define mmHOST_DATA3          0x13CC
++#define mmHOST_DATA4          0x13D0
++#define mmHOST_DATA5          0x13D4
++#define mmHOST_DATA6          0x13D8
++#define mmHOST_DATA7          0x13DC
++#define mmHOST_DATA_LAST      0x13E0
++#define mmDP_SRC_FRGD_CLR     0x1240
++#define mmDP_SRC_BKGD_CLR     0x1244
+ #define mmDEFAULT_PITCH_OFFSET      0x10A0
+ #define mmDEFAULT_SC_BOTTOM_RIGHT   0x10A8
+ #define mmDEFAULT2_SC_BOTTOM_RIGHT  0x10AC
+@@ -784,7 +795,9 @@
+ 	struct pwrmgt_cntl_t f;
+ } __attribute__((packed));
+ 
+-#define SRC_DATATYPE_EQU_DST	3
++#define DP_SRC_1BPP_OPA          0
++#define DP_SRC_COLOR_SAME_AS_DST 3
++#define DP_DST_16BPP_1555        3
+ 
+ #define ROP3_SRCCOPY	0xcc
+ #define ROP3_PATCOPY	0xf0
+@@ -793,6 +806,11 @@
+ #define GMC_BRUSH_NONE			15
+ 
+ #define DP_SRC_MEM_RECTANGULAR	2
++#define DP_SRC_HOSTDATA_BIT     3
++#define DP_SRC_HOSTDATA_BYTE    4
++
++#define DP_PIX_ORDER_MSB2LSB    0
++#define DP_PIX_ORDER_LSB2MSB    1
+ 
+ #define DP_OP_ROP	0
+ 
+--- linux-2.6.21.1/drivers/video/w100fb.c~w100-extaccel
++++ linux-2.6.21.1/drivers/video/w100fb.c
+@@ -7,6 +7,7 @@
+  * Copyright (C) 2004-2006 Richard Purdie
+  * Copyright (c) 2005 Ian Molton
+  * Copyright (c) 2006 Alberto Mardegan
++ * Copyright (c) 2006 Manuel Teira
+  *
+  * Rewritten for 2.6 by Richard Purdie <rpurdie@rpsys.net>
+  *
+@@ -17,6 +18,8 @@
+  *
+  * Hardware acceleration support by Alberto Mardegan
+  * <mardy@users.sourceforge.net>
++ * Extended hardware acceleration support by Manuel Teira
++ * <manuel.teira@telefonica.net>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -67,6 +70,12 @@
+ static void *remapped_regs;
+ static void *remapped_fbuf;
+ 
++/* Default value for dp_gui_master_cntl */
++static u32 def_gmc_value = 0;
++
++/* Flag to avoid innecessary syncing */
++static u8 last_op_hw = 0;
++
+ #define REMAPPED_FB_LEN   0x15ffff
+ 
+ /* This is the offset in the w100's address space we map the current
+@@ -166,6 +175,36 @@
+ 
+ static DEVICE_ATTR(fastpllclk, 0644, fastpllclk_show, fastpllclk_store);
+ 
++static ssize_t accel_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct fb_info *info = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n",(info->flags & FBINFO_HWACCEL_DISABLED) ?
++		       0 : 1);
++}
++
++static ssize_t accel_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{
++	unsigned int accel;
++	struct fb_info *info = dev_get_drvdata(dev);
++	struct w100fb_par *par = info->par;
++
++
++	accel = simple_strtoul(buf, NULL, 10);
++
++	if (accel == 0 && !(info->flags & FBINFO_HWACCEL_DISABLED)) {
++		info->flags |= FBINFO_HWACCEL_DISABLED;
++	} else if (info->flags & FBINFO_HWACCEL_DISABLED) {
++		w100_init_graphic_engine(par);
++		info->flags &= ~FBINFO_HWACCEL_DISABLED;
++		last_op_hw = 0;
++	}
++	return count;
++}
++
++static DEVICE_ATTR(accel, 0644, accel_show, accel_store);
++
++
+ /*
+  * Some touchscreens need hsync information from the video driver to
+  * function correctly. We export it here.
+@@ -273,6 +312,9 @@
+ 	union rbbm_status_u status;
+ 	int i;
+ 
++        if (!last_op_hw) 
++            return 0;
++
+ 	for (i = 0; i < 2000000; i++) {
+ 		status.val = readl(remapped_regs + mmRBBM_STATUS);
+ 		if (!status.f.gui_active)
+@@ -318,8 +360,8 @@
+ 	gmc.f.gmc_src_clipping = 1;
+ 	gmc.f.gmc_dst_clipping = 1;
+ 	gmc.f.gmc_brush_datatype = GMC_BRUSH_NONE;
+-	gmc.f.gmc_dst_datatype = 3; /* from DstType_16Bpp_444 */
+-	gmc.f.gmc_src_datatype = SRC_DATATYPE_EQU_DST;
++	gmc.f.gmc_dst_datatype = DP_DST_16BPP_1555;
++	gmc.f.gmc_src_datatype = DP_SRC_COLOR_SAME_AS_DST;
+ 	gmc.f.gmc_byte_pix_order = 1;
+ 	gmc.f.gmc_default_sel = 0;
+ 	gmc.f.gmc_rop3 = ROP3_SRCCOPY;
+@@ -327,7 +369,8 @@
+ 	gmc.f.gmc_clr_cmp_fcn_dis = 1;
+ 	gmc.f.gmc_wr_msk_dis = 1;
+ 	gmc.f.gmc_dp_op = DP_OP_ROP;
+-	writel(gmc.val, remapped_regs + mmDP_GUI_MASTER_CNTL);
++        def_gmc_value = gmc.val;
++	writel(def_gmc_value, remapped_regs + mmDP_GUI_MASTER_CNTL);
+ 
+ 	dp_datatype.val = dp_mix.val = 0;
+ 	dp_datatype.f.dp_dst_datatype = gmc.f.gmc_dst_datatype;
+@@ -355,20 +398,22 @@
+ 		return;
+ 	if (info->flags & FBINFO_HWACCEL_DISABLED) {
+ 		cfb_fillrect(info, rect);
++		last_op_hw = 0;
+ 		return;
+ 	}
+ 
+-	gmc.val = readl(remapped_regs + mmDP_GUI_MASTER_CNTL);
+-	gmc.f.gmc_rop3 = ROP3_PATCOPY;
++	gmc.val = def_gmc_value;
+ 	gmc.f.gmc_brush_datatype = GMC_BRUSH_SOLID_COLOR;
+-	w100_fifo_wait(2);
++	gmc.f.gmc_rop3 = ROP3_PATCOPY;
++
++	w100_fifo_wait(4);
+ 	writel(gmc.val, remapped_regs + mmDP_GUI_MASTER_CNTL);
+ 	writel(rect->color, remapped_regs + mmDP_BRUSH_FRGD_CLR);
+-
+-	w100_fifo_wait(2);
+-	writel((rect->dy << 16) | (rect->dx & 0xffff), remapped_regs + mmDST_Y_X);
++	writel((rect->dy << 16) | (rect->dx & 0xffff),
++	       remapped_regs + mmDST_Y_X);
+ 	writel((rect->width << 16) | (rect->height & 0xffff),
+-	       remapped_regs + mmDST_WIDTH_HEIGHT);
++		remapped_regs + mmDST_WIDTH_HEIGHT);
++	last_op_hw = 1;
+ }
+ 
+ 
+@@ -383,19 +428,122 @@
+ 		return;
+ 	if (info->flags & FBINFO_HWACCEL_DISABLED) {
+ 		cfb_copyarea(info, area);
++                last_op_hw = 0;
+ 		return;
+ 	}
+ 
+-	gmc.val = readl(remapped_regs + mmDP_GUI_MASTER_CNTL);
++	gmc.val = def_gmc_value;
+ 	gmc.f.gmc_rop3 = ROP3_SRCCOPY;
+ 	gmc.f.gmc_brush_datatype = GMC_BRUSH_NONE;
+-	w100_fifo_wait(1);
+-	writel(gmc.val, remapped_regs + mmDP_GUI_MASTER_CNTL);
+ 
+-	w100_fifo_wait(3);
++	w100_fifo_wait(4);
++	writel(gmc.val, remapped_regs + mmDP_GUI_MASTER_CNTL);
+ 	writel((sy << 16) | (sx & 0xffff), remapped_regs + mmSRC_Y_X);
+ 	writel((dy << 16) | (dx & 0xffff), remapped_regs + mmDST_Y_X);
+ 	writel((w << 16) | (h & 0xffff), remapped_regs + mmDST_WIDTH_HEIGHT);
++	last_op_hw = 1;
++}
++
++#define OUT(value, offset) writel(value, remapped_regs + offset)
++
++static void w100_hostdata(u32 width, u32 height, u32 depth, u32 *src)
++{
++	u32 left = width * height * depth / 32;
++
++	while (left) {
++		if (left <= 8) {
++			w100_fifo_wait(left);
++			switch (left) {
++			case 8: OUT(*src++, mmHOST_DATA1); 
++			case 7: OUT(*src++, mmHOST_DATA2);
++			case 6: OUT(*src++, mmHOST_DATA3);
++			case 5: OUT(*src++, mmHOST_DATA4);
++			case 4: OUT(*src++, mmHOST_DATA5);
++			case 3: OUT(*src++, mmHOST_DATA6);
++			case 2: OUT(*src++, mmHOST_DATA7);
++			case 1: OUT(*src++, mmHOST_DATA_LAST);
++			}
++			left = 0;
++		} else {
++			w100_fifo_wait(8);
++			OUT(*src++, mmHOST_DATA0);
++			OUT(*src++, mmHOST_DATA1);
++			OUT(*src++, mmHOST_DATA2);
++			OUT(*src++, mmHOST_DATA3);
++			OUT(*src++, mmHOST_DATA4);
++			OUT(*src++, mmHOST_DATA5);
++			OUT(*src++, mmHOST_DATA6);
++			OUT(*src++, mmHOST_DATA7);
++			left -= 8;
++		}
++	}
++}
++
++static void w100fb_imageblit(struct fb_info *info,
++                             const struct fb_image *image)
++{
++	struct w100fb_par *par = info->par;
++	union dp_gui_master_cntl_u gmc;
++	u32 fgcolor, bgcolor;
++
++	if (info->state != FBINFO_STATE_RUNNING)
++		return;
++
++	if (info->flags & FBINFO_HWACCEL_DISABLED) {
++		cfb_imageblit(info, image);
++                last_op_hw = 0;
++		return;
++	}
++
++	if (image->depth == 1) {
++		if (info->fix.visual == FB_VISUAL_TRUECOLOR ||
++		    info->fix.visual == FB_VISUAL_DIRECTCOLOR) {
++			fgcolor = 
++				((u32*)(info->pseudo_palette))[image->fg_color];
++			bgcolor = 
++				((u32*)(info->pseudo_palette))[image->bg_color];
++		} else {
++			fgcolor = image->fg_color;
++			bgcolor = image->bg_color;
++		}
++	}
++
++	gmc.val = def_gmc_value;
++	gmc.f.gmc_rop3 = ROP3_SRCCOPY;
++	gmc.f.gmc_dst_datatype = DP_DST_16BPP_1555;
++	switch (image->depth) {
++	case 1:
++	        gmc.f.gmc_dp_src_source = DP_SRC_HOSTDATA_BIT;
++		gmc.f.gmc_src_datatype = DP_SRC_1BPP_OPA;
++		gmc.f.gmc_byte_pix_order = DP_PIX_ORDER_MSB2LSB;
++		break;
++	case 16:
++                gmc.f.gmc_dp_src_source = DP_SRC_HOSTDATA_BYTE;
++		gmc.f.gmc_src_datatype = DP_SRC_COLOR_SAME_AS_DST;
++		gmc.f.gmc_byte_pix_order = DP_PIX_ORDER_LSB2MSB;
++		break;
++	default:
++		cfb_imageblit(info, image);
++		last_op_hw = 0;
++		return;
++	}
++
++	if (image->depth == 1) {
++		w100_fifo_wait(5);
++		writel(fgcolor, remapped_regs + mmDP_SRC_FRGD_CLR);
++		writel(bgcolor, remapped_regs + mmDP_SRC_BKGD_CLR);
++	} else {
++		w100_fifo_wait(3);
++	}
++	writel(gmc.val, remapped_regs + mmDP_GUI_MASTER_CNTL);
++	writel((image->dy << 16) | (image->dx & 0xffff), 
++	       remapped_regs + mmDST_Y_X);
++	writel((image->width << 16) | (image->height & 0xffff), 
++	       remapped_regs + mmDST_WIDTH_HEIGHT);
++	
++	w100_hostdata(image->width, image->height, image->depth, 
++		      (u32*)image->data);
++	last_op_hw = 1;
+ }
+ 
+ 
+@@ -540,6 +688,7 @@
+ /*
+  *  Frame buffer operations
+  */
++
+ static struct fb_ops w100fb_ops = {
+ 	.owner        = THIS_MODULE,
+ 	.fb_check_var = w100fb_check_var,
+@@ -548,7 +697,7 @@
+ 	.fb_blank     = w100fb_blank,
+ 	.fb_fillrect  = w100fb_fillrect,
+ 	.fb_copyarea  = w100fb_copyarea,
+-	.fb_imageblit = cfb_imageblit,
++	.fb_imageblit = w100fb_imageblit,
+ 	.fb_sync      = w100fb_sync,
+ };
+ 
+@@ -757,6 +906,7 @@
+ 	device_create_file(&pdev->dev, &dev_attr_reg_read);
+ 	device_create_file(&pdev->dev, &dev_attr_reg_write);
+ 	device_create_file(&pdev->dev, &dev_attr_flip);
++	device_create_file(&pdev->dev, &dev_attr_accel);
+ 
+ 	printk(KERN_INFO "fb%d: %s frame buffer device\n", info->node, info->fix.id);
+ 	return 0;
+@@ -784,6 +934,7 @@
+ 	device_remove_file(&pdev->dev, &dev_attr_reg_read);
+ 	device_remove_file(&pdev->dev, &dev_attr_reg_write);
+ 	device_remove_file(&pdev->dev, &dev_attr_flip);
++	device_remove_file(&pdev->dev, &dev_attr_accel);
+ 
+ 	unregister_framebuffer(info);
+ 
