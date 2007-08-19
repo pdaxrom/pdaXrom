@@ -1,0 +1,8 @@
+config GNOME-DOC-UTILS
+	bool
+	prompt "gnome-doc-utils"
+
+config GNOME-DOC-UTILS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on GNOME-DOC-UTILS

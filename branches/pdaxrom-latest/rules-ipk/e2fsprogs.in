@@ -1,0 +1,8 @@
+config E2FSPROGS
+	bool
+	prompt "e2fsprogs"
+
+config E2FSPROGS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on E2FSPROGS

@@ -1,0 +1,49 @@
+--- linux-2.6.21.1/drivers/mtd/nand/sharpsl.c~	2007-04-06 22:02:48.000000000 +0200
++++ linux-2.6.21.1/drivers/mtd/nand/sharpsl.c	2007-05-02 15:07:06.000000000 +0200
+@@ -54,22 +54,17 @@
+ /*
+  * Define partitions for flash device
+  */
+-#define DEFAULT_NUM_PARTITIONS 3
++#define DEFAULT_NUM_PARTITIONS 2
+ 
+ static int nr_partitions;
+ static struct mtd_partition sharpsl_nand_default_partition_info[] = {
+ 	{
+-	 .name = "System Area",
++	 .name = "Logical",
+ 	 .offset = 0,
+-	 .size = 7 * 1024 * 1024,
++	 .size = 0x00700000,
+ 	 },
+ 	{
+-	 .name = "Root Filesystem",
+-	 .offset = 7 * 1024 * 1024,
+-	 .size = 30 * 1024 * 1024,
+-	 },
+-	{
+-	 .name = "Home Filesystem",
++	 .name = "JFFS2",
+ 	 .offset = MTDPART_OFS_APPEND,
+ 	 .size = MTDPART_SIZ_FULL,
+ 	 },
+@@ -228,15 +223,15 @@
+ 		if (machine_is_poodle()) {
+ 			sharpsl_partition_info[1].size = 22 * 1024 * 1024;
+ 		} else if (machine_is_corgi() || machine_is_shepherd()) {
+-			sharpsl_partition_info[1].size = 25 * 1024 * 1024;
++			sharpsl_partition_info[1].size = 57 * 1024 * 1024;
+ 		} else if (machine_is_husky()) {
+-			sharpsl_partition_info[1].size = 53 * 1024 * 1024;
++			sharpsl_partition_info[1].size = 121 * 1024 * 1024;
+ 		} else if (machine_is_spitz()) {
+ 			sharpsl_partition_info[1].size = 5 * 1024 * 1024;
+ 		} else if (machine_is_akita()) {
+-			sharpsl_partition_info[1].size = 58 * 1024 * 1024;
++			sharpsl_partition_info[1].size = 121 * 1024 * 1024;
+ 		} else if (machine_is_borzoi()) {
+-			sharpsl_partition_info[1].size = 32 * 1024 * 1024;
++			sharpsl_partition_info[1].size = 121 * 1024 * 1024;
+ 		}
+ 	}
+ 

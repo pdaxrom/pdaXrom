@@ -1,0 +1,8 @@
+config OPENVPN
+	bool
+	prompt "openvpn"
+
+config OPENVPN_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on OPENVPN

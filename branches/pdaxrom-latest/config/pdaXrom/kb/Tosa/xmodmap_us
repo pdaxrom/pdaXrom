@@ -1,0 +1,83 @@
+!
+! 'Fn' key setup for SL6000 
+!
+
+clear Mod1
+clear Mod2
+clear Mod3
+clear Mod4
+clear Mod5
+
+keycode 25 = q Q 1
+keycode 31 = w W 2
+keycode 13 = e E 3 sterling
+keycode 26 = r R 4 EuroSign
+keycode 28 = t T 5
+keycode 33 = y Y 6
+keycode 29 = u U 7
+keycode 17 = i I 8
+keycode 23 = o O 9
+keycode 24 = p P 0
+
+keycode 9  = a A exclam
+keycode 27 = s S at
+keycode 12 = d D numbersign
+keycode 14 = f F dollar
+keycode 15 = g G percent
+keycode 16 = h H underscore
+keycode 18 = j J ampersand
+keycode 19 = k K asterisk
+keycode 20 = l L parenleft
+
+keycode 34 = z Z
+keycode 32 = x X
+keycode 11 = c C
+keycode 30 = v V
+keycode 10 = b B minus
+keycode 22 = n N plus
+keycode 21 = m M equal
+
+keycode 71 = comma semicolon parenright
+keycode 72 = period colon less less
+keycode 36 = Return Return greater greater
+
+keycode 77 = slash question
+keycode 78 = apostrophe quotedbl asciitilde
+
+keycode 100 = space space bar bar
+
+
+keycode 38  = Mode_switch
+
+! Cursor
+keycode 44  = Up    Up    Prior Prior
+keycode 45  = Down  Down  Next  Next
+keycode 43  = Left  Left  Home  Home
+keycode 46  = Right Right End   End
+
+keycode 39  = BackSpace BackSpace Delete Delete
+
+! R-Shift
+keycode 111 = Shift_R
+
+! Menu
+keycode 37 = XF86Start
+
+! CE-RH1 Remote
+
+keycode 104 = XF86AudioRaiseVolume
+keycode 105 = XF86AudioLowerVolume
+keycode 106 = XF86AudioNext
+keycode 107 = XF86AudioPrev
+keycode 108 = XF86AudioStop
+keycode 109 = XF86AudioPlay
+
+! This is the rotate
+
+keycode 41 = XF86RotateWindows
+keycode 42 = Escape
+keycode 99 = Return
+keycode 47 = Return
+
+add mod2    = Mode_switch
+add mod1    = Alt_L Alt_L Alt_L

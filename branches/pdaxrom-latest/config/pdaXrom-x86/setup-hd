@@ -1,0 +1,43 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+    echo
+    echo "pdaXrom harddrive installer"
+    echo
+    echo "$0 HARDDRIVE_MOUNT_POINT"
+    echo
+    exit 1
+fi
+
+ROOT_DIR=$1
+
+if [ "$ROOT_DIR" = "/" ]; then
+    echo
+    echo "Mount point cannot be /"
+    echo
+fi
+
+cp -axv / ${ROOT_DIR}
+tar xf /root/.etc_default.tar -C ${ROOT_DIR} --no-same-owner
+tar xf /root/.home_default.tar -C ${ROOT_DIR} --no-same-owner
+tar xf /root/.var_default.tar -C ${ROOT_DIR} --no-same-owner
+cp -axv /lib/modules ${ROOT_DIR}/lib
+rm -f ${ROOT_DIR}/etc/rc.d/rc.rofilesys
+
+for dir in /mnt/*; do
+    mkdir -p ${ROOT_DIR}/$dir
+done
+
+cat /etc/fstab | grep -v "/dev/lazydisk" | grep -v "${ROOT_DIR}" > ${ROOT_DIR}/etc/fstab
+
+mknod ${ROOT_DIR}/dev/console c 5 1
+
+BOODHD=`fdisk -l | grep 'Disk /dev' | grep -io '/dev.*:' | cut -d':' -f1`
+BOOTPART=`mount | grep "$ROOT_DIR" | cut -d ' ' -f 1`
+
+mount --bind ${ROOT_DIR}/boot /boot
+lilo
+umount /boot
+
+echo "Congratulation!!!"
+echo "pdaXrom harddrive installation finished!!!"

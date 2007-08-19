@@ -1,0 +1,8 @@
+config QUCS
+	bool
+	prompt "qucs"
+
+config QUCS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on QUCS

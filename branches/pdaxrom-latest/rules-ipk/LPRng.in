@@ -1,0 +1,8 @@
+config LPRNG
+	bool
+	prompt "LPRng"
+
+config LPRNG_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on LPRNG

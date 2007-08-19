@@ -1,0 +1,8 @@
+config NFS-UTILS
+	bool
+	prompt "nfs-utils"
+
+config NFS-UTILS_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on NFS-UTILS

@@ -1,0 +1,8 @@
+config FIXESPROTO-X11R7.1
+	bool
+	prompt "fixesproto-X11R7.1"
+
+config FIXESPROTO-X11R7.1_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on FIXESPROTO-X11R7.1

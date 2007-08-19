@@ -1,0 +1,11 @@
+--- vlc-0.8.5/modules/codec/ffmpeg/ffmpeg.c~	2006-07-04 15:42:29.000000000 +0000
++++ vlc-0.8.5/modules/codec/ffmpeg/ffmpeg.c	2006-07-04 15:42:44.000000000 +0000
+@@ -46,7 +46,7 @@
+ #   ifdef HAVE_POSTPROC_POSTPROCESS_H
+ #       include <postproc/postprocess.h>
+ #   else
+-#       include <libpostproc/postprocess.h>
++#       include <ffmpeg/postprocess.h>
+ #   endif
+ #endif
+ 

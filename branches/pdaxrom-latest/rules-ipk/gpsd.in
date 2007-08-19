@@ -1,0 +1,8 @@
+config GPSD
+	bool
+	prompt "gpsd"
+
+config GPSD_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on GPSD

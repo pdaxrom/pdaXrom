@@ -1,0 +1,8 @@
+config XFCE4-ICON-THEME
+	bool
+	prompt "xfce4-icon-theme"
+
+config XFCE4-ICON-THEME_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XFCE4-ICON-THEME
