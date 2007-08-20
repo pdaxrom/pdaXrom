@@ -1,0 +1,11 @@
+--- s/Makefile.in~	2006-08-25 13:26:54.000000000 +0000
++++ s/Makefile.in	2006-08-25 13:27:17.000000000 +0000
+@@ -293,7 +293,7 @@
+ target_alias = @target_alias@
+ AUTOMAKE_OPTIONS = 1.7
+ @BUILD_GTK_TRUE@GTK_SUBDIR = gtk
+-SUBDIRS = codegen . $(GTK_SUBDIR) examples tests  $(am__append_1)
++SUBDIRS = . $(GTK_SUBDIR) tests  $(am__append_1)
+ PLATFORM_VERSION = 2.0
+ CLEANFILES = atk.c pango.c pangocairo.c
+ EXTRA_DIST = \

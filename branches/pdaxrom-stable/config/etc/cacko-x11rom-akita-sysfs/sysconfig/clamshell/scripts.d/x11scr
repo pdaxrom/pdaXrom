@@ -1,0 +1,98 @@
+#! /bin/bash
+#
+# template          Template chkhinge script
+#
+# description: 
+#
+
+HARDWARE=`cat /proc/cpuinfo | grep 'Hardware' | cut -d':' -f2 | cut -d' ' -f3`
+
+case "$HARDWARE" in
+Corgi|Shepherd|Husky|Boxer)
+	MODE="hw"
+	;;
+*)
+	MODE="sw"
+	;;
+esac
+
+# See how we were called.
+  
+closed() {
+    /usr/X11R6/bin/xset dpms force suspend
+    return 0
+}
+
+landscape_hw() {
+    /usr/X11R6/bin/xset dpms force on
+    
+    local MODE=`/usr/X11R6/bin/xrandr | grep '^*' | cut -f1 -d' '`
+
+    case "$MODE" in
+    *2)
+	/usr/X11R6/bin/xrandr -s 0
+	;;
+    *3)
+	/usr/X11R6/bin/xrandr -s 1
+	;;    
+    esac
+
+    if pidof xvkbd >/dev/null; then xvkbdlauncher; fi
+    
+    return 0
+}	
+
+portrait_hw() {
+    /usr/X11R6/bin/xset dpms force on
+    
+    local MODE=`/usr/X11R6/bin/xrandr | grep '^*' | cut -f1 -d' '`
+
+    case "$MODE" in
+    *0)
+	/usr/X11R6/bin/xrandr -s 2
+	;;
+    *1)
+	/usr/X11R6/bin/xrandr -s 3
+	;;
+    esac
+
+    if pidof xvkbd >/dev/null; then xvkbdlauncher; fi
+    
+    return 0
+}  
+
+landscape_sw() {
+    /usr/X11R6/bin/xset dpms force on
+    /usr/X11R6/bin/xrandr -o normal
+
+    if pidof xvkbd >/dev/null; then xvkbdlauncher; fi
+    
+    return 0
+}	
+
+portrait_sw() {
+    /usr/X11R6/bin/xset dpms force on
+    /usr/X11R6/bin/xrandr -o left
+
+    if pidof xvkbd >/dev/null; then xvkbdlauncher; fi
+    
+    return 0
+}  
+
+
+case "$1" in
+  closed)
+  	closed
+	;;
+  landscape)
+  	landscape_$MODE
+	;;
+  portrait)
+  	portrait_$MODE
+  	;;	
+  *)
+	echo "Usage: $0 {closed|landscape|portrait}"
+	exit 1
+esac
+
+exit $?

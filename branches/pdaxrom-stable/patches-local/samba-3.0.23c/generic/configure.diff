@@ -1,0 +1,27 @@
+--- samba-3.0.23c/source/configure~	2006-10-22 20:57:35.000000000 +0000
++++ samba-3.0.23c/source/configure	2006-10-22 21:12:22.000000000 +0000
+@@ -21199,7 +21199,12 @@
+ See \`config.log' for more details." >&5
+ echo "$as_me: error: cannot run test program while cross compiling
+ See \`config.log' for more details." >&2;}
+-   { (exit 1); exit 1; }; }
++#   { (exit 1); exit 1; }; 
++    { 
++	echo "default is $linux_getgrouplist_ok"
++    };
++   
++   }
+ else
+   cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+@@ -30328,6 +30333,10 @@
+ 		samba_cv_HAVE_NATIVE_ICONV=no
+ 	fi
+ 	fi
++		default_dos_charset="\"CP850\""
++		default_display_charset="\"ASCII\""
++		default_unix_charset="\"UTF-8\""
++		samba_cv_HAVE_NATIVE_ICONV=yes
+ 
+         LIBS="$ic_save_LIBS"
+         if test x"$samba_cv_HAVE_NATIVE_ICONV" = x"yes"; then

@@ -1,0 +1,11 @@
+--- gcc-3.4.5/gcc/config/sh/elf.h~	2006-08-11 16:03:37.000000000 +0000
++++ gcc-3.4.5/gcc/config/sh/elf.h	2006-08-11 16:03:42.000000000 +0000
+@@ -100,7 +100,7 @@
+ 
+ #undef STARTFILE_SPEC
+ #define STARTFILE_SPEC \
+-  "%{!shared: crt1.o%s} crti.o%s \
++  "%{!shared: crt0.o%s} crti.o%s \
+    %{!shared:crtbegin.o%s} %{shared:crtbeginS.o%s}"
+ 
+ #undef ENDFILE_SPEC

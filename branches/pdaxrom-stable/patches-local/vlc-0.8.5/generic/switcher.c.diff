@@ -1,0 +1,11 @@
+--- vlc-0.8.5/modules/stream_out/switcher.c~	2006-07-04 15:53:15.000000000 +0000
++++ vlc-0.8.5/modules/stream_out/switcher.c	2006-07-04 15:53:28.000000000 +0000
+@@ -45,7 +45,7 @@
+ #ifdef HAVE_POSTPROC_POSTPROCESS_H
+ #   include <postproc/postprocess.h>
+ #else
+-#   include <libpostproc/postprocess.h>
++#   include <ffmpeg/postprocess.h>
+ #endif
+ 
+ #define SOUT_CFG_PREFIX "sout-switcher-"

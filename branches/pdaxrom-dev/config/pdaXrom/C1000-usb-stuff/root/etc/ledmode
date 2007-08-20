@@ -1,0 +1,32 @@
+#!/bin/sh
+LEDCONF=/etc/ledmode.conf
+CMD=$1
+PARAM=$2
+
+if [ ! -f $LEDCONF ]; then
+	if [ -e /hdd1 ]; then
+		echo 1 > $LEDCONF
+	else
+		echo 0 > $LEDCONF
+	fi
+fi
+
+if [ "$CMD" = "" ]; then
+	echo "Usage: ledmode {get|set <num>|reset}"
+	exit 3
+fi
+
+if [ "$CMD" = "get" ]; then
+	RET=`cat $LEDCONF`
+	echo $RET
+	exit $RET
+fi
+
+if [ "$CMD" = "set" ]; then
+	echo $PARAM > $LEDCONF
+fi
+
+ledctl ledmode `cat $LEDCONF`
+
+exit 4
+#eof

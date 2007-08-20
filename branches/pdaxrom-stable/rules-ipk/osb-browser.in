@@ -1,0 +1,8 @@
+config OSB-BROWSER
+	bool
+	prompt "osb-browser"
+
+config OSB-BROWSER_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on OSB-BROWSER

@@ -1,0 +1,8 @@
+config EDE
+	bool
+	prompt "ede"
+
+config EDE_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on EDE

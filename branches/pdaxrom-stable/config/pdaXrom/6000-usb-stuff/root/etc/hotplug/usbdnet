@@ -1,0 +1,21 @@
+#!/bin/sh
+
+. /etc/hotplug/usbdnet.conf
+. /etc/hotplug/usbd.func
+
+case $1 in
+
+up) 
+	usbd_net_if_up
+	;;
+down) 
+	usbd_net_if_down
+	;;
+*)
+	exit 1
+	;;
+
+esac
+
+exit 0
+

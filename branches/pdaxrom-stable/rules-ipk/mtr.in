@@ -1,0 +1,8 @@
+config MTR
+	bool
+	prompt "mtr"
+
+config MTR_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on MTR

@@ -1,0 +1,8 @@
+config MOTO4LIN
+	bool
+	prompt "moto4lin"
+
+config MOTO4LIN_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on MOTO4LIN

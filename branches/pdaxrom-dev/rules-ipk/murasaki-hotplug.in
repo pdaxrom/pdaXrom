@@ -1,0 +1,8 @@
+config MURASAKI-HOTPLUG
+	bool
+	prompt "murasaki hotplug"
+
+config MURASAKI-HOTPLUG_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on MURASAKI-HOTPLUG

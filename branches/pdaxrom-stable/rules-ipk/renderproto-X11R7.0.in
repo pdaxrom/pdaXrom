@@ -1,0 +1,8 @@
+config RENDERPROTO-X11R7.0
+	bool
+	prompt "renderproto-X11R7.0"
+
+config RENDERPROTO-X11R7.0_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on RENDERPROTO-X11R7.0

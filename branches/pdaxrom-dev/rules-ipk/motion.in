@@ -1,0 +1,8 @@
+config MOTION
+	bool
+	prompt "motion"
+
+config MOTION_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on MOTION

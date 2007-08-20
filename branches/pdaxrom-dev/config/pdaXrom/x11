@@ -1,0 +1,57 @@
+#!/bin/sh
+
+. /etc/profile
+
+start_xdm() {
+    local p
+    p=`pidof xdm`
+    test $p && exit 0
+    p=`pidof X`
+    test $p && exit 0
+    
+    export LD_LIBRARY_PATH=/usr/X11R6/lib:/usr/local/lib:$LD_LIBRARY_PATH
+    if [ ! -f /etc/pointercal ]; then
+	/usr/bin/ts_calibrate
+    fi
+    if [ -f /etc/sysconfig/x11 ]; then
+	. /etc/sysconfig/x11
+	export X11_RIGHT_MOUSE_BUTTON X11_RIGHT_MOUSE_BUTTON_MOD X11_MIDDLE_MOUSE_BUTTON_MOD
+    fi
+    test -f /etc/sysconfig/keyboard/kernel.map -a -f /usr/bin/loadkeys && /usr/bin/loadkeys /etc/sysconfig/keyboard/kernel.map
+    xdm
+}
+
+stop_xdm() {
+    local p
+    p=`pidof X`
+    test $p && kill $p
+    p=`pidof xdm`
+    test $p && kill $p
+}
+
+usage()
+{
+    echo "Usage: $0 {start|stop}"
+}
+
+
+if [ $# -lt 1 ] ; then usage ; exit 0 ; fi
+action=$1
+
+case "$action" in
+
+start)
+    start_xdm
+    ;;
+
+stop)
+    stop_xdm
+    ;;
+
+*)
+    usage
+    ;;
+
+esac
+
+exit 0

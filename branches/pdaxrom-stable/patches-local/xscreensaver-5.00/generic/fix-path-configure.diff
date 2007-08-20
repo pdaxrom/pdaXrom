@@ -1,0 +1,20 @@
+--- s/configure~	2006-06-30 12:10:07.000000000 +0000
++++ s/configure	2006-06-30 12:11:42.000000000 +0000
+@@ -14806,7 +14806,7 @@
+   GTK_DATADIR=""
+   if test "$have_gtk" = yes; then
+     GTK_DATADIR=`$pkg_config --variable=prefix gtk+-2.0`
+-    GTK_DATADIR="$GTK_DATADIR/share"
++    GTK_DATADIR="/usr/share"
+   fi
+ 
+   if test "$have_gtk" = yes; then
+@@ -19773,7 +19773,7 @@
+   PO_DATADIR="$GTK_DATADIR"
+ elif test "$have_gtk" = yes; then
+   PO_DATADIR=`$pkg_config --variable=prefix gtk+-2.0`
+-  PO_DATADIR="$PO_DATADIR/share"
++  PO_DATADIR="/usr/share"
+ fi
+ 
+ if test -z "$PO_DATADIR" ; then

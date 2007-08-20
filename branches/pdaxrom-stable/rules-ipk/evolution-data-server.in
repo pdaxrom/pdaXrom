@@ -1,0 +1,8 @@
+config EVOLUTION-DATA-SERVER
+	bool
+	prompt "evolution-data-server"
+
+config EVOLUTION-DATA-SERVER_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on EVOLUTION-DATA-SERVER

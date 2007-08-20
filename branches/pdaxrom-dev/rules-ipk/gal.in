@@ -1,0 +1,8 @@
+config GAL
+	bool
+	prompt "gal"
+
+config GAL_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on GAL

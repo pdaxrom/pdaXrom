@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Moto4Lin
+Comment=P2K Tools
+Exec=moto4lin
+Terminal=0
+Type=Application
+Icon=motorola.png
+Categories=Applications
+StartupNotify=False
+SingleInstance=False

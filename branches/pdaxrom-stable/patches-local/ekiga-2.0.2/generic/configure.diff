@@ -1,0 +1,113 @@
+--- s/configure~	2006-08-02 16:10:06.000000000 +0000
++++ s/configure	2006-08-02 17:06:08.000000000 +0000
+@@ -21518,7 +21518,7 @@
+   (exit $ac_status); }; then
+   pkg_cv_EDS_CFLAGS=`$PKG_CONFIG --cflags "libebook-1.0 >= 0.0.94" 2>/dev/null`
+ else
+-  pkg_failed=yes
++  pkg_failed=no
+ fi
+     fi
+ else
+@@ -21536,7 +21536,7 @@
+   (exit $ac_status); }; then
+   pkg_cv_EDS_LIBS=`$PKG_CONFIG --libs "libebook-1.0 >= 0.0.94" 2>/dev/null`
+ else
+-  pkg_failed=yes
++  pkg_failed=no
+ fi
+     fi
+ else
+@@ -21582,7 +21582,8 @@
+ and EDS_LIBS to avoid the need to call pkg-config.
+ See the pkg-config man page for more details.
+ " >&2;}
+-   { (exit 1); exit 1; }; }
++   { (exit 1); exit 1; }; 
++   }
+ elif test $pkg_failed = untried; then
+ 	{ { echo "$as_me:$LINENO: error: The pkg-config script could not be found or is too old.  Make sure it
+ is in your PATH or set the PKG_CONFIG environment variable to the full
+@@ -21604,7 +21605,8 @@
+ 
+ To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+ See \`config.log' for more details." >&2;}
+-   { (exit 1); exit 1; }; }
++   { (exit 1); exit 1; }; 
++   }
+ else
+ 	EDS_CFLAGS=$pkg_cv_EDS_CFLAGS
+ 	EDS_LIBS=$pkg_cv_EDS_LIBS
+@@ -21665,7 +21667,8 @@
+ if test x$SK_CONFIG = xno; then
+ { { echo "$as_me:$LINENO: error: Couldn't find scrollkeeper-config. Please install the scrollkeeper package: http://scrollkeeper.sourceforge.net" >&5
+ echo "$as_me: error: Couldn't find scrollkeeper-config. Please install the scrollkeeper package: http://scrollkeeper.sourceforge.net" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ fi
+ fi
+ 
+@@ -21797,7 +21800,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "${with_pwlib_dir}/include/ptlib/pprocess.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -21978,17 +21982,18 @@
+ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ 
+-as_ac_File=`echo "ac_cv_file_${with_pwlib_dir}/bin/ptlib-config" | $as_tr_sh`
+-echo "$as_me:$LINENO: checking for ${with_pwlib_dir}/bin/ptlib-config" >&5
+-echo $ECHO_N "checking for ${with_pwlib_dir}/bin/ptlib-config... $ECHO_C" >&6
++as_ac_File=`echo "ac_cv_file_${with_pwlib_dir}/make/ptlib-config" | $as_tr_sh`
++echo "$as_me:$LINENO: checking for ${with_pwlib_dir}/make/ptlib-config" >&5
++echo $ECHO_N "checking for ${with_pwlib_dir}/make/ptlib-config... $ECHO_C" >&6
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "${with_pwlib_dir}/bin/ptlib-config"; then
++   #{ (exit 1); exit 1; }; 
++   }
++if test -r "${with_pwlib_dir}/make/ptlib-config"; then
+   eval "$as_ac_File=yes"
+ else
+   eval "$as_ac_File=no"
+@@ -22018,7 +22023,7 @@
+   ;;
+   *)
+   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+-for as_dir in ${with_pwlib_dir}/bin/
++for as_dir in ${with_pwlib_dir}/make/
+ do
+   IFS=$as_save_IFS
+   test -z "$as_dir" && as_dir=.
+@@ -22073,7 +22078,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "${with_opal_dir}/include/opal/opal/call.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -22105,7 +22111,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "${with_opal_dir}/include/opal/call.h"; then
+   eval "$as_ac_File=yes"
+ else

@@ -1,0 +1,7 @@
+# cdroms
+KERNEL=="sr[0-9]*", SYMLINK="%k", NAME="cdrom%E"
+KERNEL=="hd[a-z]",  SYMLINK="%k", NAME="cdrom%E", SYSFS{removable}=="1", PROGRAM="/bin/cat /proc/ide/%k/media", RESULT=="cdrom"
+
+# disks
+KERNEL=="[sh]d[a-z]",       SYMLINK="%k", NAME="disc%E"
+KERNEL=="[sh]d[a-z][1-9]*", SYMLINK="%k", NAME="%Ppart%n"

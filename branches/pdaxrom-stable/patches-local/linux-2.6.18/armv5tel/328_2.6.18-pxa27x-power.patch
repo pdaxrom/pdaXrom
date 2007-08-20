@@ -1,0 +1,1979 @@
+diff -Nur linux-2.6.18-orig/arch/arm/Kconfig linux-2.6.18/arch/arm/Kconfig
+--- linux-2.6.18-orig/arch/arm/Kconfig	2006-11-05 17:21:30.000000000 +0000
++++ linux-2.6.18/arch/arm/Kconfig	2006-11-05 18:04:40.000000000 +0000
+@@ -726,6 +726,13 @@
+ 
+ source "drivers/cpufreq/Kconfig"
+ 
++config DVFM
++ 	bool "Voltage change sequencer driver"
++ 	depends on CPU_FREQ && ARCH_PXA
++ 	default y
++ 	help
++ 	 Handle voltage switches belongs to frequency.
++
+ config CPU_FREQ_SA1100
+ 	bool
+ 	depends on CPU_FREQ && (SA1100_H3100 || SA1100_H3600 || SA1100_H3800 || SA1100_LART || SA1100_PLEB || SA1100_BADGE4 || SA1100_HACKKIT)
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/cpu-freq-pxa27x.c linux-2.6.18/arch/arm/mach-pxa/cpu-freq-pxa27x.c
+--- linux-2.6.18-orig/arch/arm/mach-pxa/cpu-freq-pxa27x.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/cpu-freq-pxa27x.c	2006-11-05 18:04:40.000000000 +0000
+@@ -0,0 +1,681 @@
++/*
++ * CPUfreq driver for PXA27x
++ *
++ * cpufreq driver for PXA27x by Chao Xie <chao.xie@intel.com>
++ * Copyright (C) 2004, Intel Corporation
++ *
++ * This software program is licensed subject to the GNU General Public License
++ * (GPL).Version 2,June 1991, available at http://www.fsf.org/copyleft/gpl.html
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/cpufreq.h>
++#include <linux/config.h>
++#include <linux/ioctl.h>
++#include <asm/hardware.h>
++#include <asm/io.h>
++#include <asm/delay.h>
++#include <asm/mach-types.h>
++#include <asm/arch/pxa-regs.h>
++//#include <asm/arch/mainstone.h>
++
++#include "cpu-freq-voltage-pxa27x.h"
++
++#define N_NUM 8
++#define L_NUM 31
++
++#define CPUFREQ_SET_BASE	(0x1 << 8)
++#define CPUFREQ_SET_FREQ	CPUFREQ_SET_BASE << 0x1
++#define CPUFREQ_SET_B		CPUFREQ_SET_BASE << 0x2
++#define CPUFREQ_SET_T_HT	CPUFREQ_SET_BASE << 0x3
++#define CPUFREQ_SET_A		CPUFREQ_SET_BASE << 0x4
++
++#define MSC0_MASK	0x7ff07ff0
++#define DRI_MASK	0xfff
++
++struct pxa27x_mem_set {
++	unsigned int memc_clock;
++	unsigned int msc0;
++	unsigned int dri;
++};
++
++static struct pxa27x_mem_set mem_op_val[] = {
++	{13000, 0x11101110, 0x002},
++	{91000, 0x12701270, 0x015},
++	{104000, 0x12801280, 0x018},
++	{208000, 0x15d015d0, 0x031},
++	{0, 0, 0},
++};
++
++static unsigned int cpufreq_matrix[N_NUM-1][L_NUM-1];
++static unsigned int cpufreq_cur;
++static DECLARE_MUTEX    (pxa27x_freq_sem);
++
++struct cpufreq_info {
++	unsigned int l;
++	unsigned int n2;
++	unsigned int b;
++	unsigned int t;
++	unsigned int a;
++};
++
++static struct cpufreq_info cpufreq_mode;
++
++extern unsigned int get_clk_frequency_khz(int);
++extern int pxa27x_set_voltage(unsigned int, unsigned int, unsigned int);
++extern unsigned int pxa27x_get_voltage(void);
++extern struct cpufreq_governor cpufreq_gov_performance;
++
++static int pxa27x_cpufreq_governor(struct cpufreq_policy *policy,
++					unsigned int event)
++{
++        return 0;
++}
++
++static struct cpufreq_governor pxa27x_cpufreq_gov = {
++        .name           = "pxa27x_governor",
++        .governor       = pxa27x_cpufreq_governor,
++        .owner          = THIS_MODULE,
++};
++
++static inline int set_mode(unsigned int l, unsigned int n2, unsigned int b,
++				unsigned int t, unsigned int a)
++{
++	unsigned int ret = 0;
++
++	if (n2 == cpufreq_mode.n2 && l == cpufreq_mode.l && b == cpufreq_mode.b
++		&& t == cpufreq_mode.t && a == cpufreq_mode.a)
++		return 0;
++	if (l == cpufreq_mode.l && n2 == cpufreq_mode.n2) {
++		if (b != cpufreq_mode.b)
++			ret |= CPUFREQ_SET_B;
++		if (t != cpufreq_mode.t)
++			ret |= CPUFREQ_SET_T_HT;
++		if (a != cpufreq_mode.a)
++			ret |= CPUFREQ_SET_A;
++	}
++	else {
++		ret |= CPUFREQ_SET_FREQ;
++		cpufreq_mode.l = l;
++		cpufreq_mode.n2 = n2;
++	}
++	cpufreq_mode.b = b;
++	cpufreq_mode.t = t;
++	cpufreq_mode.a = a;
++	return ret;
++}
++
++#ifdef CONFIG_FAST_DVFM
++void pxa27x_setspeed(unsigned int CLKCFGValue)
++#else
++static void pxa27x_setspeed(unsigned int CLKCFGValue)
++#endif
++{
++        unsigned long flags;
++        unsigned int unused;
++
++        /* NOTE: IRQs are already turned off in dpm idle, so it is not
++           necessary to do it here. */
++        local_irq_save(flags);
++
++	__asm__ __volatile__(" \n\
++		ldr     r4, [%1]                        @load MDREFR \n\
++		mcr     p14, 0, %2, c6, c0, 0           @ set CCLKCFG[FCS] \n\
++		ldr     r5, =0xe3dfefff \n\
++		and     r4, r4, r5      \n\
++		str     r4,  [%1]                       @restore \n\
++		"
++		: "=&r" (unused)
++		: "r" (&MDREFR), "r" (CLKCFGValue)
++		: "r4", "r5");
++
++        /* NOTE: if we don't turn off IRQs up top, there is no point
++           to restoring them here. */
++        local_irq_restore(flags);
++}
++#ifdef CONFIG_FAST_DVFM
++EXPORT_SYMBOL(pxa27x_setspeed);
++#endif
++
++#ifdef CONFIG_FAST_DVFM
++//extern void pxafb_wait_for_eof(unsigned int);
++#else
++//extern void pxafb_wait_for_eof(void);
++#endif
++
++static void pxa27x_change_freq(unsigned int CLKCFGvalue)
++{
++//#ifdef CONFIG_FAST_DVFM
++//	pxafb_wait_for_eof(CLKCFGvalue);
++//#else
++//	pxafb_wait_for_eof();
++	pxa27x_setspeed(CLKCFGvalue);
++//#endif
++}
++
++static void pxa27x_set_mem_before_freq(unsigned int memc_clock,
++		unsigned int *pmdrefr, unsigned int *pmsc0, unsigned int *pdri)
++{
++	int i = 0;
++
++	while(mem_op_val[i].memc_clock < memc_clock && mem_op_val[i].memc_clock != 0)
++		i++;
++
++	/* if current msc0 > next msc0, change after */
++	if ( (MSC0 & MSC0_MASK) > mem_op_val[i].msc0) {
++		*pmsc0 = mem_op_val[i].msc0;
++	}
++	else {
++		*pmsc0 = 0;
++		MSC0 = (MSC0 & ~MSC0_MASK) | mem_op_val[i].msc0;
++	}
++	/* if current dri > next dri, change after */
++	if ( (MDREFR & DRI_MASK) > mem_op_val[i].dri) {
++		*pdri = mem_op_val[i].dri;
++	}
++	else {
++		*pdri = 0;
++		MDREFR = (MDREFR & ~DRI_MASK) | mem_op_val[i].dri;
++	}
++
++	if (memc_clock > 104000) {
++		/* K1DB2, K2DB2 set; memc/2 for sdram */
++		/* K0DB4 set; memc/4 for flash */
++		MDREFR |= ((1 << 14) | (1 << 17) | (1 << 19) | (1 << 29));
++		*pmdrefr = 0;
++	}
++	else if (memc_clock > 52000) {
++		MDREFR |= (1 << 14);
++		/* K1DB2, K2DB2 will be clear; memc for sdram */
++		/* K0DB4 will be clear; memc/2 for flash */
++		*pmdrefr = (1 << 17) | (1 << 19) | (1 << 29);
++	}
++	else {
++		/* memc for flash and sdram*/
++		*pmdrefr = (1 << 14) | (1 << 17) | (1 << 19) | (1 << 29);
++	}
++}
++
++void pxa27x_set_mem_after_freq(unsigned int mdrefr, unsigned int msc0,
++			unsigned int dri)
++{
++/*	if (mdrefr || dri)*/
++	if (dri)
++		MDREFR = (MDREFR & (~DRI_MASK | mdrefr)) | dri;
++	if (msc0)
++		MSC0 = (MSC0 & ~MSC0_MASK) | msc0;
++}
++
++/* turbo_mode_flag = 2 : indicates Turbo
++ * turbo_mode_flag = 1 : indicates HalfTurbo
++ */
++static void pxa27x_set_core_freq(unsigned int l, unsigned int n2,
++				unsigned int fast_bus_mode_flag,
++				unsigned int turbo_mode_flag,
++				unsigned int memc_clock_flag,
++				unsigned int relation)
++{
++	int CLKCFGValue = 0;
++	int turbo_mode = 0;
++	int memc_clock, m, l_pll;
++	unsigned int mdrefr, msc0, dri;
++
++	if (turbo_mode_flag == 2)
++		turbo_mode = 1;
++	else if (turbo_mode_flag == 1)
++		turbo_mode = 1 << 2;
++
++	m = (l <= 10) ? 1 : (l <= 20) ? 2 : 4;
++	l_pll = l*13000;
++	memc_clock = (!memc_clock_flag) ? (l_pll/m) : ((fast_bus_mode_flag) ? l_pll : (l_pll/2));
++	pxa27x_set_mem_before_freq(memc_clock, &mdrefr, &msc0, &dri);
++
++	/* SDRAM can not be greater than 104Mhz, and flash can not be greater
++	   than 52Mhz*/
++	if (relation & (CPUFREQ_SET_FREQ | CPUFREQ_SET_B | CPUFREQ_SET_A)) {
++		CCCR = (n2 << 7) | l | (memc_clock_flag << 25);
++
++		/*  set up the new CLKCFG value, for an new frequency       */
++		/*  0x2 is used to set FC bit in CLKCFG. */
++		CLKCFGValue = ( 0x2 | (fast_bus_mode_flag << 3) | turbo_mode);
++	}
++	else {
++		CLKCFGValue = (fast_bus_mode_flag << 3) | turbo_mode;
++	}
++
++	/*
++	 * Program the CLKCFG (CP14, reigster 6) for frequency change
++	 */
++
++	pxa27x_change_freq(CLKCFGValue);
++	pxa27x_set_mem_after_freq(mdrefr, msc0, dri);
++}
++
++unsigned int pxa27x_read_clkcfg(void)
++{
++	unsigned int value=0;
++	unsigned int un_used;
++
++	__asm__ __volatile__("mrc       p14, 0, %1, c6, c0, 0" :"=&r" (un_used)
++			:"r" (value));
++
++	return value;
++}
++EXPORT_SYMBOL_GPL(pxa27x_read_clkcfg);
++
++#define CCCR_CPDIS_BIT_ON               (1 << 31)
++#define CCCR_PPDIS_BIT_ON               (1 << 30)
++#define CCCR_PLL_EARLY_EN_BIT_ON        (1 << 26)
++#define CCCR_LCD_26_BIT_ON              (1 << 27)
++
++static int old_clkcfg;
++static int old_mdrefr;
++static int old_msc0;
++static int enter_13M(void)
++{
++	int cccr;
++	int clkcfg;
++
++	if (CCCR & (1 << 31))
++		return 1;
++	old_clkcfg = pxa27x_read_clkcfg();
++	old_mdrefr = MDREFR;
++	old_msc0 = MSC0;
++#ifdef CONFIG_13M_TWOSTEP
++	if (old_clkcfg & 0x5) {
++		pxa27x_setspeed(old_clkcfg & 0x8);
++		cccr = CCCR;
++		while (pxa27x_read_clkcfg() != (old_clkcfg & 0x8))
++			;
++
++	}
++#endif
++	cccr = CCCR;
++	cccr |= CCCR_CPDIS_BIT_ON;
++	cccr &= ~CCCR_PPDIS_BIT_ON;
++	cccr |= CCCR_LCD_26_BIT_ON;
++	CCCR = cccr;
++	LCCR4 |= (1 << 25);
++	pxa27x_setspeed(0x2);
++	MDREFR = (MDREFR & ~((1 << 14) | (1 << 17) | (1 << 19) | (1 << 29) | DRI_MASK)) | 0x002;
++	/* maybe this can optmize 13Mhz */
++	MSC0 = (MSC0 & ~MSC0_MASK) | 0x11101110;
++	return 0;
++}
++
++/* using new L, N2 to enbale CPDIS first, then change frequency */
++static void exit_13M_change_freq(unsigned int l, unsigned int n2,
++                                unsigned int fast_bus_mode_flag,
++				unsigned int turbo_mode_flag,
++				unsigned int memc_clock_flag)
++{
++	int cccr, ccsr, clkcfg;
++	unsigned int time_delay;
++
++	if (!(CCCR & (1 << 31)))
++		return;
++
++	clkcfg = 0x2;
++	if (turbo_mode_flag)
++		clkcfg |= 0x1;
++	if (fast_bus_mode_flag)
++		clkcfg |= (0x1 << 3);
++
++	cccr = CCCR;
++	cccr |= (CCCR_CPDIS_BIT_ON | CCCR_PLL_EARLY_EN_BIT_ON);
++	/* clear L and 2N, A bit */
++	cccr &= ~(0x3ffffff);
++	cccr |= l | n2 << 7 | (memc_clock_flag << 25);
++	CCCR = cccr;
++
++	/* Step 2 */
++	cccr = CCCR;
++	if ((cccr & 0x84000000) != 0x84000000) { /* CPDIS, pll_early_en */
++		printk("DPM: Warning: CPDIS or PLL_EARLY_EN not on\n");
++	}
++	time_delay = OSCR;
++	while ((OSCR - time_delay) < 390)
++		;
++	/* Step 3 */
++	while ((CCSR & 0x30000000) == 0x30000000)
++		break;
++	/* Step 4: NOP */
++
++	/* Step 5 */
++	/* Now clear the PLL disable bits */
++	/* But leave EARLY_EN on; it will be cleared by the frequency change */
++	cccr &= ~(CCCR_CPDIS_BIT_ON | CCCR_PPDIS_BIT_ON); /* Not ON */
++	cccr |= CCCR_PLL_EARLY_EN_BIT_ON;
++	CCCR = cccr;
++	MDREFR = old_mdrefr;
++	MSC0 = old_msc0;
++#ifdef CONFIG_13M_TWOSTEP
++	pxa27x_setspeed(0x2);
++#endif
++	LCCR4 &= ~((1 << 25));
++#ifdef CONFIG_13M_TWOSTEP
++	cccr = CCCR;
++	while(pxa27x_read_clkcfg() != 0x2)
++		;
++	if (turbo_mode_flag || fast_bus_mode_flag) {
++		CKEN &= ~CKEN16_LCD;
++		pxa27x_setspeed(clkcfg);
++		CKEN |= CKEN16_LCD;
++	}
++#else
++	pxa27x_setspeed(clkcfg);
++#endif
++}
++
++void pxa27x_cpufreq_restore(void)
++{
++	int CLKCFGValue = 0;
++	int turbo_mode = 0;
++	int m, l_pll, memc_clock;
++	unsigned int mdrefr, msc0, dri;
++
++	if (cpufreq_cur == 13000) {
++		enter_13M();
++		return;
++	}
++	m = (cpufreq_mode.l <= 10) ? 1 : (cpufreq_mode.l <= 20) ? 2 : 4;
++	l_pll = cpufreq_mode.l*13000;
++	memc_clock = (!cpufreq_mode.a) ? (l_pll/m) : ((cpufreq_mode.b) ? l_pll : (l_pll/2));
++	pxa27x_set_mem_before_freq(memc_clock, &mdrefr, &msc0, &dri);
++	if (cpufreq_mode.t == 2)
++		turbo_mode = 1;
++	else if (cpufreq_mode.t == 1)
++		turbo_mode = 1 << 2;
++
++	CCCR = (cpufreq_mode.n2 << 7) | cpufreq_mode.l | (cpufreq_mode.a << 25);
++	CLKCFGValue = ( 0x2 | (cpufreq_mode.b << 3) | turbo_mode);
++	pxa27x_setspeed(CLKCFGValue);
++	pxa27x_set_mem_after_freq(mdrefr, msc0, dri);
++}
++EXPORT_SYMBOL_GPL(pxa27x_cpufreq_restore);
++
++static int pxa27x_cpufreq_init(struct cpufreq_policy *policy)
++{
++	unsigned int n2, l;
++
++	/* we only have one CPU */
++	if (policy->cpu != 0)
++		return -EINVAL;
++	/* init policy */
++	policy->cur = cpufreq_cur;
++	/* we use CPU limits as default */
++	policy->min = PXA27X_MIN_FREQ;
++	policy->max = PXA27X_MAX_FREQ;
++	policy->cpuinfo.min_freq = PXA27X_MIN_FREQ;
++	policy->cpuinfo.max_freq = PXA27X_MAX_FREQ;
++	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
++	/* Only simple governer is needed. Directly using pxa27x
++	 * governor. In fact it is a NULL governor.
++	 */
++	policy->governor = &pxa27x_cpufreq_gov;
++	/* based on manual to set freq table */
++	memset(&cpufreq_matrix, 0 ,sizeof(cpufreq_matrix));
++	for (n2 = 2; n2 <= N_NUM; n2++) {
++		for (l = 2; l <= L_NUM; l++) {
++			cpufreq_matrix[n2-2][l-2] = n2*l*6500;
++			if( cpufreq_matrix[n2-2][l-2] > PXA27X_MAX_FREQ )
++				cpufreq_matrix[n2-2][l-2] = 0;
++		}
++	}
++	return 0;
++}
++
++static int pxa27x_cpufreq_exit(struct cpufreq_policy *policy)
++{
++	return 0;
++}
++
++/* the frequency is gotten form L, N base on cpufreq_matrix */
++static int pxa27x_cpufreq_verify(struct cpufreq_policy *policy)
++{
++	if (policy->min < PXA27X_MIN_FREQ || policy->max > PXA27X_MAX_FREQ)
++		return -1;
++	return 0;
++}
++
++/* every time invoke the function, frequency is set even nothing has changed */
++static int pxa27x_cpufreq_target (struct cpufreq_policy *policy,
++				unsigned int target_freq,
++				unsigned int relation)
++{
++	unsigned int n2, l, b, t = 0, a;
++	struct cpufreq_freqs freqs;
++
++	freqs.cpu = 0;
++	freqs.old = cpufreq_cur;
++	freqs.new = target_freq;
++
++	if (target_freq == 13000)  {
++		cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
++	 	enter_13M();
++		cpufreq_cur = target_freq;
++		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
++		calibrate_delay();
++		return 0;
++	}
++	l = cpufreq_mode.l;
++	n2 = cpufreq_mode.n2;
++	b = cpufreq_mode.b;
++	t = cpufreq_mode.t;
++	a = cpufreq_mode.a;
++
++/* System hang when enabling RUN/TURBO switching at 520MHZ */
++#ifdef CONFIG_PXA27x_E37
++	if (target_freq == 520000 && (relation & CPUFREQ_SET_T_HT)) {
++		printk("Workround for E37 about enabling RUN/TURBO switching at 520MHZ.\n If you want to disable workround, DO NOT set \"CONFIG_PXA27x_E37=y\"\n");
++		cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
++		enter_13M();
++		exit_13M_change_freq(l, n2, b, t, a);
++		cpufreq_cur = target_freq;
++		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
++		calibrate_delay();
++		return 0;
++	}
++#endif
++	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
++	/* Using CCCR to make sure it is 13M */
++	if ((cpufreq_cur == 13000) && (CCSR & (1 << 31)))
++		exit_13M_change_freq(l, n2, b, t, a);
++	else
++		pxa27x_set_core_freq(l, n2, b, t, a, relation);
++	cpufreq_cur = target_freq;
++	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
++	calibrate_delay();
++	return 0;
++
++}
++static unsigned int pxa27x_get_cur_freq(unsigned int cpu)
++{
++	if (cpu)
++		return 0;
++	return get_clk_frequency_khz(0);
++}
++
++static ssize_t show_available_freqs (struct cpufreq_policy *policy, char *buf)
++{
++	unsigned int n2, l, count = 0;
++
++	count += sprintf(&buf[count], "%s\t%s\t%s\n", "L", "2N", "Freq");
++	for (n2 = 2; n2 <= N_NUM ; n2++) {
++		for (l = 2; l <= L_NUM; l++) {
++			if (cpufreq_matrix[n2-2][l-2] >= policy->min
++				&& cpufreq_matrix[n2-2][l-2] <= policy->max)
++				count += sprintf(&buf[count], "%d\t%d\t%d\n", l,
++						 n2, cpufreq_matrix[n2-2][l-2]);
++		}
++	}
++	return count;
++}
++
++static struct freq_attr pxa27x_available_freqs = {
++        .attr = { .name = "scaling_available_frequencies", .mode = 0444 },
++        .show = show_available_freqs,
++};
++
++static ssize_t show_freq_voltage (struct cpufreq_policy *policy, char *buf)
++{
++	int i = 0, count = 0;
++
++	count += sprintf(&buf[count], "%s\t%s\n", "Freq", "Vol");
++	while (ipm_fv_table[i].freq != 0 ) {
++                count += sprintf(&buf[count], "%u\t%u\n", ipm_fv_table[i].freq, ipm_fv_table[i].voltage);
++		i++;
++        }
++	return count;
++}
++
++static struct freq_attr pxa27x_freq_voltage = {
++        .attr = { .name = "show_frequency_and_voltage", .mode = 0444 },
++        .show = show_freq_voltage,
++};
++
++static ssize_t show_cpu_voltage (struct cpufreq_policy *policy, char *buf)
++{
++	unsigned int vol, count;
++
++	vol = pxa27x_get_voltage();
++	count = sprintf(&buf[0], "%dmv\n", vol);
++	return count;
++}
++
++static ssize_t store_cpu_voltage (struct cpufreq_policy *policy,
++					const char *buf, size_t count)
++{
++	unsigned int vol, ret, n;
++
++	n = sscanf(buf, "%u", &vol);
++	ret = pxa27x_set_voltage(cpufreq_cur, vol, 0);
++	if (ret < 0) {
++		printk(KERN_ERR "Error:Wrong voltage");
++	}
++	return count;
++}
++
++static struct freq_attr pxa27x_cpu_voltage = {
++	.attr = { .name = "cpu-voltage", .mode = 0644 },
++	.show = show_cpu_voltage,
++	.store = store_cpu_voltage,
++};
++
++static struct freq_attr* pxa27x_attr[] = {
++        &pxa27x_available_freqs,
++	&pxa27x_cpu_voltage,
++	&pxa27x_freq_voltage,
++        NULL,
++};
++
++static struct cpufreq_driver pxa27x_cpufreq_driver = {
++	.name           = "pxa27x", /* there's a 16 char limit */
++	.flags		= CPUFREQ_CONST_LOOPS,
++	.init           = pxa27x_cpufreq_init,
++	.exit           = pxa27x_cpufreq_exit,
++	.verify         = pxa27x_cpufreq_verify,
++	.target         = pxa27x_cpufreq_target,
++	.get            = pxa27x_get_cur_freq,
++	.attr           = pxa27x_attr,
++	.owner          = THIS_MODULE,
++};
++
++/*
++ * validate l, n2 , b, t
++*/
++int pxa27x_validate(unsigned int l, unsigned int n2, unsigned int b,
++			unsigned int t, unsigned int a)
++{
++	printk("L:%u, 2N:%u, b:%u, t:%u\n", l, n2 , b, t);
++#ifdef CONFIG_PXA27x_E38
++	if (t == 1) {
++		printk("HaltTurbo mode is disabled because it may hang the system.\n If you want to enbale it, DO NOT set \"CONFIG_PXA27x_E38=y\"\n");
++		return -EINVAL;
++	}
++#endif
++	/* This is 13M mode */
++	if (b > 1 || t > 2 || a > 1)
++                return -EINVAL;
++	if (l == 1 && n2 == 2 && b == 0 && t == 0)
++		return 0;
++	if ((n2 > N_NUM) || (n2 < 2))
++                return -EINVAL;
++	if (l < 2 || l > L_NUM)
++		return -EINVAL;
++       	/* when B = 1, Max L = 16 */
++	if (b && l > 16)
++		return -EINVAL;
++	if (t == 1 && (n2 != 6 && n2 != 8))
++		return -EINVAL;
++	if (cpufreq_matrix[n2-2][l-2] == 0)
++		return -EINVAL;
++	return 0;
++}
++
++EXPORT_SYMBOL(pxa27x_validate);
++/*
++ * The interface for other module to change the frequency.
++ * If freq, n2, turbo, b, a are same as before, no frequency change occurs.
++ */
++int pxa27x_set_cpufreq(unsigned int l, unsigned int n2, unsigned int b,
++			unsigned int t, unsigned int a)
++{
++	struct cpufreq_policy policy;
++	int ret = 0;
++	unsigned int freq;
++
++	down(&pxa27x_freq_sem);
++	ret = set_mode(l, n2, b, t, a);
++	if (!ret) {
++		up(&pxa27x_freq_sem);
++		return ret;
++	}
++	policy.cpu = 0;
++	freq = l*((t == 0)? 13000 : ((t == 2)? 6500*n2 : 3250*n2));
++	printk("Set frequency to %u with L:%u, 2N:%u, B:%u, %s, A:%u\n", freq,
++		l, n2, b, (t==0)? "Run mode":(t==2)? "Turbo Mode":"Half Turbo mode", a);
++	ret = cpufreq_driver_target(&policy, freq, ret);
++	up(&pxa27x_freq_sem);
++	return ret;
++}
++
++EXPORT_SYMBOL(pxa27x_set_cpufreq);
++
++static int __init pxa27x_init_cpufreq(void)
++{
++	unsigned int clkcfg, ccsr, cccr, l, n2, b, t, a;
++	int ret;
++
++	ret = cpufreq_register_governor(&pxa27x_cpufreq_gov);
++	if (ret)
++		return ret;
++	clkcfg = pxa27x_read_clkcfg();
++	ccsr = CCSR;
++	cccr = CCCR;
++	cpufreq_cur = get_clk_frequency_khz(0);
++	l = ccsr & 0x1F;
++	n2 = (ccsr >> 7) & 0xF;
++	b = clkcfg & (0x1 << 3);
++	t = (clkcfg & 0x1)? 2: (clkcfg & (0x1 << 2))? 1:0;
++	a = (cccr >> 25) & 0x1;
++	set_mode(l, n2, b, t, a);
++        return cpufreq_register_driver(&pxa27x_cpufreq_driver);
++}
++
++static void __exit pxa27x_exit_cpufreq(void)
++{
++        cpufreq_unregister_driver(&pxa27x_cpufreq_driver);
++	cpufreq_unregister_governor(&pxa27x_cpufreq_gov);
++}
++
++MODULE_AUTHOR ("Chao Xie <chao.xie@intel.com>");
++MODULE_DESCRIPTION ("cpufreq driver for Intel pxa27x.");
++MODULE_LICENSE ("GPL");
++
++late_initcall(pxa27x_init_cpufreq);
++module_exit(pxa27x_exit_cpufreq);
++
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/cpu-freq-voltage-pxa27x.h linux-2.6.18/arch/arm/mach-pxa/cpu-freq-voltage-pxa27x.h
+--- linux-2.6.18-orig/arch/arm/mach-pxa/cpu-freq-voltage-pxa27x.h	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/cpu-freq-voltage-pxa27x.h	2006-11-05 18:04:40.000000000 +0000
+@@ -0,0 +1,24 @@
++/*
++ * Copyright (C) 2003-2004 Intel Corporation.
++ *
++ * This software program is licensed subject to the GNU General Public License
++ * (GPL).Version 2,June 1991, available at http://www.fsf.org/copyleft/gpl.html
++ *
++ */
++
++#ifndef CPU_FREQ_VOLTAGE_PXA27x_H
++#define CPU_FREQ_VOLTAGE_PXA27x_H
++
++#define PXA27X_MAX_VOL 1500    /*  in mV.  */
++#define PXA27X_MIN_VOL 900     /*  in Mv.  */
++#define PXA27X_DEFAULT_VOL 1500    /*  the default voltage.    */
++
++#define PXA27X_MIN_FREQ 13000
++#define PXA27X_MAX_FREQ 624000
++
++struct fv_table {
++	unsigned int freq;
++	unsigned int voltage;
++};
++extern struct fv_table ipm_fv_table[];
++#endif
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/cpu-voltage-pxa27x.c linux-2.6.18/arch/arm/mach-pxa/cpu-voltage-pxa27x.c
+--- linux-2.6.18-orig/arch/arm/mach-pxa/cpu-voltage-pxa27x.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/cpu-voltage-pxa27x.c	2006-11-05 18:04:40.000000000 +0000
+@@ -0,0 +1,208 @@
++/*
++ *
++ * Bulverde voltage change driver.
++ *
++ * Author:  Cain Yuan <cain.yuan@intel.com>
++ *
++ * Upgrade for 2.6 kernel by Chao Xie <chao.xie@intel.com>
++ *
++ * Copyright (C) 2003-2004 Intel Corporation.
++ *
++ * This software program is licensed subject to the GNU General Public License
++ * (GPL).Version 2,June 1991, available at http://www.fsf.org/copyleft/gpl.html
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/sched.h>
++#include <linux/init.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++#include <linux/cpufreq.h>
++
++#include "cpu-freq-voltage-pxa27x.h"
++
++/*
++ *  Transfer desired mv to  required  DAC value.
++ *  Vcore = 1.5v - ( 587uv * DACIn )
++ */
++//#define MV2DAC(mv) ((1500-mv)*1000/587)
++
++/*
++ *  Transfer desired mv to required  DAC value.
++ *  Vcore = 850mV + D[3..0] * 50mV
++ *  ISL6271A
++ */
++#define MV2DAC(mv) ((mv-850)/50)
++
++struct fv_table ipm_fv_table[] = {
++	{26000,   900},
++	{104000, 1100},
++	{208000, 1200},
++	{312000, 1300},
++	{416000, 1400},
++	{520000, 1500},
++	{624000, 1500},
++	{0,         0}
++};
++
++
++static unsigned int cpuvoltage_cur = PXA27X_DEFAULT_VOL;
++static DECLARE_MUTEX    (pxa27x_voltage_sem);
++
++extern void vm_setvoltage(unsigned int);
++extern void vm_pre_setvoltage(unsigned int);
++
++static unsigned int mv2DAC(unsigned int mv)
++{
++	if (mv > PXA27X_MAX_VOL)
++		return MV2DAC(mv);
++	if (mv < PXA27X_MIN_VOL)
++		return MV2DAC(mv);
++	return MV2DAC(mv);
++}
++
++static int check_voltage(unsigned int freq, unsigned int vol)
++{
++	int i = 0;
++
++	while (ipm_fv_table[i].freq != 0 ) {
++		if (freq <= ipm_fv_table[i].freq) {
++			if(vol < ipm_fv_table[i].voltage) {
++				printk(KERN_WARNING "Warnning: CPU voltage is lower than standard, may cause error.\n");
++				return 1;
++			}
++			else
++				return 0;
++		}
++		i++;
++	}
++	printk(KERN_ERR "Error: Can not find the voltage for frequency %u.\n", freq);
++	return -EINVAL;
++}
++
++unsigned int pxa27x_find_voltage(unsigned int freq)
++{
++	int i = 0;
++
++	while (ipm_fv_table[i].freq != 0 ) {
++                if (freq <= ipm_fv_table[i].freq) {
++                        return ipm_fv_table[i].voltage;
++                }
++                i++;
++        }
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pxa27x_find_voltage);
++
++/*
++ * According to bulverde's manual, set the core's voltage.
++ * mv == 0 indicates using default voltage arrcording frequency.
++ * If mv == cpuvoltage_cur, no voltage change happens. Because there
++ * is no convenient way of reading back voltage, it is important to mainstain
++ * cpuvoltage_cur correctly.
++ * combo == 0 means this is seperated voltage change process, otherwise it is
++ * combo change.
++ */
++int pxa27x_set_voltage(unsigned int freq, unsigned int mv, unsigned int combo)
++{
++	int ret;
++
++	/*
++	 * Currently voltage change is seperated with frequency change.
++	 */
++	if ((mv < PXA27X_MIN_VOL) && (mv > PXA27X_MAX_VOL) && mv != 0)
++		return -EINVAL;
++	if (mv == 0) {
++		if ((mv = pxa27x_find_voltage(freq)) == 0)
++			return -EINVAL;
++	}
++	else {
++		ret = check_voltage(freq, mv);
++		if (ret < 0)
++			return ret;
++	}
++	down(&pxa27x_voltage_sem);
++	if (mv == cpuvoltage_cur) {
++		up(&pxa27x_voltage_sem);
++		return 1;
++	}
++
++	if (!combo)
++		vm_setvoltage(mv2DAC(mv));
++	else
++		vm_pre_setvoltage(mv2DAC(mv));
++	cpuvoltage_cur = mv;
++	up(&pxa27x_voltage_sem);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pxa27x_set_voltage);
++
++unsigned int pxa27x_get_voltage(void)
++{
++	int vol;
++
++	down(&pxa27x_voltage_sem);
++	vol = cpuvoltage_cur;
++	up(&pxa27x_voltage_sem);
++
++	return vol;
++}
++EXPORT_SYMBOL_GPL(pxa27x_get_voltage);
++#if 0
++int pxa27x_combo_set_voltage(unsigned int freq)
++{
++	unsigned int mv;
++
++	if ((mv = pxa27x_find_voltage(freq)) == 0)
++		return -EINVAL;
++	vm_pre_setvoltage(mv2DAC(mv));
++	cpuvoltage_cur = mv;
++	return mv;
++}
++/* This is the notifier of seperated voltage change for frequency change */
++static int voltage_cpufreq_notifier(struct notifier_block *nb,
++					unsigned long val, void *data)
++{
++	struct cpufreq_freqs *freq = data;
++
++	if ((val == CPUFREQ_PRECHANGE  && freq->old < freq->new) ||
++            (val == CPUFREQ_POSTCHANGE && freq->old > freq->new)) {
++		/* using default voltage according to the frequency */
++		return pxa27x_set_voltage(freq->new, 0);
++	}
++	return 0;
++}
++
++static struct notifier_block voltage_cpufreq_notifier_block = {
++        .notifier_call  = voltage_cpufreq_notifier
++};
++
++/* This is the notifier of combo voltage change for frequency change */
++static int combo_voltage_cpufreq_notifier(struct notifier_block *nb,
++                                        unsigned long val, void *data)
++{
++        struct cpufreq_freqs *freq = data;
++
++        if (val == CPUFREQ_PRECHANGE)  {
++                return pxa27x_combo_set_voltage(freq->new);
++        }
++	return 0;
++}
++
++static struct notifier_block combo_voltage_cpufreq_notifier_block = {
++        .notifier_call  = combo_voltage_cpufreq_notifier
++};
++
++
++static int __init pxa27x_voltage_init(void)
++{
++	int ret;
++
++	ret = cpufreq_register_notifier(&voltage_cpufreq_notifier_block,
++                                        CPUFREQ_TRANSITION_NOTIFIER);
++	return ret;
++}
++late_initcall(pxa27x_voltage_init);
++#endif
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/ipmc.c linux-2.6.18/arch/arm/mach-pxa/ipmc.c
+--- linux-2.6.18-orig/arch/arm/mach-pxa/ipmc.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/ipmc.c	2006-11-05 18:04:40.000000000 +0000
+@@ -0,0 +1,562 @@
++/*
++ * linux/arch/arm/mach-pxa/ipmc.c
++ *
++ * Provide ioctl interface to application, to specify more detailed info and change
++ * system's behaviour.
++ *
++ * Copyright (C) 2003-2004 Intel Corporation.
++ *
++ * Author:  Cain Yuan <cain.yuan@intel.com>
++ *
++ * This software program is licensed subject to the GNU General Public License
++ * (GPL).Version 2,June 1991, available at http://www.fsf.org/copyleft/gpl.html
++ *
++ * If wana use it please use "mknod /dev/ipmc c 10 90" to create the dev file.
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/config.h>
++#include <linux/init.h>
++#include <linux/sched.h>
++#include <linux/miscdevice.h>
++#include <linux/fs.h>
++#include <linux/fcntl.h>
++#include <linux/errno.h>
++#include <linux/cpufreq.h>
++#include <linux/wait.h>
++#include <linux/poll.h>
++#include <linux/pm.h>
++#include <asm/uaccess.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++#include <asm/current.h>
++#include <asm/system.h>
++#include <asm/semaphore.h>
++#include "ipmc.h"
++
++extern unsigned int pxa27x_validate(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
++extern unsigned int pxa27x_read_clkcfg(void);
++extern int pxa27x_set_cpufreq(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
++extern int pm_updatetimer(int);
++extern int pxa27x_set_voltage(unsigned int, unsigned int, unsigned int);
++extern unsigned int pxa27x_get_voltage(void);
++#if 0
++extern void ipm_start_pmu();
++#endif
++
++static int ipmq_get(struct ipm_event *);
++static int ipmq_put(struct ipm_event *);
++//static int ipmq_empty(void);
++static int ipmq_clear(void);
++
++struct ipm_config global_conf;
++static DECLARE_MUTEX    (ipm_conf_sem);
++static struct ipme_queue ipme_queue;
++
++int ipmc_open(struct inode *inode, struct file *filep)
++{
++	//MOD_INC_USE_COUNT;
++	return 0;          /* success */
++}
++
++int ipmc_close( struct inode *inode, struct file *filep )
++{
++	//MOD_DEC_USE_COUNT;
++	return 0;
++}
++
++/*
++ *  Return a ipm event or get blocked until there is a event.
++ */
++
++static __inline int ipmq_empty(void)
++{
++	return (ipme_queue.len>0)?0:1;
++}
++
++ssize_t ipmc_read(struct file *filep, char *buf, size_t count,
++		loff_t *f_pos)
++{
++	DECLARE_WAITQUEUE(wait, current);
++	struct ipm_event data;
++	ssize_t retval;
++
++	if (count < sizeof(struct ipm_event))
++		return -EINVAL;
++
++	add_wait_queue(&ipme_queue.waitq, &wait);
++	set_current_state(TASK_INTERRUPTIBLE);
++
++	for (;;) {
++		if (filep->f_flags & O_NONBLOCK) {
++			retval = -EAGAIN;
++			goto out;
++		}
++
++		if (signal_pending(current)) {
++			retval = -ERESTARTSYS;
++			goto out;
++		}
++		/*	Get the event out. If no, blocked.*/
++		if ( !ipmq_empty()){
++			ipmq_get(&data);
++			break;
++		}
++		/*	No events and no error, block it.	*/
++		schedule();
++	}
++
++	/*	pass the event to user space.	*/
++	retval = copy_to_user( (struct ipm_event *)buf, &data,
++			sizeof(struct ipm_event) );
++	if (retval) {
++		retval = -EFAULT;
++		goto out;
++	}
++	retval = sizeof(struct ipm_event);
++
++out:
++	set_current_state(TASK_RUNNING);
++	remove_wait_queue(&ipme_queue.waitq, &wait);
++	return retval;
++}
++
++/*
++ *	Write will do nothing. If need to pass down some information use ioctl
++ *	interface instead.
++ */
++ssize_t ipmc_write(struct file *filep, const char *buf, size_t count,
++                loff_t *f_pos)
++{
++    return 0;
++}
++
++/* poll for ipm event */
++unsigned int ipmc_poll(struct file *file, poll_table *wait)
++{
++	poll_wait(file, &ipme_queue.waitq, wait);
++	if (!ipmq_empty())
++		return POLLIN | POLLRDNORM;
++
++	return 0;
++}
++
++#if 0
++/*
++ * This function will change voltage and freq together using
++ * VCS command and set PCMD[FVC] bit.
++ */
++static void	 combine_vltg_freq_change(struct ipm_config *conf)
++{
++	unsigned int	l, n;
++	unsigned int	turbo_mode, dac_value;
++
++	cpu_voltage_cur = conf->core_vltg;
++
++	l = bulverde_freq_getL(conf->core_freq, *conf);
++	n = conf->turbo_mode;
++	turbo_mode = (conf->turbo_mode ==0 )? 0:1;
++	dac_value =  mv2DAC(conf->core_vltg );
++
++	combochange(l, n ,turbo_mode, conf->fast_bus_mode, dac_value);
++}
++
++unsigned int check_ipm_config(struct ipm_config *target)
++{
++		int	i=0;
++		struct	ipm_config	cur;
++
++		cur.core_freq = cpufreq_get(0);
++
++		/*	Get current voltage.	*/
++		while( ipm_fv_table[i].freq != 0 ) {
++			if( cur.core_freq < ipm_fv_table[i].freq ) {
++				cur.core_vltg = ipm_fv_table[i].voltage;
++				break;
++			}
++			i++;
++		}
++		i=0;
++		/*	Get target voltage.	*/
++		while( ipm_fv_table[i].freq != 0 ) {
++			if( target->core_freq < ipm_fv_table[i].freq )  {
++				target->core_vltg = ipm_fv_table[i].voltage;
++				break;
++			}
++			i++;
++		}
++//#ifdef DEBUG
++		printk(KERN_INFO "Current freq: %d, target freq: %d.\n", cur.core_freq, target->core_freq);
++		printk(KERN_INFO "Current vol: %d, target vol: %d.\n",cur.core_vltg, target->core_vltg);
++//#endif
++		if( target->core_vltg == cur.core_vltg )	return 0;
++		if( target->core_vltg > cur.core_vltg )	return HIGHER;
++		return LOWER;
++}
++#endif
++
++
++void get_ipm_config(struct ipm_config  *ret_conf)
++{
++	struct ipm_config conf;
++	unsigned long clk_cfg = 0;
++	unsigned int l, n2, m, k, run_freq, ccsr, cccr_a;
++
++	memset(&conf, 0, sizeof(struct ipm_config));
++	conf.cpu_mode =0;	/* definitly in RUN mode.	*/
++
++	ccsr = CCSR;
++	l = ccsr & 0x1f;
++	n2 = (ccsr>>7) & 0xf;
++	m = (l <= 10) ? 1 : (l <= 20) ? 2 : 4;
++	k = (l <= 7) ? 1 : (l <= 16) ? 2 : 4;
++	cccr_a = CCCR & (1 << 25);
++
++	clk_cfg = pxa27x_read_clkcfg();
++	conf.fast_bus_mode = (clk_cfg >> 0x3) & 0x1;
++	conf.turbo_mode = (clk_cfg & 0x1)? 2: (clk_cfg & 0x4)? 1: 0;
++	conf.n2 = n2;
++	conf.l = l;
++	conf.mem_clk_conf = cccr_a >> 25;
++	run_freq = 13000*l;
++	if (ccsr & (1 << 31)) {
++		conf.core_freq = conf.sys_bus_freq = conf.mem_bus_freq = 13000;
++		conf.lcd_freq = (CCCR & (1 << 27))? 26000 : 13000;
++		memcpy(ret_conf, &conf,sizeof(struct ipm_config));
++		return ;
++	}
++	conf.core_freq = l*((conf.turbo_mode == 0)? 13000 :
++			((conf.turbo_mode == 2)? 6500*n2 : 3250*n2));
++	conf.sys_bus_freq = (conf.fast_bus_mode)? run_freq : run_freq/2;
++	conf.mem_bus_freq = (!cccr_a) ? (run_freq/m) : ((conf.fast_bus_mode) ?
++				 run_freq : (run_freq/2));
++	conf.lcd_freq = run_freq / k;
++
++	memcpy(ret_conf, &conf,sizeof(struct ipm_config));
++
++	return;
++}
++
++/*
++ *	Write the desired voltage to
++ *	DPM voltage changer and the desired freq to DPM freq changer.
++ */
++void set_ipm_conf(struct ipm_config *conf)
++{
++	int mode, ret;
++	unsigned int vol = conf->core_vltg;
++	unsigned int freq, new_freq;
++	unsigned int l = conf->l, n2 = conf->n2;
++	unsigned int t = conf->turbo_mode, b = conf->fast_bus_mode;
++	unsigned int a = conf->mem_clk_conf;
++	int pre_change = 0;
++
++	mode = conf->cpu_mode;
++	/* want to change CPU mode? */
++	if( mode != 0) {	/* not RUN mode.	*/
++		/* allow to use this method to sleep the system...*/
++		pm_suspend(mode);
++	}
++
++	ret = pxa27x_validate(l, n2, b, t, a);
++	if (ret) {
++		printk(KERN_ERR "Error: Wrong L: %d, 2N: %d, B: %d, T: %d, A:%d\n", l, n2, b, t, a);
++		return ;
++	}
++
++	freq = cpufreq_get(0);
++	new_freq = l*((t == 0)? 13000 : ((t == 2)? 6500*n2 : 3250*n2));
++	/*
++	 * It may need to change frequency. The voltage change is also invoked
++	 * according to the frequency.
++	 */
++	if (vol == 0) {
++		if (freq < new_freq)
++			pre_change = 1;
++	}
++	else {
++		if (pxa27x_get_voltage() < vol)
++			pre_change = 1;
++	}
++	if (pre_change == 1) {
++		if (pxa27x_set_voltage(new_freq, vol, 0) < 0 && vol)
++			pxa27x_set_voltage(new_freq, 0, 0);
++		pxa27x_set_cpufreq(l, n2, b, t, a);
++	}
++	else {
++		pxa27x_set_cpufreq(l, n2, b, t, a);
++		if (pxa27x_set_voltage(new_freq, vol, 0) < 0 && vol)
++			pxa27x_set_voltage(new_freq, 0, 0);
++	}
++	/*
++	 * combochange of voltage and frequency
++	 */
++#if 0
++	if (pxa27x_set_voltage(new_freq, vol, 1) < 0 && vol)
++		pxa27x_set_voltage(new_freq, 0, 1);
++	pxa27x_set_cpufreq(l, n2, b, t);
++#endif
++	return;
++}
++
++#define	SLEEP_SYSTEM 0
++extern unsigned int ipm_sleep_level;
++extern unsigned int pm_sleeptime;
++extern unsigned int pm_waketime;
++extern unsigned int pm_uitimeout;
++extern unsigned int ipm_sleep_level;
++#if 0
++extern unsigned long WindowSize;
++#endif
++int ipmc_ioctl (struct inode *inode, struct file *file, unsigned int cmd,
++		unsigned long arg)
++{
++	struct ipm_config conf, target_conf;
++	int result = 0;
++
++	memset(&conf, 0 ,sizeof(struct ipm_config));
++
++	switch (cmd) {
++		case IPMC_IOCTL_GET_DPM_CONFIG:
++			get_ipm_config(&conf);
++			return (copy_to_user((unsigned long *)arg, &conf,sizeof(conf)))? -EFAULT:0;
++			break;
++
++		case IPMC_IOCTL_SET_DPM_CONFIG:
++			if(copy_from_user(&target_conf,(struct ipmc_conf *)arg,sizeof(conf))) {
++				printk("Erro from copy_from_user.\n");
++				return -EFAULT;
++			}
++
++			set_ipm_conf(&target_conf);
++			break;
++
++			/*	Reset the UI timer.	*/
++		case IPMC_IOCTL_RESET_UI_TIMER:
++			/*pm_updatetimer(0);*/ printk("IPMC_IOCTL_RESET_UI_TIMER - unimplemented!!!\n");
++			break;
++
++			/*	get rid of those event before.	*/
++		case IPMC_IOCTL_CLEAR_EVENTLIST:
++			ipmq_clear();
++			break;
++
++		case IPMC_IOCTL_SET_SLEEPTIME:
++		/*	if( copy_from_user(&pm_sleeptime,(unsigned int *)arg,sizeof(int)) ) */ printk("IPMC_IOCTL_SET_SLEEPTIME - unimplemented!!!\n");
++				return -EFAULT;
++			break;
++#if 0
++		case IPMC_IOCTL_SET_WINDOWSIZE:
++			if( copy_from_user(&WindowSize,(unsigned int)arg,sizeof(int)) )
++				return -EFAULT;
++			break;
++#endif
++		case IPMC_IOCTL_GET_SLEEPTIME:
++		/*	return copy_to_user((unsigned int *)arg, &pm_sleeptime, sizeof(int)); */ printk("IPMC_IOCTL_GET_SLEEPTIME - unimplemented!!!\n");
++			break;
++
++		case IPMC_IOCTL_SET_WAKETIME:
++		/*	if (copy_from_user(&pm_waketime,(unsigned int *)arg,sizeof(int)) ) */ printk("IPMC_IOCTL_SET_WAKETIME - unimplemented!!!\n");
++				return -EFAULT;
++			break;
++
++		case IPMC_IOCTL_GET_WAKETIME:
++		/*	return copy_to_user((unsigned int *)arg, &pm_waketime, sizeof(int)); */ printk("IPMC_IOCTL_GET_WAKETIME - unimplemented!!!\n");
++			break;
++
++		case IPMC_IOCTL_SET_UITIME:
++		/*	if( copy_from_user(&pm_uitimeout,(unsigned int *)arg,sizeof(int)) )
++				return -EFAULT;
++			if( pm_uitimeout !=0 )
++				pm_updatetimer(0); */ printk("IPMC_IOCTL_SET_UITIME - unimplemented!!!");
++			break;
++
++		case IPMC_IOCTL_GET_UITIME:
++		/*	return copy_to_user((unsigned int *)arg, &pm_uitimeout, sizeof(int)); */ printk("IPMC_IOCTL_GET_UITIME - unimplemented!!!\n");
++			break;
++
++		case IPMC_IOCTL_SET_SLEEPLEVEL:
++		/*	if( copy_from_user(&ipm_sleep_level,(unsigned int *)arg,sizeof(int)) ) */ printk("IPMC_IOCTL_SET_SLEEPLEVEL - unimplemented!!!\n");
++				return -EFAULT;
++			break;
++
++		case IPMC_IOCTL_GET_SLEEPLEVEL:
++		/*	return copy_to_user((unsigned int *)arg, &ipm_sleep_level, sizeof(int)); */ printk("IPMC_IOCTL_GET_SLEEPLEVEL - unimplemented!!!\n");
++			break;
++
++			/*
++			 *	Do we need to decide those two ioctls into four?
++			 *	IPMC_IOCTL_CLAIMPMU, 	IPMC_IOCTL_STARTPMU,
++			 *	IPMC_IOCTL_STOPPMU,		IPMC_IOCTL_RELEASEPMU
++			 *	or just
++			 *	IPMC_IOCTL_STARTPMU,  IPMC_IOCTL_STOPPMU ?
++			 */
++			/*
++			 *	Did not need PMU events to policy  maker?	That 's really good.
++			 *	Still keep this bez we need to test PMU driver, right?
++			 */
++#if 0
++		case IPMC_IOCTL_STARTPMU:
++			ipm_start_pmu();
++			break;
++			/*
++			 *	When using stop pmu the user application should provide a place
++			 *	to save the result.
++			 */
++		case IPMC_IOCTL_STOPPMU:
++			/*	pmu should already stopped.	*/
++			pmu_stop(&presult);
++			/*
++			 *	Release it? Since only one user can have it we just
++			 *	use the recorded pmu id.
++			 */
++			pmu_release(pmu_id);
++			/*	Shall we check the arg pointer first?	*/
++			if( arg!=NULL )
++				return copy_to_user( (unsigned int)arg, &presult,
++						sizeof(struct pmu_results) );
++			else	return 0;
++			break;
++#endif
++
++		default:
++			result = -ENOIOCTLCMD;
++			break;
++	}
++	return result;
++}
++
++static struct file_operations ipmc_fops = {
++	owner:	THIS_MODULE,
++	open:	ipmc_open,
++	read:	ipmc_read,
++	write:	ipmc_write,
++	poll:	ipmc_poll,
++	ioctl:	ipmc_ioctl,
++	release:ipmc_close,
++};
++
++static struct miscdevice ipmc_misc_device = {
++	minor:	IPMC_MINOR,
++	name:	"ipmc",
++	fops:	&ipmc_fops
++};
++
++/*
++ *	Below is the event list maintain functions, the same as keypad.c
++ */
++static int ipmq_init(void)
++{
++	/* init ipme queue */
++	ipme_queue.head = ipme_queue.tail = 0;
++	ipme_queue.len = 0;
++	init_waitqueue_head(&ipme_queue.waitq);
++	return 0;
++}
++
++static int __init ipmc_init( void )
++{
++	int rc;
++
++	/*	Clear event queue. */
++	ipmq_init();
++
++	if ( (rc = misc_register( &ipmc_misc_device )) != 0 ) {
++		printk( KERN_INFO "Could not register device ipmc, res = %d.\n ",rc );
++		return -EBUSY;
++	}
++	printk( KERN_INFO "Register device ipmc successgul.\n " );
++	return 0;
++}
++
++static void ipmc_exit( void )
++{
++	misc_deregister(&ipmc_misc_device);
++}
++
++
++static int ipmq_get(struct ipm_event *ipme)
++{
++	unsigned long flags;
++
++	local_irq_save(flags);
++
++	if (!ipme_queue.len) {
++		local_irq_restore(flags);
++		return -1;
++	}
++
++	memcpy(ipme, ipme_queue.ipmes + ipme_queue.tail, sizeof(struct ipm_event));
++
++	ipme_queue.len--;
++	ipme_queue.tail = (ipme_queue.tail + 1) % MAX_IPME_NUM;
++
++	local_irq_restore(flags);
++
++	return 0;
++
++}
++
++static int ipmq_clear(void)
++{
++	unsigned long flags;
++
++	local_irq_save(flags);
++	ipme_queue.head = ipme_queue.tail = 0;
++	ipme_queue.len = 0;
++	local_irq_restore(flags);
++
++	return 0;
++}
++
++static int ipmq_put(struct ipm_event *ipme)
++{
++	unsigned long flags;
++
++	local_irq_save(flags);
++
++	if (ipme_queue.len == MAX_IPME_NUM) {
++		local_irq_restore(flags);
++		return -1;
++	}
++
++	memcpy(ipme_queue.ipmes + ipme_queue.head, ipme, sizeof(struct ipm_event));
++
++	ipme_queue.len ++;
++	ipme_queue.head = (ipme_queue.head + 1) % MAX_IPME_NUM;
++
++	local_irq_restore(flags);
++
++	/* wake up the waiting process */
++	wake_up_interruptible(&ipme_queue.waitq);
++
++	return 0;
++}
++
++static struct ipm_event __inline IPM_Events(int type, int kind, int info)
++{
++	struct ipm_event event;
++	event.type = type;
++	event.kind = kind;
++	event.info = info;
++	return event;
++}
++
++/*
++ * IPM event can be posted by this function.
++ * If we need to do some pre-processing of those events we can add code here.
++ * Also attach the processed result to info.
++ */
++void ipm_event_notify(int  type, int kind, int info)
++{
++	struct ipm_event events;
++	events = IPM_Events(type, kind, info);
++	ipmq_put(&events);
++}
++
++EXPORT_SYMBOL(ipm_event_notify);
++
++module_init(ipmc_init);
++module_exit(ipmc_exit);
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/ipmc.h linux-2.6.18/arch/arm/mach-pxa/ipmc.h
+--- linux-2.6.18-orig/arch/arm/mach-pxa/ipmc.h	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/ipmc.h	2006-11-05 18:04:40.000000000 +0000
+@@ -0,0 +1,147 @@
++/*
++ * Copyright (C) 2003-2004 Intel Corporation.
++ *
++ * This software program is licensed subject to the GNU General Public License
++ * (GPL).Version 2,June 1991, available at http://www.fsf.org/copyleft/gpl.html
++ *
++ */
++
++#ifndef	__IPMC_H
++#define	__IPMC_H
++
++#define DEBUG
++
++#ifdef __KERNEL__
++#include <linux/ioctl.h>
++#include <linux/miscdevice.h>
++//#include <asm/xscale-pmu.h>
++#endif
++
++/* Use 'K' as magic number */
++#define IPMC_IOC_MAGIC  'K'
++
++/* To keep compitable with old cpufreqd user application.  */
++#if 0
++#define IPMC_IOCTL_GET 	_IOR(IPMC_IOC_MAGIC, 1, struct ipm_config)
++#define IPMC_IOCTL_SET  _IOW(IPMC_IOC_MAGIC, 2, struct ipm_config)
++
++#endif
++#define IPMC_IOCTL_GET_DPM_CONFIG  _IOR(IPMC_IOC_MAGIC, 3, struct ipm_config)
++#define IPMC_IOCTL_SET_DPM_CONFIG  _IOW(IPMC_IOC_MAGIC, 4, struct ipm_config)
++
++#define IPMC_IOCTL_GET_DVFM_CONFIG  _IOR(IPMC_IOC_MAGIC, 3, struct ipm_config)
++#define IPMC_IOCTL_SET_DVFM_CONFIG  _IOW(IPMC_IOC_MAGIC, 4, struct ipm_config)
++
++#define IPMC_IOCTL_GET_EVENT   _IOR(IPMC_IOC_MAGIC, 5, int)
++#define IPMC_IOCTL_SET_EVENT   _IOW(IPMC_IOC_MAGIC, 6, int)
++
++#define IPMC_IOCTL_RESET_UI_TIMER _IOW(IPMC_IOC_MAGIC, 8, int)
++
++#define	IPMC_IOCTL_GET_SLEEPTIME  _IOR(IPMC_IOC_MAGIC, 9, int)
++#define	IPMC_IOCTL_SET_SLEEPTIME  _IOW(IPMC_IOC_MAGIC, 10, int)
++
++#define	IPMC_IOCTL_GET_WAKETIME  _IOR(IPMC_IOC_MAGIC, 11, int)
++#define	IPMC_IOCTL_SET_WAKETIME  _IOW(IPMC_IOC_MAGIC, 12, int)
++
++#define	IPMC_IOCTL_GET_UITIME	_IOR(IPMC_IOC_MAGIC, 13, int)
++#define	IPMC_IOCTL_SET_UITIME	_IOW(IPMC_IOC_MAGIC, 14, int)
++
++#define	IPMC_IOCTL_GET_SLEEPLEVEL _IOR(IPMC_IOC_MAGIC, 15, int)
++#define	IPMC_IOCTL_SET_SLEEPLEVEL _IOW(IPMC_IOC_MAGIC, 16, int)
++
++#define	IPMC_IOCTL_STARTPMU	 _IOW(IPMC_IOC_MAGIC, 17, int)
++#define	IPMC_IOCTL_STOPPMU	_IOW(IPMC_IOC_MAGIC, 18, struct pmu_results)
++
++#define	IPMC_IOCTL_CLEAR_EVENTLIST _IOW(IPMC_IOC_MAGIC, 20, int)
++
++#define	IPMC_IOCTL_SET_WINDOWSIZE	_IOW(IPMC_IOC_MAGIC, 22, int)
++#define NOVOLCHG    0
++#define HIGHER      1
++#define LOWER       2
++
++
++#define MAX_IPME_NUM 20	/*	20 IPM event max */
++/*      IPM events queue */
++
++struct  ipm_config {
++	/*  Below  items must be set to set configurations. */
++	unsigned int    cpu_mode;
++	unsigned int    l;  /* L */
++	unsigned int	n2; /* 2N */
++	unsigned int    core_vltg;    /*  in mV.  */
++	unsigned int    turbo_mode;     /* =2 turbo, =1 half turbo */
++	unsigned int    fast_bus_mode;
++	unsigned int	mem_clk_conf;
++	/*  Below items may need to get system DPM configurations. */
++	unsigned int	core_freq;
++	unsigned int    sys_bus_freq;
++	unsigned int    mem_bus_freq;
++	unsigned int    lcd_freq;
++	unsigned int    enabled_device;
++};
++
++struct ipm_event {
++	unsigned int type;	/*	What type of IPM events.	*/
++	unsigned int kind;	/*	What kind, or sub-type of events.*/
++//	void *infodata;		/*	events specific data.	*/
++	unsigned int info;
++};
++
++#ifdef __KERNEL__
++struct ipme_queue{
++        int head;
++        int tail;
++        int len;
++        struct ipm_event  ipmes[MAX_IPME_NUM];
++        wait_queue_head_t waitq;
++};
++#endif
++
++#define	IPM_EVENTS_TYPE(x)   ((x&0xFF000000)>>24)
++#define	IPM_EVENTS_KIND(x)   ((x&0x00F00000)>>16)
++#define	IPM_EVENTS_INFO(x)   (x&0xFF)
++
++/*	IPM event types.	*/
++#define	IPM_EVENT_DEVICE	0x1		/*	Device interrupt event.	*/
++#define	IPM_EVENT_TIMER		0x2		/*	Device Timer timeout event.	*/
++
++#define	IPM_EVENT_PROFILER	0x3		/*	Profiler events.	*/
++#define	IPM_EVENT_SYSTEM_WAKEUP	0x4
++#define	IPM_EVENT_CPU		0x5		/*	CPU utilization change  event.	*/
++
++/*	IPM event kinds.	*/
++#define	IPM_EVENT_POWER_LOW		0x1
++#define	IPM_EVENT_POWER_FAULT	0x2
++#define	IPM_EVENT_POWER_OK		0x3
++
++#define	IPM_EVENT_DEVICE_TIMEOUT	0x4
++#define	IPM_EVENT_DEVICE_INT	0x5
++
++#define	IPM_EVENT_IDLE_PROFILER	0x0
++#define	IPM_EVENT_PERF_PROFILER	0x1
++
++#define	IPM_EVENT_RTCWAKEUP	0x0
++#define	IPM_EVENT_UIWAKEUP	0x1
++
++#define	IPM_EVENT_CPUVERYBUSY		0x0		/*	report CPU is very busy now.	*/
++#define	IPM_EVENT_CPUBUSY		0x1		/*	report CPU is very busy now.	*/
++#define	IPM_EVENT_CPUFREE		0x2		/*	report CPU is free now.	*/
++
++/*	IPM event infos, not defined yet.	*/
++#define	IPM_EVENT_NULLINFO	0x0
++#define	IPM_WAKEUPBYRTC		0x1
++#define	IPM_WAKEUPBYUI		0x2
++
++/*	IPM functions	*/
++#ifdef __KERNEL__
++int 	ipmc_open(struct inode *inode, struct file *filep);
++int 	ipmc_close( struct inode *inode, struct file *filep );
++ssize_t ipmc_read(struct file *filep, char *buf, size_t count,loff_t *f_pos);
++ssize_t ipmc_write(struct file *filep, const char *buf, size_t count,loff_t *f_pos);
++int 	ipmc_ioctl (struct inode *inode, struct file *file, unsigned int cmd,unsigned long arg);
++void 	set_ipm_conf(struct ipm_config *conf);
++void 	ipm_event_notify(int  type, int kind, int info);
++#endif
++
++
++#endif
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/Kconfig linux-2.6.18/arch/arm/mach-pxa/Kconfig
+--- linux-2.6.18-orig/arch/arm/mach-pxa/Kconfig	2006-09-20 03:42:06.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/Kconfig	2006-11-05 18:04:40.000000000 +0000
+@@ -74,6 +74,29 @@
+ 
+ endif
+ 
++menu "Intel PXA27x Errata Fixes"
++depends on PXA27x
++
++#config PXA27x_E28
++#	bool "Intel PXA27x Errata 28"
++#	default y
++#	help
++#	  Core hangs during voltage change when there are outstanding transaction on the bus.
++
++config PXA27x_E37
++	bool "Intel PXA27x Errata 37"
++	default y
++	help
++	  System Hangs when enabling RUN/TURBO switching at 520MHZ
++
++config PXA27x_E38
++	bool "Intel PXA27x Errata 38"
++	default y
++	help
++	  System Hangs when enabling HalfTurbo Switching
++
++endmenu
++
+ endmenu
+ 
+ config MACH_POODLE
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/Makefile linux-2.6.18/arch/arm/mach-pxa/Makefile
+--- linux-2.6.18-orig/arch/arm/mach-pxa/Makefile	2006-11-05 17:21:30.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/Makefile	2006-11-05 18:04:40.000000000 +0000
+@@ -36,3 +36,6 @@
+ ifeq ($(CONFIG_PXA27x),y)
+ obj-$(CONFIG_PM) += standby.o
+ endif
++
++obj-$(CONFIG_DVFM) += vcs.o cpu-freq-pxa27x.o cpu-voltage-pxa27x.o ipmc.o
++
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/vcs.c linux-2.6.18/arch/arm/mach-pxa/vcs.c
+--- linux-2.6.18-orig/arch/arm/mach-pxa/vcs.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/vcs.c	2006-11-05 18:04:40.000000000 +0000
+@@ -0,0 +1,262 @@
++/*
++ * linux/arch/arm/mach-pxa/vcs.c
++ *
++ * Bulverde voltage PWR I2C driver.
++ *
++ * Copyright (C) 2006 Alexander Chukov <sash@pdaXrom.org>
++ *
++ * Based on Lineo 2.4.20 PXA27x sources.
++ *
++ * Replacement for Intel sources:
++ *
++ * Bulverde voltage change sequencer driver.
++ *
++ * Copyright (C) 2003-2004 Intel Corporation.
++ *
++ * Author: Cain Yuan <cain.yuan@intel.com>
++ *
++ * This software program is licensed subject to the GNU General Public License
++ * (GPL).Version 2,June 1991, available at http://www.fsf.org/copyleft/gpl.html
++ *
++ */
++
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/sched.h>
++#include <linux/init.h>
++#include <linux/cpufreq.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++#include <asm/io.h>
++
++#ifndef PWRCHIP_ADDR
++#define PWRCHIP_ADDR    0x0C /* ISL6271A */
++#endif
++
++/*
++ * Functionality: Initialize PWR I2C.
++ * Argument:      None
++ * Return:        void
++ */
++static int __init vcs_init(void)
++{
++	return 0;
++}
++
++static int vcs_i2c_open(void)
++{
++    PCFR |= PCFR_PI2C_EN;
++    PCFR &= ~PCFR_FVC;
++    udelay(100);
++
++    CKEN |= CKEN15_PWRI2C;
++    udelay(100);
++    return 0;
++}
++
++static int vcs_i2c_close(void)
++{
++
++    PWRICR = ICR_UR;
++    PWRISAR = 0x00;
++    udelay(100);
++
++    CKEN &= ~CKEN15_PWRI2C;
++    udelay(100);
++
++    PCFR &= ~(PCFR_PI2C_EN|PCFR_FVC);
++    udelay(100);
++    return 0;
++}
++
++static int vcs_i2c_write( unsigned char device, unsigned char value )
++{
++    int timeout;
++    int retry = 10;
++
++ Retry:
++    PWRICR = ICR_UR;
++    PWRISAR = 0x00;
++    udelay(100);
++    PWRICR = (ICR_IUE|ICR_SCLE);
++
++    /* Write slave device address & start */
++    PWRIDBR = (device<<1);
++    PWRICR |= ICR_START;
++    PWRICR &= ~ICR_STOP;
++    PWRICR |= ICR_TB;
++
++    timeout = 10*1000; /* 10ms */
++    while((PWRISR & ISR_ITE)==0){
++	if(timeout-- <= 0){
++    	    //printk("%s:timeout error\n",__func__);
++    	    goto Error;
++	}
++	udelay(1);
++    }
++    if(PWRISR & ISR_ACKNAK){
++	//printk("%s:nack error\n",__func__);
++	goto Error; /* recived NACK. */
++    }
++    PWRISR = ISR_ITE;
++
++    /* Write data */
++    PWRICR &= ~ICR_START;
++    PWRICR |= ICR_STOP;
++    PWRIDBR = value;
++    PWRICR |= ICR_TB;
++
++    timeout = 10*1000; /* 10ms */
++    while((PWRISR & ISR_ITE)==0){
++	if(timeout-- <= 0){
++    	    //printk("%s:timeout error\n",__func__);
++    	    goto Error;
++	}
++	udelay(1);
++    }
++    if(PWRISR & ISR_ACKNAK){
++	//printk("%s:nack error\n",__func__);
++	goto Error; /* recived NACK. */
++    }
++    PWRISR = ISR_ITE;
++
++    PWRICR &= ~ICR_STOP;
++    return 0;
++
++ Error:
++    PWRISR = ISR_ITE; /* need!! */
++    PWRICR = ICR_UR;
++    PWRISAR = 0;
++    PWRICR = (ICR_IUE|ICR_SCLE);
++    retry--;
++    //printk("%s: retry!\n",__func__);
++    if(retry > 0)
++	goto Retry;
++    printk("%s: error!\n",__func__);
++    return -1;
++}
++
++static int vcs_i2c_read( unsigned char device, unsigned char *value )
++{
++    unsigned long	r;
++    int timeout;
++    int retry = 10;
++
++    if(value == NULL) 
++	return -2;
++
++ Retry:
++    PWRICR = ICR_UR;
++    PWRISAR = 0x00;
++    udelay(100);
++    PWRICR = (ICR_IUE | ICR_SCLE);
++
++    // Write slave device address & start
++    PWRIDBR = ((device<<1) | 1);
++    PWRICR |= ICR_START;
++    PWRICR &= ~ICR_STOP;
++    PWRICR |= ICR_TB;
++
++    timeout = 10*1000; /* 10ms */
++    while((PWRISR & ISR_ITE)==0){
++	if(timeout-- <= 0){
++    	PWRISR = ISR_ITE;
++        goto ErrorRet;
++	}
++	udelay(1);
++    }
++
++    PWRISR = ISR_ITE;
++
++    // Write sub-address
++    PWRICR &= ~ICR_START;
++
++    // Read data
++    PWRICR |= (ICR_STOP|ICR_ACKNAK);
++    PWRICR |= ICR_TB;
++
++    timeout = 10*1000; /* 10ms */
++    while((PWRISR & ISR_IRF)==0){
++	if(timeout-- <= 0){
++    	    PWRISR = ISR_IRF;
++    	    goto ErrorRet;
++	}
++	udelay(1);
++    }
++
++    PWRISR = ISR_IRF;
++    r = PWRIDBR;
++    *value = (unsigned char)r;
++    PWRICR &= ~(ICR_STOP | ICR_ACKNAK);
++
++    return 0;
++
++ ErrorRet:
++    PWRICR = ICR_UR;
++    PWRISAR = 0;
++    PWRICR = (ICR_IUE|ICR_SCLE);
++    retry--;
++    //printk("%s: retry!\n",__func__);
++    if(retry > 0) 
++	goto Retry;
++    printk("%s: error!\n",__func__);
++    return -1;
++}
++
++static void ipm_power_change_cmd(unsigned int DACValue)
++{
++    vcs_i2c_open();
++    vcs_i2c_write(PWRCHIP_ADDR, DACValue + 0x10);
++    vcs_i2c_close();
++}
++
++static int ipm_power_read_cmd(unsigned int *DACValue)
++{
++    int ret;
++    unsigned char val = 0;
++    vcs_i2c_open();
++    ret = vcs_i2c_read(PWRCHIP_ADDR, &val);
++    vcs_i2c_close();
++    *DACValue = val;
++    return ret;
++}
++
++void vm_setvoltage(unsigned int DACValue)
++{
++    if (DACValue > 0x10)
++	return;
++    printk("%s: write %02X\n", __func__, DACValue);
++    ipm_power_change_cmd(DACValue);
++#if 0
++    {
++	unsigned int volt = 0;
++	if (!ipm_power_read_cmd(&volt))
++	    printk("%s: read %02X\n", __func__, volt & 0x0f);
++	else
++	    printk("%s: read error\n", __func__);
++    }
++#endif    
++}
++
++/*
++ * Prepare for a coupled voltage & frequency change
++ */
++void vm_pre_setvoltage(unsigned int DACValue)
++{
++    if (DACValue > 0x10)
++	return;
++    printk("%s: write %02X\n", __func__, DACValue);
++    ipm_power_change_cmd(DACValue);
++#if 0
++    {
++	unsigned int volt = 0;
++	if (!ipm_power_read_cmd(&volt))
++	    printk("%s: read %02X\n", __func__, volt & 0x0f);
++	else
++	    printk("%s: read error\n", __func__);
++    }
++#endif    
++}
++
++module_init(vcs_init);
+diff -Nur linux-2.6.18-orig/include/linux/miscdevice.h linux-2.6.18/include/linux/miscdevice.h
+--- linux-2.6.18-orig/include/linux/miscdevice.h	2006-09-20 03:42:06.000000000 +0000
++++ linux-2.6.18/include/linux/miscdevice.h	2006-11-05 18:04:40.000000000 +0000
+@@ -11,6 +11,7 @@
+ #define SUN_MOUSE_MINOR 6
+ #define APOLLO_MOUSE_MINOR 7
+ #define PC110PAD_MINOR 9
++#define IPMC_MINOR              90
+ /*#define ADB_MOUSE_MINOR 10	FIXME OBSOLETE */
+ #define WATCHDOG_MINOR		130	/* Watchdog timer     */
+ #define TEMP_MINOR		131	/* Temperature Sensor */

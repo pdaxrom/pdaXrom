@@ -1,0 +1,8 @@
+config NETPERF
+	bool
+	prompt "netperf"
+
+config NETPERF_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on NETPERF

@@ -1,0 +1,71 @@
+--- s/configure~	2006-08-18 17:58:58.000000000 +0000
++++ s/configure	2006-08-18 17:59:53.000000000 +0000
+@@ -23777,64 +23777,21 @@
+ fi
+ 
+ 
+-jpeg_incdirs="$includedir /usr/include /usr/local/include "
+ 
+-jpeg_incdir=NO
+-for i in $jpeg_incdirs;
+-do
+-  for j in jpeglib.h;
+-  do
+-    echo "configure: 23787: $i/$j" >&5
+-    if test -r "$i/$j"; then
+-      echo "taking that" >&5
+-      jpeg_incdir=$i
+-      break 2
+-    fi
+-  done
+-done
+ 
+-test "x$jpeg_incdir" = xNO && jpeg_incdir=
+ 
+-if test -n "$jpeg_incdir" && test -n "$LIBJPEG_LIBS" ; then
+ 
+-cat >>confdefs.h <<_ACEOF
+-#define ENABLE_LIBJPEG 1
+-_ACEOF
+ 
+-else
+-  if test -n "$jpeg_incdir" || test -n "$LIBJPEG_LIBS" ; then
+-    { echo "$as_me:$LINENO: WARNING:
+-There is an installation error in jpeg support. You seem to have only one
+-of either the headers _or_ the libraries installed. You may need to either
+-provide correct --with-extra-... options, or the development package of
+-libjpeg6b. You can get a source package of libjpeg from http://www.ijg.org/
+-Disabling JPEG support.
+-" >&5
+-echo "$as_me: WARNING:
+-There is an installation error in jpeg support. You seem to have only one
+-of either the headers _or_ the libraries installed. You may need to either
+-provide correct --with-extra-... options, or the development package of
+-libjpeg6b. You can get a source package of libjpeg from http://www.ijg.org/
+-Disabling JPEG support.
+-" >&2;}
+-  else
+-    { echo "$as_me:$LINENO: WARNING: libjpeg not found. disable JPEG support." >&5
+-echo "$as_me: WARNING: libjpeg not found. disable JPEG support." >&2;}
+-  fi
+-  jpeg_incdir=
+-  enable_libjpeg=no
+-  LIBJPEG_LIBS=
+ fi
+ 
+ 
+ 
++if test x$enable_libjpeg = xyes; then
+ 
++cat >>confdefs.h <<_ACEOF
++#define ENABLE_LIBJPEG 1
++_ACEOF
+ 
+-fi
+-
+-
+-
+-if test x$enable_libjpeg = xyes; then
+   BUILD_LIBJPEG_TRUE=
+   BUILD_LIBJPEG_FALSE='#'
+ else

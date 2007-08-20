@@ -1,0 +1,14 @@
+--- fuse-2.5.3/util/Makefile.am~	2006-10-20 20:31:39.000000000 +0000
++++ fuse-2.5.3/util/Makefile.am	2006-10-20 20:31:48.000000000 +0000
+@@ -7,11 +7,6 @@
+ install-exec-hook:
+ 	-chown root $(DESTDIR)$(bindir)/fusermount
+ 	-chmod u+s $(DESTDIR)$(bindir)/fusermount
+-	@if test ! -e $(DESTDIR)/dev/fuse; then \
+-		$(mkdir_p) $(DESTDIR)/dev; \
+-		echo "mknod $(DESTDIR)/dev/fuse -m 0666 c 10 229"; \
+-		mknod $(DESTDIR)/dev/fuse -m 0666 c 10 229; \
+-	fi
+ 
+ EXTRA_DIST = mount.fuse udev.rules
+ 

@@ -1,0 +1,8 @@
+config BLACKBOX
+	bool
+	prompt "blackbox"
+
+config BLACKBOX_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on BLACKBOX

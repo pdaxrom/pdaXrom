@@ -1,0 +1,8 @@
+config PANGO12
+	bool
+	prompt "pango12"
+
+config PANGO12_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on PANGO12

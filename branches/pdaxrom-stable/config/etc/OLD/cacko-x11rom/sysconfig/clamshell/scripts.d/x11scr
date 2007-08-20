@@ -1,0 +1,81 @@
+#! /bin/bash
+#
+# template          Template chkhinge script
+#
+# description: 
+#
+
+
+
+# See how we were called.
+  
+closed() {
+    /usr/X11R6/bin/xset s activate
+    return 0
+}
+
+landscape() {
+    /usr/X11R6/bin/xrandr -o normal
+
+    #xmodmap -e "keycode 133 = Right"
+    #xmodmap -e "keycode 134 = Left"
+
+    MODEL=`cat /proc/deviceinfo/product`
+    echo 'MODEL:'$MODEL
+    case "$MODEL" in
+	SL-C860|SL-C760) 
+	    echo "100" >/proc/driver/w100/fastsysclk
+	    ;;
+	SL-C700)
+	    echo "75" >/proc/driver/w100/fastsysclk
+	    ;;
+	*)
+	    ;;
+    esac
+
+    if pidof xvkbd >/dev/null; then xvkbdlauncher; fi
+    
+    return 0
+}	
+
+portrait() {
+    /usr/X11R6/bin/xrandr -o left
+
+    #xmodmap -e "keycode 133 = Up"
+    #xmodmap -e "keycode 134 = Down"
+
+    MODEL=`cat /proc/deviceinfo/product`
+    echo 'MODEL:'$MODEL
+    case "$MODEL" in
+	SL-C860) 
+	    echo "75" >/proc/driver/w100/fastsysclk
+	    ;;
+	SL-C700)
+	    echo "75" >/proc/driver/w100/fastsysclk
+	    ;;
+	*)
+	    ;;
+    esac
+
+    if pidof xvkbd >/dev/null; then xvkbdlauncher; fi
+    
+    return 0
+}  
+
+
+case "$1" in
+  closed)
+  	closed
+	;;
+  landscape)
+  	landscape
+	;;
+  portrait)
+  	portrait
+  	;;	
+  *)
+	echo "Usage: $0 {closed|landscape|portrait}"
+	exit 1
+esac
+
+exit $?

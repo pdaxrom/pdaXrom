@@ -1,0 +1,8 @@
+config LIBXFCE4UTIL
+	bool
+	prompt "libxfce4util"
+
+config LIBXFCE4UTIL_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on LIBXFCE4UTIL

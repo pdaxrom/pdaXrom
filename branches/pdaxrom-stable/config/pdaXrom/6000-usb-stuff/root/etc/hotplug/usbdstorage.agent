@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# Network hotplug policy agent for Linux 2.4 kernels
+#
+# Kernel NET hotplug params include:
+#        
+#        ACTION=%s [register or unregister]
+#        INTERFACE=%s
+#
+# HISTORY:
+#
+# 25-Feb-2001        Special case ppp and similar (redhat)
+# 23-Jan-2001        Log invocation of "ifup" if debugging
+# 04-Jan-2001        Initial version of "new" hotplug agent.
+# 2001-Dec-19        Modified to work with ash, Sharp policy for usbd0 added
+#
+# $Id: usbdstorage.agent,v 1.3 2003/10/21 00:22:54 sakamoto Exp $
+#
+
+DEVICE_CF=/dev/hda1
+DEVICE_SD=/dev/mmcd/disc0/part1
+STORAGE_PID=/var/run/usbdstorage.pid
+
+case ${ACTION} in
+active)
+    echo ${INTERFACE} > ${STORAGE_PID}
+    ;;
+inactive)
+    rm -f ${STORAGE_PID}
+    ;;
+mount)
+    case ${INTERFACE} in
+    ${DEVICE_CF})
+        /etc/pcmcia/ide start hda
+        ;;
+    ${DEVICE_SD})
+        /etc/sdcontrol insert
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+    ;;
+umount)
+    case ${INTERFACE} in
+    ${DEVICE_CF})
+        /etc/pcmcia/ide stop hda
+        ;;
+    ${DEVICE_SD})
+        /etc/sdcontrol compeject
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+    ;;
+connect)
+    ;;
+disconnect)
+    ;;
+insert)
+    ;;
+eject)
+    ;;
+*)
+    exit 1
+    ;;
+esac
+
+exit 0
+ 

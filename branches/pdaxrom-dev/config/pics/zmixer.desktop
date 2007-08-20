@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=ZMixer
+Comment=Simple ALSA Mixer
+Exec=zmixer
+Terminal=0
+Type=Application
+Icon=/usr/share/pixmaps/kamix.png
+Categories=AudioVideo
+StartupNotify=True
+SingleInstance=False

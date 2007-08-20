@@ -1,0 +1,73 @@
+--- s/configure~	2006-07-05 10:54:06.000000000 +0000
++++ s/configure	2006-07-05 11:29:17.000000000 +0000
+@@ -8167,7 +8167,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "$FreeType2_IncRoot/include/freetype2"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -8193,7 +8194,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "/usr/include/freetype2"; then
+   ac_cv_file__usr_include_freetype2=yes
+ else
+@@ -8216,7 +8218,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "/usr/local/include/freetype2"; then
+   ac_cv_file__usr_local_include_freetype2=yes
+ else
+@@ -8239,7 +8242,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "/usr/X11R6/include/freetype2"; then
+   ac_cv_file__usr_X11R6_include_freetype2=yes
+ else
+@@ -8273,8 +8277,9 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "/usr/include/libxml2/libxml"; then
++   #{ (exit 1); exit 1; }; 
++   }
++if xml2-config --cflags ; then
+   ac_cv_file__usr_include_libxml2_libxml=yes
+ else
+   ac_cv_file__usr_include_libxml2_libxml=no
+@@ -8283,7 +8288,7 @@
+ echo "$as_me:$LINENO: result: $ac_cv_file__usr_include_libxml2_libxml" >&5
+ echo "${ECHO_T}$ac_cv_file__usr_include_libxml2_libxml" >&6
+ if test $ac_cv_file__usr_include_libxml2_libxml = yes; then
+-  CFLAGS="$CFLAGS -I/usr/include/libxml2/"
++  CFLAGS="$CFLAGS `xml2-config --cflags`"
+ else
+ 
+  echo "$as_me:$LINENO: checking for /usr/local/include/libxml2/libxml" >&5
+@@ -8294,7 +8299,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ if test -r "/usr/local/include/libxml2/libxml"; then
+   ac_cv_file__usr_local_include_libxml2_libxml=yes
+ else

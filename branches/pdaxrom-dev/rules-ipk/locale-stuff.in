@@ -1,0 +1,41 @@
+comment "Localization"
+
+config GLIBC_LOCALE
+	bool
+	prompt "locale"
+
+config GLIBC_LOCALE_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on GLIBC_LOCALE
+
+config GLIBC_LOCALEDEF
+	bool
+	prompt "localedef"
+
+config GLIBC_LOCALEDEF_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on GLIBC_LOCALEDEF
+
+config GLIBC_LOCALES
+	bool
+	prompt "build locales"
+
+config GLIBC_LOCALES_STR
+	prompt "locales"
+	string
+	default ""
+	depends on GLIBC_LOCALES
+
+config GLIBC_LOCALES_INSTALL
+	prompt "locales for install"
+	string
+	default ""
+	depends on GLIBC_LOCALES
+
+config GLIBC_GCONV_INSTALL
+	prompt "gconv modules for install"
+	string
+	default "ISO8859-1"
+	depends on GLIBC_LOCALES && !ARCH_X86

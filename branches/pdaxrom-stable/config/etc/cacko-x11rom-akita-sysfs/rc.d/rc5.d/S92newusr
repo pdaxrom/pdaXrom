@@ -1,0 +1,23 @@
+
+#!/bin/bash
+if [ ! -f /home/root/.addedusr ]; then
+    touch /home/root/.addedusr
+    else
+        touch /home/root/.addedusr && exit 0
+        fi
+        
+        echo "Would you like to add a non-root user? [y/n]"
+        
+        read ans
+        
+        if [ "$ans" != "y" -a "$ans" != "Y" ]; then
+            exit 0
+                fi
+                
+                echo "add user name:"
+                read ans
+                
+                adduser $ans
+                
+                echo "User $ans added"
+                

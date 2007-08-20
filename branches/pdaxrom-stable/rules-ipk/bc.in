@@ -1,0 +1,8 @@
+config BC
+	bool
+	prompt "bc"
+
+config BC_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on BC

@@ -1,0 +1,8 @@
+config LIBTHEORA
+	bool
+	prompt "libtheora"
+
+config LIBTHEORA_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on LIBTHEORA

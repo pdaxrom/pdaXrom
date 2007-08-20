@@ -1,0 +1,59 @@
+# ATA/IDE drive adapter configuration
+#
+# The address format is "scheme,socket,serial_no[,part]".
+#
+# For multi-partition devices, first return list of partitions in
+# $PARTS.  Then, we'll get called for each partition.
+#
+case "$ADDRESS" in
+*,0,*,1)
+    #INFO="Sample IDE setup"
+    #DO_FSTAB="y" ; DO_FSCK="y" ; DO_MOUNT="y"
+    #FSTYPE="msdos"
+    #OPTS=""
+    FATOPTS="-o noatime,quiet,umask=000,iocharset=utf8"
+    #MOUNTPT="/mnt/ide"
+    DO_MOUNT="y"
+    #FSTYPE="vfat"
+    MOUNTPT="/mnt/cf"
+    ;;
+*,1,*,1)
+    #INFO="Sample IDE setup"
+    #DO_FSTAB="y" ; DO_FSCK="y" ; DO_MOUNT="y"
+    #FSTYPE="msdos"
+    #OPTS=""
+    FATOPTS="-o noatime,quiet,umask=000,iocharset=utf8"
+    #MOUNTPT="/mnt/ide"
+    DO_MOUNT="y"
+    #FSTYPE="vfat"
+    MOUNTPT="/mnt/ide"
+    ;;
+*,1,*,2)
+    #INFO="Sample IDE setup"
+    #DO_FSTAB="y" ; DO_FSCK="y" ; DO_MOUNT="y"
+    #FSTYPE="msdos"
+    #OPTS=""
+    FATOPTS="-o noatime,quiet,umask=000,iocharset=utf8"
+    #MOUNTPT="/mnt/ide"
+    DO_MOUNT="y"
+    #FSTYPE="vfat"
+    MOUNTPT="/mnt/ide2"
+    ;;
+*,1,*,3)
+    #INFO="Sample IDE setup"
+    #DO_FSTAB="y" ; DO_FSCK="y" ; DO_MOUNT="y"
+    #FSTYPE="msdos"
+    #OPTS=""
+    FATOPTS="-o noatime,quiet,umask=000,iocharset=utf8"
+    #MOUNTPT="/mnt/ide"
+    DO_MOUNT="y"
+    #FSTYPE="vfat"
+    MOUNTPT="/mnt/ide3"
+    ;;
+*,*,*)
+    PARTS="1 2 3"
+    # Card eject policy options
+    NO_CHECK=n
+    NO_FUSER=n
+    ;;
+esac

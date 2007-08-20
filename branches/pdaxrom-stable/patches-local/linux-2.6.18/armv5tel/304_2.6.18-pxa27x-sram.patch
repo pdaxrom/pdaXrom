@@ -1,0 +1,326 @@
+diff -Nur linux-2.6.18-orig/arch/arm/Kconfig linux-2.6.18/arch/arm/Kconfig
+--- linux-2.6.18-orig/arch/arm/Kconfig	2006-11-05 16:27:36.000000000 +0000
++++ linux-2.6.18/arch/arm/Kconfig	2006-11-05 17:16:43.000000000 +0000
+@@ -827,6 +827,13 @@
+ 
+ source "kernel/power/Kconfig"
+ 
++config SRAM_ALLOCATE
++	bool "PXA27x SRAM Allocation Support" if ARCH_PXA
++	depends on ARCH_PXA
++	help
++	   If you say Y here , the system will support dynamic allocation into
++	   the sram region.
++
+ config APM
+ 	tristate "Advanced Power Management Emulation"
+ 	---help---
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/Makefile linux-2.6.18/arch/arm/mach-pxa/Makefile
+--- linux-2.6.18-orig/arch/arm/mach-pxa/Makefile	2006-09-20 03:42:06.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/Makefile	2006-11-05 17:17:44.000000000 +0000
+@@ -31,6 +31,7 @@
+ # Misc features
+ obj-$(CONFIG_PM) += pm.o sleep.o
+ obj-$(CONFIG_PXA_SSP) += ssp.o
++obj-$(CONFIG_SRAM_ALLOCATE) += sram.o
+ 
+ ifeq ($(CONFIG_PXA27x),y)
+ obj-$(CONFIG_PM) += standby.o
+diff -Nur linux-2.6.18-orig/arch/arm/mach-pxa/sram.c linux-2.6.18/arch/arm/mach-pxa/sram.c
+--- linux-2.6.18-orig/arch/arm/mach-pxa/sram.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/arch/arm/mach-pxa/sram.c	2006-11-05 17:16:43.000000000 +0000
+@@ -0,0 +1,280 @@
++/*
++ *  linux/arch/arm/mach-pxa/sram.c
++ *
++ *  PXA27x  Internal Memory
++ *
++ *  Copyright (c) 2003, Intel Corporation (yu.tang@intel.com)
++ *
++ *  This software program is licensed subject to the GNU 
++ *  General Public License(GPL).Version 2,June 1991.
++ *  available at http://www.fsf.org/copyleft/gpl.html
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/sched.h>
++#include <linux/errno.h>
++#include <linux/slab.h>
++#include <linux/version.h>
++#include <linux/delay.h>
++#include <asm/system.h>
++#include <asm/irq.h>
++#include <asm/hardware.h>
++#include <asm/pgtable.h>
++#include <asm/io.h>
++#include <asm/arch/pxa-regs.h>
++
++static u32 sram_mem = 0;
++
++struct sram_block_t {
++	u32 start; /* pointer to start of sram memory block */
++	u32 end;   /* pointer to first address after sram memory block */
++	u32 pid;   /* each entry is associated with a process id */
++	struct sram_block_t *prev;
++	struct sram_block_t *next;
++};
++
++static struct sram_block_t sram_list = { 0, 0, 0, &sram_list, &sram_list };
++static u32 space_available = 0;
++
++int remove_sram_entry(u32 start) {
++	struct sram_block_t *p = sram_list.next;
++	int found = 0;
++
++	while(p != &sram_list) {
++		if(p->start == start) {
++			found = 1;
++			break;
++		}
++		p = p->next;
++	}
++
++	if(!found) return -1;
++
++	/* p now points to the memory block to be removed */
++
++	p->prev->next = p->next;
++	p->next->prev = p->prev;
++	space_available += p->end - p->start;
++	kfree(p);
++	return 0;
++}
++
++int remove_sram_pid(u32 pid) {
++	struct sram_block_t *p = sram_list.next;
++
++	while(p != &sram_list) {
++		if(p->pid == pid) {
++			/* p now points to the memory block to be removed */
++			p->prev->next = p->next;
++			p->next->prev = p->prev;
++			space_available += p->end - p->start;
++			kfree(p);
++		}
++		p = p->next;
++	}
++
++	return 0;
++}
++
++struct sram_block_t * create_sram_entry(u32 size, u32 pid) {
++
++	struct sram_block_t *p = &sram_list, *new;
++	int found = 0;
++
++	while(1) {
++		/* check to see if there's a gap big enough for the request */
++		if(p->next == &sram_list) {
++			/* we're at the end of the list */
++			if(SRAM_SIZE - p->end >= size)
++				found = 1;
++			break;
++		} else if(p->next->start - p->end >= size) {
++			/* middle of the list */
++			found = 1;
++			break;
++		}
++		p = p->next;
++	}
++
++	if(!found) return NULL;
++
++	/* p now points to the memory block just prior to the new block */
++	new = kmalloc(sizeof(struct sram_block_t), GFP_ATOMIC);
++	if(new == NULL) return NULL;
++
++	space_available -= size;
++	new->start = p->end;
++	new->end = p->end + size;
++	new->pid = pid;
++
++	new->prev = p;
++	new->next = p->next;
++	new->prev->next = new;
++	new->next->prev = new;
++
++	return new;
++}
++
++static int __init sram_init (void)
++{
++	/* cachable, bufferable */
++	sram_mem = (u32)__ioremap( SRAM_MEM_PHYS, SRAM_SIZE, L_PTE_BUFFERABLE | L_PTE_CACHEABLE);
++	if(!sram_mem) goto err;
++
++/* Enable clcok */
++	CKEN |= CKEN20_IM;
++
++	/* All the banks are
++	 * - Automatic wakeup enabled
++	 * - Enter Stand-by after 255 ms 
++	 */
++	IMPMCR = ( 0xff << 16) | (0x0f << 8) | (0xff);
++	
++	space_available = SRAM_SIZE;
++	goto out;
++
++err:
++	if (sram_mem)  {
++		iounmap((void*)sram_mem);
++		sram_mem = 0;
++	}
++
++	printk (KERN_WARNING "Failed to initialize SRAM\n");
++
++	space_available = 0;
++out:
++	return 0;
++}
++
++/*************************************************************************
++ *
++ * Function: xscale_sram_malloc_local
++ * Description: Allocates a block and returns the offest 
++ * into the sram array, not called externally
++ *
++ * Arguments:
++ * size - the size in bytes of the requested allocation
++ * res - the return val for the allocated address
++ * pid - the process id of the caller (0 for drivers)
++ *
++ *************************************************************************/
++
++int xscale_sram_malloc_local(size_t size, u32 *res, u32 pid) {
++struct sram_block_t *new;
++
++	if((size < 4)||(size%4 != 0)) {
++		printk(KERN_WARNING "SRAM Memory Full, allocation failed\n");
++		return -1;
++	}
++	if(size > space_available) {
++		printk(KERN_WARNING "SRAM Memory Full, allocation failed\n");
++		return -1;
++	}
++	new = create_sram_entry(size, pid);
++	if(new == NULL) {
++		printk(KERN_WARNING "SRAM Memory Full, allocation failed\n");
++		return -1;
++	}
++	*res = new->start;
++	return 0;
++}
++
++/*************************************************************************
++ *
++ * Function: xscale_sram_malloc
++ * Description: Allocates a block and returns the kernel space 
++ * address (sram array offset plus kernel virtual sram start)
++ *
++ * Arguments:
++ * size - the size in bytes of the requested allocation
++ *
++ *************************************************************************/
++
++void *xscale_sram_malloc(size_t size) {
++u32 addr;
++
++	if(xscale_sram_malloc_local(size, &addr, 0)) return NULL;
++	return((void *)(sram_mem + addr));
++}
++
++/*************************************************************************
++*
++ * Function: xscale_sram_malloc_user
++ * Description: Allocates a block and returns the user 
++ * space address by adding it to the given virtual sram base address
++ *
++ * Arguments:
++ * size - the size in bytes of the requested allocation
++ * virtual_sram_base - the virtual address of sram_base as assigned
++ * 	by a call to mmap.
++ * pid - the pid of the calling process
++ *
++ *************************************************************************/
++
++void *xscale_sram_malloc_user(size_t size, u32 virtual_sram_base, u32 pid) {
++u32 addr;
++
++	if(xscale_sram_malloc_local(size, &addr, pid)) return NULL;
++	return((void *)(virtual_sram_base + addr));
++}
++
++/*************************************************************************
++ *
++ * Function: xscale_sram_free
++ * Description: Frees a block of sram from kernel space
++ *
++ * Arguments:
++ * ptr - the address of the block to free
++ *
++ *************************************************************************/
++
++void xscale_sram_free(void *ptr) {
++
++	if((u32)ptr >= sram_mem)
++		remove_sram_entry((u32)ptr - sram_mem);
++}
++/*************************************************************************
++ *
++ * Function: xscale_sram_free
++ * Description: Frees a block of sram from user space
++ *
++ * Arguments:
++ * ptr - the address of the block to free
++ *
++ *************************************************************************/
++
++void xscale_sram_free_user(void *ptr, u32 virtual_sram_base) {
++        
++        if((u32)ptr >= virtual_sram_base)
++		remove_sram_entry((u32)ptr - virtual_sram_base);
++}
++
++/*************************************************************************
++ *
++ * Function: xscale_sram_free
++ * Description: Frees all sram blocks for a given process
++ *
++ * Arguments:
++ * pid - the pid for whom all sram allocations should be freed
++ *
++*************************************************************************/
++
++void xscale_sram_free_all_pid(u32 pid) {
++
++	if(pid == 0) {
++                printk(KERN_WARNING "Attempt to free memory for invalid pid, free failed\n");
++		return;
++        }
++	remove_sram_pid(pid);
++}
++
++EXPORT_SYMBOL(xscale_sram_malloc);
++EXPORT_SYMBOL(xscale_sram_free);
++EXPORT_SYMBOL(xscale_sram_malloc_user);
++EXPORT_SYMBOL(xscale_sram_free_user);
++EXPORT_SYMBOL(xscale_sram_free_all_pid);
++
++__initcall(sram_init);
++
+diff -Nur linux-2.6.18-orig/include/asm-arm/arch-pxa/sram.h linux-2.6.18/include/asm-arm/arch-pxa/sram.h
+--- linux-2.6.18-orig/include/asm-arm/arch-pxa/sram.h	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.18/include/asm-arm/arch-pxa/sram.h	2006-11-05 17:16:43.000000000 +0000
+@@ -0,0 +1,10 @@
++#ifndef _ASM_ARCH_SRAM_H
++#define _ASM_ARCH_SRAM_H
++
++extern void * xscale_sram_malloc(u32);
++extern void * xscale_sram_malloc_user(u32, u32, u32);
++extern void xscale_sram_free(void *);
++extern void xscale_sram_free_user(void *, u32);
++extern void xscale_sram_free_all_pid(u32);
++
++#endif
