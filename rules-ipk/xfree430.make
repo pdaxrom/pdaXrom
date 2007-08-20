@@ -22,7 +22,7 @@ endif
 #XFREE430_VERSION	= 430
 #XFREE430		= X$(XFREE430_VERSION)src
 
-XFREE430_VERSION	= 4.4.0
+XFREE430_VERSION	= 4.6.0
 XFREE430		= XFree86-$(XFREE430_VERSION)-src
 
 XFREE430_SUFFIX		= tgz
@@ -40,6 +40,10 @@ XFREE430_4_URL		= ftp://ftp.xfree86.org/pub/XFree86/$(XFREE430_VERSION)/source/$
 XFREE430_4_SOURCE	= $(SRCDIR)/$(XFREE430)-4.$(XFREE430_SUFFIX)
 XFREE430_5_URL		= ftp://ftp.xfree86.org/pub/XFree86/$(XFREE430_VERSION)/source/$(XFREE430)-5.$(XFREE430_SUFFIX)
 XFREE430_5_SOURCE	= $(SRCDIR)/$(XFREE430)-5.$(XFREE430_SUFFIX)
+XFREE430_6_URL          = ftp://ftp.xfree86.org/pub/XFree86/$(XFREE430_VERSION)/source/$(XFREE430)-6.$(XFREE430_SUFFIX)
+XFREE430_6_SOURCE       = $(SRCDIR)/$(XFREE430)-6.$(XFREE430_SUFFIX)
+XFREE430_7_URL          = ftp://ftp.xfree86.org/pub/XFree86/$(XFREE430_VERSION)/source/$(XFREE430)-7.$(XFREE430_SUFFIX) 
+XFREE430_7_SOURCE       = $(SRCDIR)/$(XFREE430)-7.$(XFREE430_SUFFIX) 
 endif
 
 # ----------------------------------------------------------------------------
@@ -54,6 +58,8 @@ xfree430_get_deps	+= $(XFREE430_3_SOURCE)
 ifdef PTXCONF_XFREE430_FULL
 xfree430_get_deps	+= $(XFREE430_4_SOURCE)
 xfree430_get_deps	+= $(XFREE430_5_SOURCE)
+xfree430_get_deps       += $(XFREE430_6_SOURCE)
+xfree430_get_deps       += $(XFREE430_7_SOURCE)
 endif
 
 $(STATEDIR)/xfree430.get: $(xfree430_get_deps)
@@ -81,6 +87,15 @@ $(XFREE430_4_SOURCE):
 $(XFREE430_5_SOURCE):
 	@$(call targetinfo, $@)
 	@$(call get, $(XFREE430_5_URL))
+
+$(XFREE430_6_SOURCE):                                                                                                                                        
+        @$(call targetinfo, $@)                                                                                                                              
+        @$(call get, $(XFREE430_6_URL))
+
+$(XFREE430_7_SOURCE):
+	@$(call targetinfo, $@)
+	@$(call get, $(XFREE430_7_URL))
+	        	
 endif
 # ----------------------------------------------------------------------------
 # Extract
@@ -99,6 +114,8 @@ $(STATEDIR)/xfree430.extract: $(xfree430_extract_deps)
 ifdef PTXCONF_XFREE430_FULL
 	@$(call extract, $(XFREE430_4_SOURCE))
 	@$(call extract, $(XFREE430_5_SOURCE))
+	@$(call extract, $(XFREE430_6_SOURCE))	
+	@$(call extract, $(XFREE430_7_SOURCE))
 endif
 	@$(call patchin, $(XFREE430), $(XFREE430_DIR))
 	touch $@
