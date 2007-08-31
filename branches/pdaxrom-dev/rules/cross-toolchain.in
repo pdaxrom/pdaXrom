@@ -124,7 +124,12 @@ choice
 		bool
 		prompt "4.1.0"
 		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
-	
+
+	config GCC_4_2_1
+		bool
+		prompt "4.2.1"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+		
 endchoice
 
 config GCC_SNAPSHOT
@@ -151,6 +156,7 @@ config GCC_3
 	default y if GCC_3_4_6
 	default y if GCC_4_0_0
 	default y if GCC_4_1_0
+	default y if GCC_4_2_1
 
 config GCC_F77
 	bool

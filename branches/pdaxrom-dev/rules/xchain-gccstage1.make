@@ -24,7 +24,7 @@ GCC			=  gcc-$(PTXCONF_GCC_SNAPSHOT_NAME)
 GCC_URL			=  ftp://ftp.funet.fi/pub/mirrors/gcc.gnu.org/pub/gcc/snapshots/gcc-$(GCC_VERSION)/$(GCC).tar.bz2
 else
 GCC			=  gcc-$(GCC_VERSION)
-GCC_URL			=  ftp://ftp.funet.fi/pub/mirrors/gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC).tar.bz2
+GCC_URL			=  ftp://mirrors.laffeycomputer.com/pub/gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC).tar.bz
 endif
 GCC_SOURCE		=  $(SRCDIR)/$(GCC).tar.bz2
 GCC_DIR			=  $(BUILDDIR)/$(GCC)
@@ -250,8 +250,11 @@ GCC_STAGE1_AUTOCONF = \
 	--enable-version-specific-runtime-libs \
 	--disable-multilib \
         --without-headers \
-	--with-gnu-ld
-
+	--with-gnu-ld \
+	--disable-libssp \
+	--disable-testsuite \
+	--disable-libmudflap
+		
 ifdef PTXCONF_GLIBC
 GCC_STAGE1_AUTOCONF	+= --disable-__cxa_atexit
 endif
