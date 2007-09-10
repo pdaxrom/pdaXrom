@@ -19,7 +19,7 @@ endif
 # Paths and names 
 #
 ###AUTOCONF257			= autoconf-2.57
-AUTOCONF257			= autoconf-2.59
+AUTOCONF257			= autoconf-2.61
 AUTOCONF257_URL			= http://ftp.gnu.org/pub/gnu/autoconf/$(AUTOCONF257).tar.bz2
 AUTOCONF257_SOURCE		= $(SRCDIR)/$(AUTOCONF257).tar.bz2
 AUTOCONF257_DIR			= $(BUILDDIR)/$(AUTOCONF257)

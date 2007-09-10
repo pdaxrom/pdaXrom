@@ -24,7 +24,7 @@ GCC			=  gcc-$(PTXCONF_GCC_SNAPSHOT_NAME)
 GCC_URL			=  ftp://ftp.funet.fi/pub/mirrors/gcc.gnu.org/pub/gcc/snapshots/gcc-$(GCC_VERSION)/$(GCC).tar.bz2
 else
 GCC			=  gcc-$(GCC_VERSION)
-GCC_URL			=  ftp://mirrors.laffeycomputer.com/pub/gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC).tar.bz
+GCC_URL			=  ftp://mirrors.laffeycomputer.com/pub/gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC).tar.bz2
 endif
 GCC_SOURCE		=  $(SRCDIR)/$(GCC).tar.bz2
 GCC_DIR			=  $(BUILDDIR)/$(GCC)
