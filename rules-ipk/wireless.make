@@ -18,7 +18,7 @@ endif
 #
 # Paths and names 
 #
-WIRELESS_VERSION	= 26
+WIRELESS_VERSION	= 28
 WIRELESS		= wireless_tools.$(WIRELESS_VERSION)
 WIRELESS_SUFFIX		= tar.gz
 WIRELESS_URL		= http://pcmcia-cs.sourceforge.net/ftp/contrib/$(WIRELESS).$(WIRELESS_SUFFIX)
@@ -96,7 +96,7 @@ wireless_compile_deps	= $(STATEDIR)/wireless.compile
 
 $(STATEDIR)/wireless.install: $(wireless_compile_deps)
 	@$(call targetinfo, $@)
-	$(INSTALL) -m 755 $(WIRELESS_DIR)/libiw.so.26 $(CROSS_LIB_DIR)/lib/libiw.so.26
+	$(INSTALL) -m 755 $(WIRELESS_DIR)/libiw.so.28 $(CROSS_LIB_DIR)/lib/libiw.so.26
 	ln -sf libiw.so.26 $(CROSS_LIB_DIR)/lib/libiw.so
 	$(INSTALL) -m 644 $(WIRELESS_DIR)/iwlib.h $(CROSS_LIB_DIR)/include/iwlib.h
 	touch $@
@@ -117,7 +117,7 @@ $(STATEDIR)/wireless.targetinstall: $(STATEDIR)/wireless.install
 	$(INSTALL) -m 755 $(WIRELESS_DIR)/iwlist   $(WIRELESS_DIR)/ipkg_tmp/sbin
 	$(INSTALL) -m 755 $(WIRELESS_DIR)/iwpriv   $(WIRELESS_DIR)/ipkg_tmp/sbin
 	$(INSTALL) -m 755 $(WIRELESS_DIR)/iwspy    $(WIRELESS_DIR)/ipkg_tmp/sbin
-	$(INSTALL) -m 755 $(WIRELESS_DIR)/libiw.so.26 $(WIRELESS_DIR)/ipkg_tmp/lib
+	$(INSTALL) -m 755 $(WIRELESS_DIR)/libiw.so.28 $(WIRELESS_DIR)/ipkg_tmp/lib
 	$(CROSSSTRIP) -R .note -R .comment $(WIRELESS_DIR)/ipkg_tmp/sbin/iwconfig
 	$(CROSSSTRIP) -R .note -R .comment $(WIRELESS_DIR)/ipkg_tmp/sbin/iwevent
 	$(CROSSSTRIP) -R .note -R .comment $(WIRELESS_DIR)/ipkg_tmp/sbin/iwgetid
