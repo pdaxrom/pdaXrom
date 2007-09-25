@@ -7,7 +7,7 @@ KDEDIR=/usr/lib/kde
 KDEDIRS=$KDEDIR
 PATH=@PTXCONF_PREFIX@/bin:/opt/sdk/bin:/root/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:$QTDIR/bin:$KDEDIR/bin
 LD_LIBRARY_PATH=$KDEDIR/lib:@PTXCONF_PREFIX@/lib
-PS1="# "
+PS1="[\u@\h \w]\\$ "
 
 TSLIB_TSDEVICE=/dev/input/event1
 TSLIB_TSEVENTTYPE=INPUT
