@@ -531,5 +531,5 @@ source "rules-ipk/xcdroast.in"
 endmenu
 
 source "rules-ipk/xfree430.in"
-
+source "rules-ipk/xfwm4.in
 endmenu
