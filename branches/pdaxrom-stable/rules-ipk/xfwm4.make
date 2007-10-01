@@ -53,6 +53,10 @@ xfwm4_extract: $(STATEDIR)/xfwm4.extract
 
 xfwm4_extract_deps = $(STATEDIR)/xfwm4.get
 
+xfwm4_PATH    =  PATH=$(CROSS_PATH)
+xfwm4_ENV     =  $(CROSS_ENV)
+xfwm4_ENV     += PKG_CONFIG_PATH=$(CROSS_LIB_DIR)/lib/pkgconfig:$(CROSS_LIB_DIR)/lib/pkgconfig
+
 $(STATEDIR)/xfwm4.extract: $(xfwm4_extract_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(XFWM4_DIR))
@@ -71,7 +75,7 @@ xfwm4_prepare: $(STATEDIR)/xfwm4.prepare
 #
 xfwm4_prepare_deps = \
 	$(STATEDIR)/xfwm4.extract \
-	$(STATEDIR)/virtual-xchain.install
+	$(STATEDIR)/virtual-xchain.install 
 
 XFWM4_PATH	=  PATH=$(CROSS_PATH)
 XFWM4_ENV 	=  $(CROSS_ENV)
