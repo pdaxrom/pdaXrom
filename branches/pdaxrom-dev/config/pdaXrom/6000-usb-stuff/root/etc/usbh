@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Lineo Solutions, Inc
+#
+
+case "$1" in
+start)
+	if [ -d /proc/bus/usb ]; then
+		exit 0
+	fi
+	modprobe usb_ohci_tc6393
+        if [ ! -e /dev/usb/host_ohci ]; then 
+            mknod /dev/usb/host_ohci c 10 222
+        fi
+	mount -t usbdevfs none /proc/bus/usb
+	;;
+stop)
+	if [ ! -d /proc/bus/usb ]; then
+		exit 0
+	fi
+	usbctl off 0
+	usbctl off 1
+	for i in `lsmod | grep usbcore | /bin/sed -e "s/.*\[\(.*\)\]/\1/"`;
+	do
+		modprobe -r $i
+	done
+	umount /proc/bus/usb
+	modprobe -r usbcore
+	;;
+*)
+	echo "Usage: $0 (start|stop)"
+	exit 1
+	;;
+esac
+
+exit 0

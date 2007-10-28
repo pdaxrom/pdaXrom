@@ -1,0 +1,8 @@
+config THUNAR
+	bool
+	prompt "Thunar"
+
+config THUNAR_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on THUNAR

@@ -1,0 +1,8 @@
+config ALSA-UTILS
+	bool
+	prompt "alsa-utils"
+
+config ALSA-UTILS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on ALSA-UTILS

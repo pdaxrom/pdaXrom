@@ -1,0 +1,8 @@
+config RANDRPROTO-X11R7.0
+	bool
+	prompt "randrproto-X11R7.0"
+
+config RANDRPROTO-X11R7.0_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on RANDRPROTO-X11R7.0

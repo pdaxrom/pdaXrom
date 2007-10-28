@@ -1,0 +1,8 @@
+config ED
+	bool
+	prompt "ed"
+
+config ED_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on ED

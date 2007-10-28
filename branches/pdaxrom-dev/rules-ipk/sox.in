@@ -1,0 +1,8 @@
+config SOX
+	bool
+	prompt "sox"
+
+config SOX_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on SOX

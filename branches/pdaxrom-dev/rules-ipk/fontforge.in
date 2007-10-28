@@ -1,0 +1,8 @@
+config FONTFORGE
+	bool
+	prompt "fontforge"
+
+config FONTFORGE_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on FONTFORGE

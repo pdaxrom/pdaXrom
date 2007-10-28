@@ -1,0 +1,8 @@
+config XFCE-MCS-PLUGINS
+	bool
+	prompt "xfce-mcs-plugins"
+
+config XFCE-MCS-PLUGINS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XFCE-MCS-PLUGINS

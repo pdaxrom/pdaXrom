@@ -1,0 +1,8 @@
+config OPENLDAP
+	bool
+	prompt "openldap"
+
+config OPENLDAP_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on OPENLDAP

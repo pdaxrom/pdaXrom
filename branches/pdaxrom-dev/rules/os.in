@@ -1,0 +1,24 @@
+choice
+
+    prompt "Target OS   "
+    default OS_LINUX
+    
+    config OS_NONE
+	bool
+	prompt "none"
+
+    config OS_LINUX
+	bool
+	prompt "Linux"
+
+    config KOS
+	bool
+	prompt "KallistiOS"
+
+endchoice
+
+config OS_TYPE
+	string
+	default "none"	if OS_NONE
+	default "linux"	if OS_LINUX
+	default "kos"	if KOS

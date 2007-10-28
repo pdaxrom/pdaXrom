@@ -1,0 +1,36 @@
+#! /bin/bash
+#
+# cardctl          Eject cards before a suspend and reinsert after resume
+#
+# description: 
+#
+
+
+
+# See how we were called.
+  
+suspend() {
+  cardctl eject 2>/dev/null
+  return 0
+}
+
+resume() {
+  cardctl insert 2>/dev/null
+  
+  return 0
+}	
+
+
+case "$1" in
+  suspend)
+  	suspend
+	;;
+  resume)
+  	resume
+	;;
+  *)
+	echo "Usage: $0 {suspend|resume}"
+	exit 1
+esac
+
+exit $?

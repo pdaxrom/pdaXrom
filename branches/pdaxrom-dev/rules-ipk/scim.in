@@ -1,0 +1,48 @@
+config SCIM
+	bool
+	prompt "scim"
+
+config SCIM_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on SCIM
+
+config SCIM-HANGUL
+	bool
+	prompt "scim-hangul"
+	depends on SCIM
+
+config SCIM-HANGUL_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on SCIM-HANGUL && SCIM_INSTALL
+
+config SCIM-M17N
+	bool
+	prompt "scim-m17n"
+	depends on SCIM
+
+config SCIM-M17N_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on SCIM-M17N && SCIM_INSTALL
+
+config SCIM-PINYIN
+	bool
+	prompt "scim-pinyin"
+	depends on SCIM
+
+config SCIM-PINYIN_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on SCIM-PINYIN && SCIM_INSTALL
+
+config SCIM-TABLES
+	bool
+	prompt "scim-tables"
+	depends on SCIM
+
+config SCIM-TABLES_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on SCIM-TABLES && SCIM_INSTALL

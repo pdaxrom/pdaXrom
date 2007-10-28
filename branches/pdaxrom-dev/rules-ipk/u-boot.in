@@ -1,0 +1,9 @@
+config U-BOOT
+	bool
+	prompt "u-boot"
+
+config U-BOOT_CONFIG
+	string
+	default ""
+	prompt "Target hardware"
+	depends on U-BOOT

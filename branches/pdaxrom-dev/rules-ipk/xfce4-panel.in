@@ -1,0 +1,8 @@
+config XFCE4-PANEL
+	bool
+	prompt "xfce4-panel"
+
+config XFCE4-PANEL_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XFCE4-PANEL

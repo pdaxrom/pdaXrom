@@ -1,0 +1,8 @@
+config KDEBASE
+	bool
+	prompt "kde base"
+
+config KDEBASE_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on KDEBASE

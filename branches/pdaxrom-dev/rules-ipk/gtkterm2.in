@@ -1,0 +1,8 @@
+config GTKTERM2
+	bool
+	prompt "gtkterm2"
+
+config GTKTERM2_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on GTKTERM2

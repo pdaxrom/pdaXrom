@@ -1,0 +1,8 @@
+config XORG-SERVER-X11R7.2
+	bool
+	prompt "xorg-server-X11R7.2"
+
+config XORG-SERVER-X11R7.2_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XORG-SERVER-X11R7.2

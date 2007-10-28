@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# Lineo Solutions, Inc
+#
+
+case "$1" in
+start)
+	if [ -d /proc/bus/usb ]; then
+		exit 0
+	fi
+	modprobe usb_ohci_pxa27x
+	mount -t usbdevfs none /proc/bus/usb
+	;;
+stop)
+	LIST=`mount | sed -ne "s+^\(\/dev\/s[c-d][a-f][0-9]*\) .*+\1+p"`
+	if [ -n "$LIST" ] ; then
+	  for DEVICE in $LIST ; do
+	    fuser -k -m $DEVICE
+	    umount $DEVICE
+	  done
+	fi
+	if [ ! -d /proc/bus/usb ]; then
+		exit 0
+	fi
+	usbctl off 0
+	usbctl off 1
+	for i in `lsmod | grep usbcore | sed -e "s/.*\[\(.*\)\]/\1/"`;
+	do
+		modprobe -r $i
+	done
+	umount /proc/bus/usb
+	modprobe -r usbcore
+	;;
+*)
+	echo "Usage: $0 (start|stop)"
+	exit 1
+	;;
+esac
+
+exit 0

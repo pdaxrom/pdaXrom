@@ -1,0 +1,8 @@
+config DDCXINFO-KANOTIX
+	bool
+	prompt "ddcxinfo-kanotix (VBE/DDC stuff)"
+
+config DDCXINFO-KANOTIX_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on DDCXINFO-KANOTIX

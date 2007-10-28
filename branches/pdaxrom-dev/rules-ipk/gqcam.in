@@ -1,0 +1,8 @@
+config GQCAM
+	bool
+	prompt "gqcam"
+
+config GQCAM_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on GQCAM

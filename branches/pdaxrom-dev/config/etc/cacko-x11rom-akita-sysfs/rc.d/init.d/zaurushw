@@ -1,0 +1,44 @@
+#!/bin/sh
+
+. /etc/rc.d/init.d/functions
+
+HARDWARE=`cat /proc/cpuinfo | grep 'Hardware' | cut -d':' -f2 | cut -d' ' -f3`
+
+unset W100FASTPLLCLK ADADJ COMADJ PHADADJ TOUCH BADCONFIG
+
+. /etc/sysconfig/zaurushw
+
+
+hw_init() {
+    ${HARDWARE}_init 2>/dev/null >/dev/null
+    test $W100FASTPLLCLK && echo $W100FASTPLLCLK > /sys/devices/platform/sharp-scoop/corgi-ssp/w100fb/fastpllclk
+    test $ADADJ   && echo $ADADJ   > /sys/devices/platform/sharpsl-param/adadj
+    test $COMADJ  && echo $COMADJ  > /sys/devices/platform/sharpsl-param/comadj
+    test $PHADADJ && echo $PHADADJ > /sys/devices/platform/sharpsl-param/phadadj
+    test $TOUCH   && echo $TOUCH   > /sys/devices/platform/sharpsl-param/touch
+    test $BADCONFIG && false
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        action "Starting $HARDWARE: " true
+	hw_init
+        touch /var/lock/subsys/zaurushw
+        ;;
+  stop)
+        # Stop service.
+        action "Shutting down $HARDWARE: " true
+        rm -f /var/lock/subsys/zaurushw
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit 0
+
