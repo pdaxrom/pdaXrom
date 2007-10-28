@@ -1,10 +1,20 @@
-# /etc/profile: system-wide .profile file for the Bourne shells
+# %ENV;
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+test -f /etc/sysconfig/locale && . /etc/sysconfig/locale
 
-echo
-echo -n "Processing /etc/profile... "
-# no-op
-echo "Done"
-echo
+QTDIR=/usr/lib/qt
+KDEDIR=/usr/lib/kde
+KDEDIRS=$KDEDIR
+PATH=@PTXCONF_PREFIX@/bin:/opt/sdk/bin:/root/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:$QTDIR/bin:$KDEDIR/bin
+LD_LIBRARY_PATH=$KDEDIR/lib:@PTXCONF_PREFIX@/lib
+PS1="[\u@\h \w]\\$ "
 
+TSLIB_TSDEVICE=/dev/input/event1
+TSLIB_TSEVENTTYPE=INPUT
+
+export NATIVE_SDK_FILES_PREFIX=@CROSS_LIB_DIR@
+export DISTCC_HOSTS="192.168.129.1 localhost"
+export PKG_CONFIG_PATH=@CROSS_LIB_DIR@/lib/pkgconfig:/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/X11R6/lib/pkgconfig
+export KDEDIR KDEDIRS QTDIR PATH LD_LIBRARY_PATH PS1 TSLIB_TSDEVICE TSLIB_TSEVENTTYPE
+test "$SSH_CLIENT" = "" && export TERM=linux
+export COLORTERM=

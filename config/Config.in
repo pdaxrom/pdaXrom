@@ -91,6 +91,7 @@ source "rules-ipk/fluxbox.in"
 source "rules-ipk/icewm.in"
 source "rules-ipk/metacity.in"
 source "rules-ipk/openbox.in"
+source "rules-ipk/xfwm4.in"
 endmenu
 
 menu "Terminals           "
@@ -531,5 +532,4 @@ source "rules-ipk/xcdroast.in"
 endmenu
 
 source "rules-ipk/xfree430.in"
-
 endmenu

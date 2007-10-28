@@ -1,3 +1,5 @@
+menu "XFCE4               "
+
 config XFWM4
 	bool
 	prompt "xfwm4"
@@ -6,3 +8,4 @@ config XFWM4_INSTALL
 	bool
 	prompt "Install to filesystem"
 	depends on XFWM4
+endmenu
