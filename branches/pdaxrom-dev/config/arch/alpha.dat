@@ -1,3 +1,0 @@
-KERNELCONFIG=$PWD/alpha.config
-TARGET=alpha-cacko-linux-gnu
-TARGET_CFLAGS="-O"

@@ -1,8 +1,0 @@
-config FBPANEL
-	bool
-	prompt "fbpanel"
-
-config FBPANEL_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on FBPANEL

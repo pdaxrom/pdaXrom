@@ -1,8 +1,0 @@
-config MPG123
-	bool
-	prompt "mpg123"
-
-config MPG123_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on MPG123

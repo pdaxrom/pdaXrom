@@ -1,8 +1,0 @@
-config QPEGPS
-	bool
-	prompt "qpegps"
-
-config QPEGPS_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on QPEGPS

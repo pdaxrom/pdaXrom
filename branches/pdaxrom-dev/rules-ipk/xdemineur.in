@@ -1,8 +1,0 @@
-config XDEMINEUR
-	bool
-	prompt "xdemineur"
-
-config XDEMINEUR_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XDEMINEUR

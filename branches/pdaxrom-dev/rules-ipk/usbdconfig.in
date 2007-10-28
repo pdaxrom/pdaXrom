@@ -1,9 +1,0 @@
-config USBDCONFIG
-	bool
-	prompt "usbdconfig"
-	depends on GTK22
-
-config USBDCONFIG_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on USBDCONFIG

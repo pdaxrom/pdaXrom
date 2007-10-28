@@ -1,8 +1,0 @@
-config SUBVERSION
-	bool
-	prompt "subversion"
-
-config SUBVERSION_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on SUBVERSION
