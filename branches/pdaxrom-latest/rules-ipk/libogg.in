@@ -1,8 +1,0 @@
-config LIBOGG
-	bool
-	prompt "libogg"
-
-config LIBOGG_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBOGG

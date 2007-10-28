@@ -1,8 +1,0 @@
-config EXO
-	bool
-	prompt "exo"
-
-config EXO_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on EXO

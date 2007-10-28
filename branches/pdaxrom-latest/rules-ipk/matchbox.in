@@ -1,4 +1,0 @@
-config MATCHBOX
-	bool
-	prompt "Compile matchbox / X11"
-	depends on XFREE430

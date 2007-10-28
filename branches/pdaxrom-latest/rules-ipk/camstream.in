@@ -1,8 +1,0 @@
-config CAMSTREAM
-	bool
-	prompt "camstream"
-
-config CAMSTREAM_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on CAMSTREAM

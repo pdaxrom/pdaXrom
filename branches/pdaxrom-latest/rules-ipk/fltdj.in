@@ -1,8 +1,0 @@
-config FLTDJ
-	bool
-	prompt "fltdj"
-
-config FLTDJ_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on FLTDJ

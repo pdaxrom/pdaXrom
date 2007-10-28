@@ -1,9 +1,0 @@
-! ------------ User defined keys ------------ 
-
-keycode 133 = Up
-keycode 134 = Down
-
-keycode 98 = XF86LaunchC
-keycode 48 = XF86LaunchD
-keycode 96 = Control_L
-keycode 97 = Alt_L

@@ -1,8 +1,0 @@
-config DVDRWTOOLS
-	bool
-	prompt "dvd+rw-tools"
-
-config DVDRWTOOLS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on DVDRWTOOLS

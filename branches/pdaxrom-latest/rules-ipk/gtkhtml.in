@@ -1,8 +1,0 @@
-config GTKHTML
-	bool
-	prompt "gtkhtml"
-
-config GTKHTML_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on GTKHTML

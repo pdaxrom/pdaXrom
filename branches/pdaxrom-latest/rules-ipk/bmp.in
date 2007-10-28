@@ -1,9 +1,0 @@
-config BMP
-	bool
-	prompt "beep"
-	depends on LIBID3TAG
-
-config BMP_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on BMP

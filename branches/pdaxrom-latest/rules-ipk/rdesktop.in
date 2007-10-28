@@ -1,8 +1,0 @@
-config RDESKTOP
-	bool
-	prompt "rdesktop"
-
-config RDESKTOP_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on RDESKTOP

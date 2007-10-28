@@ -1,8 +1,0 @@
-config GDBM
-	bool
-	prompt "gdbm"
-
-config GDBM_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on GDBM

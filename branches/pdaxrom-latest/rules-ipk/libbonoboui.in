@@ -1,8 +1,0 @@
-config LIBBONOBOUI
-	bool
-	prompt "libbonoboui"
-
-config LIBBONOBOUI_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBBONOBOUI

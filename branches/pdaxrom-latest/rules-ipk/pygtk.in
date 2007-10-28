@@ -1,8 +1,0 @@
-config PYGTK
-	bool
-	prompt "pygtk"
-
-config PYGTK_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on PYGTK

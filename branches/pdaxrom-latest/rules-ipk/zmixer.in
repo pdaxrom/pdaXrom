@@ -1,8 +1,0 @@
-config ZMIXER
-	bool
-	prompt "ZMixer (Simple ALSA Mixer)"
-
-config ZMIXER_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on ZMIXER
