@@ -1,0 +1,165 @@
+Patch from Manuel Teira <manuel.teira@telefonica.net> for external
+memory control via sysfs.
+
+Index: linux-2.6.22/drivers/video/w100fb.c
+===================================================================
+--- linux-2.6.22.orig/drivers/video/w100fb.c	2007-10-02 21:26:52.000000000 +0100
++++ linux-2.6.22/drivers/video/w100fb.c	2007-10-02 21:28:19.000000000 +0100
+@@ -204,6 +204,28 @@
+ 
+ static DEVICE_ATTR(accel, 0644, accel_show, accel_store);
+ 
++static ssize_t extmem_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct fb_info *info = dev_get_drvdata(dev);
++	struct w100fb_par *par = info->par;
++
++	return sprintf(buf, "%d\n", par->extmem_never_off ? 1 : 0);
++}
++
++static ssize_t extmem_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{
++	unsigned int value;
++	struct fb_info *info = dev_get_drvdata(dev);
++	struct w100fb_par *par = info->par;
++
++	value = simple_strtoul(buf, NULL, 10);
++	par->extmem_never_off = (value) ? 1 : 0;
++
++	return count;
++}
++
++static DEVICE_ATTR(extmem, 0644, extmem_show, extmem_store);
++
+ 
+ /*
+  * Some touchscreens need hsync information from the video driver to
+@@ -706,11 +728,13 @@
+ {
+ 	int memsize;
+ 
+-	if (par->extmem_active) {
++	if (par->extmem_active || par->extmem_never_off) {
+ 		memsize=par->mach->mem->size;
+ 		par->saved_extmem = vmalloc(memsize);
+-		if (par->saved_extmem)
++		if (par->saved_extmem && par->extmem_active)
+ 			memcpy_fromio(par->saved_extmem, remapped_fbuf + (W100_FB_BASE-MEM_WINDOW_BASE), memsize);
++		else if (par->saved_extmem)
++			memcpy_fromio(par->saved_extmem, remapped_fbuf + (W100_FB_BASE-MEM_INT_BASE_VALUE), memsize);
+ 	}
+ 	memsize=MEM_INT_SIZE;
+ 	par->saved_intmem = vmalloc(memsize);
+@@ -728,6 +752,9 @@
+ 		memsize=par->mach->mem->size;
+ 		memcpy_toio(remapped_fbuf + (W100_FB_BASE-MEM_WINDOW_BASE), par->saved_extmem, memsize);
+ 		vfree(par->saved_extmem);
++	} else if (par->extmem_never_off && par->saved_extmem) {
++		memsize=par->mach->mem->size;
++		memcpy_toio(remapped_fbuf + (W100_FB_BASE-MEM_INT_BASE_VALUE), par->saved_extmem, memsize);
+ 	}
+ 	if (par->saved_intmem) {
+ 		memsize=MEM_INT_SIZE;
+@@ -830,6 +857,7 @@
+ 	par->mach = inf;
+ 	par->fastpll_mode = 0;
+ 	par->blanked = 0;
++	par->extmem_never_off = 0;
+ 
+ 	par->pll_table=w100_get_xtal_table(inf->xtal_freq);
+ 	if (!par->pll_table) {
+@@ -907,6 +935,7 @@
+ 	err |= device_create_file(&pdev->dev, &dev_attr_reg_write);
+ 	err |= device_create_file(&pdev->dev, &dev_attr_flip);
+ 	err |= device_create_file(&pdev->dev, &dev_attr_accel);
++	err |= device_create_file(&pdev->dev, &dev_attr_extmem);
+ 
+ 	if (err != 0)
+ 		printk(KERN_WARNING "fb%d: failed to register attributes (%d)\n",
+@@ -939,6 +968,7 @@
+ 	device_remove_file(&pdev->dev, &dev_attr_reg_write);
+ 	device_remove_file(&pdev->dev, &dev_attr_flip);
+ 	device_remove_file(&pdev->dev, &dev_attr_accel);
++	device_remove_file(&pdev->dev, &dev_attr_extmem);
+ 
+ 	unregister_framebuffer(info);
+ 
+@@ -1516,7 +1546,7 @@
+ 	struct w100_mem_info *mem = par->mach->mem;
+ 	struct w100_bm_mem_info *bm_mem = par->mach->bm_mem;
+ 
+-	if (!par->extmem_active) {
++	if (!par->extmem_active && !par->extmem_never_off) {
+ 		w100_suspend(W100_SUSPEND_EXTMEM);
+ 
+ 		/* Map Internal Memory at FB Base */
+@@ -1530,14 +1560,17 @@
+ 		extmem_location.f.mc_ext_mem_top = (MEM_EXT_BASE_VALUE-1) >> 8;
+ 		writel((u32) (extmem_location.val), remapped_regs + mmMC_EXT_MEM_LOCATION);
+ 	} else {
+-		/* Map Internal Memory to its default location */
+-		intmem_location.f.mc_fb_start = MEM_INT_BASE_VALUE >> 8;
+-		intmem_location.f.mc_fb_top = (MEM_INT_BASE_VALUE+MEM_INT_SIZE) >> 8;
++		u32 intmem_base = MEM_INT_BASE_VALUE;
++		u32 extmem_base = W100_FB_BASE;
++		if (!par->extmem_active && par->extmem_never_off) {
++			intmem_base = W100_FB_BASE;
++			extmem_base = MEM_INT_BASE_VALUE;
++		}
++		intmem_location.f.mc_fb_start = intmem_base >> 8;
++		intmem_location.f.mc_fb_top = (intmem_base + MEM_INT_SIZE) >> 8;
+ 		writel((u32) (intmem_location.val), remapped_regs + mmMC_FB_LOCATION);
+-
+-		/* Map External Memory at FB Base */
+-		extmem_location.f.mc_ext_mem_start = W100_FB_BASE >> 8;
+-		extmem_location.f.mc_ext_mem_top = (W100_FB_BASE+par->mach->mem->size) >> 8;
++		extmem_location.f.mc_ext_mem_start = extmem_base >> 8;
++		extmem_location.f.mc_ext_mem_top = (extmem_base + par->mach->mem->size) >> 8;
+ 		writel((u32) (extmem_location.val), remapped_regs + mmMC_EXT_MEM_LOCATION);
+ 
+ 		writel(0x00007800, remapped_regs + mmMC_BIST_CTRL);
+Index: linux-2.6.22/include/video/w100fb.h
+===================================================================
+--- linux-2.6.22.orig/include/video/w100fb.h	2007-07-09 00:32:17.000000000 +0100
++++ linux-2.6.22/include/video/w100fb.h	2007-10-02 21:27:11.000000000 +0100
+@@ -138,6 +138,7 @@
+ 	unsigned int xres;
+ 	unsigned int yres;
+ 	unsigned int extmem_active;
++	unsigned int extmem_never_off;
+ 	unsigned int flip;
+ 	unsigned int blanked;
+ 	unsigned int fastpll_mode;
+Index: linux-2.6.22/drivers/video/w100fb.h
+===================================================================
+--- linux-2.6.22.orig/drivers/video/w100fb.h	2007-10-02 21:26:52.000000000 +0100
++++ linux-2.6.22/drivers/video/w100fb.h	2007-10-02 21:27:11.000000000 +0100
+@@ -238,7 +238,7 @@
+ #define W100_CFG_LEN           0x10
+ #define W100_REG_BASE          0x10000
+ #define W100_REG_LEN           0x2000
+-#define MEM_INT_BASE_VALUE     0x100000
++#define MEM_INT_BASE_VALUE     0x200000
+ #define MEM_EXT_BASE_VALUE     0x800000
+ #define MEM_INT_SIZE           0x05ffff
+ #define MEM_WINDOW_BASE        0x100000
+@@ -638,8 +638,8 @@
+ } __attribute__((packed));
+ 
+ struct mc_ext_mem_location_t {
+-	u32 mc_ext_mem_start : 16;
+-	u32 mc_ext_mem_top   : 16;
++	u32 mc_ext_mem_start : 16; /* Valid bitmask: 0xe000 */
++	u32 mc_ext_mem_top   : 16;
+ } __attribute__((packed));
+ 
+ union mc_ext_mem_location_u {
+@@ -648,7 +648,7 @@
+ } __attribute__((packed));
+ 
+ struct mc_fb_location_t {
+-	u32 mc_fb_start      : 16;
++	u32 mc_fb_start      : 16; /* Valid bitmask: 0xf800 */
+ 	u32 mc_fb_top        : 16;
+ } __attribute__((packed));
+ 
