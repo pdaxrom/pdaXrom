@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 HOSTAPD_VENDOR_VERSION	= 1
-HOSTAPD_VERSION		= 0.4.7
+HOSTAPD_VERSION		= 0.5.8
 HOSTAPD			= hostapd-$(HOSTAPD_VERSION)
 HOSTAPD_SUFFIX		= tar.gz
 HOSTAPD_URL		= http://hostap.epitest.fi/releases/$(HOSTAPD).$(HOSTAPD_SUFFIX)
@@ -71,7 +71,6 @@ hostapd_prepare: $(STATEDIR)/hostapd.prepare
 #
 hostapd_prepare_deps = \
 	$(STATEDIR)/hostapd.extract \
-	$(STATEDIR)/hostap-driver.targetinstall \
 	$(STATEDIR)/virtual-xchain.install
 
 HOSTAPD_PATH	=  PATH=$(CROSS_PATH)
@@ -134,8 +133,7 @@ $(STATEDIR)/hostapd.install: $(STATEDIR)/hostapd.compile
 
 hostapd_targetinstall: $(STATEDIR)/hostapd.targetinstall
 
-hostapd_targetinstall_deps = $(STATEDIR)/hostapd.compile \
-	$(STATEDIR)/hostap-utils.targetinstall
+hostapd_targetinstall_deps = $(STATEDIR)/hostapd.compile 
 
 $(STATEDIR)/hostapd.targetinstall: $(hostapd_targetinstall_deps)
 	@$(call targetinfo, $@)
@@ -152,7 +150,7 @@ $(STATEDIR)/hostapd.targetinstall: $(hostapd_targetinstall_deps)
 	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 				>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
 	echo "Architecture: $(SHORT_TARGET)" 						>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
 	echo "Version: $(HOSTAPD_VERSION)-$(HOSTAPD_VENDOR_VERSION)" 			>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
-	echo "Depends: hostap-driver, hostap-utils" 					>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
+	echo "Depends: " 								>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
 	echo "Description: WPA/RSN/EAP Authenticator"					>>$(HOSTAPD_IPKG_TMP)/CONTROL/control
 	@$(call makeipkg, $(HOSTAPD_IPKG_TMP))
 	touch $@
