@@ -120,9 +120,9 @@ endif
 ifdef PTXCONF_SURVIVE_SETHWCLOCK
 	$(SURVIVE_PATH) $(SURVIVE_ENV) $(MAKE) -C $(SURVIVE_DIR) sethwclock CFLAGS="-O2 -I$(KERNEL_DIR)/include"
 endif
-ifdef PTXCONF_SURVIVE_NANDLOGICAL
-	$(SURVIVE_PATH) $(SURVIVE_ENV) $(MAKE) -C $(SURVIVE_DIR) nandlogical CFLAGS="-O2 -I$(KERNEL_DIR)/include"
-endif
+#ifdef PTXCONF_SURVIVE_NANDLOGICAL
+#	$(SURVIVE_PATH) $(SURVIVE_ENV) $(MAKE) -C $(SURVIVE_DIR) nandlogical CFLAGS="-O2 -I$(KERNEL_DIR)/include"
+#endif
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -196,10 +196,10 @@ ifdef PTXCONF_SURVIVE_SETHWCLOCK
 	install $(SURVIVE_DIR)/sethwclock $(SURVIVE_DIR)/root_tmp/usr/bin/sethwclock
 	$(CROSSSTRIP) -R .note -R .comment $(SURVIVE_DIR)/root_tmp/usr/bin/sethwclock
 endif
-ifdef PTXCONF_SURVIVE_NANDLOGICAL
-	install $(SURVIVE_DIR)/nandlogical $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
-	$(CROSSSTRIP) -R .note -R .comment $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
-endif
+#ifdef PTXCONF_SURVIVE_NANDLOGICAL
+#	install $(SURVIVE_DIR)/nandlogical $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
+#	$(CROSSSTRIP) -R .note -R .comment $(SURVIVE_DIR)/root_tmp/sbin/nandlogical
+#endif
 ifdef PTXCONF_SURVIVE_NETSCRIPTS
 	install -m 644 -D $(SURVIVE_DIR)/eth0.conf $(SURVIVE_DIR)/root_tmp/etc/sysconfig/netconfig/eth0.conf
 	install -m 755 -D $(SURVIVE_DIR)/ifup	$(SURVIVE_DIR)/root_tmp/sbin/ifup
