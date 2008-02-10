@@ -20,7 +20,7 @@ endif
 # Paths and names
 #
 SUBVERSION_VENDOR_VERSION	= 1
-SUBVERSION_VERSION		= 1.3.1
+SUBVERSION_VERSION		= 1.4.6
 SUBVERSION			= subversion-$(SUBVERSION_VERSION)
 SUBVERSION_SUFFIX		= tar.bz2
 SUBVERSION_URL			= http://subversion.tigris.org/downloads/$(SUBVERSION).$(SUBVERSION_SUFFIX)
@@ -73,6 +73,9 @@ subversion_prepare_deps = \
 	$(STATEDIR)/subversion.extract \
 	$(STATEDIR)/openssl.install \
 	$(STATEDIR)/zlib.install \
+	$(STATEDIR)/apr.install \
+	$(STATEDIR)/apr-util.install \
+	$(STATEDIR)/neon.install \
 	$(STATEDIR)/virtual-xchain.install
 
 ifdef PTXCONF_GDBM
@@ -148,6 +151,8 @@ subversion_targetinstall: $(STATEDIR)/subversion.targetinstall
 
 subversion_targetinstall_deps = $(STATEDIR)/subversion.compile \
 	$(STATEDIR)/openssl.targetinstall \
+	$(STATEDIR)/apr.targetinstall \
+	$(STATEDIR)/apr-util.targetinstall \
 	$(STATEDIR)/zlib.targetinstall
 
 ifdef PTXCONF_GDBM

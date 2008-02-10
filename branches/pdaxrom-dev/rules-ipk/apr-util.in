@@ -1,0 +1,8 @@
+config APR-UTIL
+	bool
+	prompt "apr-util"
+
+config APR-UTIL_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on APR-UTIL

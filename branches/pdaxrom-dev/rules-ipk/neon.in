@@ -1,0 +1,8 @@
+config NEON
+	bool
+	prompt "neon"
+
+config NEON_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on NEON

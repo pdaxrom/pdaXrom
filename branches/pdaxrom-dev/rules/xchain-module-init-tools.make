@@ -75,9 +75,11 @@ XCHAIN_MODULE-INIT-TOOLS_ENV 	=  $(HOSTCC_ENV)
 #
 XCHAIN_MODULE-INIT-TOOLS_AUTOCONF = \
 	--prefix=$(PTXCONF_PREFIX) \
-	--build=$(GNU_HOST)
-# 	--host=$(GNU_HOST)
-# 	--target=$(PTXCONF_GNU_TARGET)
+	--build=$(GNU_HOST) \
+ 	--host=$(GNU_HOST) \
+ 	--target=$(PTXCONF_GNU_TARGET) \
+	--program-prefix=$(PTXCONF_GNU_TARGET)- \
+	--sbindir=$(PTXCONF_PREFIX)/bin
 
 $(STATEDIR)/xchain-module-init-tools.prepare: $(xchain-module-init-tools_prepare_deps)
 	@$(call targetinfo, $@)
@@ -97,7 +99,7 @@ xchain-module-init-tools_compile_deps = $(STATEDIR)/xchain-module-init-tools.pre
 
 $(STATEDIR)/xchain-module-init-tools.compile: $(xchain-module-init-tools_compile_deps)
 	@$(call targetinfo, $@)
-	$(XCHAIN_MODULE-INIT-TOOLS_PATH) $(MAKE) -C $(XCHAIN_MODULE-INIT-TOOLS_DIR)
+	$(XCHAIN_MODULE-INIT-TOOLS_PATH) $(MAKE) -C $(XCHAIN_MODULE-INIT-TOOLS_DIR) insmod_static_LDFLAGS= DOCBOOKTOMAN=/bin/true
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -108,7 +110,7 @@ xchain-module-init-tools_install: $(STATEDIR)/xchain-module-init-tools.install
 
 $(STATEDIR)/xchain-module-init-tools.install: $(STATEDIR)/xchain-module-init-tools.compile
 	@$(call targetinfo, $@)
-	$(XCHAIN_MODULE-INIT-TOOLS_PATH) $(MAKE) -C $(XCHAIN_MODULE-INIT-TOOLS_DIR) install
+	$(XCHAIN_MODULE-INIT-TOOLS_PATH) $(MAKE) -C $(XCHAIN_MODULE-INIT-TOOLS_DIR) install insmod_static_LDFLAGS= DOCBOOKTOMAN=/bin/true
 	touch $@
 
 # ----------------------------------------------------------------------------

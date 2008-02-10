@@ -89,8 +89,8 @@ $(XFREE430_5_SOURCE):
 	@$(call get, $(XFREE430_5_URL))
 
 $(XFREE430_6_SOURCE):                                                                                                                                        
-        @$(call targetinfo, $@)                                                                                                                              
-        @$(call get, $(XFREE430_6_URL))
+	@$(call targetinfo, $@)                                                                                                                              
+	@$(call get, $(XFREE430_6_URL))
 
 $(XFREE430_7_SOURCE):
 	@$(call targetinfo, $@)
