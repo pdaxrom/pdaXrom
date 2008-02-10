@@ -1,0 +1,21 @@
+--- linux-2.6.23/scripts/kconfig/lxdialog/check-lxdialog.sh~	2007-10-09 20:31:38.000000000 +0000
++++ linux-2.6.23/scripts/kconfig/lxdialog/check-lxdialog.sh	2008-02-06 06:48:19.000000000 +0000
+@@ -13,7 +13,8 @@
+ 			fi
+ 		done
+ 	done
+-	exit 1
++	echo '-lncurses'
++	exit
+ }
+ 
+ # Where is ncurses.h?
+@@ -26,7 +27,7 @@
+ 	elif [ -f /usr/include/ncurses.h ]; then
+ 		echo '-DCURSES_LOC="<ncurses.h>"'
+ 	else
+-		echo '-DCURSES_LOC="<curses.h>"'
++		echo '-I/usr/include/ncurses -DCURSES_LOC="<ncurses.h>"'
+ 	fi
+ }
+ 
