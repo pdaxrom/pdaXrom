@@ -19,9 +19,9 @@ endif
 #
 # Paths and names
 #
-SQUASHFS_VERSION	= 3.1-r2
+SQUASHFS_VERSION	= 3.3
 SQUASHFS		= squashfs$(SQUASHFS_VERSION)
-SQUASHFS_SUFFIX		= tar.gz
+SQUASHFS_SUFFIX		= tgz
 SQUASHFS_URL		= http://mesh.dl.sourceforge.net/sourceforge/squashfs/$(SQUASHFS).$(SQUASHFS_SUFFIX)
 SQUASHFS_SOURCE		= $(SRCDIR)/$(SQUASHFS).$(SQUASHFS_SUFFIX)
 SQUASHFS_DIR		= $(BUILDDIR)/squashfs$(SQUASHFS_VERSION)
@@ -96,9 +96,9 @@ endif
 $(STATEDIR)/squashfs.prepare: $(squashfs_prepare_deps)
 	@$(call targetinfo, $@)
 	@$(call clean, $(SQUASHFS_DIR)/config.cache)
-	cd $(SQUASHFS_DIR) && \
-		$(SQUASHFS_PATH) $(SQUASHFS_ENV) \
-		./configure $(SQUASHFS_AUTOCONF)
+	#cd $(SQUASHFS_DIR) && \
+	#	$(SQUASHFS_PATH) $(SQUASHFS_ENV) \
+	#	./configure $(SQUASHFS_AUTOCONF)
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -111,7 +111,7 @@ squashfs_compile_deps = $(STATEDIR)/squashfs.prepare
 
 $(STATEDIR)/squashfs.compile: $(squashfs_compile_deps)
 	@$(call targetinfo, $@)
-	$(SQUASHFS_PATH) $(MAKE) -C $(SQUASHFS_DIR)
+	$(SQUASHFS_PATH) $(MAKE) -C $(SQUASHFS_DIR)/squashfs-tools
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ squashfs_install: $(STATEDIR)/squashfs.install
 
 $(STATEDIR)/squashfs.install: $(STATEDIR)/squashfs.compile
 	@$(call targetinfo, $@)
-	$(SQUASHFS_PATH) $(MAKE) -C $(SQUASHFS_DIR) install
+	#$(SQUASHFS_PATH) $(MAKE) -C $(SQUASHFS_DIR) install
 	touch $@
 
 # ----------------------------------------------------------------------------
@@ -135,7 +135,9 @@ squashfs_targetinstall_deps = $(STATEDIR)/squashfs.compile
 
 $(STATEDIR)/squashfs.targetinstall: $(squashfs_targetinstall_deps)
 	@$(call targetinfo, $@)
-	$(SQUASHFS_PATH) $(MAKE) -C $(SQUASHFS_DIR) DESTDIR=$(SQUASHFS_IPKG_TMP) install
+	#$(SQUASHFS_PATH) $(MAKE) -C $(SQUASHFS_DIR) DESTDIR=$(SQUASHFS_IPKG_TMP) install
+	install -D -m 755 $(SQUASHFS_DIR)/squashfs-tools/mksquashfs $(SQUASHFS_IPKG_TMP)/usr/sbin/mksquashfs
+	install -D -m 755 $(SQUASHFS_DIR)/squashfs-tools/unsquashfs $(SQUASHFS_IPKG_TMP)/usr/sbin/unsquashfs	
 	mkdir -p $(SQUASHFS_IPKG_TMP)/CONTROL
 	echo "Package: squashfs" 			>$(SQUASHFS_IPKG_TMP)/CONTROL/control
 	echo "Source: $(SQUASHFS_URL)"						>>$(SQUASHFS_IPKG_TMP)/CONTROL/control
