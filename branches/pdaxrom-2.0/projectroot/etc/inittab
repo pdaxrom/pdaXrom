@@ -5,7 +5,7 @@
 #
 
 console::sysinit:/etc/init.d/rcS
-console::respawn:/sbin/getty -L 115200 /dev/tty1 vt100
+console::respawn:/sbin/getty -L 115200 /dev/vc/1 vt100
 
 # Stuff to do before rebooting
 ::ctrlaltdel:/sbin/reboot

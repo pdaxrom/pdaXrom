@@ -1,6 +1,7 @@
 menuconfig PCMCIAUTILS
 	bool "PCMCIA Utils        "
 	depends on EXPERIMENTAL_MORE
+	select KERNEL
 	select SYSFSUTILS
 	select SYSFSUTILS_LIB
 	help
