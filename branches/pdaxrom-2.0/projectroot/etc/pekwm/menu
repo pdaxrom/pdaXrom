@@ -1,0 +1,48 @@
+
+
+RootMenu = "Pekwm" {
+        Entry = "xterm" { Actions = "Exec xterm &" }
+        Entry = "xeyes" { Actions = "Exec xeyes &" }
+         Submenu = "Pekwm" {
+          Entry = "Reload" { Actions = "Reload" }
+          Entry = "Restart" { Actions = "Restart" }
+          Entry = "Exit" { Actions = "Exit" }
+         }
+ 	}
+
+WindowMenu = "Window Menu" {
+	Entry = "(Un)Stick" { Actions = "Stick" }
+	Entry = "(Un)Shade" { Actions = "Shade" }
+
+	Submenu = "Maximize" {
+		Entry = "Full" { Actions = "Maximize " }
+		Entry = "Horizontal" { Actions = "MaximizeHorizontal " }
+		Entry = "Vertical" { Actions = "MaximizeVertical " }
+	}
+	Submenu = "Stacking" {
+		Entry = "Raise " { Actions = "Raise " }
+		Entry = "Lower" { Actions = "Lower" }
+		Entry = "Always On Top " { Actions = "AlwaysOnTop " }
+		Entry = "Always Below" { Actions = "AlwaysBelow " }
+	}
+	Submenu = "Decor" {
+		Entry = "Decor" { Actions = "ToggleDecor " }
+		Entry = "Border" { Actions = "ToggleBorder " }
+		Entry = "Titlebar" { Actions = "ToggleTitlebar " }
+	}
+	SubMenu = "Send To" {
+		Entry = "Workspace 1" { Actions = "SendToWorkspace 1" }
+		Entry = "Workspace 2" { Actions = "SendToWorkspace 2" }
+		Entry = "Workspace 3" { Actions = "SendToWorkspace 3" }
+		Entry = "Workspace 4" { Actions = "SendToWorkspace 4" }
+	}
+	SubMenu = "Toggle Skip" {
+		Entry = "Menus" { Actions = "ToggleSkip Menus" }
+		Entry = "Focus Toggle" { Actions = "ToggleSkip FocusToggle" }
+		Entry = "Snap" { Actions = "ToggleSkip FrameSnap" }
+	}
+	Entry = "Iconify " { Actions = "Iconify " }
+	Entry = "Close" { Actions = "Close" }
+	Entry = "CloseFrame" { Actions = "CloseFrame" }
+	Entry = "Kill" { Actions = "Kill" }
+}

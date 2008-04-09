@@ -1,0 +1,12 @@
+# /etc/network/interfaces 
+
+auto lo can0
+
+# The loopback interface
+iface lo inet loopback
+
+# onboard CAN
+iface can0 inet static
+	address 127.42.23.180
+	netmask 255.255.255.0 
+	pre-up /etc/network/can-pre-up

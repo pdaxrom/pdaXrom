@@ -1,0 +1,11 @@
+--- linux-2.6.23_orig/sound/soc/pxa/poodle.c	2007-10-26 23:01:36.000000000 -0700
++++ linux-2.6.23/sound/soc/pxa/poodle.c	2007-10-26 23:03:01.000000000 -0700
+@@ -236,7 +236,7 @@
+ 	SOC_ENUM_SINGLE_EXT(2, spk_function),
+ };
+ 
+-static const snd_kcontrol_new_t wm8731_poodle_controls[] = {
++static const struct snd_kcontrol_new wm8731_poodle_controls[] = {
+ 	SOC_ENUM_EXT("Jack Function", poodle_enum[0], poodle_get_jack,
+ 		poodle_set_jack),
+ 	SOC_ENUM_EXT("Speaker Function", poodle_enum[1], poodle_get_spk,

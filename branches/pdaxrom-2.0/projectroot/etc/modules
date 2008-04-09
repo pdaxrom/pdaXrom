@@ -1,0 +1,30 @@
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file should contain the names of kernel modules that are
+# to be loaded at boot time, one per line.  Comments begin with
+# a "#", and everything on the line after them are ignored.
+#
+# USB support
+ohci-hcd
+# memory stick and mouse support on USB
+mousedev
+usbhid
+usb_storage
+sd_mod
+
+# to support the mostly used filesystem on USB memory sticks
+vfat
+
+# board specific hardware
+pxa27x_pwm
+pxa27x_gpioevent
+pxa2xx_spi
+max7301
+rtc-core
+rtc-pcf8563 force=0,0x51
+st24cxx force_m24w32=0,0x54
+
+# sd/mmc support
+pxamci
+mmc_block
+

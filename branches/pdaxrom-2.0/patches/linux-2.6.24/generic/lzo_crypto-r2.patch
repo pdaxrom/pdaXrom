@@ -1,0 +1,390 @@
+crypto: Add LZO compression support to the crypto interface
+
+Add LZO1X compression support to the crypto interface, including
+a couple of tests.
+
+Also convert test_deflate into a more generic test_compress() and
+avoid duplicating the data for compression and decompression tests
+since this can always work both ways in the compression case.
+
+Signed-off-by: Richard Purdie <rpurdie@openedhand.com>
+---
+ crypto/Kconfig      |    9 +++
+ crypto/Makefile     |    1 
+ crypto/crypto_lzo.c |  123 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ crypto/tcrypt.c     |   43 ++++++++----------
+ crypto/tcrypt.h     |   75 +++++++++++++++++--------------
+ 5 files changed, 194 insertions(+), 57 deletions(-)
+
+Index: linux-2.6.21/crypto/Kconfig
+===================================================================
+--- linux-2.6.21.orig/crypto/Kconfig	2007-07-01 18:49:15.000000000 +0100
++++ linux-2.6.21/crypto/Kconfig	2007-07-01 18:59:21.000000000 +0100
+@@ -419,6 +419,15 @@ config CRYPTO_DEFLATE
+ 	  
+ 	  You will most probably want this if using IPSec.
+ 
++config CRYPTO_LZO
++	tristate "LZO compression algorithm"
++	depends on CRYPTO
++	select LZO_COMPRESS
++	select LZO_DECOMPRESS
++	help
++	  Enable use of the LZO compression algorithm through the crypto
++	  subsystem.
++
+ config CRYPTO_MICHAEL_MIC
+ 	tristate "Michael MIC keyed digest algorithm"
+ 	select CRYPTO_ALGAPI
+Index: linux-2.6.21/crypto/Makefile
+===================================================================
+--- linux-2.6.21.orig/crypto/Makefile	2007-07-01 18:49:15.000000000 +0100
++++ linux-2.6.21/crypto/Makefile	2007-07-01 18:49:22.000000000 +0100
+@@ -46,6 +46,7 @@ obj-$(CONFIG_CRYPTO_TEA) += tea.o
+ obj-$(CONFIG_CRYPTO_KHAZAD) += khazad.o
+ obj-$(CONFIG_CRYPTO_ANUBIS) += anubis.o
+ obj-$(CONFIG_CRYPTO_DEFLATE) += deflate.o
++obj-$(CONFIG_CRYPTO_LZO) += crypto_lzo.o
+ obj-$(CONFIG_CRYPTO_MICHAEL_MIC) += michael_mic.o
+ obj-$(CONFIG_CRYPTO_CRC32C) += crc32c.o
+ 
+Index: linux-2.6.21/crypto/crypto_lzo.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.21/crypto/crypto_lzo.c	2007-07-01 19:00:18.000000000 +0100
+@@ -0,0 +1,123 @@
++/*
++ * Cryptographic API for LZO compression.
++ *
++ * Copyright (C) 2007 Nokia Corporation. All rights reserved.
++ *
++ * Author: Richard Purdie <rpurdie@openedhand.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
++ * 02110-1301 USA
++ *
++ */
++
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/crypto.h>
++#include <linux/vmalloc.h>
++#include <linux/interrupt.h>
++#include <linux/mm.h>
++#include <linux/lzo.h>
++
++struct lzo_ctx {
++	void *lzo_mem;
++};
++
++static int lzo_init(struct crypto_tfm *tfm)
++{
++	struct lzo_ctx *ctx = crypto_tfm_ctx(tfm);
++
++	ctx->lzo_mem = vmalloc(LZO1X_MEM_COMPRESS);
++
++	if (!ctx->lzo_mem) {
++		vfree(ctx->lzo_mem);
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++static void lzo_exit(struct crypto_tfm *tfm)
++{
++	struct lzo_ctx *ctx = crypto_tfm_ctx(tfm);
++
++	vfree(ctx->lzo_mem);
++}
++
++static int lzo_compress(struct crypto_tfm *tfm, const u8 *src,
++			    unsigned int slen, u8 *dst, unsigned int *dlen)
++{
++	struct lzo_ctx *ctx = crypto_tfm_ctx(tfm);
++	size_t compress_size;
++	int ret;
++
++	/* Check if enough space in dst buffer for worst case expansion */
++	if (*dlen < lzo1x_worst_compress(slen))
++		return -EINVAL;
++
++	ret = lzo1x_1_compress(src, slen, dst, &compress_size, ctx->lzo_mem);
++
++	if (ret != LZO_E_OK)
++		return -EINVAL;
++
++	*dlen = compress_size;
++
++	return 0;
++}
++
++static int lzo_decompress(struct crypto_tfm *tfm, const u8 *src,
++			      unsigned int slen, u8 *dst, unsigned int *dlen)
++{
++	int ret;
++	size_t dest_len = *dlen;
++
++	ret = lzo1x_decompress_safe(src, slen, dst, &dest_len);
++
++	*dlen = dest_len;
++
++	if (ret != LZO_E_OK)
++		return -EINVAL;
++
++	return 0;
++}
++
++static struct crypto_alg alg = {
++	.cra_name		= "lzo1x",
++	.cra_flags		= CRYPTO_ALG_TYPE_COMPRESS,
++	.cra_ctxsize		= sizeof(struct lzo_ctx),
++	.cra_module		= THIS_MODULE,
++	.cra_list		= LIST_HEAD_INIT(alg.cra_list),
++	.cra_init		= lzo_init,
++	.cra_exit		= lzo_exit,
++	.cra_u			= { .compress = {
++	.coa_compress 		= lzo_compress,
++	.coa_decompress  	= lzo_decompress } }
++};
++
++static int __init init(void)
++{
++	return crypto_register_alg(&alg);
++}
++
++static void __exit fini(void)
++{
++	crypto_unregister_alg(&alg);
++}
++
++module_init(init);
++module_exit(fini);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("LZO Compression Algorithm");
++MODULE_AUTHOR("Richard Purdie <rpurdie@openedhand.com>");
++
+Index: linux-2.6.21/crypto/tcrypt.c
+===================================================================
+--- linux-2.6.21.orig/crypto/tcrypt.c	2007-07-01 18:49:15.000000000 +0100
++++ linux-2.6.21/crypto/tcrypt.c	2007-07-01 18:49:22.000000000 +0100
+@@ -790,7 +790,7 @@ out:
+ 	crypto_free_hash(tfm);
+ }
+ 
+-static void test_deflate(void)
++static void test_compress(char *algo, struct comp_testvec *testvec, int num_tests)
+ {
+ 	unsigned int i;
+ 	char result[COMP_BUF_SIZE];
+@@ -798,25 +798,25 @@ static void test_deflate(void)
+ 	struct comp_testvec *tv;
+ 	unsigned int tsize;
+ 
+-	printk("\ntesting deflate compression\n");
++	printk("\ntesting %s compression\n", algo);
+ 
+-	tsize = sizeof (deflate_comp_tv_template);
++	tsize = sizeof(struct comp_testvec) * num_tests;
+ 	if (tsize > TVMEMSIZE) {
+ 		printk("template (%u) too big for tvmem (%u)\n", tsize,
+ 		       TVMEMSIZE);
+ 		return;
+ 	}
+ 
+-	memcpy(tvmem, deflate_comp_tv_template, tsize);
++	memcpy(tvmem, testvec, tsize);
+ 	tv = (void *)tvmem;
+ 
+-	tfm = crypto_alloc_comp("deflate", 0, CRYPTO_ALG_ASYNC);
++	tfm = crypto_alloc_comp(algo, 0, CRYPTO_ALG_ASYNC);
+ 	if (IS_ERR(tfm)) {
+-		printk("failed to load transform for deflate\n");
++		printk("failed to load transform for %s\n", algo);
+ 		return;
+ 	}
+ 
+-	for (i = 0; i < DEFLATE_COMP_TEST_VECTORS; i++) {
++	for (i = 0; i < num_tests; i++) {
+ 		int ilen, ret, dlen = COMP_BUF_SIZE;
+ 
+ 		printk("test %u:\n", i + 1);
+@@ -835,26 +835,16 @@ static void test_deflate(void)
+ 		       ilen, dlen);
+ 	}
+ 
+-	printk("\ntesting deflate decompression\n");
+-
+-	tsize = sizeof (deflate_decomp_tv_template);
+-	if (tsize > TVMEMSIZE) {
+-		printk("template (%u) too big for tvmem (%u)\n", tsize,
+-		       TVMEMSIZE);
+-		goto out;
+-	}
+-
+-	memcpy(tvmem, deflate_decomp_tv_template, tsize);
+-	tv = (void *)tvmem;
++	printk("\ntesting %s decompression\n", algo);
+ 
+-	for (i = 0; i < DEFLATE_DECOMP_TEST_VECTORS; i++) {
++	for (i = 0; i < num_tests; i++) {
+ 		int ilen, ret, dlen = COMP_BUF_SIZE;
+ 
+ 		printk("test %u:\n", i + 1);
+ 		memset(result, 0, sizeof (result));
+ 
+-		ilen = tv[i].inlen;
+-		ret = crypto_comp_decompress(tfm, tv[i].input,
++		ilen = tv[i].outlen;
++		ret = crypto_comp_decompress(tfm, tv[i].output,
+ 		                             ilen, result, &dlen);
+ 		if (ret) {
+ 			printk("fail: ret=%d\n", ret);
+@@ -862,7 +852,7 @@ static void test_deflate(void)
+ 		}
+ 		hexdump(result, dlen);
+ 		printk("%s (ratio %d:%d)\n",
+-		       memcmp(result, tv[i].output, dlen) ? "fail" : "pass",
++		       memcmp(result, tv[i].input, dlen) ? "fail" : "pass",
+ 		       ilen, dlen);
+ 	}
+ out:
+@@ -1037,7 +1027,8 @@ static void do_test(void)
+ 		test_hash("tgr192", tgr192_tv_template, TGR192_TEST_VECTORS);
+ 		test_hash("tgr160", tgr160_tv_template, TGR160_TEST_VECTORS);
+ 		test_hash("tgr128", tgr128_tv_template, TGR128_TEST_VECTORS);
+-		test_deflate();
++		test_compress("deflate", deflate_tv_template, DEFLATE_TEST_VECTORS);
++		test_compress("lzo1x", lzo1x_tv_template, LZO1X_TEST_VECTORS);
+ 		test_hash("crc32c", crc32c_tv_template, CRC32C_TEST_VECTORS);
+ 		test_hash("hmac(md5)", hmac_md5_tv_template,
+ 			  HMAC_MD5_TEST_VECTORS);
+@@ -1143,7 +1134,7 @@ static void do_test(void)
+ 		break;
+ 
+ 	case 13:
+-		test_deflate();
++		test_compress("deflate", deflate_tv_template, DEFLATE_TEST_VECTORS);
+ 		break;
+ 
+ 	case 14:
+@@ -1268,6 +1259,10 @@ static void do_test(void)
+ 			    CAMELLIA_CBC_DEC_TEST_VECTORS);
+ 		break;
+ 
++	case 33:
++		test_compress("lzo1x", lzo1x_tv_template, LZO1X_TEST_VECTORS);
++		break;
++
+ 	case 100:
+ 		test_hash("hmac(md5)", hmac_md5_tv_template,
+ 			  HMAC_MD5_TEST_VECTORS);
+Index: linux-2.6.21/crypto/tcrypt.h
+===================================================================
+--- linux-2.6.21.orig/crypto/tcrypt.h	2007-04-26 04:08:32.000000000 +0100
++++ linux-2.6.21/crypto/tcrypt.h	2007-07-01 18:49:22.000000000 +0100
+@@ -3846,10 +3846,9 @@ struct comp_testvec {
+  * Deflate test vectors (null-terminated strings).
+  * Params: winbits=11, Z_DEFAULT_COMPRESSION, MAX_MEM_LEVEL.
+  */
+-#define DEFLATE_COMP_TEST_VECTORS 2
+-#define DEFLATE_DECOMP_TEST_VECTORS 2
++#define DEFLATE_TEST_VECTORS 2
+ 
+-static struct comp_testvec deflate_comp_tv_template[] = {
++static struct comp_testvec deflate_tv_template[] = {
+ 	{
+ 		.inlen	= 70,
+ 		.outlen	= 38,
+@@ -3885,39 +3884,49 @@ static struct comp_testvec deflate_comp_
+ 	},
+ };
+ 
+-static struct comp_testvec deflate_decomp_tv_template[] = {
++/*
++ * LZO test vectors
++ */
++#define LZO1X_TEST_VECTORS 2
++
++static struct comp_testvec lzo1x_tv_template[] = {
+ 	{
+-		.inlen	= 122,
+-		.outlen	= 191,
+-		.input	= { 0x5d, 0x8d, 0x31, 0x0e, 0xc2, 0x30, 0x10, 0x04,
+-			    0xbf, 0xb2, 0x2f, 0xc8, 0x1f, 0x10, 0x04, 0x09,
+-			    0x89, 0xc2, 0x85, 0x3f, 0x70, 0xb1, 0x2f, 0xf8,
+-			    0x24, 0xdb, 0x67, 0xd9, 0x47, 0xc1, 0xef, 0x49,
+-			    0x68, 0x12, 0x51, 0xae, 0x76, 0x67, 0xd6, 0x27,
+-			    0x19, 0x88, 0x1a, 0xde, 0x85, 0xab, 0x21, 0xf2,
+-			    0x08, 0x5d, 0x16, 0x1e, 0x20, 0x04, 0x2d, 0xad,
+-			    0xf3, 0x18, 0xa2, 0x15, 0x85, 0x2d, 0x69, 0xc4,
+-			    0x42, 0x83, 0x23, 0xb6, 0x6c, 0x89, 0x71, 0x9b,
+-			    0xef, 0xcf, 0x8b, 0x9f, 0xcf, 0x33, 0xca, 0x2f,
+-			    0xed, 0x62, 0xa9, 0x4c, 0x80, 0xff, 0x13, 0xaf,
+-			    0x52, 0x37, 0xed, 0x0e, 0x52, 0x6b, 0x59, 0x02,
+-			    0xd9, 0x4e, 0xe8, 0x7a, 0x76, 0x1d, 0x02, 0x98,
+-			    0xfe, 0x8a, 0x87, 0x83, 0xa3, 0x4f, 0x56, 0x8a,
+-			    0xb8, 0x9e, 0x8e, 0x5c, 0x57, 0xd3, 0xa0, 0x79,
+-			    0xfa, 0x02 },
+-		.output	= "This document describes a compression method based on the DEFLATE"
++		.inlen	= 70,
++		.outlen	= 46,
++		.input	= "Join us now and share the software "
++			  "Join us now and share the software ",
++		.output	= { 0x00, 0x0d, 0x4a, 0x6f, 0x69, 0x6e, 0x20, 0x75,
++			    0x73, 0x20, 0x6e, 0x6f, 0x77, 0x20, 0x61, 0x6e,
++			    0x64, 0x20, 0x73, 0x68, 0x61, 0x72, 0x65, 0x20,
++			    0x74, 0x68, 0x65, 0x20, 0x73, 0x6f, 0x66, 0x74,
++			    0x77, 0x70, 0x01, 0x01, 0x4a, 0x6f, 0x69, 0x6e,
++			    0x3d, 0x88, 0x00, 0x11, 0x00, 0x00 },
++	}, {
++		.inlen	= 191,
++		.outlen	= 153,
++		.input	= "This document describes a compression method based on the DEFLATE"
+ 			  "compression algorithm.  This document defines the application of "
+ 			  "the DEFLATE algorithm to the IP Payload Compression Protocol.",
+-	}, {
+-		.inlen	= 38,
+-		.outlen	= 70,
+-		.input	= { 0xf3, 0xca, 0xcf, 0xcc, 0x53, 0x28, 0x2d, 0x56,
+-			    0xc8, 0xcb, 0x2f, 0x57, 0x48, 0xcc, 0x4b, 0x51,
+-			    0x28, 0xce, 0x48, 0x2c, 0x4a, 0x55, 0x28, 0xc9,
+-			    0x48, 0x55, 0x28, 0xce, 0x4f, 0x2b, 0x29, 0x07,
+-			    0x71, 0xbc, 0x08, 0x2b, 0x01, 0x00 },
+-		.output	= "Join us now and share the software "
+-			  "Join us now and share the software ",
++		.output	= { 0x00, 0x2f, 0x54, 0x68, 0x69, 0x73, 0x20, 0x64,
++			    0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x20,
++			    0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x62, 0x65,
++			    0x73, 0x20, 0x61, 0x20, 0x63, 0x6f, 0x6d, 0x70,
++			    0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x20,
++			    0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x20, 0x62,
++			    0x61, 0x73, 0x65, 0x64, 0x20, 0x6f, 0x6e, 0x20,
++			    0x74, 0x68, 0x65, 0x20, 0x44, 0x45, 0x46, 0x4c,
++			    0x41, 0x54, 0x45, 0x2a, 0x98, 0x00, 0x0d, 0x61,
++			    0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d,
++			    0x2e, 0x20, 0x20, 0x54, 0x68, 0x69, 0x73, 0x2a,
++			    0x60, 0x01, 0x02, 0x66, 0x69, 0x6e, 0x65, 0x73,
++			    0x80, 0x07, 0x05, 0x61, 0x70, 0x70, 0x6c, 0x69,
++			    0x63, 0x61, 0x74, 0x62, 0x0b, 0x6f, 0x66, 0x88,
++			    0x02, 0xcd, 0x09, 0x20, 0x27, 0x03, 0x01, 0x20,
++			    0x74, 0x6f, 0x80, 0x03, 0x09, 0x49, 0x50, 0x20,
++			    0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x20,
++			    0x43, 0x29, 0x3c, 0x02, 0x06, 0x50, 0x72, 0x6f,
++			    0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x11, 0x00,
++			    0x00 },
+ 	},
+ };
+ 

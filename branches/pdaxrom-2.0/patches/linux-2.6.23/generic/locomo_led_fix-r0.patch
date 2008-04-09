@@ -1,0 +1,17 @@
+---
+ drivers/leds/leds-locomo.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux/drivers/leds/leds-locomo.c
+===================================================================
+--- linux.orig/drivers/leds/leds-locomo.c	2007-12-30 23:34:46.000000000 +0000
++++ linux/drivers/leds/leds-locomo.c	2007-12-30 23:35:05.000000000 +0000
+@@ -19,7 +19,7 @@
+ static void locomoled_brightness_set(struct led_classdev *led_cdev,
+ 				enum led_brightness value, int offset)
+ {
+-	struct locomo_dev *locomo_dev = LOCOMO_DEV(led_cdev->dev);
++	struct locomo_dev *locomo_dev = LOCOMO_DEV(led_cdev->dev->parent);
+ 	unsigned long flags;
+ 
+ 	local_irq_save(flags);

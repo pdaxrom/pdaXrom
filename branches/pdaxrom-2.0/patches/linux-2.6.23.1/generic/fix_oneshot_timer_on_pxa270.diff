@@ -1,0 +1,115 @@
+Subject: one shot timer mode on PXA270
+From: Russell King
+
+Note: This patch is an interim solution for kernel 2.6.23. It should be fixed
+in future kernels.
+
+Signed-off-by: Juergen Beisert <j.beisert@pengutronix.de>
+
+On Thu, Nov 08, 2007 at 08:34:19AM +0000, Russell King - ARM Linux wrote:
+> On Wed, Nov 07, 2007 at 06:55:18PM +0100, Thomas Gleixner wrote:
+> > On Wed, 7 Nov 2007, Nicolas Pitre wrote:
+> > > On Wed, 7 Nov 2007, Russell King - ARM Linux wrote:
+> > > > On Wed, Nov 07, 2007 at 10:24:26AM -0500, Nicolas Pitre wrote:
+> > > > In terms of the time keeping code, if GENERIC_TIME is set and we miss
+> > > > ticks, the amount of time passed is calculated from the clock source
+> > > > thusly (in update_wall_time):
+> > > > 
+> > > >         offset = (clocksource_read(clock) - clock->cycle_last) & clock->mask;
+> > > > 
+> > > > and that is used to work out how many ticks to process.  Any left over
+> > > > offset adjustment seems to be applied into the code which calculates
+> > > > the NTP intervals and such like to keep time keeping accurate
+> > > > irrespective of the actual interrupt times.
+> > > 
+> > > Yes indeed.  My point is that the periodic mode is more likely to have 
+> > > precise interrupt periods.  Therefore it is probably better for the core 
+> > > code to use it when !HIGH_RES_TIMERS && !CONFIG_NO_HZ, and use the one 
+> > > shot mode otherwise.  Whether or not this is the case at the moment I 
+> > > don't know.
+> > 
+> > The core code of clockevents is actually providing a precise periodic
+> > interrupt based on the oneshot timer even with respect to NTP
+> > adjustment of the clock source. But it's hard to tell if there is a
+> > real benefit / difference aside of the simpler code in the clock event
+> > device of the PXA
+> 
+> Okay, so does that make Nico happy for the periodic emulation code
+> in mach-pxa/time.c to be removed?
+
+Also can I at least have an acked-by from both of you (Nico and Thomas)
+for the latest patch to mach-pxa/time.c (appended below to avoid confusion)?
+
+Index: linux-2.6.23.1/arch/arm/mach-pxa/time.c
+===================================================================
+--- linux-2.6.23.1.orig/arch/arm/mach-pxa/time.c
++++ linux-2.6.23.1/arch/arm/mach-pxa/time.c
+@@ -30,6 +30,7 @@ pxa_ost0_interrupt(int irq, void *dev_id
+ 	if (c->mode == CLOCK_EVT_MODE_ONESHOT) {
+ 		/* Disarm the compare/match, signal the event. */
+ 		OIER &= ~OIER_E0;
++		OSSR = OSSR_M0;
+ 		c->event_handler(c);
+ 	} else if (c->mode == CLOCK_EVT_MODE_PERIODIC) {
+ 		/* Call the event handler as many times as necessary
+@@ -62,9 +63,9 @@ pxa_ost0_interrupt(int irq, void *dev_id
+ 		 * anything that might put us "very close".
+ 	 */
+ #define MIN_OSCR_DELTA 16
+-	do {
++		do {
+ 			OSSR = OSSR_M0;
+-		next_match = (OSMR0 += LATCH);
++			next_match = (OSMR0 += LATCH);
+ 			c->event_handler(c);
+ 		} while (((signed long)(next_match - OSCR) <= MIN_OSCR_DELTA)
+ 			 && (c->mode == CLOCK_EVT_MODE_PERIODIC));
+@@ -76,14 +77,16 @@ pxa_ost0_interrupt(int irq, void *dev_id
+ static int
+ pxa_osmr0_set_next_event(unsigned long delta, struct clock_event_device *dev)
+ {
+-	unsigned long irqflags;
++	unsigned long flags, next, oscr;
+ 
+-	raw_local_irq_save(irqflags);
+-	OSMR0 = OSCR + delta;
+-	OSSR = OSSR_M0;
++	raw_local_irq_save(flags);
+ 	OIER |= OIER_E0;
+-	raw_local_irq_restore(irqflags);
+-	return 0;
++	next = OSCR + delta;
++	OSMR0 = next;
++	oscr = OSCR;
++	raw_local_irq_restore(flags);
++
++	return (signed)(next - oscr) <= MIN_OSCR_DELTA ? -ETIME : 0;
+ }
+ 
+ static void
+@@ -94,15 +97,16 @@ pxa_osmr0_set_mode(enum clock_event_mode
+ 	switch (mode) {
+ 	case CLOCK_EVT_MODE_PERIODIC:
+ 		raw_local_irq_save(irqflags);
+-		OSMR0 = OSCR + LATCH;
+ 		OSSR = OSSR_M0;
+ 		OIER |= OIER_E0;
++		OSMR0 = OSCR + LATCH;
+ 		raw_local_irq_restore(irqflags);
+ 		break;
+ 
+ 	case CLOCK_EVT_MODE_ONESHOT:
+ 		raw_local_irq_save(irqflags);
+ 		OIER &= ~OIER_E0;
++		OSSR = OSSR_M0;
+ 		raw_local_irq_restore(irqflags);
+ 		break;
+ 
+@@ -111,6 +115,7 @@ pxa_osmr0_set_mode(enum clock_event_mode
+ 		/* initializing, released, or preparing for suspend */
+ 		raw_local_irq_save(irqflags);
+ 		OIER &= ~OIER_E0;
++		OSSR = OSSR_M0;
+ 		raw_local_irq_restore(irqflags);
+ 		break;
+ 	}

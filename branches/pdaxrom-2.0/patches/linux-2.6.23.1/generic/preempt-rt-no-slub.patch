@@ -1,0 +1,16 @@
+---
+ init/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6.23.1-rt5/init/Kconfig
+===================================================================
+--- linux-2.6.23.1-rt5.orig/init/Kconfig
++++ linux-2.6.23.1-rt5/init/Kconfig
+@@ -562,6 +562,7 @@ config SLAB
+ 
+ config SLUB
+ 	bool "SLUB (Unqueued Allocator)"
++	depends on !PREEMPT_RT
+ 	help
+ 	   SLUB is a slab allocator that minimizes cache line usage
+ 	   instead of managing queues of cached objects (SLAB approach).

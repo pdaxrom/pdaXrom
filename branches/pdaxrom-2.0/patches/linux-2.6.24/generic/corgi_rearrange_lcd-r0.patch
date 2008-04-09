@@ -1,0 +1,814 @@
+---
+ arch/arm/mach-pxa/corgi.c            |  183 +++++++++++++++++++++
+ arch/arm/mach-pxa/corgi_lcd.c        |  299 -----------------------------------
+ arch/arm/mach-pxa/sharpsl.h          |   19 --
+ arch/arm/mach-pxa/spitz.c            |  106 +++++++++++-
+ drivers/input/touchscreen/corgi_ts.c |    8 
+ include/asm-arm/arch-pxa/corgi.h     |    1 
+ include/asm-arm/arch-pxa/sharpsl.h   |    2 
+ include/asm-arm/arch-pxa/spitz.h     |    2 
+ 8 files changed, 292 insertions(+), 328 deletions(-)
+
+Index: linux-2.6.23/arch/arm/mach-pxa/corgi.c
+===================================================================
+--- linux-2.6.23.orig/arch/arm/mach-pxa/corgi.c	2007-10-16 13:07:19.000000000 +0100
++++ linux-2.6.23/arch/arm/mach-pxa/corgi.c	2007-10-16 13:18:22.000000000 +0100
+@@ -21,6 +21,7 @@
+ #include <linux/mmc/host.h>
+ #include <linux/pm.h>
+ #include <linux/backlight.h>
++#include <video/w100fb.h>
+ 
+ #include <asm/setup.h>
+ #include <asm/memory.h>
+@@ -142,6 +143,136 @@ struct corgissp_machinfo corgi_ssp_machi
+ 
+ 
+ /*
++ * LCD/Framebuffer
++ */
++static void w100_lcdtg_suspend(struct w100fb_par *par)
++{
++	corgi_lcdtg_suspend();
++}
++
++static void w100_lcdtg_init(struct w100fb_par *par)
++{
++	corgi_lcdtg_hw_init(par->xres);
++}
++
++
++static struct w100_tg_info corgi_lcdtg_info = {
++	.change  = w100_lcdtg_init,
++	.suspend = w100_lcdtg_suspend,
++	.resume  = w100_lcdtg_init,
++};
++
++static struct w100_mem_info corgi_fb_mem = {
++	.ext_cntl          = 0x00040003,
++	.sdram_mode_reg    = 0x00650021,
++	.ext_timing_cntl   = 0x10002a4a,
++	.io_cntl           = 0x7ff87012,
++	.size              = 0x1fffff,
++};
++
++static struct w100_gen_regs corgi_fb_regs = {
++	.lcd_format    = 0x00000003,
++	.lcdd_cntl1    = 0x01CC0000,
++	.lcdd_cntl2    = 0x0003FFFF,
++	.genlcd_cntl1  = 0x00FFFF0D,
++	.genlcd_cntl2  = 0x003F3003,
++	.genlcd_cntl3  = 0x000102aa,
++};
++
++static struct w100_gpio_regs corgi_fb_gpio = {
++	.init_data1   = 0x000000bf,
++	.init_data2   = 0x00000000,
++	.gpio_dir1    = 0x00000000,
++	.gpio_oe1     = 0x03c0feff,
++	.gpio_dir2    = 0x00000000,
++	.gpio_oe2     = 0x00000000,
++};
++
++static struct w100_mode corgi_fb_modes[] = {
++{
++	.xres            = 480,
++	.yres            = 640,
++	.left_margin     = 0x56,
++	.right_margin    = 0x55,
++	.upper_margin    = 0x03,
++	.lower_margin    = 0x00,
++	.crtc_ss         = 0x82360056,
++	.crtc_ls         = 0xA0280000,
++	.crtc_gs         = 0x80280028,
++	.crtc_vpos_gs    = 0x02830002,
++	.crtc_rev        = 0x00400008,
++	.crtc_dclk       = 0xA0000000,
++	.crtc_gclk       = 0x8015010F,
++	.crtc_goe        = 0x80100110,
++	.crtc_ps1_active = 0x41060010,
++	.pll_freq        = 75,
++	.fast_pll_freq   = 100,
++	.sysclk_src      = CLK_SRC_PLL,
++	.sysclk_divider  = 0,
++	.pixclk_src      = CLK_SRC_PLL,
++	.pixclk_divider  = 2,
++	.pixclk_divider_rotated = 6,
++},{
++	.xres            = 240,
++	.yres            = 320,
++	.left_margin     = 0x27,
++	.right_margin    = 0x2e,
++	.upper_margin    = 0x01,
++	.lower_margin    = 0x00,
++	.crtc_ss         = 0x81170027,
++	.crtc_ls         = 0xA0140000,
++	.crtc_gs         = 0xC0140014,
++	.crtc_vpos_gs    = 0x00010141,
++	.crtc_rev        = 0x00400008,
++	.crtc_dclk       = 0xA0000000,
++	.crtc_gclk       = 0x8015010F,
++	.crtc_goe        = 0x80100110,
++	.crtc_ps1_active = 0x41060010,
++	.pll_freq        = 0,
++	.fast_pll_freq   = 0,
++	.sysclk_src      = CLK_SRC_XTAL,
++	.sysclk_divider  = 0,
++	.pixclk_src      = CLK_SRC_XTAL,
++	.pixclk_divider  = 1,
++	.pixclk_divider_rotated = 1,
++},
++
++};
++
++static struct w100fb_mach_info corgi_fb_info = {
++	.tg         = &corgi_lcdtg_info,
++	.init_mode  = INIT_MODE_ROTATED,
++	.mem        = &corgi_fb_mem,
++	.regs       = &corgi_fb_regs,
++	.modelist   = &corgi_fb_modes[0],
++	.num_modes  = 2,
++	.gpio       = &corgi_fb_gpio,
++	.xtal_freq  = 12500000,
++	.xtal_dbl   = 0,
++};
++
++static struct resource corgi_fb_resources[] = {
++	[0] = {
++		.start   = 0x08000000,
++		.end     = 0x08ffffff,
++		.flags   = IORESOURCE_MEM,
++	},
++};
++
++static struct platform_device corgifb_device = {
++	.name           = "w100fb",
++	.id             = -1,
++	.num_resources	= ARRAY_SIZE(corgi_fb_resources),
++	.resource	= corgi_fb_resources,
++	.dev            = {
++ 		.platform_data = &corgi_fb_info,
++ 		.parent = &corgissp_device.dev,
++	},
++
++};
++
++
++/*
+  * Corgi Backlight Device
+  */
+ static void corgi_bl_kick_battery(void)
+@@ -155,6 +286,21 @@ static void corgi_bl_kick_battery(void)
+ 	}
+ }
+ 
++static void corgi_bl_set_intensity(int intensity)
++{
++	if (intensity > 0x10)
++		intensity += 0x10;
++
++	/* Bits 0-4 are accessed via the SSP interface */
++	corgi_ssp_blduty_set(intensity & 0x1f);
++
++	/* Bit 5 is via SCOOP */
++	if (intensity & 0x0020)
++		set_scoop_gpio(&corgiscoop_device.dev, CORGI_SCP_BACKLIGHT_CONT);
++	else
++		reset_scoop_gpio(&corgiscoop_device.dev, CORGI_SCP_BACKLIGHT_CONT);
++}
++
+ static struct generic_bl_info corgi_bl_machinfo = {
+ 	.name = "corgi-bl",
+ 	.max_intensity = 0x2f,
+@@ -191,9 +337,40 @@ static struct platform_device corgiled_d
+ 	.id		= -1,
+ };
+ 
++
+ /*
+  * Corgi Touch Screen Device
+  */
++static unsigned long (*get_hsync_invperiod)(struct device *dev);
++
++static void inline sharpsl_wait_sync(int gpio)
++{
++	while((GPLR(gpio) & GPIO_bit(gpio)) == 0);
++	while((GPLR(gpio) & GPIO_bit(gpio)) != 0);
++}
++
++static unsigned long corgi_get_hsync_invperiod(void)
++{
++	if (!get_hsync_invperiod)
++		get_hsync_invperiod = symbol_get(w100fb_get_hsynclen);
++	if (!get_hsync_invperiod)
++		return 0;
++
++	return get_hsync_invperiod(&corgifb_device.dev);
++}
++
++static void corgi_put_hsync(void)
++{
++	if (get_hsync_invperiod)
++		symbol_put(w100fb_get_hsynclen);
++	get_hsync_invperiod = NULL;
++}
++
++static void corgi_wait_hsync(void)
++{
++	sharpsl_wait_sync(CORGI_GPIO_HSYNC);
++}
++
+ static struct resource corgits_resources[] = {
+ 	[0] = {
+ 		.start		= CORGI_IRQ_GPIO_TP_INT,
+@@ -203,9 +380,9 @@ static struct resource corgits_resources
+ };
+ 
+ static struct corgits_machinfo  corgi_ts_machinfo = {
+-	.get_hsync_len   = corgi_get_hsync_len,
+-	.put_hsync       = corgi_put_hsync,
+-	.wait_hsync      = corgi_wait_hsync,
++	.get_hsync_invperiod = corgi_get_hsync_invperiod,
++	.put_hsync           = corgi_put_hsync,
++	.wait_hsync          = corgi_wait_hsync,
+ };
+ 
+ static struct platform_device corgits_device = {
+Index: linux-2.6.23/arch/arm/mach-pxa/corgi_lcd.c
+===================================================================
+--- linux-2.6.23.orig/arch/arm/mach-pxa/corgi_lcd.c	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/mach-pxa/corgi_lcd.c	2007-10-16 13:07:24.000000000 +0100
+@@ -173,7 +173,7 @@ static void lcdtg_set_phadadj(int mode)
+ 
+ static int lcd_inited;
+ 
+-static void lcdtg_hw_init(int mode)
++void corgi_lcdtg_hw_init(int mode)
+ {
+ 	if (!lcd_inited) {
+ 		int comadj;
+@@ -254,7 +254,7 @@ static void lcdtg_hw_init(int mode)
+ 	}
+ }
+ 
+-static void lcdtg_suspend(void)
++void corgi_lcdtg_suspend(void)
+ {
+ 	/* 60Hz x 2 frame = 16.7msec x 2 = 33.4 msec */
+ 	mdelay(34);
+@@ -288,298 +288,3 @@ static void lcdtg_suspend(void)
+ 	lcd_inited = 0;
+ }
+ 
+-
+-/*
+- * Corgi w100 Frame Buffer Device
+- */
+-#ifdef CONFIG_PXA_SHARP_C7xx
+-
+-#include <video/w100fb.h>
+-
+-static void w100_lcdtg_suspend(struct w100fb_par *par)
+-{
+-	lcdtg_suspend();
+-}
+-
+-static void w100_lcdtg_init(struct w100fb_par *par)
+-{
+-	lcdtg_hw_init(par->xres);
+-}
+-
+-
+-static struct w100_tg_info corgi_lcdtg_info = {
+-	.change  = w100_lcdtg_init,
+-	.suspend = w100_lcdtg_suspend,
+-	.resume  = w100_lcdtg_init,
+-};
+-
+-static struct w100_mem_info corgi_fb_mem = {
+-	.ext_cntl          = 0x00040003,
+-	.sdram_mode_reg    = 0x00650021,
+-	.ext_timing_cntl   = 0x10002a4a,
+-	.io_cntl           = 0x7ff87012,
+-	.size              = 0x1fffff,
+-};
+-
+-static struct w100_gen_regs corgi_fb_regs = {
+-	.lcd_format    = 0x00000003,
+-	.lcdd_cntl1    = 0x01CC0000,
+-	.lcdd_cntl2    = 0x0003FFFF,
+-	.genlcd_cntl1  = 0x00FFFF0D,
+-	.genlcd_cntl2  = 0x003F3003,
+-	.genlcd_cntl3  = 0x000102aa,
+-};
+-
+-static struct w100_gpio_regs corgi_fb_gpio = {
+-	.init_data1   = 0x000000bf,
+-	.init_data2   = 0x00000000,
+-	.gpio_dir1    = 0x00000000,
+-	.gpio_oe1     = 0x03c0feff,
+-	.gpio_dir2    = 0x00000000,
+-	.gpio_oe2     = 0x00000000,
+-};
+-
+-static struct w100_mode corgi_fb_modes[] = {
+-{
+-	.xres            = 480,
+-	.yres            = 640,
+-	.left_margin     = 0x56,
+-	.right_margin    = 0x55,
+-	.upper_margin    = 0x03,
+-	.lower_margin    = 0x00,
+-	.crtc_ss         = 0x82360056,
+-	.crtc_ls         = 0xA0280000,
+-	.crtc_gs         = 0x80280028,
+-	.crtc_vpos_gs    = 0x02830002,
+-	.crtc_rev        = 0x00400008,
+-	.crtc_dclk       = 0xA0000000,
+-	.crtc_gclk       = 0x8015010F,
+-	.crtc_goe        = 0x80100110,
+-	.crtc_ps1_active = 0x41060010,
+-	.pll_freq        = 75,
+-	.fast_pll_freq   = 100,
+-	.sysclk_src      = CLK_SRC_PLL,
+-	.sysclk_divider  = 0,
+-	.pixclk_src      = CLK_SRC_PLL,
+-	.pixclk_divider  = 2,
+-	.pixclk_divider_rotated = 6,
+-},{
+-	.xres            = 240,
+-	.yres            = 320,
+-	.left_margin     = 0x27,
+-	.right_margin    = 0x2e,
+-	.upper_margin    = 0x01,
+-	.lower_margin    = 0x00,
+-	.crtc_ss         = 0x81170027,
+-	.crtc_ls         = 0xA0140000,
+-	.crtc_gs         = 0xC0140014,
+-	.crtc_vpos_gs    = 0x00010141,
+-	.crtc_rev        = 0x00400008,
+-	.crtc_dclk       = 0xA0000000,
+-	.crtc_gclk       = 0x8015010F,
+-	.crtc_goe        = 0x80100110,
+-	.crtc_ps1_active = 0x41060010,
+-	.pll_freq        = 0,
+-	.fast_pll_freq   = 0,
+-	.sysclk_src      = CLK_SRC_XTAL,
+-	.sysclk_divider  = 0,
+-	.pixclk_src      = CLK_SRC_XTAL,
+-	.pixclk_divider  = 1,
+-	.pixclk_divider_rotated = 1,
+-},
+-
+-};
+-
+-static struct w100fb_mach_info corgi_fb_info = {
+-	.tg         = &corgi_lcdtg_info,
+-	.init_mode  = INIT_MODE_ROTATED,
+-	.mem        = &corgi_fb_mem,
+-	.regs       = &corgi_fb_regs,
+-	.modelist   = &corgi_fb_modes[0],
+-	.num_modes  = 2,
+-	.gpio       = &corgi_fb_gpio,
+-	.xtal_freq  = 12500000,
+-	.xtal_dbl   = 0,
+-};
+-
+-static struct resource corgi_fb_resources[] = {
+-	[0] = {
+-		.start   = 0x08000000,
+-		.end     = 0x08ffffff,
+-		.flags   = IORESOURCE_MEM,
+-	},
+-};
+-
+-struct platform_device corgifb_device = {
+-	.name           = "w100fb",
+-	.id             = -1,
+-	.num_resources	= ARRAY_SIZE(corgi_fb_resources),
+-	.resource	= corgi_fb_resources,
+-	.dev            = {
+- 		.platform_data = &corgi_fb_info,
+- 		.parent = &corgissp_device.dev,
+-	},
+-
+-};
+-#endif
+-
+-
+-/*
+- * Spitz PXA Frame Buffer Device
+- */
+-#ifdef CONFIG_PXA_SHARP_Cxx00
+-
+-#include <asm/arch/pxafb.h>
+-
+-void spitz_lcd_power(int on, struct fb_var_screeninfo *var)
+-{
+-	if (on)
+-		lcdtg_hw_init(var->xres);
+-	else
+-		lcdtg_suspend();
+-}
+-
+-#endif
+-
+-
+-/*
+- * Corgi/Spitz Touchscreen to LCD interface
+- */
+-static unsigned long (*get_hsync_time)(struct device *dev);
+-
+-static void inline sharpsl_wait_sync(int gpio)
+-{
+-	while((GPLR(gpio) & GPIO_bit(gpio)) == 0);
+-	while((GPLR(gpio) & GPIO_bit(gpio)) != 0);
+-}
+-
+-#ifdef CONFIG_PXA_SHARP_C7xx
+-unsigned long corgi_get_hsync_len(void)
+-{
+-	if (!get_hsync_time)
+-		get_hsync_time = symbol_get(w100fb_get_hsynclen);
+-	if (!get_hsync_time)
+-		return 0;
+-
+-	return get_hsync_time(&corgifb_device.dev);
+-}
+-
+-void corgi_put_hsync(void)
+-{
+-	if (get_hsync_time)
+-		symbol_put(w100fb_get_hsynclen);
+-	get_hsync_time = NULL;
+-}
+-
+-void corgi_wait_hsync(void)
+-{
+-	sharpsl_wait_sync(CORGI_GPIO_HSYNC);
+-}
+-#endif
+-
+-#ifdef CONFIG_PXA_SHARP_Cxx00
+-static struct device *spitz_pxafb_dev;
+-
+-static int is_pxafb_device(struct device * dev, void * data)
+-{
+-	struct platform_device *pdev = container_of(dev, struct platform_device, dev);
+-
+-	return (strncmp(pdev->name, "pxa2xx-fb", 9) == 0);
+-}
+-
+-unsigned long spitz_get_hsync_len(void)
+-{
+-#ifdef CONFIG_FB_PXA
+-	if (!spitz_pxafb_dev) {
+-		spitz_pxafb_dev = bus_find_device(&platform_bus_type, NULL, NULL, is_pxafb_device);
+-		if (!spitz_pxafb_dev)
+-			return 0;
+-	}
+-	if (!get_hsync_time)
+-		get_hsync_time = symbol_get(pxafb_get_hsync_time);
+-	if (!get_hsync_time)
+-#endif
+-		return 0;
+-
+-	return pxafb_get_hsync_time(spitz_pxafb_dev);
+-}
+-
+-void spitz_put_hsync(void)
+-{
+-	put_device(spitz_pxafb_dev);
+-	if (get_hsync_time)
+-		symbol_put(pxafb_get_hsync_time);
+-	spitz_pxafb_dev = NULL;
+-	get_hsync_time = NULL;
+-}
+-
+-void spitz_wait_hsync(void)
+-{
+-	sharpsl_wait_sync(SPITZ_GPIO_HSYNC);
+-}
+-#endif
+-
+-/*
+- * Corgi/Spitz Backlight Power
+- */
+-#ifdef CONFIG_PXA_SHARP_C7xx
+-void corgi_bl_set_intensity(int intensity)
+-{
+-	if (intensity > 0x10)
+-		intensity += 0x10;
+-
+-	/* Bits 0-4 are accessed via the SSP interface */
+-	corgi_ssp_blduty_set(intensity & 0x1f);
+-
+-	/* Bit 5 is via SCOOP */
+-	if (intensity & 0x0020)
+-		set_scoop_gpio(&corgiscoop_device.dev, CORGI_SCP_BACKLIGHT_CONT);
+-	else
+-		reset_scoop_gpio(&corgiscoop_device.dev, CORGI_SCP_BACKLIGHT_CONT);
+-}
+-#endif
+-
+-
+-#if defined(CONFIG_MACH_SPITZ) || defined(CONFIG_MACH_BORZOI)
+-void spitz_bl_set_intensity(int intensity)
+-{
+-	if (intensity > 0x10)
+-		intensity += 0x10;
+-
+-	/* Bits 0-4 are accessed via the SSP interface */
+-	corgi_ssp_blduty_set(intensity & 0x1f);
+-
+-	/* Bit 5 is via SCOOP */
+-	if (intensity & 0x0020)
+-		reset_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_CONT);
+-	else
+-		set_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_CONT);
+-
+-	if (intensity)
+-		set_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_ON);
+-	else
+-		reset_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_ON);
+-}
+-#endif
+-
+-#ifdef CONFIG_MACH_AKITA
+-void akita_bl_set_intensity(int intensity)
+-{
+-	if (intensity > 0x10)
+-		intensity += 0x10;
+-
+-	/* Bits 0-4 are accessed via the SSP interface */
+-	corgi_ssp_blduty_set(intensity & 0x1f);
+-
+-	/* Bit 5 is via IO-Expander */
+-	if (intensity & 0x0020)
+-		akita_reset_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_CONT);
+-	else
+-		akita_set_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_CONT);
+-
+-	if (intensity)
+-		akita_set_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_ON);
+-	else
+-		akita_reset_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_ON);
+-}
+-#endif
+Index: linux-2.6.23/arch/arm/mach-pxa/sharpsl.h
+===================================================================
+--- linux-2.6.23.orig/arch/arm/mach-pxa/sharpsl.h	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/mach-pxa/sharpsl.h	2007-10-16 13:07:24.000000000 +0100
+@@ -26,28 +26,15 @@ void corgi_ssp_set_machinfo(struct corgi
+ 
+ 
+ /*
+- * SharpSL Backlight
+- */
+-void corgi_bl_set_intensity(int intensity);
+-void spitz_bl_set_intensity(int intensity);
+-void akita_bl_set_intensity(int intensity);
+-
+-
+-/*
+- * SharpSL Touchscreen Driver
++ * SharpSL/Corgi LCD Driver
+  */
+-unsigned long corgi_get_hsync_len(void);
+-unsigned long spitz_get_hsync_len(void);
+-void corgi_put_hsync(void);
+-void spitz_put_hsync(void);
+-void corgi_wait_hsync(void);
+-void spitz_wait_hsync(void);
++void corgi_lcdtg_suspend(void);
++void corgi_lcdtg_hw_init(int mode);
+ 
+ 
+ /*
+  * SharpSL Battery/PM Driver
+  */
+-
+ #define READ_GPIO_BIT(x)    (GPLR(x) & GPIO_bit(x))
+ 
+ /* MAX1111 Channel Definitions */
+Index: linux-2.6.23/arch/arm/mach-pxa/spitz.c
+===================================================================
+--- linux-2.6.23.orig/arch/arm/mach-pxa/spitz.c	2007-10-16 13:07:20.000000000 +0100
++++ linux-2.6.23/arch/arm/mach-pxa/spitz.c	2007-10-16 13:07:24.000000000 +0100
+@@ -271,6 +271,55 @@ static struct platform_device spitzled_d
+ /*
+  * Spitz Touch Screen Device
+  */
++
++static unsigned long (*get_hsync_invperiod)(struct device *dev);
++
++static void inline sharpsl_wait_sync(int gpio)
++{
++	while((GPLR(gpio) & GPIO_bit(gpio)) == 0);
++	while((GPLR(gpio) & GPIO_bit(gpio)) != 0);
++}
++
++static struct device *spitz_pxafb_dev;
++
++static int is_pxafb_device(struct device * dev, void * data)
++{
++	struct platform_device *pdev = container_of(dev, struct platform_device, dev);
++
++	return (strncmp(pdev->name, "pxa2xx-fb", 9) == 0);
++}
++
++static unsigned long spitz_get_hsync_invperiod(void)
++{
++#ifdef CONFIG_FB_PXA
++	if (!spitz_pxafb_dev) {
++		spitz_pxafb_dev = bus_find_device(&platform_bus_type, NULL, NULL, is_pxafb_device);
++		if (!spitz_pxafb_dev)
++			return 0;
++	}
++	if (!get_hsync_invperiod)
++		get_hsync_invperiod = symbol_get(pxafb_get_hsync_time);
++	if (!get_hsync_invperiod)
++#endif
++		return 0;
++
++	return get_hsync_invperiod(spitz_pxafb_dev);
++}
++
++static void spitz_put_hsync(void)
++{
++	put_device(spitz_pxafb_dev);
++	if (get_hsync_invperiod)
++		symbol_put(pxafb_get_hsync_time);
++	spitz_pxafb_dev = NULL;
++	get_hsync_invperiod = NULL;
++}
++
++static void spitz_wait_hsync(void)
++{
++	sharpsl_wait_sync(SPITZ_GPIO_HSYNC);
++}
++
+ static struct resource spitzts_resources[] = {
+ 	[0] = {
+ 		.start		= SPITZ_IRQ_GPIO_TP_INT,
+@@ -280,9 +329,9 @@ static struct resource spitzts_resources
+ };
+ 
+ static struct corgits_machinfo  spitz_ts_machinfo = {
+-	.get_hsync_len   = spitz_get_hsync_len,
+-	.put_hsync       = spitz_put_hsync,
+-	.wait_hsync      = spitz_wait_hsync,
++	.get_hsync_invperiod = spitz_get_hsync_invperiod,
++	.put_hsync           = spitz_put_hsync,
++	.wait_hsync          = spitz_wait_hsync,
+ };
+ 
+ static struct platform_device spitzts_device = {
+@@ -449,6 +498,14 @@ static struct pxaficp_platform_data spit
+  * Spitz PXA Framebuffer
+  */
+ 
++static void spitz_lcd_power(int on, struct fb_var_screeninfo *var)
++{
++	if (on)
++		corgi_lcdtg_hw_init(var->xres);
++	else
++		corgi_lcdtg_suspend();
++}
++
+ static struct pxafb_mode_info spitz_pxafb_modes[] = {
+ {
+ 	.pixclock       = 19231,
+@@ -547,6 +604,27 @@ static void __init common_init(void)
+ 	set_pxa_fb_info(&spitz_pxafb_info);
+ }
+ 
++#if defined(CONFIG_MACH_SPITZ) || defined(CONFIG_MACH_BORZOI)
++static void spitz_bl_set_intensity(int intensity)
++{
++	if (intensity > 0x10)
++		intensity += 0x10;
++
++	/* Bits 0-4 are accessed via the SSP interface */
++	corgi_ssp_blduty_set(intensity & 0x1f);
++
++	/* Bit 5 is via SCOOP */
++	if (intensity & 0x0020)
++		reset_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_CONT);
++	else
++		set_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_CONT);
++
++	if (intensity)
++		set_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_ON);
++	else
++		reset_scoop_gpio(&spitzscoop2_device.dev, SPITZ_SCP2_BACKLIGHT_ON);
++}
++
+ static void __init spitz_init(void)
+ {
+ 	platform_scoop_config = &spitz_pcmcia_config;
+@@ -557,6 +635,7 @@ static void __init spitz_init(void)
+ 
+ 	platform_device_register(&spitzscoop2_device);
+ }
++#endif
+ 
+ #ifdef CONFIG_MACH_AKITA
+ /*
+@@ -569,6 +648,26 @@ struct platform_device akitaioexp_device
+ 
+ EXPORT_SYMBOL_GPL(akitaioexp_device);
+ 
++static void akita_bl_set_intensity(int intensity)
++{
++	if (intensity > 0x10)
++		intensity += 0x10;
++
++	/* Bits 0-4 are accessed via the SSP interface */
++	corgi_ssp_blduty_set(intensity & 0x1f);
++
++	/* Bit 5 is via IO-Expander */
++	if (intensity & 0x0020)
++		akita_reset_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_CONT);
++	else
++		akita_set_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_CONT);
++
++	if (intensity)
++		akita_set_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_ON);
++	else
++		akita_reset_ioexp(&akitaioexp_device.dev, AKITA_IOEXP_BACKLIGHT_ON);
++}
++
+ static void __init akita_init(void)
+ {
+ 	spitz_ficp_platform_data.transceiver_mode = akita_irda_transceiver_mode;
+@@ -585,7 +684,6 @@ static void __init akita_init(void)
+ }
+ #endif
+ 
+-
+ static void __init fixup_spitz(struct machine_desc *desc,
+ 		struct tag *tags, char **cmdline, struct meminfo *mi)
+ {
+Index: linux-2.6.23/drivers/input/touchscreen/corgi_ts.c
+===================================================================
+--- linux-2.6.23.orig/drivers/input/touchscreen/corgi_ts.c	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/drivers/input/touchscreen/corgi_ts.c	2007-10-16 13:07:24.000000000 +0100
+@@ -74,10 +74,10 @@ extern unsigned int get_clk_frequency_kh
+ 
+ static unsigned long calc_waittime(struct corgi_ts *corgi_ts)
+ {
+-	unsigned long hsync_len = corgi_ts->machinfo->get_hsync_len();
++	unsigned long hsync_invperiod = corgi_ts->machinfo->get_hsync_invperiod();
+ 
+-	if (hsync_len)
+-		return get_clk_frequency_khz(0)*1000/hsync_len;
++	if (hsync_invperiod)
++		return get_clk_frequency_khz(0)*1000/hsync_invperiod;
+ 	else
+ 		return 0;
+ }
+@@ -114,7 +114,7 @@ static int sync_receive_data_send_cmd(st
+ 			if (timer2-timer1 > wait_time) {
+ 				/* too slow - timeout, try again */
+ 				corgi_ts->machinfo->wait_hsync();
+-				/* get OSCR */
++				/* get CCNT */
+ 				CCNT(timer1);
+ 				/* Wait after HSync */
+ 				CCNT(timer2);
+Index: linux-2.6.23/include/asm-arm/arch-pxa/corgi.h
+===================================================================
+--- linux-2.6.23.orig/include/asm-arm/arch-pxa/corgi.h	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/include/asm-arm/arch-pxa/corgi.h	2007-10-16 13:07:24.000000000 +0100
+@@ -104,7 +104,6 @@
+  */
+ extern struct platform_device corgiscoop_device;
+ extern struct platform_device corgissp_device;
+-extern struct platform_device corgifb_device;
+ 
+ #endif /* __ASM_ARCH_CORGI_H  */
+ 
+Index: linux-2.6.23/include/asm-arm/arch-pxa/sharpsl.h
+===================================================================
+--- linux-2.6.23.orig/include/asm-arm/arch-pxa/sharpsl.h	2007-10-16 13:07:13.000000000 +0100
++++ linux-2.6.23/include/asm-arm/arch-pxa/sharpsl.h	2007-10-16 13:07:24.000000000 +0100
+@@ -16,7 +16,7 @@ int corgi_ssp_max1111_get(unsigned long 
+  */
+ 
+ struct corgits_machinfo {
+-	unsigned long (*get_hsync_len)(void);
++	unsigned long (*get_hsync_invperiod)(void);
+ 	void (*put_hsync)(void);
+ 	void (*wait_hsync)(void);
+ };
+Index: linux-2.6.23/include/asm-arm/arch-pxa/spitz.h
+===================================================================
+--- linux-2.6.23.orig/include/asm-arm/arch-pxa/spitz.h	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/include/asm-arm/arch-pxa/spitz.h	2007-10-16 13:07:24.000000000 +0100
+@@ -156,5 +156,3 @@ extern struct platform_device spitzscoop
+ extern struct platform_device spitzscoop2_device;
+ extern struct platform_device spitzssp_device;
+ extern struct sharpsl_charger_machinfo spitz_pm_machinfo;
+-
+-extern void spitz_lcd_power(int on, struct fb_var_screeninfo *var);

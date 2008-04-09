@@ -1,0 +1,70 @@
+Subject: Port of latest linux-2.6-touch git to recent kernel
+From: Marc Kleine-Budde <mlk@pengutronix.de>
+
+Signed-off-by: Marc Kleine-Budde <mkl@penugtronix.de>
+
+---
+ drivers/input/touchscreen/Kconfig       |    2 +-
+ drivers/input/touchscreen/wm97xx-core.c |    7 ++++---
+ include/linux/wm97xx.h                  |    2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
+
+Index: drivers/input/touchscreen/Kconfig
+===================================================================
+--- drivers/input/touchscreen/Kconfig.orig
++++ drivers/input/touchscreen/Kconfig
+@@ -240,7 +240,7 @@ config TOUCHSCREEN_USB_IRTOUCH
+ 
+ config TOUCHSCREEN_WM97XX
+ 	tristate "Support for WM97xx AC97 touchscreen controllers"
+-	depends on SND_AC97_BUS
++	depends on AC97_BUS
+ 
+ choice
+ 	prompt "WM97xx codec type"
+Index: drivers/input/touchscreen/wm97xx-core.c
+===================================================================
+--- drivers/input/touchscreen/wm97xx-core.c.orig
++++ drivers/input/touchscreen/wm97xx-core.c
+@@ -85,6 +85,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/device.h>
+ #include <linux/wm97xx.h>
++#include <linux/freezer.h>
+ #include <asm/uaccess.h>
+ #include <asm/io.h>
+ 
+@@ -313,9 +314,9 @@ EXPORT_SYMBOL_GPL(wm97xx_config_gpio);
+ /*
+  * Handle a pen down interrupt.
+  */
+-static void wm97xx_pen_irq_worker(void *ptr)
++static void wm97xx_pen_irq_worker(struct work_struct *work)
+ {
+-	struct wm97xx *wm = (struct wm97xx *) ptr;
++	struct wm97xx *wm = container_of(work, struct wm97xx, pen_event_work);
+ 
+ 	/* do we need to enable the touch panel reader */
+ 	if (wm->id == WM9705_ID2) {
+@@ -373,7 +374,7 @@ static int wm97xx_init_pen_irq(struct wm
+ {
+ 	u16 reg;
+ 
+-	INIT_WORK(&wm->pen_event_work, wm97xx_pen_irq_worker, wm);
++	INIT_WORK(&wm->pen_event_work, wm97xx_pen_irq_worker);
+ 	if ((wm->pen_irq_workq =
+ 		create_singlethread_workqueue("kwm97pen")) == NULL) {
+ 		err("could not create pen irq work queue");
+Index: include/linux/wm97xx.h
+===================================================================
+--- include/linux/wm97xx.h.orig
++++ include/linux/wm97xx.h
+@@ -243,7 +243,7 @@ struct wm97xx {
+ 	u16 dig_save[3];		/* saved during aux reading */
+ 	struct wm97xx_codec_drv *codec;	/* attached codec driver*/
+ 	struct input_dev* input_dev;	/* touchscreen input device */
+-	ac97_t *ac97;			/* ALSA codec access */
++	struct snd_ac97 *ac97;		/* ALSA codec access */
+ 	struct device *dev;		/* ALSA device */
+     struct device *battery_dev;
+     struct device *touch_dev;

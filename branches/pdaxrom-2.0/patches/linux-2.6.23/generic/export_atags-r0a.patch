@@ -1,0 +1,241 @@
+[PATCH] Export atags to userspace and allow kexec to use customised atags
+
+Currently, the atags used by kexec are fixed to the ones originally used
+to boot the kernel. This is less than ideal as changing the commandline, 
+initrd and other options would be a useful feature.
+
+This patch exports the atags used for the current kernel to userspace 
+through an "atags" file in procfs. The presence of the file is 
+controlled by its own Kconfig option and cleans up several ifdef blocks
+into a separate file. The tags for the new kernel are assumed to be at
+a fixed location before the kernel image itself. The location of the 
+tags used to boot the original kernel is unimportant and no longer 
+saved.
+
+Based on a patch from Uli Luckas <u.luckas@road.de>
+
+Signed-off-by: Richard Purdie <rpurdie@rpsys.net>
+
+---
+ arch/arm/Kconfig                  |    7 +++
+ arch/arm/kernel/Makefile          |    1 
+ arch/arm/kernel/atags.c           |   86 ++++++++++++++++++++++++++++++++++++++
+ arch/arm/kernel/atags.h           |    5 ++
+ arch/arm/kernel/machine_kexec.c   |    2 
+ arch/arm/kernel/relocate_kernel.S |    7 ++-
+ arch/arm/kernel/setup.c           |    2 
+ include/asm-arm/kexec.h           |    5 ++
+ 8 files changed, 114 insertions(+), 1 deletion(-)
+
+Index: linux-2.6.23/arch/arm/kernel/atags.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.23/arch/arm/kernel/atags.c	2008-01-20 16:46:10.000000000 +0000
+@@ -0,0 +1,86 @@
++#include <linux/slab.h>
++#include <linux/kexec.h>
++#include <linux/proc_fs.h>
++#include <asm/setup.h>
++#include <asm/types.h>
++#include <asm/page.h>
++
++struct buffer {
++	size_t size;
++	char *data;
++};
++static struct buffer tags_buffer;
++
++static int
++read_buffer(char* page, char** start, off_t off, int count,
++	int* eof, void* data)
++{
++	struct buffer *buffer = (struct buffer *)data;
++
++	if (off >= buffer->size) {
++		*eof = 1;
++		return 0;
++	}
++
++	count = min((int) (buffer->size - off), count);
++
++	memcpy(page, &buffer->data[off], count);
++
++	return count;
++}
++
++
++static int
++create_proc_entries(void)
++{
++	struct proc_dir_entry* tags_entry;
++
++	tags_entry = create_proc_read_entry("atags", 0400, &proc_root, read_buffer, &tags_buffer);
++	if (!tags_entry)
++		return -ENOMEM;
++
++	return 0;
++}
++
++
++static char __initdata atags_copy_buf[KEXEC_BOOT_PARAMS_SIZE];
++static char __initdata *atags_copy;
++
++void __init save_atags(const struct tag *tags)
++{
++	atags_copy = atags_copy_buf;
++	memcpy(atags_copy, tags, KEXEC_BOOT_PARAMS_SIZE);
++}
++
++
++static int __init init_atags_procfs(void)
++{
++	struct tag *tag;
++	int error;
++
++	if (!atags_copy) {
++		printk(KERN_WARNING "Exporting ATAGs: No saved tags found\n");
++		return -EIO;
++	}
++
++	for (tag = (struct tag *) atags_copy; tag->hdr.size; tag = tag_next(tag))
++		;
++
++	tags_buffer.size = ((char *) tag - atags_copy) + sizeof(tag->hdr);
++	tags_buffer.data = kmalloc(tags_buffer.size, GFP_KERNEL);
++	if (tags_buffer.data == NULL)
++		return -ENOMEM;
++	memcpy(tags_buffer.data, atags_copy, tags_buffer.size);
++
++	error = create_proc_entries();
++	if (error) {
++		printk(KERN_ERR "Exporting ATAGs: not enough memory\n");
++		kfree(tags_buffer.data);
++		tags_buffer.size = 0;
++		tags_buffer.data = NULL;
++	}
++
++	return error;
++}
++
++arch_initcall(init_atags_procfs);
+Index: linux-2.6.23/arch/arm/kernel/atags.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.23/arch/arm/kernel/atags.h	2008-01-20 16:46:10.000000000 +0000
+@@ -0,0 +1,5 @@
++#ifdef CONFIG_ATAGS_PROC
++extern void save_atags(struct tag *tags);
++#else
++static inline void save_atags(struct tag *tags) { }
++#endif
+Index: linux-2.6.23/arch/arm/kernel/Makefile
+===================================================================
+--- linux-2.6.23.orig/arch/arm/kernel/Makefile	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/kernel/Makefile	2008-01-20 16:46:10.000000000 +0000
+@@ -19,6 +19,7 @@ obj-$(CONFIG_ISA_DMA)		+= dma-isa.o
+ obj-$(CONFIG_PCI)		+= bios32.o isa.o
+ obj-$(CONFIG_SMP)		+= smp.o
+ obj-$(CONFIG_KEXEC)		+= machine_kexec.o relocate_kernel.o
++obj-$(CONFIG_ATAGS_PROC)	+= atags.o
+ obj-$(CONFIG_OABI_COMPAT)	+= sys_oabi-compat.o
+ 
+ obj-$(CONFIG_CRUNCH)		+= crunch.o crunch-bits.o
+Index: linux-2.6.23/arch/arm/kernel/setup.c
+===================================================================
+--- linux-2.6.23.orig/arch/arm/kernel/setup.c	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/kernel/setup.c	2008-01-20 16:46:10.000000000 +0000
+@@ -38,6 +38,7 @@
+ #include <asm/mach/time.h>
+ 
+ #include "compat.h"
++#include "atags.h"
+ 
+ #ifndef MEM_SIZE
+ #define MEM_SIZE	(16*1024*1024)
+@@ -803,6 +804,7 @@ void __init setup_arch(char **cmdline_p)
+ 	if (tags->hdr.tag == ATAG_CORE) {
+ 		if (meminfo.nr_banks != 0)
+ 			squash_mem_tags(tags);
++		save_atags(tags);
+ 		parse_tags(tags);
+ 	}
+ 
+Index: linux-2.6.23/arch/arm/Kconfig
+===================================================================
+--- linux-2.6.23.orig/arch/arm/Kconfig	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/Kconfig	2008-01-20 16:51:12.000000000 +0000
+@@ -856,6 +856,13 @@ config KEXEC
+ 	  initially work for you.  It may help to enable device hotplugging
+ 	  support.
+ 
++config ATAGS_PROC
++	bool "Export atags in procfs"
++	default n
++	help
++	  Should the atags used to boot the kernel be exported in an "atags"
++	  file in procfs. Useful with kexec.
++
+ endmenu
+ 
+ if (ARCH_SA1100 || ARCH_INTEGRATOR || ARCH_OMAP || ARCH_IMX )
+Index: linux-2.6.23/arch/arm/kernel/machine_kexec.c
+===================================================================
+--- linux-2.6.23.orig/arch/arm/kernel/machine_kexec.c	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/kernel/machine_kexec.c	2008-01-20 16:46:10.000000000 +0000
+@@ -21,6 +21,7 @@ extern void setup_mm_for_reboot(char mod
+ extern unsigned long kexec_start_address;
+ extern unsigned long kexec_indirection_page;
+ extern unsigned long kexec_mach_type;
++extern unsigned long kexec_boot_atags;
+ 
+ /*
+  * Provide a dummy crash_notes definition while crash dump arrives to arm.
+@@ -62,6 +63,7 @@ void machine_kexec(struct kimage *image)
+ 	kexec_start_address = image->start;
+ 	kexec_indirection_page = page_list;
+ 	kexec_mach_type = machine_arch_type;
++	kexec_boot_atags = image->start - KEXEC_ARM_ZIMAGE_OFFSET + KEXEC_ARM_ATAGS_OFFSET;
+ 
+ 	/* copy our kernel relocation code to the control code page */
+ 	memcpy(reboot_code_buffer,
+Index: linux-2.6.23/arch/arm/kernel/relocate_kernel.S
+===================================================================
+--- linux-2.6.23.orig/arch/arm/kernel/relocate_kernel.S	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/arch/arm/kernel/relocate_kernel.S	2008-01-20 16:46:10.000000000 +0000
+@@ -50,7 +50,7 @@ relocate_new_kernel:
+ 	mov lr,r1
+ 	mov r0,#0
+ 	ldr r1,kexec_mach_type
+-	mov r2,#0
++	ldr r2,kexec_boot_atags
+ 	mov pc,lr
+ 
+ 	.globl kexec_start_address
+@@ -65,6 +65,11 @@ kexec_indirection_page:
+ kexec_mach_type:
+ 	.long	0x0
+ 
++	/* phy addr of the atags for the new kernel */
++	.globl kexec_boot_atags
++kexec_boot_atags:
++	.long	0x0
++
+ relocate_new_kernel_end:
+ 
+ 	.globl relocate_new_kernel_size
+Index: linux-2.6.23/include/asm-arm/kexec.h
+===================================================================
+--- linux-2.6.23.orig/include/asm-arm/kexec.h	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/include/asm-arm/kexec.h	2008-01-20 16:46:10.000000000 +0000
+@@ -14,6 +14,11 @@
+ 
+ #define KEXEC_ARCH KEXEC_ARCH_ARM
+ 
++#define KEXEC_BOOT_PARAMS_SIZE 1536
++
++#define KEXEC_ARM_ATAGS_OFFSET  0x1000
++#define KEXEC_ARM_ZIMAGE_OFFSET 0x8000
++
+ #ifndef __ASSEMBLY__
+ 
+ struct kimage;

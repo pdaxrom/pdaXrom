@@ -1,0 +1,17 @@
+---
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: Makefile
+===================================================================
+--- Makefile.orig
++++ Makefile
+@@ -1,7 +1,7 @@
+ VERSION = 2
+ PATCHLEVEL = 6
+ SUBLEVEL = 23
+-EXTRAVERSION = .1-rt5
++EXTRAVERSION = .1-rt5-ptx2-pcm027-1
+ NAME = Arr Matey! A Hairy Bilge Rat!
+ 
+ # *DOCUMENTATION*

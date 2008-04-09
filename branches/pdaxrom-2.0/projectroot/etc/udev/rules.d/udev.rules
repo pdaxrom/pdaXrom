@@ -1,0 +1,22 @@
+# make the first rtc device the default one
+KERNEL=="rtc0",			SYMLINK="rtc"
+
+# ALSA devices
+KERNEL=="controlC[0-9]*",       NAME="snd/%k"
+KERNEL=="hwC[D0-9]*",           NAME="snd/%k"
+KERNEL=="pcmC[D0-9cp]*",        NAME="snd/%k"
+KERNEL=="midiC[D0-9]*",         NAME="snd/%k"
+KERNEL=="timer",                NAME="snd/%k"
+KERNEL=="seq",                  NAME="snd/%k"
+
+# modprobe
+ACTION=="add", ENV{MODALIAS}=="?*", RUN+="/sbin/modprobe $env{MODALIAS}"
+
+# block devices
+SUBSYSTEM=="block", ACTION=="add"    RUN+="/etc/udev/scripts/mount.sh"
+SUBSYSTEM=="block", ACTION=="remove" RUN+="/etc/udev/scripts/mount.sh"
+
+# network devices
+KERNEL=="tun", NAME="net/%k"
+SUBSYSTEM=="net", ACTION=="add", RUN+="/etc/udev/scripts/net.sh"
+SUBSYSTEM=="net", ACTION=="remove", RUN+="/etc/udev/scripts/net.sh"

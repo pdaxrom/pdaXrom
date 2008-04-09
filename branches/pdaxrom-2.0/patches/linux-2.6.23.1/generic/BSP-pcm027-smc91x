@@ -1,0 +1,16 @@
+---
+ drivers/net/smc91x.h |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: drivers/net/smc91x.h
+===================================================================
+--- drivers/net/smc91x.h.orig
++++ drivers/net/smc91x.h
+@@ -194,6 +194,7 @@
+ #elif	defined(CONFIG_ARCH_INNOKOM) || \
+ 	defined(CONFIG_MACH_MAINSTONE) || \
+ 	defined(CONFIG_ARCH_PXA_IDP) || \
++	defined(CONFIG_ARCH_PCM027) || \
+ 	defined(CONFIG_ARCH_RAMSES)
+ 
+ #define SMC_CAN_USE_8BIT	1

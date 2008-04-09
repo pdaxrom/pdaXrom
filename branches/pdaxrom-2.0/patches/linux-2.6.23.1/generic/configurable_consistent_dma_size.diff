@@ -1,0 +1,75 @@
+Subject: arm: configureable consistent DMA size
+
+This patch makes the consistent DMA size configurable via Kconfig. You
+need to enlarge the DMA size if you want to use a framebuffer and the
+quick capture interface on the PXA at the same time with big resolutions.
+
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+
+---
+
+ arch/arm/Kconfig         |   18 ++++++++++++++++++
+ include/asm-arm/memory.h |   19 +++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+
+Index: arch/arm/Kconfig
+===================================================================
+--- arch/arm/Kconfig.orig
++++ arch/arm/Kconfig
+@@ -766,6 +766,24 @@ config ALIGNMENT_TRAP
+ 	  correct operation of some network protocols. With an IP-only
+ 	  configuration it is safe to say N, otherwise say Y.
+ 
++choice
++	prompt "consistent DMA size"
++	default DMA_SZ_2M
++
++config DMA_SZ_2M
++	bool "2 MiByte"
++
++config DMA_SZ_4M
++	bool "4 MiByte"
++
++config DMA_SZ_6M
++	bool "6 MiByte"
++
++config DMA_SZ_8M
++	bool "8 MiByte"
++
++endchoice
++
+ endmenu
+ 
+ menu "Boot options"
+Index: include/asm-arm/memory.h
+===================================================================
+--- include/asm-arm/memory.h.orig
++++ include/asm-arm/memory.h
+@@ -114,8 +114,27 @@
+  * between 2MB and 14MB inclusive.
+  */
+ #ifndef CONSISTENT_DMA_SIZE
++
++#ifdef CONFIG_DMA_SZ_2M
++#define CONSISTENT_DMA_SIZE SZ_2M
++#endif
++
++#ifdef CONFIG_DMA_SZ_4M
++#define CONSISTENT_DMA_SIZE SZ_4M
++#endif
++
++#ifdef CONFIG_DMA_SZ_6M
++#define CONSISTENT_DMA_SIZE (SZ_2M + SZ_4M)
++#endif
++
++#ifdef CONFIG_DMA_SZ_8M
++#define CONSISTENT_DMA_SIZE SZ_8M
++#endif
++
++#ifndef CONSISTENT_DMA_SIZE
+ #define CONSISTENT_DMA_SIZE SZ_2M
+ #endif
++#endif
+ 
+ /*
+  * Physical vs virtual RAM address space conversion.  These are

@@ -1,0 +1,298 @@
+---
+ drivers/video/backlight/Kconfig     |    8 +
+ drivers/video/backlight/Makefile    |    1 
+ drivers/video/backlight/pcm027_bl.c |  262 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 271 insertions(+)
+
+Index: drivers/video/backlight/Makefile
+===================================================================
+--- drivers/video/backlight/Makefile.orig
++++ drivers/video/backlight/Makefile
+@@ -7,3 +7,4 @@ obj-$(CONFIG_BACKLIGHT_HP680)	+= hp680_b
+ obj-$(CONFIG_BACKLIGHT_LOCOMO)	+= locomolcd.o
+ obj-$(CONFIG_BACKLIGHT_PROGEAR) += progear_bl.o
+ obj-$(CONFIG_BACKLIGHT_CARILLO_RANCH) += cr_bllcd.o
++obj-$(CONFIG_LCD_PCM027)	+= pcm027_bl.o
+Index: drivers/video/backlight/pcm027_bl.c
+===================================================================
+--- /dev/null
++++ drivers/video/backlight/pcm027_bl.c
+@@ -0,0 +1,262 @@
++/**
++ * pcm027_bl.c
++ *
++ * backlight brightness control for phyCORE-PXA270 and development base board
++ *
++ * Copyright (C) 2004 SYSGO AG, Christian Koerner <christian.koerner@sysggo.com>.
++ * Copyright (C) 2005 Phytec Messtechnik GmbH, armlinux@phytec.de
++ * Copyright (C) 2006 Pengutronix, jbe@pengutronix.de
++ *
++ * PURPOSE:
++ * This driver controls the backlight via one of the internal PXA's PWM units.
++ * Which one has to use is defined in the board file as a resource.
++ *
++ * Define a "struct platform_device" and define .name to "pcm027-bl". Add a
++ * resource with the baseadress of the PWM unit to use. Thats all. Rest is
++ * done here.
++ *
++ * You can control the backlight behaviour by hand with:
++ *
++ * /sys/class/backlight/pcm027-bl/brightness
++ *  - you can echo 0 ... `cat /sys/class/backlight/pcm027-bl/max_brightness`
++ *    into this entry
++ *
++ * /sys/class/backlight/pcm027-bl/power
++ *  - you can echo 0 ... 4 into this entry
++ *    0 = FB_BLANK_UNBLANK
++ *    1 = FB_BLANK_NORMAL
++ *    2 = FB_BLANK_VSYNC_SUSPEND
++ *    3 = FB_BLANK_HSYNC_SUSPEND
++ *    4 = FB_BLANK_POWERDOWN
++ **/
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/pm.h>
++#include <linux/platform_device.h>
++#include <linux/fb.h>
++#include <linux/backlight.h>
++#include <asm/arch/pxa-regs.h>
++
++/*
++ * PWM settings for the backlight:
++ * Prescaler is 13 and period is 1023 -> ~1ms period
++ */
++#define PRESCALER 12
++#define MAX_PERIOD 1023
++
++/*
++ * Backlight's current brightness
++ */
++static int current_brightness = MAX_PERIOD;
++
++/**
++ * backlight_intensity - control backlight via PWM
++ * @pwm_base: base address of PWM unit to cont
++ * @new_intensity: new intensity value
++ **/
++static void backlight_intensity(void __iomem *pwm_base, int new_intensity)
++{
++	printk(KERN_DEBUG "backlight_intensity: pwm_base: 0x%p intensity: %d\n",pwm_base, new_intensity);
++	writel(new_intensity, pwm_base);
++}
++
++/**
++ * pcm027_get_brightness - get current backlight brightness
++ * @bd: backlight device to get the brightness from
++ *
++ * Returns current backlight brightness
++ **/
++static int pcm027_get_brightness(struct backlight_device *bd)
++{
++	return current_brightness;
++}
++
++/**
++ * pcm027_set_brightness - set backlight brightness
++ * @bd: backlight device to set the new brightness to
++ * @new_brightness: new brightness (0..max_brightness)
++ *
++ * Returns 0 on success
++ **/
++
++static int pcm027_set_brightness(struct backlight_device *bd)
++{
++	int intensity = bd->props.brightness;
++	void __iomem *pwm_base = dev_get_drvdata(&bd->dev);
++
++	if (bd->props.power != FB_BLANK_UNBLANK)
++		intensity = 0;
++	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
++		intensity = 0;
++
++	backlight_intensity(pwm_base, intensity);
++	current_brightness = intensity;
++
++	return 0;
++}
++
++
++static struct backlight_ops pcm027_ops = {
++	.update_status  = pcm027_set_brightness,
++	.get_brightness = pcm027_get_brightness,
++	.check_fb       = NULL,	/* we only have one display and one backlight */
++};
++
++
++/* ########################################################## */
++
++/**
++ * pcm027bl_probe - probe and register the backlight driver
++ * @pd: platform device to work with
++ *
++ * Returns 0 on success
++ **/
++static int pcm027bl_probe(struct platform_device *pd)
++{
++	struct backlight_device *pcm027_backlight_device;
++	struct resource *res;
++	void *ioaddr;
++	int ret;
++
++	if ((res = platform_get_resource(pd, IORESOURCE_MEM, 0)) == NULL)
++		return -EIO;
++
++	if (!request_mem_region(res->start, res->end - res->start + 1, "backlight-pwm"))
++		return -EBUSY;
++
++	ioaddr = ioremap(res->start, res->end - res->start + 1);
++	if (!ioaddr) {
++		ret = -EBUSY;
++		goto err_release;
++	}
++
++	/*
++	 * store PWM baseaddress in backlight_device and platform_device
++	 */
++	pcm027_backlight_device = backlight_device_register("pcm027-bl",
++			&pd->dev, pd, &pcm027_ops);
++
++	if (IS_ERR(pcm027_backlight_device)) {
++		printk(KERN_ERR "Cannot register backlight device\n");
++		ret = PTR_ERR(pcm027_backlight_device);
++		goto err_iounmap;
++	}
++
++	platform_set_drvdata(pd, ioaddr);
++
++	/*
++	 * setup the pwm
++	 */
++	pxa_gpio_mode(GPIO16_PWM0_MD);	/* activate alternate function for this GPIO */
++	pxa_set_cken(CKEN_PWM0, 1);	/* enable clock to this unit */
++
++	writel((PRESCALER | 0x40) & 0x7F, ioaddr);
++	writel(MAX_PERIOD & 0x3FF, ioaddr + 8);	/* period */
++
++	pcm027_backlight_device->props.power = FB_BLANK_UNBLANK;
++	pcm027_backlight_device->props.brightness = MAX_PERIOD;
++	pcm027_backlight_device->props.max_brightness = MAX_PERIOD;
++	backlight_intensity(ioaddr,MAX_PERIOD);
++
++	printk(KERN_INFO "PCM027 Backlight Driver Loaded\n");
++	return 0;
++
++err_iounmap:
++	iounmap(ioaddr);
++err_release:
++	release_mem_region(res->start, res->end - res->start + 1);
++
++	return ret;
++}
++
++/**
++ * pcm027bl_remove - unregister the backlight driver and free all resources
++ * @pd: Device to unregister
++ *
++ * Returns 0 on success
++ **/
++static int pcm027bl_remove(struct platform_device *pd)
++{
++	struct backlight_device *pcm027_backlight_device = to_backlight_device(&pd->dev);
++	void *ioaddr = platform_get_drvdata(pd);
++	struct resource *res;
++
++	backlight_device_unregister(pcm027_backlight_device);
++
++	res = platform_get_resource(pd, IORESOURCE_MEM, 0);
++
++	iounmap(ioaddr);
++	release_mem_region(res->start, res->end - res->start + 1);
++
++	printk(KERN_INFO "PCM027 Backlight Driver Unloaded\n");
++	return 0;
++}
++
++/**
++ * pcm027bl_suspend - switch into power down mode
++ * @pd: Platform device to power down
++ * @state: ignored
++ *
++ * FIXME: Maybe also power down the PWM unit
++ **/
++#ifdef CONFIG_PM
++static int pcm027bl_suspend(struct platform_device *pd, pm_message_t state)
++{
++	if (pcm027_powermode == FB_BLANK_UNBLANK) {
++		backlight_intensity(pd->dev.driver_data, 0); /* shut off the light */
++		pcm027_powermode = FB_BLANK_POWERDOWN;
++	}
++
++	return 0;
++}
++#endif /* CONFIG_PM */
++
++/**
++ * pcm027bl_resume - resume to last settings
++ * @pd: Platform device to resume
++ **/
++#ifdef CONFIG_PM
++static int pcm027bl_resume(struct platform_device * pd)
++{
++	if (pcm027_powermode != FB_BLANK_UNBLANK) {
++		pcm027_powermode = FB_BLANK_UNBLANK;
++		backlight_intensity(pd->dev.driver_data, current_brightness); /* resume to old value */
++	}
++	return 0;
++}
++#else
++
++# define pcm027bl_suspend	NULL
++# define pcm027bl_resume	NULL
++
++#endif /* CONFIG_PM */
++
++static struct platform_driver pcm027bl_driver = {
++	.probe		= pcm027bl_probe,
++	.remove		= pcm027bl_remove,
++	.suspend	= pcm027bl_suspend,
++	.resume		= pcm027bl_resume,
++	.driver		= {
++		.name	= "pcm027-bl",
++	},
++};
++
++static int __init pcm027bl_init(void)
++{
++	return platform_driver_register(&pcm027bl_driver);
++}
++
++static void __exit pcm027bl_exit(void)
++{
++	platform_driver_unregister(&pcm027bl_driver);
++}
++
++module_init (pcm027bl_init);
++module_exit (pcm027bl_exit);
++
++MODULE_AUTHOR("Christian Koerner, Phytec, Juergen Beisert <jbe@pengutronix.de>");
++MODULE_DESCRIPTION("phyCORE-PXA270 Backlight Driver");
++MODULE_LICENSE("GPL");
++
++/* end of file pcm027_bl.c */
+Index: drivers/video/backlight/Kconfig
+===================================================================
+--- drivers/video/backlight/Kconfig.orig
++++ drivers/video/backlight/Kconfig
+@@ -77,3 +77,11 @@ config BACKLIGHT_CARILLO_RANCH
+ 	help
+ 	  If you have a Intel LE80578 (Carillo Ranch) say Y to enable the
+ 	  backlight driver.
++
++config LCD_PCM027
++	tristate "Phytec PCM-027 Backlight Driver"
++	depends on BACKLIGHT_LCD_SUPPORT
++	depends on FB_PXA && MACH_PCM027 && BACKLIGHT_CLASS_DEVICE
++	help
++	  Turn on LCD support for Phytec's PCM270 board
++
