@@ -1,8 +1,0 @@
-config ZONEINFO
-	bool
-	prompt "timezones"
-
-config ZONEINFO_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on ZONEINFO

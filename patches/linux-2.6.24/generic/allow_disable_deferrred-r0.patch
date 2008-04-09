@@ -1,0 +1,17 @@
+---
+ drivers/video/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6.23/drivers/video/Kconfig
+===================================================================
+--- linux-2.6.23.orig/drivers/video/Kconfig	2008-01-21 22:13:51.000000000 +0000
++++ linux-2.6.23/drivers/video/Kconfig	2008-01-21 22:14:00.000000000 +0000
+@@ -147,7 +147,7 @@ config FB_SYS_FOPS
+ config FB_DEFERRED_IO
+ 	bool
+ 	depends on FB
+-	default y
++	default n
+ 
+ config FB_SVGALIB
+ 	tristate

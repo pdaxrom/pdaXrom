@@ -1,0 +1,24 @@
+Subject: Allow more error in bit time calculation
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+
+This patch allows more error in the bit time calculation. which is needed for some mpc52xx boards
+
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+
+---
+ net/can/dev.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6.23-rc6/net/can/dev.c
+===================================================================
+--- linux-2.6.23-rc6.orig/net/can/dev.c
++++ linux-2.6.23-rc6/net/can/dev.c
+@@ -117,7 +117,7 @@ int can_calc_bit_time(struct can_priv *c
+ 					unsigned error = abs(brp_expected*10/
+ 							   (brp*(1+prop_seg+phase_seg1+phase_seg2))-10000);
+ 
+-					if (error > 10 || error > best_error)
++					if (error > 300 || error > best_error)
+ 						continue;
+ 
+ 					if (error == best_error && prop_seg < bit_time->prop_seg)

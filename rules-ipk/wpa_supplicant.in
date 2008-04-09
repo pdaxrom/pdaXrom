@@ -1,8 +1,0 @@
-config WPA_SUPPLICANT
-	bool
-	prompt "wpa_supplicant"
-
-config WPA_SUPPLICANT_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on WPA_SUPPLICANT

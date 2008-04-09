@@ -1,0 +1,239 @@
+ drivers/input/Kconfig  |   15 +++
+ drivers/input/Makefile |    1 
+ drivers/input/power.c  |  194 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 210 insertions(+)
+
+Index: linux/drivers/input/power.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ linux/drivers/input/power.c	2007-12-26 17:48:11.000000000 +0000
+@@ -0,0 +1,194 @@
++/*
++ *  Copyright (c) 2001 "Crazy" James Simmons
++ *  Copyright (c) 2005 Dmitry Torokhov
++ *
++ *  Input driver Power Management.
++ *
++ *  Sponsored by Transvirtual Technology.
++ */
++
++/*
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ *
++ * Should you need to contact me, the author, you can do so by
++ * e-mail - mail your message to <jsimmons@transvirtual.com>.
++ */
++
++#include <linux/module.h>
++#include <linux/input.h>
++#include <linux/slab.h>
++#include <linux/init.h>
++#include <linux/tty.h>
++#include <linux/delay.h>
++#include <linux/pm.h>
++#include <linux/apm-emulation.h>
++
++
++static struct input_handler power_handler;
++//static long suspend_time_pressed;
++//static DEFINE_SPINLOCK(suspend_time_lock);
++
++static void system_power_event(unsigned int keycode)
++{
++//	unsigned long flags;
++
++	switch (keycode) {
++		case KEY_SUSPEND:
++
++			/* ignore jitter */
++	//		spin_lock_irqsave(&suspend_time_lock, flags);
++	//		if (time_before(jiffies, suspend_time_pressed + msecs_to_jiffies(200))) {
++	//			spin_unlock_irqrestore(&suspend_time_lock, flags);
++	//			break;
++	//		}
++	//		suspend_time_pressed = jiffies;
++	//		spin_unlock_irqrestore(&suspend_time_lock, flags);
++
++			apm_queue_event(APM_USER_SUSPEND);
++
++			printk(KERN_INFO "power: Requesting system suspend...\n");
++			break;
++
++		case KEY_POWER:
++			printk(KERN_INFO "power: Shutdown via APM is not supported...\n");
++			break;
++
++		default:
++			break;
++	}
++}
++
++static void device_power_event(struct input_dev *dev, unsigned int keycode)
++{
++	switch (keycode) {
++		case KEY_SUSPEND:
++		case KEY_POWER:
++			//printk(KERN_DEBUG "power.c: device-level power management is not supported yet\n");
++			break;
++
++		default:
++			break;
++	}
++}
++
++static void power_event(struct input_handle *handle, unsigned int type,
++		        unsigned int code, int value)
++{
++	/* only react on key down events */
++	if (value != 1)
++		return;
++
++	switch (type) {
++		case EV_PWR:
++			system_power_event(code);
++			break;
++
++		case EV_KEY:
++			device_power_event(handle->dev, code);
++			break;
++
++		default:
++			break;
++	}
++}
++
++static int power_connect(struct input_handler *handler,
++					  struct input_dev *dev,
++					  const struct input_device_id *id)
++{
++	struct input_handle *handle;
++	int err;
++
++	if (!(handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL)))
++		return -ENOMEM;
++
++	handle->dev = dev;
++	handle->handler = handler;
++	handle->name = "power";
++
++
++	printk(KERN_INFO "power.c: Adding power management to input layer\n");
++
++	handler->private = handle;
++	err = input_register_handle(handle);
++	if (err < 0) {
++		printk(KERN_ERR "power.c: Failed to register inpuit power handler\n");
++		kfree(handle);
++		return err;
++	}
++
++	err = input_open_device(handle);
++	if (err < 0) {
++		printk(KERN_ERR "power.c: Failed to open input power device\n");
++		input_unregister_handle(handle);
++		kfree(handle);
++		return err;
++	}
++
++	return 0;
++}
++
++static void power_disconnect(struct input_handle *handler)
++{
++	struct input_handle *handle = handler->private;
++
++	input_close_device(handle);
++	kfree(handle);
++}
++
++static const struct input_device_id power_ids[] = {
++	{
++		.flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
++		.evbit = {  BIT_MASK(EV_KEY) },
++		.keybit = { [BIT_WORD(KEY_SUSPEND)] =  BIT_MASK(KEY_SUSPEND) }
++	},
++	{
++		.flags = INPUT_DEVICE_ID_MATCH_EVBIT | INPUT_DEVICE_ID_MATCH_KEYBIT,
++		.evbit = { BIT_MASK(EV_KEY) },
++		.keybit = { [BIT_WORD(KEY_POWER)] =  BIT_MASK(KEY_POWER) }
++	},
++	{
++		.flags = INPUT_DEVICE_ID_MATCH_EVBIT,
++		.evbit = { BIT_MASK(EV_PWR) },
++	},
++	{ }, 	/* Terminating entry */
++};
++
++MODULE_DEVICE_TABLE(input, power_ids);
++
++static struct input_handler power_handler = {
++	.event =	power_event,
++	.connect =	power_connect,
++	.disconnect =	power_disconnect,
++	.name =		"power",
++	.id_table =	power_ids,
++};
++
++static int __init power_init(void)
++{
++	return input_register_handler(&power_handler);
++}
++
++static void __exit power_exit(void)
++{
++	input_unregister_handler(&power_handler);
++}
++
++module_init(power_init);
++module_exit(power_exit);
++
++MODULE_AUTHOR("James Simmons <jsimmons@transvirtual.com>");
++MODULE_DESCRIPTION("Input Power Management driver");
++MODULE_LICENSE("GPL");
+Index: linux/drivers/input/Kconfig
+===================================================================
+--- linux.orig/drivers/input/Kconfig	2007-11-05 21:53:53.000000000 +0000
++++ linux/drivers/input/Kconfig	2007-12-26 14:29:27.000000000 +0000
+@@ -136,6 +136,21 @@ config INPUT_EVBUG
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called evbug.
++	  
++config INPUT_POWER
++	tristate "Power management interface"
++	depends on INPUT && APM_EMULATION
++	---help---
++	  Say Y here if you have an input device (keyboard) that has
++	  sleep/power keys and you would like use these keys to
++	  initiate power management operations. Note that on many
++	  machines power and sleep keys are not part of the input
++	  system and only accessible when using ACPI button driver.
++
++	  If unsure, say N.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called power.
+ 
+ comment "Input Device Drivers"
+ 
+Index: linux/drivers/input/Makefile
+===================================================================
+--- linux.orig/drivers/input/Makefile	2007-11-05 21:53:53.000000000 +0000
++++ linux/drivers/input/Makefile	2007-12-26 14:00:21.000000000 +0000
+@@ -22,3 +22,4 @@ obj-$(CONFIG_INPUT_TABLET)	+= tablet/
+ obj-$(CONFIG_INPUT_TOUCHSCREEN)	+= touchscreen/
+ obj-$(CONFIG_INPUT_MISC)	+= misc/
+ 
++obj-$(CONFIG_INPUT_POWER)	+= power.o

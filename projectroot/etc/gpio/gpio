@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# init GPIO framework
+#
+# available GPIO
+# - 19 to control motor's direction
+#
+
+usage(){
+   echo "usage: $0 {start|stop|status}"
+}
+
+# FIXME: test if already done
+start_proc(){
+	echo 19:out:lo > /sys/class/gpio/map_gpio
+}
+
+stop_proc(){
+	echo 19 > /sys/class/gpio/unmap_gpio
+}
+
+statuc_proc(){
+	cat /proc/gpio
+}
+
+case "$1" in
+	start)
+		start_proc
+		;;
+	stop)
+		stop_proc
+		;;
+	status)
+		status_proc
+		;;
+	*)
+		usage
+		exit 1
+		;;
+esac
+
+exit 0

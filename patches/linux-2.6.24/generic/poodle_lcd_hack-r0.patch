@@ -1,0 +1,25 @@
+---
+ arch/arm/mach-pxa/poodle.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+Index: linux-2.6.23/arch/arm/mach-pxa/poodle.c
+===================================================================
+--- linux-2.6.23.orig/arch/arm/mach-pxa/poodle.c	2007-12-28 01:21:10.000000000 +0000
++++ linux-2.6.23/arch/arm/mach-pxa/poodle.c	2007-12-28 01:21:19.000000000 +0000
+@@ -48,6 +48,8 @@
+ #include "devices.h"
+ #include "sharpsl.h"
+ 
++extern void locomolcd_power(int on);
++
+ static struct resource poodle_scoop_resources[] = {
+ 	[0] = {
+ 		.start		= 0x10800000,
+@@ -316,6 +318,7 @@ static struct pxafb_mach_info poodle_fb_
+ 	.num_modes	= 1,
+ 	.lccr0		= LCCR0_Act | LCCR0_Sngl | LCCR0_Color,
+ 	.lccr3		= 0,
++	.pxafb_lcd_power = locomolcd_power,
+ };
+ 
+ static struct platform_device *devices[] __initdata = {

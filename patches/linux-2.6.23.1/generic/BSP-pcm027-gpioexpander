@@ -1,0 +1,148 @@
+---
+ arch/arm/mach-pxa/pcm027-gpio-expander.c |  139 +++++++++++++++++++++++++++++++
+ 1 file changed, 139 insertions(+)
+
+Index: arch/arm/mach-pxa/pcm027-gpio-expander.c
+===================================================================
+--- /dev/null
++++ arch/arm/mach-pxa/pcm027-gpio-expander.c
+@@ -0,0 +1,139 @@
++/*
++ *  linux/arch/arm/mach-pxa/pcm027-gpio-expander.c
++ *
++ *  Support for Phytec's GPIO Expansion Board
++ *
++ *  Author:	Juergen Kilb
++ *  Created:	April 05, 2005
++ *  Copyright:	Phytec Messtechnik GmbH
++ *  e-Mail:	armlinux@phytec.de
++ *
++ *  based on Intel Mainstone Board
++ *
++ *  Modified for kernel 2.6.15 by Juergen Beisert @ Pengutronix (jbe@pengutronix.de)
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2 as
++ *  published by the Free Software Foundation.
++ */
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++#include <asm/arch/pcm027.h>
++
++/**
++ * gpio_event_resources - event generators
++ *
++ * GPIO91: light sensor
++ * GPIO14: key#1
++ * GPIO86: key#2
++ * GPIO87: key#3
++ **/
++static struct resource gpio_event_resources[] = {
++	[0]= {
++		.start	= IRQ_GPIO(91),
++		.end	= IRQ_GPIO(91),
++		.flags	= IORESOURCE_IRQ,
++	},
++	[1]= {
++		.start	= IRQ_GPIO(14),
++		.end	= IRQ_GPIO(14),
++		.flags	= IORESOURCE_IRQ,
++	},
++	[2]= {
++		.start	= IRQ_GPIO(86),
++		.end	= IRQ_GPIO(86),
++		.flags	= IORESOURCE_IRQ,
++	},
++	[3]= {
++		.start	= IRQ_GPIO(87),
++		.end	= IRQ_GPIO(87),
++		.flags	= IORESOURCE_IRQ,
++	}
++};
++
++static struct platform_device gpio_event_device = {
++	.name		= "pxa27x-gpioevent",
++	.id		= 1,
++	.num_resources	= ARRAY_SIZE(gpio_event_resources),
++	.resource	= gpio_event_resources,
++};
++
++/**
++ * setup_gpio - setup general GPIOs
++ **/
++static void __init setup_gpio(void)
++{
++/*
++ * In this case there are some pins dedicated to special functions.
++ */
++	pxa_gpio_mode(19 | GPIO_OUT);	/* used as motor direction control out */
++}
++
++/*
++ * setup_gpio_event - setup some GPIOs as input for simple change notification
++ *
++ * CAUTION: Must be in sync with the gpio_event_?_device structures, because
++ * the gpio_event driver rejects all GPIO not already configured as interrupt sources
++ */
++static void __init setup_gpio_event(void)
++{
++/*
++ * In this case there are some pins dedicated to special functions.
++ */
++	pxa_gpio_mode(91 | GPIO_IN);	/* used as ligh sensor interrupt in */
++	pxa_gpio_mode(14 | GPIO_IN);	/* used as key 1 input */
++	pxa_gpio_mode(86 | GPIO_IN);	/* used as key 2 input */
++	pxa_gpio_mode(87 | GPIO_IN);	/* used as key 3 input */
++}
++
++/**
++ * pwm_1_resources - This pwm controls the motor speed
++ */
++static struct resource pwm_1_resources[] = {
++	{
++		.start	= 0x40C00000,
++		.end	= 0x40C00000+0x0F,
++		.flags	= IORESOURCE_MEM,
++	}
++};
++
++static struct platform_device pwm_1_device = {
++	.name		= "pxa27x-pwm",
++	.id		= 1,
++	.resource	= pwm_1_resources,
++	.num_resources	= ARRAY_SIZE(pwm_1_resources),
++};
++
++static struct platform_device *devices[] __initdata = {
++	&gpio_event_device,
++	&pwm_1_device,
++};
++
++/**
++ * pcm027_gpio_expander_init - system init for gpio expander board using
++ *
++ * Add platform devices present on gpio expander board and init
++ * them from CPU side as far as required to use them later on
++ **/
++static int __init pcm027_gpio_expander_init(void)
++{
++	/*
++	 * Enable some PWM pins if not already done
++	 * by the boot loader
++	 */
++	pxa_gpio_mode(GPIO17_PWM1_MD);	/* activate alternate function for this GPIO */
++	pxa_set_cken(CKEN_PWM1, 1);	/* enable clock to this unit FIXME: should be part of the power management */
++
++	setup_gpio_event();
++
++	setup_gpio();
++
++	platform_add_devices(devices, ARRAY_SIZE(devices));
++
++	return 0;
++}
++
++arch_initcall(pcm027_gpio_expander_init);

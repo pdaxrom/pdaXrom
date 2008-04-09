@@ -1,0 +1,25 @@
+Subject: ac97: add support for master left inv switch
+From: Juergen Beisert <j.beisert@pengutronix.de>
+
+This patch adds support for Master Left Inv Switch.
+At least required to drive the mono speaker on the PXA270 platfrom
+
+Signed-off-by: Juergen Beisert <j.beisert@pengutronix.de>
+
+---
+
+ sound/pci/ac97/ac97_patch.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: sound/pci/ac97/ac97_patch.c
+===================================================================
+--- sound/pci/ac97/ac97_patch.c.orig
++++ sound/pci/ac97/ac97_patch.c
+@@ -587,6 +587,7 @@ AC97_SINGLE("Mic 1 Volume", AC97_MIC, 8,
+ AC97_SINGLE("Mic 2 Volume", AC97_MIC, 0, 31, 1),
+ AC97_SINGLE("Mic 20dB Boost Switch", AC97_MIC, 7, 1, 0),
+ 
++AC97_SINGLE("Master Left Inv Switch", AC97_MASTER, 6, 1, 0),
+ AC97_SINGLE("Master ZC Switch", AC97_MASTER, 7, 1, 0),
+ AC97_SINGLE("Headphone ZC Switch", AC97_HEADPHONE, 7, 1, 0),
+ AC97_SINGLE("Mono ZC Switch", AC97_MASTER_MONO, 7, 1, 0),

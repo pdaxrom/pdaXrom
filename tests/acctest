@@ -1,0 +1,344 @@
+#!/bin/bash
+# This is a Pengutronix automated remote test script
+# It has been customized to verify a
+# Phytec PCM-027 on a PCM-990
+
+test -f ${PTXDIST_WORKSPACE}/local-host/share/pelts/lib/libptxdisttest.sh
+if [ $? = 0 ]
+then
+        source ${PTXDIST_WORKSPACE}/local-host/share/pelts/lib/libptxdisttest.sh
+else
+        echo ${PTXDIST_WORKSPACE}/local-host/share/pelts/lib/libptxdisttest.sh >&2
+        echo not found. Is an appropriate  version of \'pelts\' installed? >&2
+        exit 1
+fi
+
+#
+# sanity checks
+#
+
+checking "for boardsetup file"
+test -f ${PTXDIST_WORKSPACE}/boardsetup/boardsetup
+result fatal
+
+. ${PTXDIST_WORKSPACE}/boardsetup/boardsetup
+
+#
+# test if we have a ptxconfig file in the project
+#
+
+checking "if ptxconfig exists"
+test -f ${PTXDIST_WORKSPACE}/ptxconfig
+result
+
+#
+# do we have network access to the target?
+#
+
+checking "response to icmp ping requests"
+ping -q -n -c1 ${PTXCONF_BOARDSETUP_TARGETIP}
+result fatal
+
+#
+# check for SSH server running on target, also
+# if dropbear is running on the target rather than sshd, we can't do automted tests,
+# due to a required password entry on every connection.
+#
+
+ret=$(curl -s -m 1 "telnet://${PTXCONF_BOARDSETUP_TARGETIP}:22")
+if [ $? = 7 ]
+then
+        echo >&2
+        echo There is no SSH server reachable on the target. >&2
+        echo Cannot run automated tests, exiting. >&2
+        exit 1
+fi
+echo "$ret" | grep dropbear
+if [ $? = 0 ]
+then
+        echo >&2
+        echo Sorry, dropbear is running as SSH server on the target. >&2
+        echo Cannot run automated tests, because of password entry difficulty. >&2
+        echo Exiting. >&2
+        exit 1
+fi
+
+#
+# no need to continue if vital things are missing
+#
+
+all_on_board
+
+
+#
+# first, acquire the time to enable a realtimeclock clockspeed judgment at the end
+#
+
+startingtimethere=$(remote 'date +%s')
+startingtimehere=$(date +%s)
+
+
+#
+# check flash partitions [EDITME]
+#
+
+# Only check for first two partitions. This already proves that we parsed the commandline
+# partition tables correctly with the correct eraseblock size.
+
+checking "mtd0 layout"
+remote_compare 'grep "^mtd0" /proc/mtd' "mtd0: 00040000 00040000 \"u-boot\""
+result
+
+checking "mtd1 layout"
+remote_compare 'grep "^mtd1" /proc/mtd' "mtd1: 00400000 00040000 \"system\""
+result
+
+checking "mtd2 layout"
+remote_compare 'grep "^mtd2" /proc/mtd' "mtd2: 01bc0000 00040000 \"root\""
+result
+
+#
+# check memory
+#
+
+ret=$(remote 'grep "^MemTotal" /proc/meminfo | sed -e "s/^MemTotal: *//g"')
+checking "memory: $ret"
+test "${ret: -2}" = "kB"
+result
+
+#
+# check if root filesystem is jffs2
+#
+
+checking "if root filesystem is jffs2 and rw"
+remote_compare 'mount | grep "/dev/root"' '/dev/root on / type jffs2 (rw)'
+result
+
+#
+# check if vital processes are running, err sleeping [EDITME]
+#
+
+for process in \
+	pure-ftpd \
+	sshd \
+	udevd
+do
+	checking "if process $process is active"
+	remote_assure_process "$process"
+	result
+done
+
+#
+# check for vital files and devices [EDITME]
+#
+
+for device in \
+	/dev/ttyS0 \
+	/dev/ttyS1 \
+	/dev/rtc0 \
+	/dev/zero \
+	/dev/null \
+	/dev/urandom
+do
+	checking "if device $device exists"
+	remote_file "$device" character
+	result
+done
+
+for device in \
+	/dev/ttyPSC0 \
+	/dev/ttyPSC1
+do
+	checking "that device $device does not exist"
+	remote_file "$device" exists
+	test $? = 1
+	result
+done
+
+for command in \
+	/bin/busybox \
+	/bin/cp \
+	/bin/dd \
+	/bin/lsmod \
+	/bin/memedit \
+	/bin/mount \
+	/bin/ping \
+	/bin/ps \
+	/usr/sbin/systool \
+	/bin/umount \
+	/sbin/insmod \
+	/sbin/rmmod \
+	/sbin/modinfo \
+	/sbin/modprobe \
+	/sbin/flash_eraseall
+do
+	checking "if command $command is executable"
+	remote_file "$command" executable
+	result
+done
+
+#
+# check that "Kernel announces correct kernel release number" [EDITME]
+#
+
+checking "kernel release number"
+remote_compare 'uname -a | cut -f 3 -d" "' '2.6.23.1-rt5'
+result
+
+#
+# check that "OSELAS BSP announces correct BSP release information" [EDITME]
+#
+
+checking "BSP release number"
+ret=$(remote 'grep OSELAS /etc/init.d/banner')
+test "$(echo $ret | grep -o "phyCORE-PXA270")" = "phyCORE-PXA270" \
+-a   "$(echo $ret | grep -o "PTXdist-.\..\..")" = "PTXdist-1.0.1"
+result
+
+#
+# check network services [EDITME]
+#
+
+checking "ports by running nmap"
+nmap=$(nmap ${PTXCONF_BOARDSETUP_TARGETIP})
+result
+checking "ftp port is reachable"
+test "$(echo "$nmap" | grep "^21/" | sed 's/  */ /g')" = "21/tcp open ftp"
+result
+checking "ssh port is reachable"
+test "$(echo "$nmap" | grep "^22/" | sed 's/  */ /g')" = "22/tcp open ssh"
+result
+checking "telnet port is reachable"
+test "$(echo "$nmap" | grep "^23/" | sed 's/  */ /g')" = "23/tcp open telnet"
+result
+checking "http port is reachable"
+test "$(echo "$nmap" | grep "^80/" | sed 's/  */ /g')" = "80/tcp open http"
+result
+
+#
+# check network reliability
+#
+checking "for netcat on target"
+remote_file "/bin/nc" executable
+result fatal
+repeats=3  # [EDITME], relevant for overall test duration
+ddoptions="bs=10M count=1"
+randomdata=$(mktemp) || exit 1
+dd if=/dev/urandom of=$randomdata $ddoptions 2> /dev/null
+correctmd5=($(md5sum $randomdata))
+for i in `seq 1 $repeats`;
+do
+  checking "network reliability, pass $i of $repeats"
+  remote "dd if=/dev/stdout $ddoptions | nc -l -p 12222 > /dev/stdin &"&
+  sleep 1
+  receivedmd5=($(nc -q 3 ${PTXCONF_BOARDSETUP_TARGETIP} 12222 < $randomdata | md5sum))
+  test ${receivedmd5[0]} = ${correctmd5[0]}
+  result
+done
+rm -f $randomdata
+
+#
+# check network throughput with iperf
+#
+checking "for iperf on target"
+remote_file "/usr/bin/iperf" executable
+result fatal
+checking "for running iperf server on this machine"
+curl -s -m 1 "telnet://${PTXCONF_BOARDSETUP_SERVERIP}:5001"
+if [ $? = 28 ] # iperf is running on this machine
+then
+  result
+  duration=10     # [EDITME], relevant for overall test duration
+  threshold=30000 # [EDITME], how many kbits/s do we expect for a PASS
+  checking "network throughput averaged over $duration seconds"
+  ret=$(remote "iperf -c ${PTXCONF_BOARDSETUP_SERVERIP} -d -t $duration -f k")
+  upstream_id=$(echo "$ret" | grep ".* connected with .* 5001$" | sed 's/^\[\(.*\)\].*/\1/')
+  downstream_id=$(echo "$ret" | grep "port 5001 connected with" | sed 's/^\[\(.*\)\].*/\1/')
+  upstreamkbits=$(echo "$ret" | grep "^\[$upstream_id\]  " | sed 's/  */ /g' | cut -f7 -d" ")
+  downstreamkbits=$(echo "$ret" | grep "^\[$downstream_id\]  " | sed 's/  */ /g' | cut -f7 -d" ")
+  write_to_log "Upstream (DUT to server):   $upstreamkbits kbits/s"
+  write_to_log "Downstream (server to DUT): $downstreamkbits kbits/s"
+  test $upstreamkbits -ge $threshold -a $downstreamkbits -ge $threshold
+  result
+else
+  write_to_log "There is no iperf server running on this machine at ${PTXCONF_BOARDSETUP_SERVERIP}!"
+  false
+  result
+fi
+
+#
+# check for a running busybox multi-call binary
+#
+
+checking "for busybox"
+ret=$(remote 'busybox | head -n1')
+test "${ret:0:7}" = "BusyBox"
+result
+
+#
+# CAN tests
+#
+for baudrate in 125 250 500 1000
+# for baudrate in  10 20 50 100 125 250 500 800 1000
+do
+  # cansend -> cable -> candump
+  checking "CAN external loopback transfer at $baudrate kbit/s"
+  remote 'rm -f cantest.log'
+  remote 'candump -d -o cantest.log can1'
+  remote "canconfig can0 baudrate $baudrate"
+  remote "canconfig can1 baudrate $baudrate"
+  ret=$(remote 'cansend can0 0x43 0x41 0x4e 0x2d 0x54 0x45 0x53 0x54 2>&1')
+  cansendretval=$?
+  echo "$ret" | grep "write: No buffer space available"
+  if [ $? = 0 ]
+  then
+    write_to_log "write: No buffer space available"
+    false
+    result
+  else
+    remote 'kill -SIGINT $(pidof candump)'
+    remote 'grep "<0x001> \[8\] 43 41 4e 2d 54 45 53 54" cantest.log'
+    grepretval=$?
+    test $cansendretval = 0 -a $grepretval = 0
+    result
+  fi
+  # bulk cansend
+  checking "CAN queue filling at $baudrate kbit/s, 15000 frames"
+  ret=$(remote "cansend can0 0x43 0x41 0x4e 0x2d 0x54 0x45 0x53 0x54 --loop 15000 2>&1")
+  cansendretval=$?
+  echo "$ret" | grep "write: No buffer space available"
+  if [ $? = 0 ]
+  then
+    write_to_log "write: No buffer space available"
+    false
+    result
+  else
+    test $cansendretval = 0
+    result
+  fi
+done
+remote 'rm cantest.log'
+
+
+#
+# at last, remember that we wanted to compare the two realtime clocks
+#
+
+endingtimethere=$(remote 'date +%s')
+endingtimehere=$(date +%s)
+elapsedtimethere=$(($endingtimethere-$startingtimethere))
+elapsedtimehere=$(($endingtimehere-$startingtimehere))
+checking "realtime clock retardation over a period of $elapsedtimehere seconds"
+test $(($elapsedtimehere-$elapsedtimethere)) -le 2
+result
+
+echo -n All tests completed. >&2
+if [ $fail_count -gt 0 ]
+then
+	printf "%8b" "${RED} $fail_count TEST(S) FAILED.${NC}\n" >&2
+	exit 1
+else
+	echo >&2
+	exit 0
+fi
+

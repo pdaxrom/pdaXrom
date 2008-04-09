@@ -1,0 +1,5 @@
+config PXACAMERA
+	prompt "PXA-Quickcam example program"
+	bool
+	default y
+

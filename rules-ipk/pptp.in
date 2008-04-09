@@ -1,8 +1,0 @@
-config PPTP
-	bool
-	prompt "pptp"
-
-config PPTP_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on PPTP

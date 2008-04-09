@@ -1,8 +1,0 @@
-config VPND
-	bool
-	prompt "vpnd"
-
-config VPND_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on VPND

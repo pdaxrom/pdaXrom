@@ -1,8 +1,0 @@
-config SQLITEBROWSER
-	bool
-	prompt "sqlite browser"
-
-config SQLITEBROWSER_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on SQLITEBROWSER

@@ -1,8 +1,0 @@
-config LYNX
-	bool
-	prompt "lynx"
-
-config LYNX_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on LYNX

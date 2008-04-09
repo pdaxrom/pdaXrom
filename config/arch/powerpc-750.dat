@@ -1,4 +1,0 @@
-TARGET=powerpc-750-linux-gnu
-GCC_EXTRA_CONFIG=--with-cpu=750 --enable-cxx-flags=-mcpu=750
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
-TARGET_OPT_CFLAGS=-O3 -fomit-frame-pointer -ffast-math -finline-functions -frerun-loop-opt -frerun-cse-after-loop

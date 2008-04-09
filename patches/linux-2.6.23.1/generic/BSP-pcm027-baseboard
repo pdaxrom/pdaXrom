@@ -1,0 +1,352 @@
+---
+ arch/arm/mach-pxa/pcm027-baseboard.c |  343 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 343 insertions(+)
+
+Index: arch/arm/mach-pxa/pcm027-baseboard.c
+===================================================================
+--- /dev/null
++++ arch/arm/mach-pxa/pcm027-baseboard.c
+@@ -0,0 +1,343 @@
++/*
++ *  linux/arch/arm/mach-pxa/pcm027-baseboard.c
++ *
++ *  Support for the Phytec phyCORE-PXA270 Development Platform.
++ *
++ *  Author:	Juergen Kilb
++ *  Created:	April 05, 2005
++ *  Copyright:	Phytec Messtechnik GmbH
++ *  e-Mail:	armlinux@phytec.de
++ *
++ *  based on Intel Mainstone Board
++ *
++ *  Modified for kernel 2.6.15 by Juergen Beisert @ Pengutronix (jbe@pengutronix.de)
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2 as
++ *  published by the Free Software Foundation.
++ */
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/fb.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++#include <asm/arch/pcm027.h>
++#include <asm/arch/pxafb.h>
++#include <asm/arch/mmc.h>
++#include <asm/arch/ohci.h>
++#include <asm/arch/pxa-regs.h>
++#if defined(CONFIG_VIDEO_PXA27X) || defined(CONFIG_VIDEO_PXA27X_MODULE)
++#include <asm/arch/pxa_cif.h>
++#endif
++
++/*
++ * pcm027_backlight_power - control power supply to the backlight
++ * @on: 0 = switch off, 1 = switch on
++ *
++ * Called by the pxafb driver
++ */
++static void pcm027_backlight_power(int on)
++{
++	if (on) {
++		pxa_gpio_mode(GPIO16_PWM0_MD);
++		PWM_CTRL0   = 0x3F;
++		PWM_PWDUTY0 = 0xff;
++		PWM_PERVAL0 = 0xff;
++		pxa_set_cken(CKEN_PWM0, 1);
++	} else {
++		pxa_set_cken(CKEN_PWM0, 0);
++		PWM_CTRL0   = 0x00;
++		PWM_PWDUTY0 = 0x00;
++		PWM_PERVAL0 = 0x3FF;
++	}
++}
++
++/*
++ * pcm027_lcd_power - control power supply to the LCD
++ * @on: 0 = switch off, 1 = switch on
++ *
++ * Called by the pxafb driver
++ */
++static void pcm027_lcd_power(int on, struct fb_var_screeninfo *var)
++{
++	if (on) {
++		/* enable LCD-Latches
++		 * power on LCD
++		 */
++		__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG3) =
++			PCM027_CTRL_LCDPWR + PCM027_CTRL_LCDON;
++	} else {
++		/* disable LCD-Latches
++		 * power off LCD
++		 */
++		__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG3) = 0x00;
++	}
++}
++
++#ifdef CONFIG_PCM027_DISPLAY_SHARP
++static struct pxafb_mode_info fb_info_sharp_lq084v1dg21 = {
++	.pixclock		= 28000,
++	.xres			= 640,
++	.yres			= 480,
++	.bpp			= 16,
++	.hsync_len		= 20,
++	.left_margin		= 103,
++	.right_margin		= 47,
++	.vsync_len		= 6,
++	.upper_margin		= 28,
++	.lower_margin		= 5,
++	.sync			= 0,
++};
++
++static struct pxafb_mach_info pcm027_fbinfo __initdata = {
++	.modes			= &fb_info_sharp_lq084v1dg21,
++	.num_modes		= 1,
++	.lccr0			= LCCR0_PAS,
++	.lccr3			= LCCR3_PCP,
++	.pxafb_backlight_power	= pcm027_backlight_power,
++	.pxafb_lcd_power	= pcm027_lcd_power,
++};
++#endif
++
++#ifdef CONFIG_PCM027_DISPLAY_NEC
++struct pxafb_mode_info fb_info_nec_nl6448bc20_18d = {
++	.pixclock		= 39720,
++	.xres			= 640,
++	.yres			= 480,
++	.bpp			= 16,
++	.hsync_len		= 32,
++	.left_margin		= 16,
++	.right_margin		= 48,
++	.vsync_len		= 2,
++	.upper_margin		= 12,
++	.lower_margin		= 17,
++	.sync			= 0,
++};
++
++static struct pxafb_mach_info pcm027_fbinfo __initdata = {
++	.modes			= &fb_info_nec_nl6448bc20_18d,
++	.num_modes		= 1,
++	.lccr0			= LCCR0_Act,
++	.lccr3			= LCCR3_PixFlEdg,
++	.pxafb_backlight_power	= pcm027_backlight_power,
++	.pxafb_lcd_power	= pcm027_lcd_power,
++};
++#endif
++
++/**
++ * backlight_pwm - PWM based brightness control
++ *
++ * PWM#0 is used for this purpose
++ **/
++static struct resource backlight_pwm[] = {
++	{
++		.start	= 0x40B00000,
++		.end	= 0x40B00000+0x0F,
++		.flags	= IORESOURCE_MEM,
++	}
++};
++
++/**
++ * backlight_device - control the backlight brightness
++ *
++ * Used by backlight and LCD generic support
++ **/
++static struct platform_device backlight_device = {
++	.name		= "pcm027-bl",
++	.id		= 0,
++	.resource	= backlight_pwm,
++	.num_resources	= ARRAY_SIZE(backlight_pwm),
++};
++
++static struct platform_device led_device = {
++	.name		= "pcm027-baseboard-led",
++	.id		= 0,
++};
++
++static struct pxamci_platform_data pcm027_mci_platform_data;
++
++static int pcm027_mci_init(struct device *dev, irq_handler_t mci_detect_int, void *data)
++{
++	int err;
++
++	pcm027_mci_platform_data.detect_delay = msecs_to_jiffies(250);
++
++	/*
++	 * setup GPIO for PXA27x MMC controller
++	 */
++	pxa_gpio_mode(GPIO32_MMCCLK_MD);
++	pxa_gpio_mode(GPIO112_MMCCMD_MD);
++	pxa_gpio_mode(GPIO92_MMCDAT0_MD);
++	pxa_gpio_mode(GPIO109_MMCDAT1_MD);
++	pxa_gpio_mode(GPIO110_MMCDAT2_MD);
++	pxa_gpio_mode(GPIO111_MMCDAT3_MD);
++
++	err = request_irq(PCM027_MMCDET_IRQ, mci_detect_int, IRQF_DISABLED,
++			     "MMC card detect", data);
++	if (err) {
++		printk(KERN_ERR "pcm027_mci_init: MMC/SD: can't request MMC card detect IRQ\n");
++		return -1;
++	}
++
++	return 0;
++}
++
++static void pcm027_mci_setpower(struct device *dev, unsigned int vdd)
++{
++	struct pxamci_platform_data* p_d = dev->platform_data;
++
++	if (( 1 << vdd) & p_d->ocr_mask) {
++		printk(KERN_DEBUG "%s: on\n", __FUNCTION__);
++		__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG5) = 1;//PCM027_CTRL_MMC2PWR;
++	} else {
++		printk(KERN_DEBUG "%s: off\n", __FUNCTION__);
++		__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG5) = ~PCM027_CTRL_MMC2PWR;
++	}
++}
++
++static void pcm027_mci_exit(struct device *dev, void *data)
++{
++	free_irq(PCM027_MMCDET_IRQ, data);
++}
++
++static struct pxamci_platform_data pcm027_mci_platform_data = {
++	.ocr_mask	= MMC_VDD_32_33|MMC_VDD_33_34,
++	.init 		= pcm027_mci_init,
++	.setpower 	= pcm027_mci_setpower,
++	.exit		= pcm027_mci_exit,
++};
++
++/**
++ * pcm027_ohci_init - init OHCI hardware to work with
++ *
++ * Only USB port 1 (host only) is connected
++ *
++ * GPIO88 (USBHPWR#1): overcurrent in, overcurrent when low
++ * GPIO89 (USBHPEN#1): power-on out, on when low
++ */
++static int pcm027_ohci_init(struct device *dev)
++{
++	pxa_gpio_mode(PCM_027_USB_OVERCURRENT);
++	pxa_gpio_mode(PCM_027_USB_PWR_EN);
++	/*
++	 * disable USB port 2 and 3
++	 * power sense is active low
++	 */
++	UHCHR = ((UHCHR) | UHCHR_PCPL | UHCHR_PSPL | UHCHR_SSEP2 | UHCHR_SSEP3) &
++		~(UHCHR_SSEP1 | UHCHR_SSE);
++	/*
++	 * wait 10ms after Power on
++	 * overcurrent per port
++	 * power switch per port
++	 */
++	UHCRHDA = (5<<24) | (1<<11) | (1<<8);	/* FIXME: Required? */
++
++	return 0;
++}
++
++static struct pxaohci_platform_data pcm027_ohci_platform_data = {
++	.port_mode	= PMM_PERPORT_MODE,	/* FIXME: Correct */
++	.init			= pcm027_ohci_init,
++	.exit			= NULL,
++};
++
++/*
++ * PXA27x Camera specific stuff
++ */
++#if defined(CONFIG_VIDEO_PXA27X) || defined(CONFIG_VIDEO_PXA27X_MODULE)
++static int pcm027_pxacamera_init(struct device *dev)
++{
++	printk("%s\n",__FUNCTION__);
++	pxa_gpio_mode(GPIO98_CIF_DD0_MD);
++	pxa_gpio_mode(GPIO105_CIF_DD1_MD);
++	pxa_gpio_mode(GPIO104_CIF_DD2_MD);
++	pxa_gpio_mode(GPIO103_CIF_DD3_MD);
++	pxa_gpio_mode(GPIO95_CIF_DD4_MD);
++	pxa_gpio_mode(GPIO94_CIF_DD5_MD);
++	pxa_gpio_mode(GPIO93_CIF_DD6_MD);
++	pxa_gpio_mode(GPIO108_CIF_DD7_MD);
++	pxa_gpio_mode(GPIO107_CIF_DD8_MD);
++	pxa_gpio_mode(GPIO106_CIF_DD9_MD);
++	pxa_gpio_mode(GPIO42_CIF_MCLK_MD);
++	pxa_gpio_mode(GPIO45_CIF_PCLK_MD);
++	pxa_gpio_mode(GPIO43_CIF_FV_MD);
++	pxa_gpio_mode(GPIO44_CIF_LV_MD);
++
++	pxa_set_cken(CKEN_CAMERA, 1);
++	CICR4 = CICR4_MCLK_EN | 4;
++
++	return 0;
++}
++
++struct pxacamera_platform_data pcm027_pxacamera_platform_data = {
++	.init	= pcm027_pxacamera_init,
++	.cicr2	= CICR2_FSW(0) | CICR2_BFPW(0) | CICR2_HSW(0) |
++		  CICR2_ELW(0) | CICR2_BLW(0),
++	.cicr3	= CICR3_VSW(0) | CICR3_EFW(0) |	CICR3_BFW(0),
++	.cicr4	= CICR4_PCLK_EN | CICR4_PCP | CICR4_MCLK_EN,
++	.flags  = PXACIF_MASTER,
++	.mclk_10khz = 2000,
++};
++
++static struct resource pxacamera_resources[] = {
++	[0] = {
++		.start	= 0x50000000,
++		.end	= 0x50000000 + 0xfff,
++		.flags	= IORESOURCE_MEM,
++	},
++	[1] = {
++		.start	= IRQ_CAMERA,
++		.end	= IRQ_CAMERA,
++		.flags	= IORESOURCE_IRQ,
++	},
++};
++
++static u64 pxacamera_dmamask = 0xffffffffUL;
++
++static struct platform_device pxacamera_device = {
++	.name		= "pxa2xx-camera",
++	.id		= -1,
++	.dev		= {
++		.dma_mask      		= &pxacamera_dmamask,
++		.coherent_dma_mask	= 0xffffffff,
++	},
++	.num_resources	= ARRAY_SIZE(pxacamera_resources),
++	.resource	= pxacamera_resources,
++};
++
++void __init pxa_set_camera_info(struct pxacamera_platform_data *info)
++{
++	pxacamera_device.dev.platform_data = info;
++}
++#endif /* CONFIG_VIDEO_PXA27X ||CONFIG_VIDEO_PXA27X_MODULE */
++
++/**
++ * pcm027_baseboard_init - system init for baseboard using
++ *
++ * Add platform devices present on this board and init
++ * them from CPU side as far as required to use them later on
++ **/
++static int __init pcm027_baseboard_init(void)
++{
++	platform_device_register(&backlight_device);
++	platform_device_register(&led_device);
++
++#ifndef CONFIG_PCM027_DISPLAY_NONE
++	set_pxa_fb_info(&pcm027_fbinfo);
++#endif
++
++	/* MMC */
++	pxa_set_mci_info(&pcm027_mci_platform_data);
++	pxa_set_ohci_info(&pcm027_ohci_platform_data);
++
++#if defined(CONFIG_VIDEO_PXA27X) || defined(CONFIG_VIDEO_PXA27X_MODULE)
++	pcm027_pxacamera_init(NULL);
++	pxa_set_camera_info(&pcm027_pxacamera_platform_data);
++	platform_device_register(&pxacamera_device);
++#endif
++
++	return 0;
++}
++
++arch_initcall(pcm027_baseboard_init);

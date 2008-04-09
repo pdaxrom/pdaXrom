@@ -1,8 +1,0 @@
-config @PACKET@
-	bool
-	prompt "@packet@"
-
-config @PACKET@_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on @PACKET@

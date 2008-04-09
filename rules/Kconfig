@@ -1,0 +1,265 @@
+#
+# config/Kconfig: Main menu structure definition
+# Copyright (C) Robert Schwebel <r.schwebel@pengutronix.de> 2002, 2003, 2004, 2005, 2006
+#
+
+source "rules/ptxdist-version.in"
+
+comment "------------------------------------"
+
+menu "PTXdist Config, Architecture  "
+source "rules/experimental.in"
+source "rules/target.in"
+endmenu
+
+menu "Cross Compilation Tools       "
+source "rules/crosstools.in"
+endmenu
+
+menu "Host Side Tools               "
+source "rules/hosttools.in"
+endmenu
+
+menu "Debugging Tools               "
+source "rules/debug.in"
+endmenu
+
+comment "------------------------------------"
+
+menu "Image Creation Options        "
+source "rules/images.in"
+endmenu
+
+menu "Root Filesystem               "
+source "rules/rootfs.in"
+source "rules/rootfs_init_d_files.in"
+source "rules/rootfs_rc_d_links.in"
+source "rules/rootfs_configfiles.in"
+endmenu
+
+menu "Core (Kernel, libc, locales)  "
+source "rules/klibc.in"
+source "rules/kernel.in"
+source "rules/dtc.in"
+source "rules/libc.in"
+source "rules/gcclibs.in"
+source "rules/locales.in"
+source "rules/u-boot.in"
+endmenu
+
+comment "------------------------------------"
+
+menu "Shell & Console Tools         "
+source "rules/bash.in"
+source "rules/busybox.in"
+source "rules/clock.in"
+source "rules/coreutils.in"
+source "rules/daemonize.in"
+source "rules/diffutils.in"
+source "rules/findutils.in"
+source "rules/sysvinit.in"
+source "rules/initng.in"
+source "rules/module-init-tools.in"
+source "rules/gawk.in"
+source "rules/hotplug.in"
+source "rules/mtd-utils.in"
+source "rules/pcmcia-cs.in"
+source "workspace/rules/pcmciautils.in"
+source "rules/pdksh.in"
+source "rules/procps.in"
+source "rules/screen.in"
+source "rules/setserial.in"
+source "rules/sysfsutils.in"
+source "rules/sysutils.in"
+source "rules/util-linux.in"
+source "workspace/rules/udev.in"
+source "rules/xmlstarlet.in"
+source "rules/pciutils.in"
+source "rules/usbutils.in"
+endmenu
+
+menu "Scripting Languages           "
+source "rules/scriptlanguages.in"
+endmenu
+
+menu "Networking Tools              "
+source "rules/networking.in"
+endmenu
+
+menu "Disk and File Utilities       "
+source "rules/bonniexx.in"
+source "rules/dosfstools.in"
+source "rules/e2fsprogs.in"
+source "rules/fam.in"
+source "rules/grub.in"
+source "rules/hdparm.in"
+source "rules/ipkg.in"
+source "rules/liblockfile.in"
+source "rules/lilo.in"
+source "rules/logrotate.in"
+source "rules/samba.in"
+source "rules/unionfs.in"
+source "rules/zip.in"
+source "rules/fuse.in"
+endmenu
+
+menu "Communication Utilities       "
+source "rules/bluez.in"
+source "workspace/rules/canutils.in"
+source "rules/efax.in"
+source "rules/lrzsz.in"
+source "rules/mgetty.in"
+source "rules/pop3spam.in"
+source "rules/smtpclient.in"
+source "rules/ssmtp.in"
+endmenu
+
+menu "Applications                  "
+source "rules/alsa-utils.in"
+source "rules/flash.in"
+source "rules/gnupg.in"
+source "rules/mad.in"
+source "rules/mplayer.in"
+source "rules/setmixer.in"
+source "rules/rawrec.in"
+source "rules/mc.in"
+source "rules/ffmpeg.in"
+source "rules/kaffe.in"
+source "rules/cvs.in"
+endmenu
+
+menu "Tools                         "
+source "rules/tools.in"
+endmenu
+
+menu "Editors                       "
+source "rules/editors.in"
+endmenu
+
+menu "System Libraries              "
+source "rules/alsa-lib.in"
+source "rules/boost.in"
+source "rules/commoncpp2.in"
+source "rules/db41.in"
+source "rules/db44.in"
+source "rules/expat.in"
+source "rules/gettext.in"
+source "rules/hrtimers-support.in"
+source "rules/libusb.in"
+
+source "rules/libdaemon.in"
+source "rules/libelf.in"
+source "rules/libezv24.in"
+source "rules/libgsloop.in"
+source "rules/libiconv.in"
+source "rules/liblist.in"
+source "rules/libmqueue.in"
+source "rules/libnetpbm.in"
+source "rules/libpopt.in"
+source "rules/librn.in"
+source "rules/libxml2.in"
+source "rules/libxmlconfig.in"
+source "rules/libxslt.in"
+
+source "rules/live.in"
+source "rules/mysql.in"
+source "rules/ncurses.in"
+source "rules/pcre.in"
+source "rules/readline.in"
+
+source "rules/slang.in"
+source "rules/sqlite.in"
+source "rules/termcap.in"
+source "rules/xerces.in"
+source "rules/zlib.in"
+endmenu
+
+menu "Middleware                    "
+source "rules/dbus.in"
+source "rules/libdbus-cxx.in"
+source "rules/omniorb.in"
+source "rules/mico.in"
+endmenu
+
+menu "Graphics Libraries            "
+
+source "rules/xorg.in"
+
+comment "X Applications"
+source "rules/gtk-menu.in"
+source "rules/fltk.in"
+source "rules/hpanel.in"
+#source "rules/qte.in"
+source "rules/wxWindows.in"
+source "rules/realvnc.in"
+source "rules/xli.in"
+source "rules/xterm.in"
+
+comment "X Window Managers"
+source "rules/blackbox.in"
+source "rules/pekwm.in"
+
+comment "Framebuffer"
+source "rules/fbtest.in"
+source "rules/fbutils.in"
+
+comment "Other Stuff"
+source "rules/sdl.in"
+source "rules/libpng.in"
+source "rules/libjpeg.in"
+source "rules/fontconfig.in"
+source "rules/tslib.in"
+source "rules/qtopia.in"
+source "rules/i855resolution.in"
+source "rules/i915resolution.in"
+endmenu
+
+menu "Scientific Apps               "
+source "rules/fftw.in"
+source "rules/gnuplot.in"
+source "rules/libmodbus.in"
+source "rules/libpv.in"
+endmenu
+
+menu "Web Applications              "
+source "rules/mfirebird.in"
+source "rules/penguzilla.in"
+source "rules/jvisu.in"
+endmenu
+
+menu "Test Suites                   "
+source "rules/cyclictest.in"
+source "workspace/rules/hackbench.in"
+source "rules/host-pelts.in"
+source "rules/pelts_tests.in"
+source "rules/tests.in"
+endmenu
+
+menu "Broken or orphaned Packages   "
+depends on BROKEN
+source "rules/at-spi.in"
+source "rules/cfgsh.in"
+source "rules/dialog.in"
+source "rules/e2tools.in"
+source "rules/flex.in"
+source "rules/xalf.in"
+source "rules/dotgnu.in"
+source "rules/gail.in"
+source "rules/gmp3.in"
+source "rules/gmp4.in"
+source "rules/gtk1210.in"
+source "rules/konq-e.in"
+source "rules/libart.in"
+source "rules/libgd.in"
+source "rules/libglade.in"
+source "rules/libgnomecanvas.in"
+#source "rules/libidl068.in"
+source "rules/libIDL-2.in"
+source "rules/liboop.in"
+source "rules/paranoia.in"
+source "rules/qte.in"
+source "rules/sudo.in"
+source "rules/tinylogin.in"
+source "rules/xvkbd.in"
+endmenu
+

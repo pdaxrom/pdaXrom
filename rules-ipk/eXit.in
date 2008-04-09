@@ -1,9 +1,0 @@
-config EXIT
-	bool
-	prompt "eXit"
-	depends on XFREE430
-
-config EXIT_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on EXIT

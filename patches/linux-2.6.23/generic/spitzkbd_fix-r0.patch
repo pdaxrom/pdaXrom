@@ -1,0 +1,16 @@
+---
+ drivers/input/keyboard/spitzkbd.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6.23/drivers/input/keyboard/spitzkbd.c
+===================================================================
+--- linux-2.6.23.orig/drivers/input/keyboard/spitzkbd.c	2007-10-09 21:31:38.000000000 +0100
++++ linux-2.6.23/drivers/input/keyboard/spitzkbd.c	2007-12-27 16:59:58.000000000 +0000
+@@ -390,6 +390,7 @@ static int __init spitzkbd_probe(struct 
+ 	for (i = 0; i < ARRAY_SIZE(spitzkbd_keycode); i++)
+ 		set_bit(spitzkbd->keycode[i], input_dev->keybit);
+ 	clear_bit(0, input_dev->keybit);
++	set_bit(KEY_SUSPEND, input_dev->keybit);
+ 	set_bit(SW_LID, input_dev->swbit);
+ 	set_bit(SW_TABLET_MODE, input_dev->swbit);
+ 	set_bit(SW_HEADPHONE_INSERT, input_dev->swbit);

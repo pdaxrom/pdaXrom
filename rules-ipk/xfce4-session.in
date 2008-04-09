@@ -1,8 +1,0 @@
-config XFCE4-SESSION
-	bool
-	prompt "xfce4-session"
-
-config XFCE4-SESSION_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on XFCE4-SESSION

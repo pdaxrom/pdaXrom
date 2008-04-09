@@ -1,5 +1,0 @@
-KERNELCONFIG=$PWD/mipsel.config
-TARGET=mipsEEel-cacko-linux-gnu
-#GCC_EXTRA_CONFIG=--with-cpu=r5900 --enable-cxx-flags=-mcpu=r5900
-GLIBC_TARGET_CFLAGS=-g -Os
-TARGET_OPT_CFLAGS=-Os -finline-limit=10000

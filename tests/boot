@@ -1,0 +1,4 @@
+#!/bin/sh
+
+${PTXDIST_WORKSPACE}/local-host/share/pelts/scripts/boot $*
+

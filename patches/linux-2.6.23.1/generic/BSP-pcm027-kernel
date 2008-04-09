@@ -1,0 +1,98 @@
+---
+ arch/arm/Kconfig           |    2 +-
+ arch/arm/mach-pxa/Kconfig  |   30 ++++++++++++++++++++++++++++--
+ arch/arm/mach-pxa/Makefile |    4 ++++
+ 3 files changed, 33 insertions(+), 3 deletions(-)
+
+Index: arch/arm/mach-pxa/Makefile
+===================================================================
+--- arch/arm/mach-pxa/Makefile.orig
++++ arch/arm/mach-pxa/Makefile
+@@ -17,6 +17,9 @@ obj-$(CONFIG_PXA_SHARP_C7xx)	+= corgi.o 
+ obj-$(CONFIG_PXA_SHARP_Cxx00)	+= spitz.o corgi_ssp.o corgi_lcd.o sharpsl_pm.o spitz_pm.o
+ obj-$(CONFIG_MACH_AKITA)	+= akita-ioexp.o
+ obj-$(CONFIG_MACH_POODLE)	+= poodle.o corgi_ssp.o
++obj-$(CONFIG_MACH_PCM027)	+= pcm027.o
++obj-$(CONFIG_MACH_PCM027_BASEBOARD)	+= pcm027-baseboard.o
++obj-$(CONFIG_MACH_PCM027_GPIO_EXPANDER) += pcm027-gpio-expander.o
+ obj-$(CONFIG_MACH_TOSA)         += tosa.o
+ obj-$(CONFIG_MACH_EM_X270) += em-x270.o
+ 
+@@ -26,6 +29,7 @@ led-$(CONFIG_ARCH_LUBBOCK) += leds-lubbo
+ led-$(CONFIG_MACH_MAINSTONE) += leds-mainstone.o
+ led-$(CONFIG_ARCH_PXA_IDP) += leds-idp.o
+ led-$(CONFIG_MACH_TRIZEPS4) += leds-trizeps4.o
++led-$(CONFIG_MACH_PCM027) += leds-pcm027.o
+ 
+ obj-$(CONFIG_LEDS) += $(led-y)
+ 
+Index: arch/arm/mach-pxa/Kconfig
+===================================================================
+--- arch/arm/mach-pxa/Kconfig.orig
++++ arch/arm/mach-pxa/Kconfig
+@@ -41,8 +41,36 @@ config MACH_EM_X270
+ 	bool "CompuLab EM-x270 platform"
+ 	select PXA27x
+ 
++config MACH_PCM027
++	bool "PHYTEC phyCORE-PXA270 (PCM-027)"
++	select PXA27x
++	select IWMMXT
++
+ endchoice
+ 
++config MACH_PCM027_BASEBOARD
++	bool "PHYTEC phyCORE-PXA270 (PCM-027) Baseboard"
++	depends on MACH_PCM027
++
++choice
++	prompt "choose your display"
++	depends on MACH_PCM027_BASEBOARD
++
++config PCM027_DISPLAY_SHARP
++	bool "use the sharp lq084v1dg21 stn display"
++
++config PCM027_DISPLAY_NEC
++	bool "use the nec nl6448bc20_18d tft display"
++
++config PCM027_DISPLAY_NONE
++	bool "no display"
++
++endchoice
++
++config MACH_PCM027_GPIO_EXPANDER
++	bool "PHYTEC phyCORE-PXA270 (PCM-027) gpio expander board"
++	depends on MACH_PCM027_BASEBOARD
++
+ if PXA_SHARPSL
+ 
+ choice
+@@ -78,7 +106,6 @@ endif
+ config ARCH_PXA_PWM
+ 	tristate "Support for Pulse Width Modulation device on PXA27x"
+ 	depends PXA27x
+-	default n
+ 	help
+ 	  Enable PWM Support on PXA27x processor. This processor
+ 	  supports up to 4 PWM. Check your design, if they are
+@@ -87,7 +114,6 @@ config ARCH_PXA_PWM
+ config ARCH_PXA_GPIOEVENT
+ 	tristate "Support for GPIO based event notification on PXA27x"
+ 	depends PXA27x
+-	default n
+ 	help
+ 	  Enable GPIO based event notification on PXA27x processor.
+ 	  This processor supports to setup its GPIO to be interrupt
+Index: arch/arm/Kconfig
+===================================================================
+--- arch/arm/Kconfig.orig
++++ arch/arm/Kconfig
+@@ -700,7 +700,7 @@ config LEDS
+ 		   ARCH_OMAP || ARCH_P720T || ARCH_PXA_IDP || \
+ 		   ARCH_SA1100 || ARCH_SHARK || ARCH_VERSATILE || \
+ 		   ARCH_AT91 || MACH_TRIZEPS4 || ARCH_DAVINCI || \
+-		   ARCH_KS8695
++		   ARCH_KS8695 || MACH_PCM027
+ 	help
+ 	  If you say Y here, the LEDs on your machine will be used
+ 	  to provide useful information about your current system status.

@@ -1,8 +1,0 @@
-config ZIP
-	bool
-	prompt "zip"
-
-config ZIP_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on ZIP

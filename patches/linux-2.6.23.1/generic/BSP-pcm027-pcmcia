@@ -1,0 +1,387 @@
+---
+ drivers/pcmcia/Makefile        |    1 
+ drivers/pcmcia/pxa2xx_base.c   |    6 
+ drivers/pcmcia/pxa2xx_pcm027.c |  344 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 351 insertions(+)
+
+Index: drivers/pcmcia/Makefile
+===================================================================
+--- drivers/pcmcia/Makefile.orig
++++ drivers/pcmcia/Makefile
+@@ -68,5 +68,6 @@ sa1100_cs-$(CONFIG_SA1100_SIMPAD)		+= sa
+ 
+ pxa2xx_cs-$(CONFIG_ARCH_LUBBOCK)		+= pxa2xx_lubbock.o sa1111_generic.o
+ pxa2xx_cs-$(CONFIG_MACH_MAINSTONE)		+= pxa2xx_mainstone.o
++pxa2xx_cs-$(CONFIG_MACH_PCM027)			+= pxa2xx_pcm027.o
+ pxa2xx_cs-$(CONFIG_PXA_SHARPSL)			+= pxa2xx_sharpsl.o
+ 
+Index: drivers/pcmcia/pxa2xx_base.c
+===================================================================
+--- drivers/pcmcia/pxa2xx_base.c.orig
++++ drivers/pcmcia/pxa2xx_base.c
+@@ -195,10 +195,16 @@ int __pxa2xx_drv_pcmcia_probe(struct dev
+ 		MECR |= MECR_CIT;
+ 
+ 		/* Set MECR:NOS (Number Of Sockets) */
++#if defined (CONFIG_MACH_PCM027)
++		/* We use both sockest, but only the upper for PCMCIA */
++		MECR |= MECR_NOS;
++#else
+ 		if (nr > 1)
+ 			MECR |= MECR_NOS;
+ 		else
+ 			MECR &= ~MECR_NOS;
++#endif
++
+ 	}
+ 
+ 	return ret;
+Index: drivers/pcmcia/pxa2xx_pcm027.c
+===================================================================
+--- /dev/null
++++ drivers/pcmcia/pxa2xx_pcm027.c
+@@ -0,0 +1,344 @@
++/*
++ * linux/drivers/pcmcia/pxa2xx_pcm027.c
++ *
++ * PCM027 PCMCIA specific routines.
++ *
++ * Created:	May 11, 2005
++ * Author:	Juergen Kilb armlinux@phytec.de
++ * Copyright:	Phytec Messtechnik GmbH
++ *
++ * based on pxa2xx_mainstone.c
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/errno.h>
++#include <linux/interrupt.h>
++#include <linux/device.h>
++#include <linux/platform_device.h>
++
++#include <pcmcia/ss.h>
++
++#include <asm/hardware.h>
++#include <asm/irq.h>
++#include <asm/delay.h>
++
++#include <asm/arch/pxa-regs.h>
++#include <asm/arch/pcm027.h>
++
++#include "soc_common.h"
++
++#undef DEBUG
++
++#ifdef DEBUG
++#define deb(x,y...) prink(x,###y)
++#else
++#define deb(x,...) do {} while(0)
++#endif
++
++static struct pcmcia_irqs irqs[] =
++{
++	{ 1, PCM027_CF_CD, "PCMCIA1 CD" }
++};
++
++/**
++ * pcm027_pcmcia_hw_init -
++ * @skt:
++ **/
++static int pcm027_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
++{
++	/*
++	 * Setup default state of GPIO outputs
++	 * before we enable them as outputs.
++	 */
++	deb(KERN_ERR " pcm027_pcmcia_hw_init beginn \n");
++
++	deb(KERN_ERR " CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " CFREG6 = %02X \n",PCM027_CF6);
++
++	GPSR(GPIO48_nPOE) =
++	    GPIO_bit(GPIO48_nPOE) |
++	    GPIO_bit(GPIO49_nPWE) |
++	    GPIO_bit(GPIO50_nPIOR) |
++	    GPIO_bit(GPIO51_nPIOW) |
++	    GPIO_bit(GPIO85_nPCE_1) |
++	    GPIO_bit(GPIO54_nPCE_2);
++
++	pxa_gpio_mode(GPIO48_nPOE_MD);
++	pxa_gpio_mode(GPIO49_nPWE_MD);
++	pxa_gpio_mode(GPIO50_nPIOR_MD);
++	pxa_gpio_mode(GPIO51_nPIOW_MD);
++	pxa_gpio_mode(GPIO85_nPCE_1_MD);
++	pxa_gpio_mode(GPIO54_nPCE_2_MD);
++	pxa_gpio_mode(GPIO79_pSKTSEL_MD);
++	pxa_gpio_mode(GPIO55_nPREG_MD);
++	pxa_gpio_mode(GPIO56_nPWAIT_MD);
++	pxa_gpio_mode(GPIO57_nIOIS16_MD);
++
++	skt->irq = PCM027_CF_IRQ;
++	/* set_irq_type(PCM027_CF_IRQ, PCM027_CF_IRQ_EDGE); */
++
++	/* Enable LED */
++	PCM027_CF0 = PCM027_CF_REG0_LED;
++	/* Enable Output Buffers */
++	PCM027_CF3 = PCM027_CF_REG3_CFIN | PCM027_CF_REG3_CFCD;
++
++	deb(KERN_ERR " CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " CFREG6 = %02X \n",PCM027_CF6);
++
++	printk(KERN_ERR " pcm027_pcmcia_hw_init end \n");
++
++	return soc_pcmcia_request_irqs(skt, irqs, ARRAY_SIZE(irqs));
++}
++
++/**
++ * pcm027_pcmcia_hw_shutdown -
++ * @skt:
++ **/
++static void pcm027_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt)
++{
++	deb(KERN_ERR " pcm027_pcmcia_hw_shutdown beginn \n");
++
++	deb(KERN_ERR " CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " CFREG6 = %02X \n",PCM027_CF6);
++
++	soc_pcmcia_free_irqs(skt, irqs, ARRAY_SIZE(irqs));
++
++	deb(KERN_ERR " CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " CFREG6 = %02X \n",PCM027_CF6);
++
++	deb(KERN_ERR " pcm027_pcmcia_hw_shutdown end\n");
++}
++
++static unsigned long pcm027_pcmcia_status[1];
++
++/**
++ * pcm027_pcmcia_socket_state -
++ * @skt:
++ * @state:
++ **/
++static void pcm027_pcmcia_socket_state(struct soc_pcmcia_socket *skt,
++                                       struct pcmcia_state *state)
++{
++	unsigned char i,j,prev;
++	unsigned int status;
++
++	deb(KERN_ERR " pcm027_pcmcia_socket_state beginn \n");
++
++	status = PCM027_CF5;
++
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG6 = %02X \n",PCM027_CF6);
++	deb(KERN_ERR " MECR   = 0x%08X \n",MECR);
++	deb(KERN_ERR " MCMEM0 = 0x%08X \n",MCMEM0);
++	deb(KERN_ERR " MCMEM1 = 0x%08X \n",MCMEM1);
++	deb(KERN_ERR " MCATT0 = 0x%08X \n",MCATT0);
++	deb(KERN_ERR " MCATT1 = 0x%08X \n",MCATT1);
++	deb(KERN_ERR " MCIO0  = 0x%08X \n",MCIO0);
++	deb(KERN_ERR " MCIO1  = 0x%08X \n",MCIO1);
++
++	state->detect = ((0x03 & PCM027_CF6)==0x03)  ? 0 : 1;
++	state->ready  = (GPLR(GPIO_PCM027_CF_INT) & 0x00000800) ? 1 : 0;
++	state->bvd1   = (status & PCM027_CF_REG5_BVD1) ? 1 : 0;
++	state->bvd2   = (status & PCM027_CF_REG5_BVD2) ? 1 : 0;
++	state->vs_3v  = (status & PCM027_CF_REG5_VS1) ? 0 : 1;
++	state->vs_Xv  = (status & PCM027_CF_REG5_VS2) ? 0 : 1;
++	state->wrprot = 0;  /* not available */
++
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state CFREG6 = %02X \n",PCM027_CF6);
++	deb(KERN_ERR " pcm027_pcmcia_socket_state end \n");
++}
++
++/**
++ * pcm027_pcmcia_configure_socket -
++ * @skt:
++ * @state:
++ **/
++static int pcm027_pcmcia_configure_socket(struct soc_pcmcia_socket *skt,
++        const socket_state_t *state)
++{
++	unsigned long power = 0;
++	int ret = 0;
++
++	deb(KERN_ERR " pcm027_pcmcia_configure_socket begin\n");
++	deb(KERN_ERR " CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " CFREG6 = %02X \n",PCM027_CF6);
++
++	switch (state->Vcc) {
++		case 0:
++			printk(KERN_ERR " Power off VCC = 0V \n");
++			/* Disable LED */
++			PCM027_CF0 = 0x00;
++			/* Disable data and address line driver */
++			PCM027_CF3 &= ~(PCM027_CF_REG3_CFOE | PCM027_CF_REG3_CFON);
++			PCM027_CF2 |= PCM027_CF_REG2_RES;
++			/* Disable Power */
++			PCM027_CF4 = 0x00;
++			break;
++		case 33:
++			printk(KERN_ERR " VCC = 3,3V \n");
++			/* Enable VCC = 3.3V */
++			PCM027_CF4 = PCM027_CF_REG4_PWRENA ;
++			/* Enable LED */
++			PCM027_CF0 = PCM027_CF_REG0_LED;
++			/* Enable Output Buffers */
++			PCM027_CF3 |= PCM027_CF_REG3_CFOE | PCM027_CF_REG3_CFON;
++			break;
++		case 50:
++			printk(KERN_ERR " VCC = 5V \n");
++			/* Enable VCC = 5V */
++			PCM027_CF4 = PCM027_CF_REG4_PWRENA | PCM027_CF_REG4_5_3V;
++			/* Enable LED */
++			PCM027_CF0 = PCM027_CF_REG0_LED;
++			/* Enable Output Buffers */
++			PCM027_CF3 |= PCM027_CF_REG3_CFOE | PCM027_CF_REG3_CFON;
++			break;
++		default:
++			printk(KERN_ERR "%s(): bad Vcc %u\n",__FUNCTION__,state->Vcc);
++			ret = -1;
++	}
++
++	if (state->flags & SS_RESET) {
++		/* Reset CF-Card Socked 1	   */
++		printk(KERN_ERR " Reset CF-Card ! \n");
++		PCM027_CF2 |= PCM027_CF_REG2_RES;
++	} else {
++		printk(KERN_ERR " Release Reset ! \n");
++		PCM027_CF2 &= ~PCM027_CF_REG2_RES;
++	}
++	/* Wait for Reset and Power */
++	udelay(1000);
++
++	deb(KERN_ERR " CFREG0 = %02X \n",PCM027_CF0);
++	deb(KERN_ERR " CFREG1 = %02X \n",PCM027_CF1);
++	deb(KERN_ERR " CFREG2 = %02X \n",PCM027_CF2);
++	deb(KERN_ERR " CFREG3 = %02X \n",PCM027_CF3);
++	deb(KERN_ERR " CFREG4 = %02X \n",PCM027_CF4);
++	deb(KERN_ERR " CFREG5 = %02X \n",PCM027_CF5);
++	deb(KERN_ERR " CFREG6 = %02X \n",PCM027_CF6);
++
++	deb(KERN_ERR " pcm027_pcmcia_configure_socket end\n");
++
++	return ret;
++}
++
++/**
++ * pcm027_pcmcia_socket_init -
++ * @skt:
++ **/
++static void pcm027_pcmcia_socket_init(struct soc_pcmcia_socket *skt)
++{
++	deb(KERN_ERR " pcm027_pcmcia_socket_init\n");
++}
++
++/**
++ * pcm027_pcmcia_socket_suspend -
++ * @skt:
++ **/
++static void pcm027_pcmcia_socket_suspend(struct soc_pcmcia_socket *skt)
++{
++	deb(KERN_ERR " pcm027_pcmcia_socket_suspend\n");
++}
++
++static struct pcmcia_low_level pcm027_pcmcia_ops =
++{
++	.owner			= THIS_MODULE,
++	.hw_init		= pcm027_pcmcia_hw_init,
++	.hw_shutdown		= pcm027_pcmcia_hw_shutdown,
++	.socket_state		= pcm027_pcmcia_socket_state,
++	.configure_socket	= pcm027_pcmcia_configure_socket,
++	.socket_init		= pcm027_pcmcia_socket_init,
++	.socket_suspend		= pcm027_pcmcia_socket_suspend,
++	.first			= 1,
++	.nr			= 1,
++};
++
++static struct platform_device *pcm027_pcmcia_device;
++
++/**
++ * pcm027_pcmcia_init -
++ **/
++static int __init pcm027_pcmcia_init(void)
++{
++	int ret;
++
++	deb(KERN_ERR " pcm027_pcmcia_init beginn\n");
++
++	pcm027_pcmcia_device = kmalloc(sizeof(*pcm027_pcmcia_device), GFP_KERNEL);
++	if (!pcm027_pcmcia_device)
++		return -ENOMEM;
++	memset(pcm027_pcmcia_device, 0, sizeof(*pcm027_pcmcia_device));
++	pcm027_pcmcia_device->name = "pxa2xx-pcmcia";
++	pcm027_pcmcia_device->dev.platform_data = &pcm027_pcmcia_ops;
++
++	ret = platform_device_register(pcm027_pcmcia_device);
++	if (ret)
++		kfree(pcm027_pcmcia_device);
++
++	deb(KERN_ERR " pcm027_pcmcia_init end\n");
++
++	return ret;
++}
++
++/**
++ * pcm027_pcmcia_exit -
++ **/
++static void __exit pcm027_pcmcia_exit(void)
++{
++	/*
++	 * This call is supposed to free our pcm027_pcmcia_device.
++	 * Unfortunately platform_device don't have a free method, and
++	 * we can't assume it's free of any reference at this point so we
++	 * can't free it either.
++	 */
++	deb(KERN_ERR " pcm027_pcmcia_exit\n");
++	platform_device_unregister(pcm027_pcmcia_device);
++}
++
++module_init(pcm027_pcmcia_init);
++module_exit(pcm027_pcmcia_exit);
++
++MODULE_LICENSE("GPL");
++
++/* end of file pxa2xx_pcm027.c */

@@ -1,0 +1,24 @@
+menu "Target boards"
+
+choice
+prompt "Select target board"
+config ITELEC_DAVINCI
+	prompt "Elecard iTelec 61x"
+	bool
+	
+config PHYCORE_PXA270
+	prompt "PhyCORE PXA270"
+	bool
+
+config SHARP_AKITA
+	prompt "Sharp Zaurus SL-C1000 (Akita)"
+	bool
+endchoice
+    
+config PHYCORE_KSP0061
+	prompt "KSP0061"
+	bool
+	depends on PHYCORE_PXA270
+	default y
+
+endmenu

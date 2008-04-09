@@ -1,0 +1,20 @@
+ipaddr=@IPADDR@
+serverip=@SERVERIP@
+gateway=@GATEWAY@
+netmask=@NETMASK@
+nfsrootfs=@ROOTFS@
+jffs2=root-pcm027.jffs2
+uimage=uImage-pcm027
+uboot=u-boot-pcm027.bin
+bootcmd=run bcmd_flash
+mtdids=nor0=physmap-flash.0
+mtdparts=mtdparts=physmap-flash.0:256k(u-boot)ro,4096k(system),-(root)
+bargs_base=setenv bootargs console=ttyS0,@BAUDRATE@ ip=$(ipaddr):$(serverip):$(gateway):$(netmask):$(hostname):eth0:off'
+bargs_nfs=setenv bootargs $(bootargs) root=/dev/nfs nfsroot=$(serverip):$(nfsrootfs),v3,tcp
+bargs_mtd=setenv bootargs $(bootargs) $(mtdparts)
+bargs_flash=setenv bootargs $(bootargs) root=/dev/mtdblock2 rootfstype=jffs2
+bcmd_flash=run bargs_base bargs_mtd bargs_flash; bootm 0x40000
+bcmd_net=run bargs_base bargs_mtd bargs_nfs; tftpboot 0xa0200000 $(uimage); bootm
+prg_kernel=tftpboot 0xa0200000 $(uimage); erase nor0,1; cp.b 0xa0200000 0x40000 $(filesize)
+prg_jffs2=tftpboot 0xa0200000 $(jffs2); erase nor0,2; cp.b 0xa0200000 0x440000 $(filesize)
+update=tftpboot 0xa0200000 $(uboot); erase nor0,0; cp.b 0xa0200000 0x000 $(filesize)

@@ -1,8 +1,0 @@
-config VISUALBOYADVANCE
-	bool
-	prompt "VisualBoyAdvance"
-
-config VISUALBOYADVANCE_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on VISUALBOYADVANCE

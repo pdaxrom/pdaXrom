@@ -1,0 +1,9 @@
+# use xprop WM_CLASS | sed 's/.*"\(.*\)", "\(.*\)".*/= "\1,\2" {/g' to get
+# window id
+
+Property = "xterm,XTerm" {
+        Group = "terms" {
+                Size = "5"
+        }
+        ApplyOn = "New Start Reload"
+}

@@ -1,9 +1,0 @@
-config SYSLINUX
-	bool
-	prompt "syslinux"
-	depends on ARCH_X86
-
-config SYSLINUX_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on SYSLINUX
