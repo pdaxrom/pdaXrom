@@ -13,6 +13,10 @@ config PHYCORE_PXA270
 config SHARP_AKITA
 	prompt "Sharp Zaurus SL-C1000 (Akita)"
 	bool
+
+config SHARP_CORGI
+	prompt "Sharp Zaurus SL-C7x0"
+	bool
 endchoice
     
 config PHYCORE_KSP0061
