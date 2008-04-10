@@ -81,4 +81,3 @@ if [ "$ACTION" = "remove" ] && [ -x "$UMOUNT" ] && [ -n "$DEVNAME" ]; then
 	$UMOUNT "$mnt" && rmdir "$mnt"
     done
 fi
-
