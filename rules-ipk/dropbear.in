@@ -1,8 +1,0 @@
-config DROPBEAR
-	bool
-	prompt "dropbear"
-
-config DROPBEAR_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on DROPBEAR

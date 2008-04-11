@@ -1,8 +1,0 @@
-config LIBVORBIS
-	bool
-	prompt "libvorbis"
-
-config LIBVORBIS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBVORBIS

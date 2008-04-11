@@ -1,8 +1,0 @@
-config LIBGNOMECUPS
-	bool
-	prompt "libgnomecups"
-
-config LIBGNOMECUPS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBGNOMECUPS

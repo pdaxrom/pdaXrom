@@ -1,8 +1,0 @@
-config YACAS
-	bool
-	prompt "yacas"
-
-config YACAS_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on YACAS

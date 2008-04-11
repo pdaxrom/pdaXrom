@@ -1,9 +1,0 @@
-config CLOCK
-	bool
-	prompt "Clock"
-	depends on ROX
-
-config CLOCK_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on CLOCK

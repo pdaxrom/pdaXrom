@@ -1,8 +1,0 @@
-config SQLITE
-	bool
-	prompt "sqlite"
-
-config SQLITE_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on SQLITE

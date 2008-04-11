@@ -1,8 +1,0 @@
-config XFPRINT
-	bool
-	prompt "xfprint"
-
-config XFPRINT_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on XFPRINT

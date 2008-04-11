@@ -1,6 +1,0 @@
-KERNELCONFIG=$PWD/arm.config
-TARGET=arm-cacko-linux
-GCC_EXTRA_CONFIG="--with-cpu=arm7 --enable-cxx-flags=-mcpu=arm7"
-#TARGET_CFLAGS="-O"
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
-TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer

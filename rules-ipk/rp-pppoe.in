@@ -1,8 +1,0 @@
-config RP-PPPOE
-	bool
-	prompt "rp-pppoe"
-
-config RP-PPPOE_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on RP-PPPOE

@@ -1,9 +1,0 @@
-config DVFM
-	bool
-	prompt "dvfm"
-	depends ARM_ARCH_PXA
-
-config DVFM_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on DVFM

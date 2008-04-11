@@ -1,0 +1,127 @@
+#
+# Kconfig: Main menu structure definition
+# Copyright (C) Robert Schwebel <r.schwebel@pengutronix.de> 2005, 2006
+#
+
+config BUILD_TOOLCHAIN
+	bool
+	default y
+
+config PROJECT
+	string
+	prompt "Project Name        "
+	help
+	  Name of this project; each PTXdist "Project" specifies a unique
+	  configuration for an embedded Linux project.
+
+	  Usually you don't have to set this config option; change it
+	  only if you want to have some non-default name.
+
+source "workspace/rules/glibc.in"
+source "workspace/rules/glibc-headers.in"
+source "workspace/rules/glibc-crt.in"
+source "workspace/rules/glibc-final.in"
+source "workspace/rules/glibc-ports.in"
+source "workspace/rules/glibc-linuxthreads.in"
+
+source "workspace/rules/cross-binutils.in"
+source "workspace/rules/kernel-headers.in"
+source "workspace/rules/cross-gcc-first.in"
+source "workspace/rules/cross-gcc-second.in"
+source "workspace/rules/cross-gdb.in"
+source "workspace/rules/cross-toolchain.in"
+
+comment "                  "
+
+choice
+	prompt "architecture      "
+
+        config ARCH_ARM
+                bool "arm    "
+
+	config ARCH_MIPS
+		bool "mips   "
+
+        config ARCH_POWERPC
+                bool "powerpc"
+
+	config ARCH_I386
+		bool "i368   "
+
+	help
+	  This option specifies the toolchain architecture. It corresponds to
+	  the arch/ directory of the Linux kernel.
+
+endchoice
+
+config ARCH
+	string
+	default "arm" if ARCH_ARM
+	default "mips" if ARCH_MIPS
+	default "powerpc" if ARCH_POWERPC
+	default "i386" if ARCH_I386
+
+config GNU_TARGET
+	string
+	prompt "toolchain target"
+	help
+	  The GNU_TARGET specifies which toolchain variant is to be
+	  built.
+
+config COMPILER_PREFIX
+	string
+	default "${PTXCONF_GNU_TARGET}-"
+
+config TOOLCHAIN_DEBUG
+	bool
+	prompt "debuggable toolchain internals"
+	help
+	  Select this if you want to debug the glibc/libstdc++ internals.
+	  Note: this enlarges your toolchain at about 500 MB.
+	
+
+menu "misc                        "
+
+config CONFIGFILE_VERSION
+	string
+	prompt "ptxdist version"
+	default "0.10.7"
+	help
+	  Specify the PTXdist version this configuration was tested with
+	  here. This is an additional sanity check to make sure that
+	  only tested versions are built.
+
+config PREFIX_KERNEL
+	string
+	depends on KERNEL_HEADERS_SANIZIZED
+	default "-sanitized"
+
+config PREFIX_FIRST
+	string
+	prompt "first prefix"
+	default "/opt/${PTXCONF_PROJECT}"
+	help
+	  Your toolchain will be installed under PREFIX_FIRST/PREFIX_SECOND
+	  The intention behind this is that you can change the installation
+	  directory with PREFIX_FIRST while keeping the directory which
+	  describes what kind of toolchain you have (PREFIX_SECOND)
+
+config PREFIX_SECOND
+	string
+	prompt "second prefix"
+	default "${PTXCONF_GNU_TARGET}/gcc-${PTXCONF_CROSS_GCC_FIRST_VERSION}-glibc-${PTXCONF_GLIBC_VERSION}-kernel-${PTXCONF_KERNEL_HEADERS_VERSION}${PTXCONF_PREFIX_KERNEL}"
+	help
+	  Your toolchain will be installed under PREFIX_FIRST/PREFIX_SECOND
+	  The intention behind this is that you can change the installation
+	  directory with PREFIX_FIRST while keeping the directory which
+	  describes what kind of toolchain you have (PREFIX_SECOND)
+
+config PREFIX
+	string
+	default "${PTXCONF_PREFIX_FIRST}/${PTXCONF_PREFIX_SECOND}"
+
+config HOST_PREFIX
+	string
+	default "${PTXCONF_PREFIX}"
+
+endmenu

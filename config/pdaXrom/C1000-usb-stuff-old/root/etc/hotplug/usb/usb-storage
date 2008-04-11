@@ -1,5 +1,0 @@
-#!/bin/sh
-. /etc/hotplug/hotplug.functions
-if [ ! -L /var/run/usb/%proc%bus%usb%* ]; then
-  mount /mnt/usbstorage
-fi

@@ -1,8 +1,0 @@
-config PYCAIRO
-	bool
-	prompt "pycairo"
-
-config PYCAIRO_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on PYCAIRO
