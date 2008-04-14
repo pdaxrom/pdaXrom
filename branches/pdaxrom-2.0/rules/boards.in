@@ -21,6 +21,10 @@ config SHARP_CORGI
 config QEMU_ARM
 	prompt "Qemu ARM Emulator"
 	bool
+
+config QEMU_X86
+	prompt "Qemu x86 Emulator"
+	bool
 endchoice
     
 config PHYCORE_KSP0061
