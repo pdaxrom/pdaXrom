@@ -95,11 +95,13 @@ $(STATEDIR)/qemu-arm.targetinstall: $(qemu-arm_targetinstall_deps_default)
 	@$(call install_copy, qemu-arm, 0, 0, 0755, /etc/rc.d)
 	@$(call install_copy, qemu-arm, 0, 0, 0755, /etc/init.d)
 	@$(call install_copy, qemu-arm, 0, 0, 0644, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/modules.corgi, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/modules.qemuarm, \
 		/etc/modules,n)
 	@$(call install_copy, qemu-arm, 0, 0, 0644, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/inittab, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/inittab.qemuarm, \
 		/etc/inittab,n)
+
+	@$(call install_node, qemu-arm, 0, 0, 0644, c, 204, 64, /dev/ttyAMA0)
 
 ifdef PTXCONF_PEKWM
 	cd $(PTXDIST_WORKSPACE)/projectroot/etc/pekwm && \
