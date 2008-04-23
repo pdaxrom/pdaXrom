@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Wed Apr 23 12:09:25 2008
+# Thu Apr 10 14:02:08 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -24,8 +24,6 @@ PTXCONF_ITELEC_DAVINCI=y
 # PTXCONF_PHYCORE_PXA270 is not set
 # PTXCONF_SHARP_AKITA is not set
 # PTXCONF_SHARP_CORGI is not set
-# PTXCONF_QEMU_ARM is not set
-# PTXCONF_QEMU_X86 is not set
 # PTXCONF_IPERF is not set
 # PTXCONF_SCHEDUTILS is not set
 
@@ -120,8 +118,8 @@ PTXCONF_CROSS_PREFIX="${PTXCONF_PREFIX}-cross"
 # GNU Toolchain Identification String
 #
 PTXCONF_CROSSCHAIN_VENDOR="OSELAS.Toolchain-1.1.1"
-PTXCONF_CROSSCHAIN_CHECK="4.0.4"
-PTXCONF_GNU_TARGET="arm-v5te-linux-gnu"
+PTXCONF_CROSSCHAIN_CHECK="4.1.2"
+PTXCONF_GNU_TARGET="arm-v5te-linux-gnueabi"
 PTXCONF_COMPILER_PREFIX="${PTXCONF_GNU_TARGET}-"
 
 #
@@ -416,7 +414,7 @@ PTXCONF_KERNEL_NATIVE_CMDLINE="root/boot/vmlinux root=/dev/root rootflags=${ROOT
 # C library                     
 #
 PTXCONF_GLIBC=y
-PTXCONF_GLIBC_VERSION="2.3.6"
+PTXCONF_GLIBC_VERSION="2.5"
 
 #
 # Install options
