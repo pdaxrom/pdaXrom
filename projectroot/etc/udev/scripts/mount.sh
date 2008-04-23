@@ -20,6 +20,10 @@ if [ ! -d /sys$DEVPATH/device ]; then
     DEVPATH=$DEVPATH/..
 fi
 
+if [ ! -e /sys$DEVPATH/removable ]; then
+    exit 0
+fi
+
 VENDOR=`cat /sys$DEVPATH/device/vendor 2>/dev/null`
 MODEL=`cat  /sys$DEVPATH/device/model 2>/dev/null`
 MNT=`echo $VENDOR$MODEL | sed s/\ *$// | sed 's|/|\\\\|g'`$PART
