@@ -1,0 +1,11 @@
+--- s/Makefile-	2008-04-29 01:29:08.000000000 +0700
++++ s/Makefile	2008-04-29 01:32:56.000000000 +0700
+@@ -769,6 +769,8 @@
+ 	$(Q)mkdir -p $(MODVERDIR)
+ endif
+ 
++archprepare: prepare0
++
+ # All the preparing..
+ prepare-all: prepare0 prepare
+ 
