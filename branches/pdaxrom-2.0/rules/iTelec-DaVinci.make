@@ -94,15 +94,9 @@ $(STATEDIR)/itelec-davinci.targetinstall: $(itelec-davinci_targetinstall_deps_de
 	# create /etc/rc.d links
 	@$(call install_copy, itelec-davinci, 0, 0, 0755, /etc/rc.d)
 	@$(call install_copy, itelec-davinci, 0, 0, 0755, /etc/init.d)
-	@$(call install_copy, itelec-davinci, 0, 0, 0755, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/network/can-pre-up, \
-		/etc/network/can-pre-up,n)
-	# create some special setup files
-	@$(call install_copy, itelec-davinci, 0, 0, 0755, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/gpio/gpio, \
-		/etc/init.d/gpio, n)
-	@$(call install_link, itelec-davinci, \
-		../init.d/gpio, /etc/rc.d/S12_gpio)
+	@$(call install_copy, itelec-davinci, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/modules.davinci, \
+		/etc/modules,n)
 
 ifdef PTXCONF_PEKWM
 	cd $(PTXDIST_WORKSPACE)/projectroot/etc/pekwm && \
@@ -111,6 +105,7 @@ ifdef PTXCONF_PEKWM
 				$$file, /etc/pekwm/$$file, n) \
 		done
 endif
+
 ifdef PTXCONF_XORG_SERVER
 	@$(call install_copy, itelec-davinci, 0, 0, 0755, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/X11/xorg.conf, \
