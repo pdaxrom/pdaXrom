@@ -85,6 +85,7 @@ endmenu
 
 menu "Networking Tools              "
 source "rules/networking.in"
+source "workspace/rules/dhcpcd.in"
 endmenu
 
 menu "Disk and File Utilities       "

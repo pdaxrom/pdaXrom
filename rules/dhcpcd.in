@@ -1,0 +1,5 @@
+config DHCPCD
+	bool
+	prompt "dhcpcd"
+	help
+	  an RFC2131 compliant DHCP client
