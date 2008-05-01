@@ -30,7 +30,7 @@ static int done;
 
 void catch_int(int sig_num) {
     done = 1;
-    fprintf(stderr, "Terminating...\n");
+//    fprintf(stderr, "Terminating...\n");
 }
 
 struct rc_event *get_rc_event(int key)
@@ -80,10 +80,10 @@ int main(int argc, char *argv[])
 	    while (!done) {
 		if (msp430lib_get_ir_key(&k, MSP430LIB_WITHOUT_TOGGLE) == MSP430LIB_SUCCESS) {
 		    struct rc_event *ev = get_rc_event(k);
-		    if (k)
-			fprintf(stderr, "key = %4x\n", k);
+//		    if (k)
+//			fprintf(stderr, "key = %4x\n", k);
 		    if (ev) {
-			fprintf(stderr, "mode = %d, t=%d, c=%d, v=%d\n", ev->mode, ev->type, ev->code, ev->value);
+//			fprintf(stderr, "mode = %d, t=%d, c=%d, v=%d\n", ev->mode, ev->type, ev->code, ev->value);
 			
 			switch (ev->mode) {
 			    case MODE_MOUSE:

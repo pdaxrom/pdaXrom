@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/rcontrol
+NAME=rcontrol
+DESC="remote control daemon"
+PIDFILE=/var/run/rcontrol.pid
+set -e
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	start-stop-daemon -S -b -x "$DAEMON" -m -p $PIDFILE
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon -K -p $PIDFILE
+	echo "$NAME."
+	;;
+  restart|force-reload)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon -K -x "$DAEMON" -p $PIDFILE
+	sleep 1
+	start-stop-daemon -S -b -x "$DAEMON" -m -p $PIDFILE
+	echo "$NAME."
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
