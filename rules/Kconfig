@@ -190,7 +190,7 @@ menu "Graphics Libraries            "
 source "rules/xorg.in"
 
 comment "X Applications"
-source "rules/gtk-menu.in"
+source "workspace/rules/gtk-menu.in"
 source "rules/fltk.in"
 source "rules/hpanel.in"
 #source "rules/qte.in"
@@ -200,8 +200,12 @@ source "rules/xli.in"
 source "rules/xterm.in"
 source "workspace/rules/xkbd.in"
 
+comment "X Window addon libraries"
+source "workspace/rules/startup-notification.in"
+
 comment "X Window Managers"
 source "rules/blackbox.in"
+source "workspace/rules/openbox.in"
 source "rules/pekwm.in"
 
 comment "Framebuffer"

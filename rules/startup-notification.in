@@ -1,0 +1,10 @@
+config STARTUP_NOTIFICATION
+	bool
+	select XORG_LIB_X11
+	select XORG_LIB_ICE
+	prompt "startup-notification"
+	help
+	  startup-notification contains a reference implementation of 
+	  the startup notification protocol. The reference implementation 
+	  is mostly under an X Window System style license, and has no 
+	  special dependencies.
