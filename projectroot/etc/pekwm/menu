@@ -2,6 +2,7 @@
 
 RootMenu = "Pekwm" {
         Entry = "xterm" { Actions = "Exec xterm &" }
+        Entry = "xkbd"  { Actions = "Exec xkbd &"  }
         Entry = "xeyes" { Actions = "Exec xeyes &" }
          Submenu = "Pekwm" {
           Entry = "Reload" { Actions = "Reload" }

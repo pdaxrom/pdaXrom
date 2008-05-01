@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Thu May  1 17:12:35 2008
+# Thu May  1 18:28:39 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1846,6 +1846,7 @@ PTXCONF_GLIB_LIBICONV_GNU=y
 PTXCONF_HPANEL=y
 PTXCONF_XLI=y
 PTXCONF_XTERM=y
+PTXCONF_XKBD=y
 
 #
 # X Window Managers

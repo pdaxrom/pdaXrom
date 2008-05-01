@@ -1,0 +1,19 @@
+--- xkbd-0.8.15/src/Makefile.am-	2008-05-01 18:38:38.000000000 +0700
++++ xkbd-0.8.15/src/Makefile.am	2008-05-01 18:39:00.000000000 +0700
+@@ -1,4 +1,4 @@
+-DEFAULT_CONFIG=$(pkgdatadir)/en_GB.qwerty.xkbd
++DEFAULT_CONFIG=$(pkgdatadir)/en_US.qwerty.xkbd
+ 
+ LDADD = @X_LIBS@ -lX11 -lXtst $(XPM_LIBS) $(XFT_LIBS)
+ CFLAGS = @CFLAGS@ -DDEFAULTCONFIG=\"$(DEFAULT_CONFIG)\"
+--- xkbd-0.8.15/src/Makefile.in-	2008-05-01 18:42:20.000000000 +0700
++++ xkbd-0.8.15/src/Makefile.in	2008-05-01 18:42:27.000000000 +0700
+@@ -177,7 +177,7 @@
+ sharedstatedir = @sharedstatedir@
+ sysconfdir = @sysconfdir@
+ target_alias = @target_alias@
+-DEFAULT_CONFIG = $(pkgdatadir)/en_GB.qwerty.xkbd
++DEFAULT_CONFIG = $(pkgdatadir)/en_US.qwerty.xkbd
+ LDADD = @X_LIBS@ -lX11 -lXtst $(XPM_LIBS) $(XFT_LIBS)
+ xkbd_SOURCES = xkbd.c libXkbd.c box.c button.c kb.c libvirtkeys.c \
+                       structs.h box.h  button.h  kb.h  libvirtkeys.h \
