@@ -7,3 +7,4 @@
 
 # board specific hardware
 davinci_emac_driver
+uinput
