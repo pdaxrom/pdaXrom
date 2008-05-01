@@ -198,6 +198,7 @@ source "rules/wxWindows.in"
 source "rules/realvnc.in"
 source "rules/xli.in"
 source "rules/xterm.in"
+source "workspace/rules/xkbd.in"
 
 comment "X Window Managers"
 source "rules/blackbox.in"
