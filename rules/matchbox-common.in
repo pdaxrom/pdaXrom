@@ -1,0 +1,6 @@
+config MATCHBOX_COMMON
+	bool
+	prompt "matchbox-common"
+	help
+	  common stuff for matchbox
+

@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Thu May  1 21:19:16 2008
+# Fri May  2 15:35:32 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1876,6 +1876,16 @@ PTXCONF_OPENBOX=y
 PTXCONF_PEKWM=y
 
 #
+# X11 DE
+#
+
+#
+# Matchbox              
+#
+# PTXCONF_LIBMATCHBOX is not set
+PTXCONF_MATCHBOX_COMMON=y
+
+#
 # Framebuffer
 #
 # PTXCONF_FBTEST is not set
@@ -1907,6 +1917,8 @@ PTXCONF_RCONTROL=y
 #
 # Web Applications              
 #
+PTXCONF_LINKS=y
+PTXCONF_LINKS_X11=y
 # PTXCONF_MFIREBIRD is not set
 # PTXCONF_PENGUZILLA is not set
 # PTXCONF_JVISU is not set

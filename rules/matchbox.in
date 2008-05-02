@@ -1,0 +1,6 @@
+menu "Matchbox              "
+
+source "workspace/rules/libmatchbox.in"
+source "workspace/rules/matchbox-common.in"
+
+endmenu
