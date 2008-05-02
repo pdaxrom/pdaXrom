@@ -208,6 +208,9 @@ source "rules/blackbox.in"
 source "workspace/rules/openbox.in"
 source "rules/pekwm.in"
 
+comment "X11 DE"
+source "workspace/rules/matchbox.in"
+
 comment "Framebuffer"
 source "rules/fbtest.in"
 source "rules/fbutils.in"
@@ -232,6 +235,7 @@ source "rules/libpv.in"
 endmenu
 
 menu "Web Applications              "
+source "workspace/rules/links.in"
 source "rules/mfirebird.in"
 source "rules/penguzilla.in"
 source "rules/jvisu.in"
