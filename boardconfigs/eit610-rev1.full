@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Fri May  2 15:35:32 2008
+# Fri May  2 16:47:14 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1883,7 +1883,7 @@ PTXCONF_PEKWM=y
 # Matchbox              
 #
 # PTXCONF_LIBMATCHBOX is not set
-PTXCONF_MATCHBOX_COMMON=y
+# PTXCONF_MATCHBOX_COMMON is not set
 
 #
 # Framebuffer

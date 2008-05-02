@@ -13,6 +13,5 @@ config LINKS_X11
 	select XORG_LIB_XEXT
 	select XORG_LIB_X11
 	select XORG_LIB_XFT
-	select MATCHBOX_COMMON
 	help
 	  enable X11 GUI
