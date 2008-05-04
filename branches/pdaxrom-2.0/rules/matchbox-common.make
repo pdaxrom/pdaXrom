@@ -104,17 +104,19 @@ matchbox-common_targetinstall: $(STATEDIR)/matchbox-common.targetinstall
 $(STATEDIR)/matchbox-common.targetinstall: $(matchbox-common_targetinstall_deps_default)
 	@$(call targetinfo, $@)
 
+	cd $(MATCHBOX_COMMON_DIR) && $(MATCHBOX_COMMON_PATH) $(MAKE) $(PARALLELMFLAGS) DESTDIR=$(MATCHBOX_COMMON_DIR)/fakeroot install
+
 	@$(call install_init, matchbox-common)
 	@$(call install_fixup, matchbox-common,PACKAGE,matchbox-common)
 	@$(call install_fixup, matchbox-common,PRIORITY,optional)
 	@$(call install_fixup, matchbox-common,VERSION,$(MATCHBOX_COMMON_VERSION))
 	@$(call install_fixup, matchbox-common,SECTION,base)
 	@$(call install_fixup, matchbox-common,AUTHOR,"Alexander Chukov <sash\@pdaXrom.org>")
-	@$(call install_fixup, matchbox-common,DEPENDS,)
+	@$(call install_fixup, matchbox-common,DEPENDS, libmatchbox)
 	@$(call install_fixup, matchbox-common,DESCRIPTION,missing)
 
-	@$(call install, MATCHBOX_COMMON)
-
+	@$(call install_target, matchbox-common, $(MATCHBOX_COMMON_DIR)/fakeroot/usr, /usr)
+	
 	@$(call install_finish, matchbox-common)
 
 	@$(call touch, $@)

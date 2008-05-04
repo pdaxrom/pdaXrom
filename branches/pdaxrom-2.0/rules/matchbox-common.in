@@ -1,6 +1,7 @@
 config MATCHBOX_COMMON
 	bool
 	prompt "matchbox-common"
+	select LIBMATCHBOX
 	help
 	  common stuff for matchbox
 

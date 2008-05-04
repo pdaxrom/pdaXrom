@@ -110,7 +110,7 @@ $(STATEDIR)/libmatchbox.targetinstall: $(libmatchbox_targetinstall_deps_default)
 	@$(call install_fixup, libmatchbox,VERSION,$(LIBMATCHBOX_VERSION))
 	@$(call install_fixup, libmatchbox,SECTION,base)
 	@$(call install_fixup, libmatchbox,AUTHOR,"Alexander Chukov <sash\@pdaXrom.org>")
-	@$(call install_fixup, libmatchbox,DEPENDS,)
+	@$(call install_fixup, libmatchbox,DEPENDS, "startup-notification libpng libjpeg")
 	@$(call install_fixup, libmatchbox,DESCRIPTION,missing)
 
 	@$(call install_copy, libmatchbox, 0, 0, 0755, $(LIBMATCHBOX_DIR)/libmb/.libs/libmb.so.1.0.9, /usr/lib/libmb.so.1.0.9)

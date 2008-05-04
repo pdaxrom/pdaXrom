@@ -1,0 +1,7 @@
+config MB_APPLET_INPUT_MANAGER
+	bool
+	prompt "mb-applet-input-manager"
+	select MATCHBOX_PANEL
+	help
+	  matchbox applet input manager
+

@@ -1,6 +1,16 @@
 menu "Matchbox              "
 
+source "workspace/rules/libfakekey.in"
 source "workspace/rules/libmatchbox.in"
 source "workspace/rules/matchbox-common.in"
-
+source "workspace/rules/matchbox-desktop.in"
+#source "workspace/rules/mb-desktop-image-browser.in"
+source "workspace/rules/matchbox-panel.in"
+source "workspace/rules/matchbox-panel-manager.in"
+source "workspace/rules/matchbox-window-manager.in"
+comment "---------------------"
+source "workspace/rules/matchbox-keyboard.in"
+source "workspace/rules/mb-applet-input-manager.in"
+source "workspace/rules/mb-applet-startup-monitor.in"
+source "workspace/rules/mb-applet-volume.in"
 endmenu

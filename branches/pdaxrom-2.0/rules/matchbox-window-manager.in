@@ -1,0 +1,9 @@
+config MATCHBOX_WINDOW_MANAGER
+	bool
+	prompt "matchbox-window-manager"
+	select LIBMATCHBOX
+	select MATCHBOX_COMMON
+	select GTK
+	help
+	  matchbox window manager
+

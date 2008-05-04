@@ -1,0 +1,9 @@
+config MATCHBOX_DESKTOP
+	bool
+	prompt "matchbox-desktop"
+	select LIBMATCHBOX
+	select MATCHBOX_COMMON
+	select GTK
+	help
+	  matchbox desktop
+
