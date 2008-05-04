@@ -1,0 +1,9 @@
+config MATCHBOX_KEYBOARD
+	bool
+	prompt "matchbox-keyboard"
+	select MATCHBOX_PANEL
+	select LIBFAKEKEY
+	select EXPAT
+	help
+	  matchbox keyboard
+

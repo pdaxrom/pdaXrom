@@ -1,0 +1,7 @@
+config MATCHBOX_PANEL_MANAGER
+	bool
+	prompt "matchbox-panel-manager"
+	select MATCHBOX_PANEL
+	help
+	  matchbox panel manager
+

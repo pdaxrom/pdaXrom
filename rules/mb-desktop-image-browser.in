@@ -1,0 +1,7 @@
+config MB_DESKTOP_IMAGE_BROWSER
+	bool
+	prompt "mb-desktop-image-browser"
+	select MATCHBOX_DESKTOP
+	help
+	  matchbox desktop image browser
+

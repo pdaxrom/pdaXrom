@@ -1,0 +1,8 @@
+config LIBFAKEKEY
+	bool
+	prompt "libfakekey"
+	select XORG_LIB_X11
+	select XORG_LIB_XTST
+	help
+	  libfakekey
+
