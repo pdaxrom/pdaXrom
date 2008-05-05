@@ -28,6 +28,7 @@ comment "------------------------------------"
 
 menu "Image Creation Options        "
 source "rules/images.in"
+source "workspace/rules/images-addon.in"
 endmenu
 
 menu "Root Filesystem               "

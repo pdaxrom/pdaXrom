@@ -23,3 +23,26 @@ install_target =								\
 		$(call install_copy, $$XPACKET, 0, 0, $$XMOD, "$$XSRC/$$f", "$$XDST/$$f"); \
 	    fi;									\
 	done
+
+#
+#
+#
+#ifeq (y, $(PTXCONF_IMAGE_CRAMFS))
+SEL_ROOTFS-$(PTXCONF_IMAGE_CRAMFS) += $(IMAGEDIR)/root.cramfs
+#BOOTDISK_TARGETINSTALL += $(IMAGEDIR)/root.cramfs
+#endif
+
+#
+# create the CRAMFS image
+#
+$(IMAGEDIR)/root.cramfs: $(STATEDIR)/image_working_dir
+	@echo -n "Creating root.cramfs from working dir..."
+	@cd $(WORKDIR);							\
+	($(AWK) -F: $(DOPERMISSIONS) $(IMAGEDIR)/permissions &&		\
+	(								\
+		echo -n "$(PTXCONF_HOST_PREFIX)/bin/mkcramfs ";		\
+		echo -n "$(WORKDIR) ";					\
+		echo -n "$(PTXCONF_IMAGE_CRAMFS_EXTRA_ARGS) ";		\
+		echo -n "$@" )						\
+	) | $(FAKEROOT) --
+	@echo "done."

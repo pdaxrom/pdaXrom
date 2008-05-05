@@ -1,3 +1,12 @@
-xsetroot -solid black
-exec pekwm --config /etc/pekwm/config
+DEFAULT_SESSION=
 
+if [ -e /etc/X11/default-session ]; then
+    DEFAULT_SESSION=`cat /etc/X11/default-session`
+fi
+
+if [ "x$DEFAULT_SESSION" = "x" ]; then
+    xsetroot -solid black
+    exec pekwm --config /etc/pekwm/config
+else
+    exec $DEFAULT_SESSION
+fi
