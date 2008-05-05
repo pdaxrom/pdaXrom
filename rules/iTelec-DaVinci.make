@@ -98,6 +98,12 @@ $(STATEDIR)/itelec-davinci.targetinstall: $(itelec-davinci_targetinstall_deps_de
 		$(PTXDIST_WORKSPACE)/projectroot/etc/modules.davinci, \
 		/etc/modules,n)
 
+ifdef PTXCONF_MATCHBOX_COMMON
+	@$(call install_copy, itelec-davinci, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/X11/default-session.mb, \
+		/etc/X11/default-session,n)
+endif
+
 ifdef PTXCONF_PEKWM
 	cd $(PTXDIST_WORKSPACE)/projectroot/etc/pekwm && \
 		for file in `find -type f ! -path "*.svn*"`; do \

@@ -122,7 +122,7 @@ $(STATEDIR)/openbox.targetinstall: $(openbox_targetinstall_deps_default)
 	@$(call install_link, openbox, libobrender.so.21.0.2, /usr/lib/libobrender.so.21)
 	@$(call install_link, openbox, libobrender.so.21.0.2, /usr/lib/libobrender.so)
 	@$(call install_copy, openbox, 0, 0, 0644, $(OPENBOX_DIR)/data/openbox.png, /usr/share/pixmaps/openbox.png)
-	@$(call install_copy, openbox, 0, 0, 0644, $(OPENBOX_DIR)/data/xsession/openbox-session, /usr/bin/openbox-session)
+	@$(call install_copy, openbox, 0, 0, 0755, $(OPENBOX_DIR)/data/xsession/openbox-session, /usr/bin/openbox-session)
 	@$(call install_copy, openbox, 0, 0, 0644, $(OPENBOX_DIR)/data/xsession/openbox.desktop, /usr/share/xsessions/openbox.desktop)
 	@$(call install_copy, openbox, 0, 0, 0644, $(OPENBOX_DIR)/themes/Clearlooks/openbox-3/themerc, /usr/share/themes/Clearlooks/openbox-3/themerc)
 
