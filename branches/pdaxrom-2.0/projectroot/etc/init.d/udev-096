@@ -25,7 +25,7 @@ fi
 echo "mounting... tmpfs at $udev_root"
 mount -n -t tmpfs tmpfs $udev_root -o mode=755
 
-echo /sbin/udevsend > /proc/sys/kernel/hotplug 
+#echo /sbin/udevsend > /proc/sys/kernel/hotplug 
 
 [ -d /proc/1 ] || mount -n /proc
 echo -n "Creating initial device nodes..."
