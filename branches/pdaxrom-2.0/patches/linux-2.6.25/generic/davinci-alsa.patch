@@ -1,0 +1,91 @@
+--- linux-2.6.25/sound/soc/davinci/davinci-evm.c-	2008-05-07 13:22:23.000000000 +0700
++++ linux-2.6.25/sound/soc/davinci/davinci-evm.c	2008-05-07 13:25:33.000000000 +0700
+@@ -21,6 +21,7 @@
+ 
+ #include <asm/mach-types.h>
+ #include <asm/dma.h>
++#include <asm/arch/edma.h>
+ #include <asm/arch/hardware.h>
+ 
+ #include "../codecs/tlv320aic3x.h"
+@@ -163,8 +164,8 @@
+ };
+ 
+ static struct evm_snd_platform_data evm_snd_data = {
+-	.tx_dma_ch	= DM644X_DMACH_MCBSP_TX,
+-	.rx_dma_ch	= DM644X_DMACH_MCBSP_RX,
++	.tx_dma_ch	= DAVINCI_DMA_MCBSP_TX,
++	.rx_dma_ch	= DAVINCI_DMA_MCBSP_RX,
+ };
+ 
+ static struct platform_device *evm_snd_device;
+--- linux-2.6.25/sound/soc/davinci/davinci-pcm.c-	2008-05-07 13:09:26.000000000 +0700
++++ linux-2.6.25/sound/soc/davinci/davinci-pcm.c	2008-05-07 13:16:04.000000000 +0700
+@@ -21,6 +21,7 @@
+ #include <sound/soc.h>
+ 
+ #include <asm/dma.h>
++#include <asm/arch/edma.h>
+ 
+ #include "davinci-pcm.h"
+ 
+@@ -147,7 +148,7 @@
+ 		return ret;
+ 
+ 	/* Request slave DMA channel */
+-	ret = davinci_request_dma(PARAM_ANY, "Link",
++	ret = davinci_request_dma(DAVINCI_EDMA_PARAM_ANY, "Link",
+ 				  NULL, NULL, &prtd->slave_lch, &tcc, EVENTQ_0);
+ 	if (ret) {
+ 		davinci_free_dma(prtd->master_lch);
+@@ -191,7 +192,7 @@
+ static int davinci_pcm_prepare(struct snd_pcm_substream *substream)
+ {
+ 	struct davinci_runtime_data *prtd = substream->runtime->private_data;
+-	struct paramentry_descriptor temp;
++	edmacc_paramentry_regs temp;
+ 
+ 	prtd->period = 0;
+ 	davinci_pcm_enqueue_dma(substream);
+--- linux-2.6.25/arch/arm/mach-davinci/dma.c-	2008-05-07 13:17:52.000000000 +0700
++++ linux-2.6.25/arch/arm/mach-davinci/dma.c	2008-05-07 13:19:40.000000000 +0700
+@@ -309,6 +309,25 @@
+ 	}
+ }
+ 
++/**
++ * DMA transfer position - returns the current transfer points for the dma
++ * source and destination
++ * Arguments:
++ *     lch - logical channel number
++ *     src - source port position
++ *     dst - destination port position
++ */
++void davinci_dma_getposition(int lch, dma_addr_t *src, dma_addr_t *dst)
++{
++	edmacc_paramentry_regs temp;
++
++	davinci_get_dma_params(lch, &temp);
++	if (src != NULL)
++		*src = temp.src;
++	if (dst != NULL)
++		*dst = temp.dst;
++}
++
+ /******************************************************************************
+  *
+  * DMA interrupt requests: Requests for the interrupt on the free channel
+@@ -1735,3 +1754,4 @@
+ EXPORT_SYMBOL(davinci_dma_chain_lch);
+ EXPORT_SYMBOL(davinci_dma_unchain_lch);
+ EXPORT_SYMBOL(davinci_dma_unlink_lch);
++EXPORT_SYMBOL(davinci_dma_getposition);
+--- linux-2.6.25/include/asm-arm/arch-davinci/edma.h-	2008-05-07 13:21:03.000000000 +0700
++++ linux-2.6.25/include/asm-arm/arch-davinci/edma.h	2008-05-07 13:21:16.000000000 +0700
+@@ -552,4 +552,6 @@
+  *****************************************************************************/
+ void davinci_free_dma(int lch);
+ 
++void davinci_dma_getposition(int lch, dma_addr_t *src, dma_addr_t *dst);
++
+ #endif

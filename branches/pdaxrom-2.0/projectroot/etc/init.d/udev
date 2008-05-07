@@ -30,20 +30,18 @@ udevd=/sbin/udevd
 udevt="/sbin/udevadm trigger"
 udevs="/sbin/udevadm settle"
 
-make_extra_nodes () {
-	# there are a few things that sysfs does not export for us.
-	# these things go here (and remember to remove them in
-	# remove_extra_nodes()
-	#
-	# Thanks to Gentoo for the initial list of these.
-	ln -snf /proc/self/fd $udev_root/fd
-	ln -snf /proc/self/fd/0 $udev_root/stdin
-	ln -snf /proc/self/fd/1 $udev_root/stdout
-	ln -snf /proc/self/fd/2 $udev_root/stderr
-	ln -snf /proc/kcore $udev_root/core
-
-	mkdir $udev_root/pts
-	mkdir $udev_root/shm
+make_extra_nodes() {
+    [ -e /etc/udev/links.conf ] || return
+    grep '^[^#]' /etc/udev/links.conf | \
+    while read type name arg1; do
+	[ "$type" -a "$name" -a ! -e "/dev/$name" -a ! -L "/dev/$name" ] ||continue
+	case "$type" in
+    	    L) ln -s $arg1 /dev/$name ;;
+    	    D) mkdir -p /dev/$name ;;
+    	    M) mknod /dev/$name $arg1 ;;
+    	    *) echo "links.conf: unparseable line ($type $name $arg1)" ;;
+	esac
+    done
 }
 
 # don't use udev if sysfs is not mounted.
