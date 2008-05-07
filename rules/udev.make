@@ -166,6 +166,9 @@ ifdef PTXCONF_ROOTFS_ETC_UDEV_USER_RULES
 		$(call install_copy, udev, 0, 0, 0755, $$i, \
 			/etc/udev/scripts/$$i,n); \
 	done;
+	@$(call install_copy, udev, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/udev/links.conf, \
+		/etc/udev/links.conf, n)
 endif
 ifdef PTXCONF_ROOTFS_ETC_UDEV_DEFAULT_RULES
 	@$(call install_copy, udev, 0, 0, 0755, \
