@@ -3,6 +3,7 @@ menuconfig PANGO
 	prompt "pango                         "
 	select CAIRO
 	select GLIB
+	select XORG_LIB_XFT if PANGO_TARGET_X11
 	select WINE if ARCH_MINGW
 
 config PANGO_TARGET_X11
