@@ -18,7 +18,7 @@ endmenu
 
 menu "Host Side Tools               "
 source "rules/hosttools.in"
-source "workspace/rules/host-shared-mime-info.in"
+#source "workspace/rules/host-shared-mime-info.in"
 endmenu
 
 menu "Debugging Tools               "
