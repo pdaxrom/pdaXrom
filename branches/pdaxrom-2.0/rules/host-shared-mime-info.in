@@ -1,0 +1,5 @@
+config HOST_SHARED_MIME_INFO
+	bool
+	prompt "shared-mime-info"
+	help
+	  The shared-mime-info package contains the core database of common types and the *update-mime-database* command used to extend it.

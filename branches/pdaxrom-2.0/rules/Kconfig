@@ -18,6 +18,7 @@ endmenu
 
 menu "Host Side Tools               "
 source "rules/hosttools.in"
+source "workspace/rules/host-shared-mime-info.in"
 endmenu
 
 menu "Debugging Tools               "
@@ -191,8 +192,10 @@ menu "Graphics Libraries            "
 source "rules/xorg.in"
 
 comment "X Applications"
+source "workspace/rules/aterm.in"
 source "workspace/rules/gtk-menu.in"
 source "rules/fltk.in"
+source "workspace/rules/fbpanel.in"
 source "rules/hpanel.in"
 #source "rules/qte.in"
 source "rules/wxWindows.in"
@@ -211,6 +214,7 @@ source "rules/pekwm.in"
 
 comment "X11 DE"
 source "workspace/rules/matchbox.in"
+source "workspace/rules/rox-filer.in"
 
 comment "Framebuffer"
 source "rules/fbtest.in"
@@ -224,6 +228,7 @@ source "rules/fontconfig.in"
 source "rules/tslib.in"
 source "rules/qtopia.in"
 source "workspace/rules/rcontrol.in"
+source "workspace/rules/shared-mime-info.in"
 source "rules/i855resolution.in"
 source "rules/i915resolution.in"
 endmenu
