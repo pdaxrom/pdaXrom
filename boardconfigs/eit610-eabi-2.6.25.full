@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Sun May 11 04:39:11 2008
+# Sun May 11 13:33:55 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -294,6 +294,7 @@ PTXCONF_HOST_XORG_PROTO_FONTS=y
 # PTXCONF_HOST_GETTEXT is not set
 PTXCONF_HOST_LIBICONV=y
 # PTXCONF_HOST_LIBICONV_EXTRA_ENCODINGS is not set
+PTXCONF_HOST_LIBIDL_2=y
 
 #
 # Debugging Tools               
@@ -1959,6 +1960,7 @@ PTXCONF_SHARED_MIME_INFO=y
 #
 # Web Applications              
 #
+PTXCONF_FIREFOX=y
 PTXCONF_LINKS=y
 PTXCONF_LINKS_X11=y
 # PTXCONF_MFIREBIRD is not set
@@ -1975,3 +1977,4 @@ PTXCONF_LINKS_X11=y
 PTXCONF_TESTSUITE_DIR="/usr/lib/testsuites"
 # PTXCONF_DBENCH is not set
 # PTXCONF_LTP is not set
+PTXCONF_LIBIDL_2=y

@@ -1,0 +1,7 @@
+xptcinvoke-arm.patch
+eabi-fix.patch
+jsnum.h.diff
+eabi-fix3.patch
+linkage-problem.patch
+security-cross.patch
+xptcstubs_arm.cpp.diff

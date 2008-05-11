@@ -1,0 +1,31 @@
+--- mozilla/js/src/jsnum.h.orig	2007-11-02 02:52:24.000000000 +0600
++++ mozilla/js/src/jsnum.h	2008-05-11 14:41:39.000000000 +0700
+@@ -60,15 +60,16 @@
+  * are stored in big endian`s way.
+  */
+ 
+-#if defined(__arm) || defined(__arm32__) || defined(__arm26__) || defined(__arm__)
++#if !defined(__ARM_EABI__) && \
++    (defined(__arm) || defined(__arm32__) || defined(__arm26__) || defined(__arm__))
+ #ifndef __QNXNTO__
+-#define CPU_IS_ARM
++#define IEEE_ARM
+ #endif
+ #endif
+ 
+ typedef union jsdpun {
+     struct {
+-#if defined(IS_LITTLE_ENDIAN) && !defined(CPU_IS_ARM)
++#if defined(IS_LITTLE_ENDIAN) && !defined(IEEE_ARM)
+         uint32 lo, hi;
+ #else
+         uint32 hi, lo;
+@@ -97,7 +98,7 @@
+  * so this code should work.
+  */
+ 
+-#if defined(IS_LITTLE_ENDIAN) && !defined(CPU_IS_ARM)
++#if defined(IS_LITTLE_ENDIAN) && !defined(IEEE_ARM)
+ #define JSDOUBLE_HI32(x)        (((uint32 *)&(x))[1])
+ #define JSDOUBLE_LO32(x)        (((uint32 *)&(x))[0])
+ #else

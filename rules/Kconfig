@@ -19,6 +19,7 @@ endmenu
 menu "Host Side Tools               "
 source "rules/hosttools.in"
 #source "workspace/rules/host-shared-mime-info.in"
+source "workspace/rules/host-libidl-2.in"
 endmenu
 
 menu "Debugging Tools               "
@@ -243,6 +244,7 @@ source "rules/libpv.in"
 endmenu
 
 menu "Web Applications              "
+source "workspace/rules/firefox.in"
 source "workspace/rules/links.in"
 source "rules/mfirebird.in"
 source "rules/penguzilla.in"
@@ -273,7 +275,7 @@ source "rules/libart.in"
 source "rules/libgd.in"
 source "rules/libgnomecanvas.in"
 #source "rules/libidl068.in"
-source "rules/libIDL-2.in"
+source "workspace/rules/libIDL-2.in"
 source "rules/liboop.in"
 source "rules/paranoia.in"
 source "rules/qte.in"

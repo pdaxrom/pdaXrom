@@ -1,0 +1,17 @@
+config FIREFOX
+	bool
+	prompt "firefox"
+	select XORG_LIB_XEXT
+	select XORG_LIB_X11
+	select XORG_LIB_SM
+	select XORG_LIB_ICE
+	select XORG_LIB_XPM
+	select XORG_LIB_XMU
+	select CAIRO
+	select GTK
+	select LIBIDL_2
+	select HOST_LIBIDL_2
+	select LIBPNG
+	select LIBJPEG
+	help
+	  webbrowser
