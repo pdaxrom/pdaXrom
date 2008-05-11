@@ -1,0 +1,20 @@
+--- s/configure-	2008-05-11 04:19:23.000000000 +0700
++++ s/configure	2008-05-11 04:19:58.000000000 +0700
+@@ -38,7 +38,7 @@
+ DEBUG=NO
+ HELP=1
+ 
+-CC=gcc
++#CC=gcc
+ CROSSPF=
+ 
+ L_EX=
+@@ -250,7 +250,7 @@
+ 		"486" )		MARCH='-march=i486';;
+ 		"586" )		MARCH='-march=i586';;
+ 		"686" )		MARCH='-march=i686';;
+-		"release" )	CFLAG='-O2 -fweb -march=i386'
++		"release" )	CFLAG='-O2 -fweb'
+ 				HAVE_FUNCS="$HAVE_FUNCS -DGTK_NO_CHECK_CASTS -DG_DISABLE_CAST_CHECKS";;
+ 		"--prefix="* )	MT_PREFIX="`echo "$A" | sed -e "s/--prefix=//"`"
+ 				WIN_BIN_INSTALL="$MT_PREFIX/bin"

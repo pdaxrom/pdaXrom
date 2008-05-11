@@ -113,6 +113,8 @@ $(STATEDIR)/aterm.targetinstall: $(aterm_targetinstall_deps_default)
 	@$(call install_fixup, aterm,DESCRIPTION,missing)
 
 	@$(call install_copy, aterm, 0, 0, 0755, $(ATERM_DIR)/src/aterm, /usr/bin/aterm)
+	@$(call install_copy, aterm, 0, 0, 0644, $(PDAXROMDIR)/apps/aterm.desktop, /usr/share/applications/aterm.desktop)
+	@$(call install_copy, aterm, 0, 0, 0644, $(PDAXROMDIR)/pixmaps/konsole.png, /usr/share/pixmaps/konsole.png)
 
 	@$(call install_finish, aterm)
 

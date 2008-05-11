@@ -1,0 +1,18 @@
+--- s/src/drawing.c-	2008-05-11 03:49:08.000000000 +0700
++++ s/src/drawing.c	2008-05-11 03:49:13.000000000 +0700
+@@ -426,11 +426,11 @@
+                GTK_BUTTONS_NONE, 
+                _("Do you want to save the changes you made to \"%s\"?\nYour changes will be lost if you don't save them."),
+                drawing->filename->str);
+-#ifdef GTK_STOCK_DISCARD
+-        gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_DISCARD,GTK_RESPONSE_DISCARD);
+-#else
++//#ifdef GTK_STOCK_DISCARD
++//        gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_DISCARD,GTK_RESPONSE_DISCARD);
++//#else
+         gtk_dialog_add_button(GTK_DIALOG(dialog), _("Close _without Saving"), GTK_RESPONSE_NO);
+-#endif /* !GTK_STOCK_DISCARD */
++//#endif /* !GTK_STOCK_DISCARD */
+         gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+         gtk_dialog_add_button(GTK_DIALOG(dialog), GTK_STOCK_SAVE, GTK_RESPONSE_YES);
+         
