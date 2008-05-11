@@ -1,0 +1,14 @@
+--- mozilla/xpcom/reflect/xptcall/src/md/unix/xptcstubs_arm.cpp-	2008-05-11 14:08:37.000000000 +0700
++++ mozilla/xpcom/reflect/xptcall/src/md/unix/xptcstubs_arm.cpp	2008-05-11 14:25:44.000000000 +0700
+@@ -45,9 +45,9 @@
+ #endif
+ 
+ /* Specify explicitly a symbol for this function, don't try to guess the c++ mangled symbol.  */
+-static nsresult PrepareAndDispatch(nsXPTCStubBase* self, uint32 methodIndex, PRUint32* args) asm("_PrepareAndDispatch");
++nsresult PrepareAndDispatch(nsXPTCStubBase* self, uint32 methodIndex, PRUint32* args) asm("_PrepareAndDispatch");
+ 
+-static nsresult
++nsresult
+ PrepareAndDispatch(nsXPTCStubBase* self, uint32 methodIndex, PRUint32* args)
+ {
+ #define PARAM_BUFFER_COUNT     16
