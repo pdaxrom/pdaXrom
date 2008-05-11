@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Sun May 11 01:21:51 2008
+# Sun May 11 04:39:11 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1884,7 +1884,9 @@ PTXCONF_LIBGLADE=y
 # PTXCONF_GLADE is not set
 # PTXCONF_FLTK is not set
 PTXCONF_FBPANEL=y
+# PTXCONF_GPAINT is not set
 # PTXCONF_HPANEL is not set
+PTXCONF_MTPAINT=y
 PTXCONF_XLI=y
 # PTXCONF_XTERM is not set
 # PTXCONF_XKBD is not set

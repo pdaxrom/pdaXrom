@@ -1,3 +1,5 @@
+PDAXROMDIR=${PTXDIST_WORKSPACE}/pdaxrom_data
+
 #
 # install_target
 #
