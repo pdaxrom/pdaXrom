@@ -19,6 +19,7 @@ endmenu
 menu "Host Side Tools               "
 source "rules/hosttools.in"
 #source "workspace/rules/host-shared-mime-info.in"
+source "workspace/rules/host-icu.in"
 source "workspace/rules/host-libidl-2.in"
 endmenu
 
@@ -88,6 +89,7 @@ endmenu
 
 menu "Networking Tools              "
 source "rules/networking.in"
+source "workspace/rules/curl.in"
 source "workspace/rules/dhcpcd.in"
 endmenu
 
@@ -151,6 +153,7 @@ source "rules/expat.in"
 source "rules/gettext.in"
 #source "rules/glibmm.in"
 source "rules/hrtimers-support.in"
+source "workspace/rules/icu.in"
 source "rules/libusb.in"
 
 source "rules/libdaemon.in"
@@ -249,6 +252,7 @@ source "workspace/rules/links.in"
 source "rules/mfirebird.in"
 source "rules/penguzilla.in"
 source "rules/jvisu.in"
+source "workspace/rules/WebKit.in"
 endmenu
 
 menu "Test Suites                   "
