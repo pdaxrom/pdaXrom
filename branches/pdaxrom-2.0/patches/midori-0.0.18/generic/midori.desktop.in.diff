@@ -1,0 +1,10 @@
+--- s/midori.desktop.in-	2008-05-12 17:07:23.000000000 +0700
++++ s/midori.desktop.in	2008-05-12 17:07:31.000000000 +0700
+@@ -9,6 +9,6 @@
+ Categories=GTK;Network;
+ MimeType=text/html;text/xml;application/xhtml+xml;application/xml;
+ Exec=midori %u
+-Icon=web-browser
++Icon=web-browser.png
+ Terminal=false
+ StartupNotify=true

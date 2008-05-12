@@ -249,6 +249,7 @@ endmenu
 menu "Web Applications              "
 source "workspace/rules/firefox.in"
 source "workspace/rules/links.in"
+source "workspace/rules/midori.in"
 source "rules/mfirebird.in"
 source "rules/penguzilla.in"
 source "rules/jvisu.in"
