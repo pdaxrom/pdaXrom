@@ -11,6 +11,7 @@ source "rules/cairo.in"
 source "rules/cairomm.in"
 source "rules/directfb.in"
 source "rules/libglade.in"
+source "workspace/rules/libsexy.in"
 source "rules/glade.in"
 source "rules/wine.in"
 
