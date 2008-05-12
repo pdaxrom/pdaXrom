@@ -1,0 +1,5 @@
+config HOST_ICU
+	bool
+	prompt "host icu"
+	help
+	  icu

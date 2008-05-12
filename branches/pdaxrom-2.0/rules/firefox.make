@@ -130,7 +130,7 @@ $(STATEDIR)/firefox.targetinstall: $(firefox_targetinstall_deps_default)
 	@$(call install_fixup, firefox,PRIORITY,optional)
 	@$(call install_fixup, firefox,VERSION,$(FIREFOX_VERSION))
 	@$(call install_fixup, firefox,SECTION,base)
-	@$(call install_fixup, firefox,AUTHOR,"Robert Schwebel <r.schwebel\@pengutronix.de>")
+	@$(call install_fixup, firefox,AUTHOR,"Alexander Chukov <sash\@pdaXrom.org>")
 	@$(call install_fixup, firefox,DEPENDS, "gtk")
 	@$(call install_fixup, firefox,DESCRIPTION,missing)
 
