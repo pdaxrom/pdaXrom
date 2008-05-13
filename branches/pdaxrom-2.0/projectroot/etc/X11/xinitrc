@@ -1,7 +1,18 @@
 DEFAULT_SESSION=
 
+get_session() {
+    test -d /usr/share/xsessions || return
+    
+    for sf in /usr/share/xsessions/*.desktop; do
+	cat $sf | grep 'Exec' | cut -f2 -d'='
+	break
+    done
+}
+
 if [ -e /etc/X11/default-session ]; then
     DEFAULT_SESSION=`cat /etc/X11/default-session`
+else
+    DEFAULT_SESSION=`get_session`
 fi
 
 if [ "x$DEFAULT_SESSION" = "x" ]; then
