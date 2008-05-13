@@ -1,6 +1,7 @@
 config HOST_LIBIDL_2
 	bool
 	prompt "host libidl2"
+	select HOST_GLIB
 	help
 	  libIDL is a front-end for CORBA IDL and Mozilla's XPIDL,
 	  currently used in the GNOME project (bundled with ORBit),
