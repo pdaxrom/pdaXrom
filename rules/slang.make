@@ -67,8 +67,12 @@ SLANG_MAKEVARS	:= SLANG_INST_LIB=
 #
 SLANG_AUTOCONF := \
 	$(CROSS_AUTOCONF_USR) \
-	--with-png=$(SYSROOT)/usr \
+	--with-png=$(SYSROOT)/usr
+
+ifdef PTXCONF_SLANG_LIBICONV	
+SLANG_AUTOCONF += \
 	--with-iconv=$(SYSROOT)/usr
+endif
 
 $(STATEDIR)/slang.prepare: $(slang_prepare_deps_default)
 	@$(call targetinfo, $@)
