@@ -63,15 +63,20 @@ SKIPSTONE_ENV 	:= $(CROSS_ENV)
 #
 # autoconf
 #
-SKIPSTONE_AUTOCONF := $(CROSS_AUTOCONF_USR)
+SKIPSTONE_AUTOCONF := $(CROSS_AUTOCONF_USR) \
+    --with-mozilla-includes=$(SYSROOT)/usr/include/firefox \
+    --with-mozilla-libs=$(SYSROOT)/usr/lib/firefox
 
 $(STATEDIR)/skipstone.prepare: $(skipstone_prepare_deps_default)
 	@$(call targetinfo, $@)
 	@$(call clean, $(SKIPSTONE_DIR)/config.cache)
-	#cd $(SKIPSTONE_DIR) && \
-	#	$(SKIPSTONE_PATH) $(SKIPSTONE_ENV) \
-	#	./configure $(SKIPSTONE_AUTOCONF)
+ifdef PTXCONF_SKIPSTONE_MOZILLA
+	cd $(SKIPSTONE_DIR) && \
+		$(SKIPSTONE_PATH) $(SKIPSTONE_ENV) \
+		./configure $(SKIPSTONE_AUTOCONF)
+else
 	cp -f $(SKIPSTONE_DIR)/src/Makefile.webkit $(SKIPSTONE_DIR)/src/Makefile
+endif
 	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
@@ -108,6 +113,11 @@ $(STATEDIR)/skipstone.targetinstall: $(skipstone_targetinstall_deps_default)
 	cd $(SKIPSTONE_DIR) && $(SKIPSTONE_PATH) $(SKIPSTONE_ENV) $(MAKE) $(PARALLELMFLAGS) \
 	    LDFLAGS="-Wl,-rpath-link,$(SYSROOT)/usr/lib -Wl,-rpath-link,$(SYSROOT)/lib" \
 	    PREFIX=$(SKIPSTONE_DIR)/fakeroot/usr install
+
+ifndef PTXCONF_SKIPSTONE_MOZILLA
+	rm -f $(SKIPSTONE_DIR)/fakeroot/usr/bin/skipstone
+	ln -sf skipstone-bin $(SKIPSTONE_DIR)/fakeroot/usr/bin/skipstone
+endif
 
 	@$(call install_init, skipstone)
 	@$(call install_fixup, skipstone,PACKAGE,skipstone)

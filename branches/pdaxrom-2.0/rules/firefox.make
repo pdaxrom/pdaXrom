@@ -100,7 +100,9 @@ firefox_install: $(STATEDIR)/firefox.install
 
 $(STATEDIR)/firefox.install: $(firefox_install_deps_default)
 	@$(call targetinfo, $@)
-	#@$(call install, FIREFOX)
+	@$(call install, FIREFOX)
+	ln -s firefox-$(FIREFOX_VERSION) $(SYSROOT)/usr/include/firefox
+	ln -s firefox-$(FIREFOX_VERSION) $(SYSROOT)/usr/lib/firefox
 	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
@@ -118,6 +120,9 @@ $(STATEDIR)/firefox.targetinstall: $(firefox_targetinstall_deps_default)
 	    HOST_LIBIDL_CFLAGS="`PATH=$(HOST_PATH) libIDL-config-2 --cflags`" \
 	    HOST_LIBIDL_LIBS="$(HOST_LDFLAGS) `PATH=$(HOST_PATH) libIDL-config-2 --libs`" \
 	    DESTDIR=$(FIREFOX_DIR)/fakeroot install
+
+	ln -s firefox-$(FIREFOX_VERSION) $(FIREFOX_DIR)/fakeroot/usr/include/firefox
+	ln -s firefox-$(FIREFOX_VERSION) $(FIREFOX_DIR)/fakeroot/usr/lib/firefox
 
 	rm -rf $(FIREFOX_DIR)/fakeroot/usr/bin/firefox-config
 	rm -rf $(FIREFOX_DIR)/fakeroot/usr/include

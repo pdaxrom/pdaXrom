@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Wed May 14 13:03:56 2008
+# Wed May 14 15:14:06 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1975,14 +1975,12 @@ PTXCONF_SHARED_MIME_INFO=y
 #
 # Web Applications              
 #
-# PTXCONF_FIREFOX is not set
+PTXCONF_FIREFOX=y
 PTXCONF_LINKS=y
 PTXCONF_LINKS_X11=y
 PTXCONF_MIDORI=y
-# PTXCONF_MFIREBIRD is not set
-# PTXCONF_PENGUZILLA is not set
-# PTXCONF_JVISU is not set
 PTXCONF_SKIPSTONE=y
+PTXCONF_SKIPSTONE_MOZILLA=y
 PTXCONF_WEBKIT=y
 
 #
@@ -1995,3 +1993,4 @@ PTXCONF_WEBKIT=y
 PTXCONF_TESTSUITE_DIR="/usr/lib/testsuites"
 # PTXCONF_DBENCH is not set
 # PTXCONF_LTP is not set
+PTXCONF_LIBIDL_2=y
