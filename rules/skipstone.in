@@ -3,7 +3,7 @@ config SKIPSTONE
 	prompt "skipstone"
 	select GTK
 	select LIBXML2
-	select WEBKIT
+	select WEBKIT if !SKIPSTONE_MOZILLA
 	help
 	  SkipStone is a Gtk+ Web Browser that embeds Mozilla's rendering component Gecko. It aims to be light and fast with few dependencies. As of version 1.0.0 - Support for Apple WebKit has been added.
 
