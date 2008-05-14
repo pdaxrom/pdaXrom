@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Mon May 12 16:53:03 2008
+# Wed May 14 13:03:56 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1982,6 +1982,7 @@ PTXCONF_MIDORI=y
 # PTXCONF_MFIREBIRD is not set
 # PTXCONF_PENGUZILLA is not set
 # PTXCONF_JVISU is not set
+PTXCONF_SKIPSTONE=y
 PTXCONF_WEBKIT=y
 
 #

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Skipstone
+Comment=Skipstone Web Browser
+Exec=firefox
+Terminal=false
+MultipleArgs=false
+Type=Application
+Icon=/usr/share/skipstone/pixmaps/default/skipstone.png
+Categories=Application;Internet;
+SingleInstance=true
