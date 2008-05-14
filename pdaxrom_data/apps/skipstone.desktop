@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Skipstone
 Comment=Skipstone Web Browser
-Exec=firefox
+Exec=skipstone
 Terminal=false
 MultipleArgs=false
 Type=Application

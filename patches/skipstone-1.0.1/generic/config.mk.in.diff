@@ -1,0 +1,20 @@
+--- s/config.mk.in-	2008-05-14 15:52:56.000000000 +0700
++++ s/config.mk.in	2008-05-14 15:53:33.000000000 +0700
+@@ -49,15 +49,11 @@
+ 	-I$(MOZILLA_INCLUDE_HOME)/gtkembedmoz \
+ 	-I$(MOZILLA_INCLUDE_HOME)/nspr \
+ 	-I$(MOZILLA_INCLUDE_HOME)/uconv \
+-	-I$(MOZILLA_INCLUDE_HOME)/webbrowserpersist \
+-	-I/usr/include/nspr \
+-	-I/usr/local/include/nspr \
+-	-I/usr/include/nss \
+-	-I/usr/local/include/nss
++	-I$(MOZILLA_INCLUDE_HOME)/webbrowserpersist
+ 	
+ MOZILLA_LIBS = \
+ 	-L$(MOZILLA_LIB_HOME) \
+-	-lgtkembedmoz -lplds4 -lplc4 -lnspr4 -lxpcom $(EXTRA_LIBS)
++	-lgtkembedmoz -lplds4 -lplc4 -lnspr4 -lxpcom $(EXTRA_LIBS)
+ 
+ CPPFLAGS += -I. -I../ $(GTK_INCLUDES) $(MOZILLA_INCLUDES) 
+ 
