@@ -1,0 +1,13 @@
+Двоичные файлы skipstone-1.0.1/src/skipstone-bin-webkit и skipstone-1.0.1.new/src/skipstone-bin-webkit различаются
+diff -Nur skipstone-1.0.1/src/skipstone.h skipstone-1.0.1.new/src/skipstone.h
+--- skipstone-1.0.1/src/skipstone.h	2008-04-14 13:10:18.000000000 +0700
++++ skipstone-1.0.1.new/src/skipstone.h	2008-05-14 13:14:55.000000000 +0700
+@@ -26,7 +26,7 @@
+ #ifndef WebKit
+ #include <gtkmozembed.h>
+ #else
+-#include <webkit.h>
++#include <webkit/webkit.h>
+ #endif
+ 
+ #include <gmodule.h>
