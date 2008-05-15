@@ -125,11 +125,11 @@ ifdef PTXCONF_XORG_SERVER
 	@$(call install_copy, itelec-davinci, 0, 0, 0755, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/init.d/xorg, \
 		/etc/init.d/xorg, n)
-	@$(call install_copy, itelec-davinci, 0, 0, 0644, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 	@$(call install_link, itelec-davinci, ../init.d/xorg, /etc/rc.d/S13_xorg)
 	@$(call install_link, itelec-davinci, /usr/bin/Xorg, /usr/bin/X)
 endif
+	@$(call install_copy, itelec-davinci, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 
 	@$(call install_copy, itelec-davinci, 0, 0, 0644, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/hosts.equiv, \

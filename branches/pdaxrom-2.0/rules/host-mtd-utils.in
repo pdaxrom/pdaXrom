@@ -1,0 +1,4 @@
+config HOST_MTD_UTILS
+	bool
+	select HOST_ZLIB
+	select HOST_LZO
