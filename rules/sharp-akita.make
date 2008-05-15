@@ -101,6 +101,11 @@ $(STATEDIR)/sharp-akita.targetinstall: $(sharp-akita_targetinstall_deps_default)
 		$(PTXDIST_WORKSPACE)/projectroot/etc/inittab, \
 		/etc/inittab,n)
 
+ifdef PTXCONF_CONSOLE_TOOLS_LOADKEYS_INIT
+	@$(call install_copy, sharp-akita, 0, 0, 0644, \
+		$(PDAXROMDIR)/configs/keymaps/akita/keymap-2.6.map, /etc/keymap-2.6.map)
+endif
+
 ifdef PTXCONF_PEKWM
 	cd $(PTXDIST_WORKSPACE)/projectroot/etc/pekwm && \
 		for file in `find -type f ! -path "*.svn*"`; do \
@@ -121,11 +126,11 @@ ifdef PTXCONF_XORG_SERVER
 	@$(call install_copy, sharp-akita, 0, 0, 0755, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/init.d/xorg, \
 		/etc/init.d/xorg, n)
-	@$(call install_copy, sharp-akita, 0, 0, 0644, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 	@$(call install_link, sharp-akita, ../init.d/xorg, /etc/rc.d/S13_xorg)
 	@$(call install_link, sharp-akita, /usr/bin/Xorg, /usr/bin/X)
 endif
+	@$(call install_copy, sharp-akita, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 
 	@$(call install_copy, sharp-akita, 0, 0, 0644, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/hosts.equiv, \

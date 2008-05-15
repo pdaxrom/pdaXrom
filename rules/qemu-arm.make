@@ -123,11 +123,11 @@ ifdef PTXCONF_XORG_SERVER
 	@$(call install_copy, qemu-arm, 0, 0, 0755, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/init.d/xorg, \
 		/etc/init.d/xorg, n)
-	@$(call install_copy, qemu-arm, 0, 0, 0644, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 	@$(call install_link, qemu-arm, ../init.d/xorg, /etc/rc.d/S13_xorg)
 	@$(call install_link, qemu-arm, /usr/bin/Xorg, /usr/bin/X)
 endif
+	@$(call install_copy, qemu-arm, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 
 	@$(call install_copy, qemu-arm, 0, 0, 0644, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/hosts.equiv, \

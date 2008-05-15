@@ -1,0 +1,5 @@
+config LZO
+	bool
+	prompt "lzo"
+	help
+	  lzo compressor/decompressor library

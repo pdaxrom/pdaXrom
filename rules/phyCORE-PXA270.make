@@ -124,11 +124,11 @@ ifdef PTXCONF_XORG_SERVER
 	@$(call install_copy, phycore-pxa270, 0, 0, 0755, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/init.d/xorg, \
 		/etc/init.d/xorg, n)
-	@$(call install_copy, phycore-pxa270, 0, 0, 0644, \
-		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 	@$(call install_link, phycore-pxa270, ../init.d/xorg, /etc/rc.d/S13_xorg)
 	@$(call install_link, phycore-pxa270, /usr/bin/Xorg, /usr/bin/X)
 endif
+	@$(call install_copy, phycore-pxa270, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 
 	@$(call install_copy, phycore-pxa270, 0, 0, 0644, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/hosts.equiv, \
