@@ -133,6 +133,9 @@ endif
 		$(PTXDIST_WORKSPACE)/projectroot/etc/ts.conf, /etc/ts.conf, n)
 
 	@$(call install_copy, sharp-akita, 0, 0, 0644, \
+		$(PTXDIST_WORKSPACE)/projectroot/etc/profile.local.akita, /etc/profile.local, n)
+
+	@$(call install_copy, sharp-akita, 0, 0, 0644, \
 		$(PTXDIST_WORKSPACE)/projectroot/etc/hosts.equiv, \
 		/etc/hosts.equiv, n)
 

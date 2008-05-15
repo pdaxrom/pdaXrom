@@ -18,6 +18,8 @@ if mount | grep /dev/root | grep cramfs >/dev/null ; then
     tar c /var 2>/dev/null | tar x -C /tmp
     echo "done."
     mount -o bind /tmp/var /var
+else
+    mount -o remount,rw /
 fi
 
 # modprobe ppp_async

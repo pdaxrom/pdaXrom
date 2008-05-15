@@ -1,0 +1,6 @@
+config LEAFPAD
+	bool
+	prompt "leafpad"
+	select GTK
+	help
+	  GTK+ based simple text editor

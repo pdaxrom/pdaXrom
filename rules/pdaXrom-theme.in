@@ -1,0 +1,15 @@
+menuconfig PDAXROM_THEME
+	bool
+	prompt "pdaXrom-theme"
+	help
+	  pdaXrom customization stuff
+
+config PDAXROM_THEME_DESKTOP
+	bool
+	prompt "Desktop"
+	depends on PDAXROM_THEME
+	select ROX_FILER
+	select FBPANEL
+	select OPENBOX
+	help
+	  OpenBox/ROX based desktop and fbpanel
