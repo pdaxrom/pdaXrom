@@ -99,6 +99,11 @@ $(STATEDIR)/pdaxrom-theme.targetinstall: $(pdaxrom-theme_targetinstall_deps_defa
 
 ifdef PTXCONF_PDAXROM_THEME_DESKTOP
 	@$(call install_copy, pdaxrom-theme, 0, 0, 0755, $(PDAXROMDIR)/configs/openbox/autostart.sh, /etc/xdg/openbox/autostart.sh)
+	@$(call install_copy, pdaxrom-theme, 0, 0, 0644, $(PDAXROMDIR)/configs/rox/Options, /etc/xdg/rox.sourceforge.net/ROX-Filer/Options)
+	@$(call install_copy, pdaxrom-theme, 0, 0, 0644, $(PDAXROMDIR)/configs/rox/menus2, /etc/xdg/rox.sourceforge.net/ROX-Filer/menus2)
+	@$(call install_copy, pdaxrom-theme, 0, 0, 0644, $(PDAXROMDIR)/configs/rox/pb_mydesk, /etc/xdg/rox.sourceforge.net/ROX-Filer/pb_mydesk)
+	@$(call install_copy, pdaxrom-theme, 0, 0, 0644, $(PDAXROMDIR)/pixmaps/withatwist.png, /usr/share/pixmaps/Wallpapers/withatwist.png)
+
 	@cd $(PDAXROMDIR)/pixmaps/fbpanel; \
 	for i in *.png; do \
 		$(call install_copy, pdaxrom-theme, 0, 0, 0644, $$i, \

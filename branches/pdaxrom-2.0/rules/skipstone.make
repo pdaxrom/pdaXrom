@@ -131,6 +131,7 @@ endif
 	@$(call install_target, skipstone, $(SKIPSTONE_DIR)/fakeroot/usr, /usr)
 
 	@$(call install_copy, skipstone, 0, 0, 0644, $(PDAXROMDIR)/apps/skipstone.desktop, /usr/share/applications/skipstone.desktop)
+	@$(call install_copy, skipstone, 0, 0, 0644, $(SKIPSTONE_DIR)/pixmaps/skipstone.png, /usr/share/pixmaps/skipstone.png)
 
 	@$(call install_finish, skipstone)
 

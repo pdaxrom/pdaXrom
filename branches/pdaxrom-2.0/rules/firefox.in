@@ -15,3 +15,7 @@ config FIREFOX
 	select LIBJPEG
 	help
 	  webbrowser
+
+config FIREFOX_ENGINE_ONLY
+	bool
+	depends on FIREFOX
