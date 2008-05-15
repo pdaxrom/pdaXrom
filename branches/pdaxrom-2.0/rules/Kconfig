@@ -143,6 +143,7 @@ endmenu
 
 menu "Editors                       "
 source "rules/editors.in"
+source "workspace/rules/leafpad.in"
 endmenu
 
 menu "System Libraries              "
@@ -224,6 +225,7 @@ source "rules/pekwm.in"
 comment "X11 DE"
 source "workspace/rules/matchbox.in"
 source "workspace/rules/rox-filer.in"
+source "workspace/rules/pdaXrom-theme.in"
 
 comment "Framebuffer"
 source "rules/fbtest.in"

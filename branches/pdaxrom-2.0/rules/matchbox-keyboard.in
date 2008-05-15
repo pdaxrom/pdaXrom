@@ -1,7 +1,7 @@
 config MATCHBOX_KEYBOARD
 	bool
 	prompt "matchbox-keyboard"
-	select MATCHBOX_PANEL
+	select LIBMATCHBOX
 	select LIBFAKEKEY
 	select EXPAT
 	help

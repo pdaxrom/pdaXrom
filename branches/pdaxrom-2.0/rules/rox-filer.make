@@ -127,7 +127,7 @@ $(STATEDIR)/rox-filer.targetinstall: $(rox-filer_targetinstall_deps_default)
 	@$(call install_target, rox-filer, $(ROX_FILER_DIR)/ROX-Filer/images, /usr/Applications/ROX-Filer/images)
 	@$(call install_copy, rox-filer, 0, 0, 0755, $(ROX_FILER_DIR)/ROX-Filer/ROX-Filer, /usr/Applications/ROX-Filer/ROX-Filer)
 	@$(call install_copy, rox-filer, 0, 0, 0755, $(ROX_FILER_DIR)/ROX-Filer/AppRun, /usr/Applications/ROX-Filer/AppRun)
-	@$(call install_link, rox-filer, ../Applications/ROX-Filer/AppRun, /usr/bin/rox)
+	@$(call install_copy, rox-filer, 0, 0, 0755, $(PDAXROMDIR)/configs/rox/rox, /usr/bin/rox)
 
 	@$(call install_finish, rox-filer)
 
