@@ -141,9 +141,10 @@ $(STATEDIR)/firefox.targetinstall: $(firefox_targetinstall_deps_default)
 
 	@$(call install_target, firefox, $(FIREFOX_DIR)/fakeroot/usr, /usr)
 
+ifndef PTXCONF_FIREFOX_ENGINE_ONLY
 	@$(call install_copy, firefox, 0, 0, 0644, $(PDAXROMDIR)/apps/mozilla-firefox.desktop, /usr/share/applications/mozilla-firefox.desktop)
 	@$(call install_copy, firefox, 0, 0, 0644, $(PDAXROMDIR)/pixmaps/mozilla-firefox.png, /usr/share/pixmaps/mozilla-firefox.png)
-
+endif
 	@$(call install_finish, firefox)
 
 	@$(call touch, $@)

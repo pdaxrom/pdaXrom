@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<pinboard>
+  <backdrop style="Stretched">/usr/share/pixmaps/Wallpapers/withatwist.png</backdrop>
+  <icon x="32" y="32" label="Home">~/</icon>
+</pinboard>

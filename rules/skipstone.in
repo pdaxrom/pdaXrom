@@ -12,5 +12,6 @@ config SKIPSTONE
 	bool
 	depends on SKIPSTONE
 	prompt "Mozilla engine"
+	select FIREFOX_ENGINE_ONLY
 	help
 	  Use mozilla engine
