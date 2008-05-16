@@ -18,6 +18,7 @@
 #define DEBUG_MESSAGE printf
 
 #define I2C_DEVICE   "/dev/i2c/0"
+#define I2C_DEVICE1   "/dev/i2c/1"
 #define I2C_DEV_ADDR 0x23
 
 static int msp430lib_fd = -1;
@@ -245,6 +246,14 @@ int msp430lib_init(void)
     tmp_errno = errno;
     DEBUG_MESSAGE("opening i2c device %s: %s fd=%d\n", 
                   I2C_DEVICE, strerror(tmp_errno),msp430lib_fd);
+    if( msp430lib_fd < 0 )
+    {
+	msp430lib_fd = open(I2C_DEVICE1, O_RDWR);
+	tmp_errno = errno;
+	DEBUG_MESSAGE("opening i2c device %s: %s fd=%d\n", 
+            	    I2C_DEVICE1, strerror(tmp_errno),msp430lib_fd);
+    }
+
     if( msp430lib_fd < 0 )
     {
         //  DEBUG_MESSAGE("Error while opening i2c device %s\n", I2C_DEVICE);
