@@ -1,0 +1,15 @@
+--- linux-2.6.25/arch/arm/mach-davinci/board-evm.c-	2008-05-16 10:33:38.000000000 +0700
++++ linux-2.6.25/arch/arm/mach-davinci/board-evm.c	2008-05-16 10:33:52.000000000 +0700
+@@ -149,12 +149,6 @@
+             .size		= 0x8000,
+ 	    .mask_flags 	= MTD_WRITEABLE, /* force read-only */
+ 	},
+-        { 
+-	    .name		= "local",                                                                                                                     
+-            .offset		= MTDPART_OFS_APPEND,                                                                                                        
+-            .size		= 0x1800000,
+-	    .mask_flags		= 0,
+-	},
+         {
+ 	    .name		= "root",                                                                                                                      
+             .offset		= MTDPART_OFS_APPEND,                                                                                                        
