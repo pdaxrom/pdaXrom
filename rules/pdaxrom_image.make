@@ -62,8 +62,8 @@ pdaxrom_image_install: $(STATEDIR)/pdaxrom_image.install
 
 $(STATEDIR)/pdaxrom_image.install: $(pdaxrom_image_install_deps_default)
 	@$(call targetinfo, $@)
-
-	@ tar cvf $(IMAGEDIR)/pdaxrom-$(PTXCONF_PROJECT_VERSION).tar $(IMAGEDIR)/root.jffs2 $(IMAGEDIR)/kernel.img $(PTXDIST_WORKSPACE)/pdaxrom_data/autoboot.sh > /dev/null 2<&1
+	@ cp  $(PTXDIST_WORKSPACE)/pdaxrom_data/scripts/autoboot.sh $(IMAGEDIR)/autoboot.sh 
+	@ cd $(IMAGEDIR) && tar -cvf pdaxrom-$(PTXCONF_PROJECT_VERSION).tar root.jffs2 kernel.img autoboot.sh > /dev/null 2<&1
  
 # FIXME: rsc: this needs a proper SYSROOT description!
 #
