@@ -3,7 +3,8 @@
 #
 
 export PATH="$PATH:/usr/bin:/bin:/sbin"
-export TSLIB_TSDEVICE=/dev/event0
+export TSLIB_TSDEVICE=/dev/input/event1
+export TSLIB_CONFFILE=/etc/ts.conf
 
 # This fixes the backspace when telnetting in.
 if [ "$TERM" != "linux" ]; then
