@@ -29,7 +29,7 @@ if [ "x$file" = "x" ]; then
     echo "No kernel"
 fi
 
-for file in $LOC/rootfs.img $LOC/root.jffs2.img; do
+for file in $LOC/rootfs.img $LOC/root.jffs2; do
     if [ -e $file ]; then
 	echo "RootFS $file"
 	flash_eraseall /dev/mtd2
