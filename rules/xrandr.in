@@ -1,0 +1,6 @@
+config XRANDR
+	bool
+	depends on XORG_APP
+	prompt "xrandr"
+	help
+	  FIXME
