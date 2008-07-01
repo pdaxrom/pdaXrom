@@ -197,7 +197,7 @@ endmenu
 
 menu "Graphics Libraries            "
 
-source "rules/xorg.in"
+source "workspace/rules/xorg.in"
 
 comment "X Applications"
 source "workspace/rules/aterm.in"
