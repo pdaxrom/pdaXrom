@@ -1,0 +1,14 @@
+config LXDE
+	bool
+	select XORG_LIB_X11
+	select STARTUP_NOTIFICATION
+	select XORG_LIB_XCURSOR
+	select XORG_LIB_XFT
+	select XORG_LIB_SM
+	select LIBXML2
+	select GLIB
+	select PANGO
+	select PANGO_TARGET_X11
+	prompt "LXDE"
+	help
+	 Openbox is a highly configurable, next generation window manager with extensive standards support.
