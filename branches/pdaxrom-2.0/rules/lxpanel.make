@@ -70,7 +70,7 @@ $(STATEDIR)/lxpanel.prepare: $(lxpanel_prepare_deps_default)
 	@$(call clean, $(LXPANEL_DIR)/config.cache)
 	cd $(LXPANEL_DIR) && \
 		$(LXPANEL_PATH) $(LXPANEL_ENV) \
-		./configure $(LXPANEL_AUTOCONF)
+	       ac_cv_func_malloc_0_nonnull=yes ./configure $(LXPANEL_AUTOCONF)
 	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
@@ -92,7 +92,6 @@ lxpanel_install: $(STATEDIR)/lxpanel.install
 
 $(STATEDIR)/lxpanel.install: $(lxpanel_install_deps_default)
 	@$(call targetinfo, $@)
-	@$(call install, LXPANEL)
 	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
@@ -103,17 +102,19 @@ lxpanel_targetinstall: $(STATEDIR)/lxpanel.targetinstall
 
 $(STATEDIR)/lxpanel.targetinstall: $(lxpanel_targetinstall_deps_default)
 	@$(call targetinfo, $@)
+	
+	cd $(LXPANEL_DIR) && $(LXPANEL_PATH) $(LXPANEL_ENV) $(MAKE) $(PARALLELMFLAGS) DESTDIR=$(LXPANEL_DIR)/fakeroot install	
 
 	@$(call install_init, lxpanel)
 	@$(call install_fixup, lxpanel,PACKAGE,lxpanel)
 	@$(call install_fixup, lxpanel,PRIORITY,optional)
 	@$(call install_fixup, lxpanel,VERSION,$(LXPANEL_VERSION))
 	@$(call install_fixup, lxpanel,SECTION,base)
-	@$(call install_fixup, lxpanel,AUTHOR,"Adrian Crutchfield <insearchof@pdaXrom.org>")dr
+	@$(call install_fixup, lxpanel,AUTHOR,"Adrian Crutchfield <insearchof@pdaXrom.org>")
 	@$(call install_fixup, lxpanel,DEPENDS,)
 	@$(call install_fixup, lxpanel,DESCRIPTION,missing)
 
-	@$(call install_copy, lxpanel, 0, 0, 0755, $(LXPANEL_DIR)/foobar, /dev/null)
+	@$(call install_target, lxpanel, $(LXPANEL_DIR)/fakeroot/usr, /usr)
 
 	@$(call install_finish, lxpanel)
 
