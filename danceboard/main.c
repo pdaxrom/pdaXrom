@@ -158,9 +158,9 @@ int main(int argc, char *argv[])
     if (desk) {
 	img = create_image_from_buffer (dpy, 
 					scr, 
-					desk->images[1]->buf, 
-					desk->images[1]->width, 
-					desk->images[1]->height);
+					desk->images[0]->buf, 
+					desk->images[0]->width, 
+					desk->images[0]->height);
     }
 
     while(1) {
