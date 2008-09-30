@@ -1,0 +1,5 @@
+config QUASAR
+	bool
+	prompt "quasar"
+	help
+	  FIXME

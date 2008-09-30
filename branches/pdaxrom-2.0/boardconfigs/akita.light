@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Thu Apr 10 12:00:59 2008
+# Fri Aug 22 20:47:19 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -23,6 +23,9 @@ PTXCONF_PROJECT_VERSION="-light-1"
 # PTXCONF_ITELEC_DAVINCI is not set
 # PTXCONF_PHYCORE_PXA270 is not set
 PTXCONF_SHARP_AKITA=y
+# PTXCONF_SHARP_CORGI is not set
+# PTXCONF_QEMU_ARM is not set
+# PTXCONF_QEMU_X86 is not set
 # PTXCONF_IPERF is not set
 # PTXCONF_SCHEDUTILS is not set
 
@@ -118,7 +121,7 @@ PTXCONF_CROSS_PREFIX="${PTXCONF_PREFIX}-cross"
 #
 PTXCONF_CROSSCHAIN_VENDOR="OSELAS.Toolchain-1.1.1"
 PTXCONF_CROSSCHAIN_CHECK="4.1.2"
-PTXCONF_GNU_TARGET="arm-iwmmx-linux-gnueabi"
+PTXCONF_GNU_TARGET="arm-v5te-linux-gnueabi"
 PTXCONF_COMPILER_PREFIX="${PTXCONF_GNU_TARGET}-"
 
 #
@@ -224,6 +227,9 @@ PTXCONF_HOST_PKG_CONFIG=y
 # PTXCONF_HOST_GETTEXT is not set
 PTXCONF_HOST_LIBICONV=y
 # PTXCONF_HOST_LIBICONV_EXTRA_ENCODINGS is not set
+# PTXCONF_HOST_ICU is not set
+# PTXCONF_HOST_LIBIDL_2 is not set
+PTXCONF_HOST_LZO=y
 
 #
 # Debugging Tools               
@@ -264,6 +270,7 @@ PTXCONF_IMAGE_JFFS2_EXTRA_ARGS="-p -n"
 # PTXCONF_IMAGE_UIMAGE is not set
 # PTXCONF_IMAGE_CPIO is not set
 # PTXCONF_IMAGE_EXT2 is not set
+# PTXCONF_IMAGE_CRAMFS is not set
 
 #
 # Root Filesystem               
@@ -452,7 +459,9 @@ PTXCONF_GCCLIBS=y
 PTXCONF_GCCLIBS_CXX=y
 PTXCONF_GCCLIBS_GCC_S=y
 # PTXCONF_LOCALES is not set
-# PTXCONF_U_BOOT is not set
+PTXCONF_U_BOOT=y
+PTXCONF_U_BOOT_VERSION="1.2.0"
+PTXCONF_U_BOOT_CONFIG="adsvix_config"
 
 #
 # ------------------------------------
@@ -1085,6 +1094,7 @@ PTXCONF_BB_CONFIG_LOGREAD=y
 #
 # PTXCONF_BB_CONFIG_TCPSVD is not set
 # PTXCONF_BB_CONFIG_UDPSVD is not set
+# PTXCONF_CONSOLE_TOOLS is not set
 PTXCONF_COREUTILS=y
 PTXCONF_COREUTILS_CP=y
 PTXCONF_COREUTILS_DD=y
@@ -1183,6 +1193,7 @@ PTXCONF_ROOTFS_ETC_UDEV_USER_RULES=y
 PTXCONF_ROOTFS_ETC_INITD_UDEV=y
 # PTXCONF_ROOTFS_ETC_INITD_UDEV_DEFAULT is not set
 PTXCONF_ROOTFS_ETC_INITD_UDEV_USER=y
+# PTXCONF_UDEV096 is not set
 # PTXCONF_XMLSTARLET is not set
 # PTXCONF_PCIUTILS is not set
 PTXCONF_USBUTILS=y
@@ -1292,6 +1303,8 @@ PTXCONF_WIRELESS_SHARED=y
 #
 # Network Card Support
 #
+# PTXCONF_CURL is not set
+# PTXCONF_DHCPCD is not set
 
 #
 # Disk and File Utilities       
@@ -1369,6 +1382,7 @@ PTXCONF_MEMEDIT=y
 # PTXCONF_HEXEDIT is not set
 # PTXCONF_JOE is not set
 PTXCONF_NANO=y
+# PTXCONF_LEAFPAD is not set
 
 #
 # System Libraries              
@@ -1387,6 +1401,7 @@ PTXCONF_ALSA_LIB_SEQ=y
 # PTXCONF_DB44 is not set
 # PTXCONF_EXPAT is not set
 # PTXCONF_GETTEXT is not set
+# PTXCONF_ICU is not set
 PTXCONF_LIBUSB=y
 # PTXCONF_LIBDAEMON is not set
 # PTXCONF_LIBELF is not set
@@ -1403,6 +1418,7 @@ PTXCONF_LIBICONV=y
 # PTXCONF_LIBXML2 is not set
 # PTXCONF_LIBXMLCONFIG is not set
 # PTXCONF_LIBXSLT is not set
+PTXCONF_LZO=y
 # PTXCONF_MYSQL is not set
 PTXCONF_NCURSES=y
 
@@ -1425,6 +1441,7 @@ PTXCONF_READLINE=y
 # PTXCONF_READLINE_TERMCAP is not set
 PTXCONF_READLINE_NCURSES=y
 PTXCONF_SLANG=y
+# PTXCONF_SLANG_LIBICONV is not set
 # PTXCONF_SQLITE is not set
 # PTXCONF_TERMCAP is not set
 # PTXCONF_XERCES is not set
@@ -1520,6 +1537,7 @@ PTXCONF_XORG_DEFAULT_DATA_DIR="/usr/lib"
 #
 # X Applications
 #
+# PTXCONF_ATERM is not set
 
 #
 # GTK+ and friends      
@@ -1538,15 +1556,51 @@ PTXCONF_GLIB_LIBICONV_GNU=y
 # PTXCONF_DIRECTFB is not set
 # PTXCONF_DIRECTFB_EXAMPLES is not set
 # PTXCONF_LIBGLADE is not set
+# PTXCONF_LIBSEXY is not set
 # PTXCONF_GLADE is not set
 # PTXCONF_FLTK is not set
+# PTXCONF_FBPANEL is not set
+# PTXCONF_GPAINT is not set
+# PTXCONF_MTPAINT is not set
 # PTXCONF_XLI is not set
 # PTXCONF_XTERM is not set
+# PTXCONF_XKBD is not set
+
+#
+# X Window addon libraries
+#
+# PTXCONF_STARTUP_NOTIFICATION is not set
 
 #
 # X Window Managers
 #
+# PTXCONF_OPENBOX is not set
 # PTXCONF_PEKWM is not set
+
+#
+# X11 DE
+#
+
+#
+# Matchbox              
+#
+# PTXCONF_LIBFAKEKEY is not set
+# PTXCONF_LIBMATCHBOX is not set
+# PTXCONF_MATCHBOX_COMMON is not set
+# PTXCONF_MATCHBOX_DESKTOP is not set
+# PTXCONF_MATCHBOX_PANEL is not set
+# PTXCONF_MATCHBOX_PANEL_MANAGER is not set
+# PTXCONF_MATCHBOX_WINDOW_MANAGER is not set
+
+#
+# ---------------------
+#
+# PTXCONF_MATCHBOX_KEYBOARD is not set
+# PTXCONF_MB_APPLET_INPUT_MANAGER is not set
+# PTXCONF_MB_APPLET_STARTUP_MONITOR is not set
+# PTXCONF_MB_APPLET_VOLUME is not set
+# PTXCONF_ROX_FILER is not set
+# PTXCONF_PDAXROM_THEME is not set
 
 #
 # Framebuffer
@@ -1563,6 +1617,8 @@ PTXCONF_LIBPNG=y
 # PTXCONF_FONTCONFIG is not set
 # PTXCONF_TSLIB is not set
 # PTXCONF_QTOPIA is not set
+# PTXCONF_RCONTROL is not set
+# PTXCONF_SHARED_MIME_INFO is not set
 # PTXCONF_I855RESOLUTION is not set
 # PTXCONF_I915RESOLUTION is not set
 
@@ -1577,9 +1633,11 @@ PTXCONF_LIBPNG=y
 #
 # Web Applications              
 #
-# PTXCONF_MFIREBIRD is not set
-# PTXCONF_PENGUZILLA is not set
-# PTXCONF_JVISU is not set
+# PTXCONF_FIREFOX is not set
+# PTXCONF_LINKS is not set
+# PTXCONF_MIDORI is not set
+# PTXCONF_SKIPSTONE is not set
+# PTXCONF_WEBKIT is not set
 
 #
 # Test Suites                   
