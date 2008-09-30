@@ -1,0 +1,5 @@
+config XOURNAL
+	bool
+	prompt "xournal"
+	help
+	  FIXME

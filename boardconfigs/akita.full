@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.99.2
-# Tue Jul 29 17:25:37 2008
+# Tue Sep 30 15:12:06 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1446,6 +1446,10 @@ PTXCONF_MC_USES_SLANG=y
 # ffmpeg not supported by strongARM
 #
 # PTXCONF_CVS is not set
+# PTXCONF_QUASAR is not set
+# PTXCONF_GPICVIEW is not set
+# PTXCONF_XOURNAL is not set
+# PTXCONF_MRXVT is not set
 
 #
 # Tools                         

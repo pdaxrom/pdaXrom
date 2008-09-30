@@ -49,7 +49,7 @@ source "rules/dtc.in"
 source "rules/libc.in"
 source "rules/gcclibs.in"
 source "rules/locales.in"
-source "rules/u-boot.in"
+source "workspace/rules/u-boot.in"
 endmenu
 
 comment "------------------------------------"
@@ -135,6 +135,10 @@ source "rules/mc.in"
 source "rules/ffmpeg.in"
 source "rules/kaffe.in"
 source "rules/cvs.in"
+source "workspace/rules/quasar.in"
+source "workspace/rules/gpicview.in"
+source "workspace/rules/xournal.in"
+source "workspace/rules/mrxvt.in"
 endmenu
 
 menu "Tools                         "
