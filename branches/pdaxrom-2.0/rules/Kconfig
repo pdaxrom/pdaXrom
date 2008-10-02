@@ -199,11 +199,11 @@ source "rules/omniorb.in"
 source "rules/mico.in"
 endmenu
 
-menu "Graphics Libraries            "
+menu "X11 Confgurations             "
 
 source "workspace/rules/xorg.in"
 
-comment "X Applications"
+menu "X Applications           "
 source "workspace/rules/aterm.in"
 source "workspace/rules/gtk-menu.in"
 source "rules/fltk.in"
@@ -217,14 +217,16 @@ source "rules/realvnc.in"
 source "rules/xli.in"
 source "rules/xterm.in"
 source "workspace/rules/xkbd.in"
+endmenu
 
 comment "X Window addon libraries"
 source "workspace/rules/startup-notification.in"
 
-comment "X Window Managers"
+menu "X Window Managers       "
 source "rules/blackbox.in"
 source "workspace/rules/openbox.in"
 source "rules/pekwm.in"
+endmenu
 
 comment "X11 DE"
 source "workspace/rules/matchbox.in"
