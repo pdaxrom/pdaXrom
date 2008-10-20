@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Xorg server
+#
+
+PREFIX="xorg: "
+THISFILE=$0
+PIDFILE="/tmp/.X0-lock"
+		
+usage() {
+	echo "${PREFIX}usage: $THISFILE [start|stop]"
+}
+
+case $1 in 
+
+	start)
+		echo "${PREFIX} starting"
+		if [ -e "$PIDFILE" ]; then 
+			echo "${PREFIX} Another xorg server seems to be running, aborting"
+			exit 1
+		fi
+		/usr/bin/xinit /etc/X11/xinitrc 2>/dev/null 1>/dev/null &
+		;;
+
+	stop)
+		echo "${PREFIX} stopping"
+		if [ ! -e "$PIDFILE" ]; then
+			echo "${PREFIX} there seems to be no server running"
+			exit 1
+		fi
+		kill `cat $PIDFILE`
+		rm -f $PIDFILE
+		echo "${PREFIX} done"
+		;;
+
+	*)
+
+		usage
+		exit 1
+		;;
+
+esac
+

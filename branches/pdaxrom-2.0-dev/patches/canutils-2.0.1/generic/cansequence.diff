@@ -1,0 +1,17 @@
+Index: src/cansequence.c
+===================================================================
+--- src/cansequence.c	(revision 83)
++++ src/cansequence.c	(revision 85)
+@@ -163,10 +163,10 @@
+ 					sequence = frame.data[0];
+ 				}
+ 				if (verbose>1)
+-					printf("received frame. sequence number: %d\n",sequence);
++					printf("received frame. sequence number: %d\n", frame.data[0]);
+ 				if (frame.data[0] != sequence) {
+ 					printf("received wrong sequence count. expected: %d, got: %d\n",
+-						frame.data[0], sequence);
++						sequence, frame.data[0]);
+ 					if(quit)
+ 						exit(1);
+ 					sequence = frame.data[0];

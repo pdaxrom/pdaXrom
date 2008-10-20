@@ -1,0 +1,46 @@
+--- linux-2.6.25/sound/oss/davinci-audio-aic33.c-	2008-05-16 11:02:19.000000000 +0700
++++ linux-2.6.25/sound/oss/davinci-audio-aic33.c	2008-05-16 11:07:53.000000000 +0700
+@@ -63,7 +63,7 @@
+ #define AIC33_MASTER
+ 
+ /* codec clock frequency */
+-#define MCLK  22
++#define MCLK  27
+ 
+ /*
+  * AUDIO related MACROS
+@@ -663,6 +663,34 @@
+ 		audio_aic33_write(5, 0x34);	/* D-value 8-MSB's */
+ 		audio_aic33_write(6, 0x14);	/* D-value 6-LSB's */
+ 	}
++#elif(MCLK==27)
++
++	if ((reg_info[count].Fsref == 96000) | (reg_info[count].Fsref == 48000)) {
++    		/* For MCLK = 27 MHz and to get Fsref = 48kHz
++        	   Fsref = (MCLK * k * R)/(2048 * p);
++        	   Select P = 2, R= 1, K = 7.2818, which results in J = 7, D = 2818 */
++
++    		/*Enable the PLL | Q-value | P-value */
++    		audio_aic33_write(3, PLL_ENABLE | 0x10 | 0x02);
++    		audio_aic33_write(4, (7 << 2));    /* J-value */
++    		audio_aic33_write(5, (unsigned char)(2818 >> 6));    /* D-value 8-MSB's */
++    		audio_aic33_write(6, (unsigned char)(2818 << 2));    /* D-value 6-LSB's */
++
++	}
++
++	else if ((reg_info[count].Fsref == 88200) | (reg_info[count].Fsref ==
++                            44100)) {
++
++    		/* MCLK = 27 MHz and to get Fsref = 44.1kHz
++        	   Fsref = (MCLK * k * R)/(2048 * p);
++        	   Select P = 2, R =1, K = 6.6901, which results in J = 6, D = 6901 */
++
++    		/*Enable the PLL | Q-value | P-value */
++    		audio_aic33_write(3, PLL_ENABLE | 0x10 | 0x02);
++    		audio_aic33_write(4, (6 << 2));    /* J-value */
++    		audio_aic33_write(5, (unsigned char)(6901 >> 6));    /* D-value 8-MSB's */
++    		audio_aic33_write(6, (unsigned char)(6901 << 2));    /* D-value 6-LSB's */
++	}
+ #elif(MCLK==22)
+ 
+ 	if ((reg_info[count].Fsref == 96000) | (reg_info[count].Fsref == 48000)) {

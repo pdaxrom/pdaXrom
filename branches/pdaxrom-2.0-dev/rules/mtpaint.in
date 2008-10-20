@@ -1,0 +1,13 @@
+config MTPAINT
+	bool
+	prompt "mtpaint"
+	select XORG_LIB_XEXT
+	select XORG_LIB_X11
+	select XORG_LIB_SM
+	select XORG_LIB_ICE
+	select XORG_LIB_XPM
+	select XORG_LIB_XMU
+	select GTK
+	select EXPAT
+	help
+	  mtPaint is a painting program designed for creating icons and pixel-based artwork. It can edit indexed palette or 24 bit RGB images and offers painting, palette, and image manipulation tools.

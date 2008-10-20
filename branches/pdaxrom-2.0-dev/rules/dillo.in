@@ -1,0 +1,7 @@
+config DILLO
+	bool
+	prompt "Dillo2"	
+	select FLTK2
+	help
+	  Dillo web browser, Dillo is a multi-platform  graphical web browser known for its speed and small size. 
+

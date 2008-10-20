@@ -1,0 +1,569 @@
+Subject: i2c driver for eeproms with r/w support
+From: Marc Kleine-Budde <m.kleine-budde@pengutronix.de>
+
+Not intended for upstream.
+
+Signed-off-by: N.N.
+
+---
+ drivers/i2c/chips/Kconfig   |   10 
+ drivers/i2c/chips/Makefile  |    1 
+ drivers/i2c/chips/st24cxx.c |  500 ++++++++++++++++++++++++++++++++++++++++++++
+ drivers/i2c/chips/st24cxx.h |    9 
+ 4 files changed, 520 insertions(+)
+
+Index: drivers/i2c/chips/st24cxx.c
+===================================================================
+--- /dev/null
++++ drivers/i2c/chips/st24cxx.c
+@@ -0,0 +1,505 @@
++/*
++ * 24cxx.c
++ *
++ * Copyright (C) 2007 Luotao Fu <l.fu@pengutronix.de>, Pengutronix
++ *
++ * Copyright (C) 2004, 2005 Marc Kleine-Budde <mkl@pengutronix.de>, Pengutronix
++ *
++ * based on:
++ * - linux-2.6.9-rc2/drivers/i2c/chips/eeprom.c
++ *   Part of lm_sensors, Linux kernel modules for hardware monitoring
++ *   Copyright (C) 1998, 1999 Frodo Looijaard <frodol@dds.nl> and
++ *	                      Philip Edelbrock <phil@netroedge.com>
++ *   Copyright (C) 2003       Greg Kroah-Hartman <greg@kroah.com>
++ *   Copyright (C) 2003       IBM Corp.
++ * - linux-2.6.0-test10-obs266/drivers/char/eepromi2c.c
++ *   Copyright
++ *   Author: 2002 AXE Inc.
++ *     takawata@axe-inc.co.jp
++ *   Based On
++ *     linux/drivers/char/x1226-rtc.c
++ *
++ *     I2C Real Time Clock Client Driver for Xicor X1226 RTC/Calendar
++ *
++ *     Copyright 2002 MontaVista Software Inc.
++ *     Author: MontaVista Software, Inc.
++ *       stevel@mvista.com or source@mvista.com
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
++
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/sched.h>
++#include <linux/i2c.h>
++
++#include "st24cxx.h"
++
++/* Addresses to scan */
++static unsigned short normal_i2c[] = { I2C_CLIENT_END };
++
++/* Insmod parameters */
++I2C_CLIENT_INSMOD_4(st24c02, m24w32, at24c256, m24512);
++
++/* Each client has this additional data */
++struct st24cxx_eeprom_data {
++        int size;
++        int page_size;
++        int page_size_shift;
++        int (*read) (struct i2c_client *client, u8 *buf, int off, int count);
++        int (*write) (struct i2c_client *client, u8 *buf, int off, int count);
++	struct i2c_client client;
++        struct bin_attribute bin_attr;
++};
++
++struct st24cxx_eeprom_conf {
++        int size;
++        int page_size_shift;	/* how often we have to shift to get the pagesize */
++        char *name;
++};
++
++static const struct st24cxx_eeprom_conf eeprom_conf[] = {
++/* note: st24c02 will be replaced by m24c02, with 16 byte page size */
++        [st24c02]  = {  .size = 256,
++			.page_size_shift = 3,	/* 8 bytes per single write */
++			.name = "24c02 eeprom" },
++	[m24w32]   = {	.size = 4096,
++			.page_size_shift = 5,	/* 32 bytes per single write */
++			.name = "m24c32 eeprom" },
++	[at24c256] = {  .size = 32768,
++			.page_size_shift = 6,	/* 64 bytes per single write */
++			.name = "at24c256 eeprom" },
++	[m24512]   = {	.size = 65536,
++			.page_size_shift = 7,	/* 128 bytes per single write */
++			.name = "m24512 eeprom"},
++};
++
++
++static int st24cxx_eeprom_attach_adapter(struct i2c_adapter *adapter);
++static int st24cxx_eeprom_detect(struct i2c_adapter *adapter, int address, int kind);
++static int st24cxx_eeprom_detach_client(struct i2c_client *client);
++
++/* This is the driver that will be inserted */
++static struct i2c_driver st24cxx_eeprom_driver = {
++	.driver = {
++		.name	= "eeprom",
++	},
++	.id		= I2C_DRIVERID_ST24CXX_EEPROM,
++	.attach_adapter	= st24cxx_eeprom_attach_adapter,
++	.detach_client	= st24cxx_eeprom_detach_client,
++};
++
++static int st24cxx_read_16(struct i2c_client *client,
++                         u8 *buf, int off, int count)
++{
++        int ret;
++	u8 regbuf[2] = { (off >> 8) & 0xff, off & 0xff};
++
++	struct i2c_msg random_addr_read[2] = {
++		{
++			/* "Set Current Address" */
++			.addr  = client->addr,
++			.flags = 0,
++			.len   = sizeof(regbuf),
++			.buf   = regbuf
++		},
++		{
++			/* "Sequential Read" if count>1,
++			   "Current Address Read" if count=1 */
++			.addr  = client->addr,
++			.flags = I2C_M_RD,
++			.len   = count,
++			.buf   = buf
++		}
++	};
++
++	if ((ret = i2c_transfer(client->adapter, random_addr_read, 2)) != 2) {
++		ret = -ENXIO;
++		dev_dbg(&client->dev, "i2c_transfer failed\n");
++	}
++
++        return ret;
++}
++
++
++static inline int __st24cxx_write_16(struct i2c_client *client,
++                                   u8 *buf, int off, int count)
++{
++	int ret;
++	u8* local_buf;
++	u8 regbuf[2] = { (off >> 8) & 0xff, off & 0xff};
++
++	struct i2c_msg page_write = {
++		.addr = client->addr,
++		.len  = count + sizeof(regbuf)
++	};
++
++	if ((local_buf = (u8*)kmalloc(count + sizeof(regbuf),
++				      GFP_KERNEL)) == NULL) {
++		dev_err(&client->dev, "buffer alloc failed\n");
++		return -ENOMEM;
++	}
++
++	memcpy(local_buf, regbuf, sizeof(regbuf));
++	memcpy(local_buf + sizeof(regbuf), buf, count);
++	page_write.buf = local_buf;
++
++	if ((ret = i2c_transfer(client->adapter, &page_write, 1)) != 1) {
++		ret = -ENXIO;
++		dev_dbg(&client->dev, "i2c_transfer failed\n");
++	}
++
++	kfree(local_buf);
++
++	return ret;
++}
++
++
++/*
++ * write to nonvolatile mem region (eprom, eg.) and wait
++ */
++static int st24cxx_write_16(struct i2c_client *client,
++                          u8 *buf, int off, int count)
++{
++        int ret;
++
++        ret = __st24cxx_write_16(client, buf, off, count);
++        if (ret < 0)
++                return ret;
++
++        /* wait for device to flush it's write buffers */
++        set_current_state(TASK_INTERRUPTIBLE);
++        schedule_timeout(ST24CXX_WRITE_WAIT);
++
++        return ret;
++}
++
++
++static int st24cxx_read_8(struct i2c_client *client,
++                        u8 *buf, int off, int count)
++{
++        int ret;
++	u8 regbuf[1] = {off & 0xff};
++	struct i2c_msg random_addr_read[2] = {
++		{
++			/* "Set Current Address" */
++			.addr  = client->addr,
++			.flags = 0,
++			.len   = sizeof(regbuf),
++			.buf   = regbuf
++
++                },
++		{
++			/* "Sequential Read" if count>1,
++			   "Current Address Read" if count=1 */
++			.addr  = client->addr,
++			.flags = I2C_M_RD,
++			.len   = count,
++			.buf   = buf
++
++		}
++	};
++
++	if ((ret = i2c_transfer(client->adapter, random_addr_read, 2)) != 2) {
++		ret = -ENXIO;
++		dev_dbg(&client->dev, "i2c_transfer failed\n");
++	}
++
++        return ret;
++}
++
++
++static inline int __st24cxx_write_8(struct i2c_client *client,
++                                  u8 *buf, int off, int count)
++{
++	int ret;
++	u8* local_buf;
++	u8 regbuf[1] = {off & 0xff};
++
++	struct i2c_msg page_write = {
++		.addr = client->addr,
++		.len  = count + sizeof(regbuf),
++	};
++
++	if ((local_buf = (u8*)kmalloc(count + sizeof(regbuf),
++				      GFP_KERNEL)) == NULL) {
++		dev_err(&client->dev, "buffer alloc failed\n");
++		return -ENOMEM;
++	}
++
++	memcpy(local_buf, regbuf, sizeof(regbuf));
++	memcpy(local_buf + sizeof(regbuf), buf, count);
++	page_write.buf = local_buf;
++
++	if ((ret = i2c_transfer(client->adapter, &page_write, 1)) != 1) {
++		ret = -ENXIO;
++		dev_dbg(&client->dev, "i2c_transfer failed\n");
++	}
++
++	kfree(local_buf);
++
++	return ret;
++}
++
++
++/*
++ * write to nonvolatile mem region (eprom, eg.) and wait
++ */
++static int st24cxx_write_8(struct i2c_client *client,
++                         u8 *buf, int off, int count)
++{
++        int ret;
++
++        ret = __st24cxx_write_8(client, buf, off, count);
++        if (ret < 0)
++                return ret;
++
++        /* wait for device to flush it's write buffers */
++        set_current_state(TASK_INTERRUPTIBLE);
++        schedule_timeout(ST24CXX_WRITE_WAIT);
++
++        return ret;
++}
++
++
++static ssize_t st24cxx_eeprom_read(struct kobject *kobj, struct bin_attribute *attr,
++			char *buf, loff_t off, size_t count)
++{
++	struct i2c_client *client = to_i2c_client(container_of(kobj, struct device, kobj));
++        struct st24cxx_eeprom_data *data = i2c_get_clientdata(client);
++	int remaining, copysize;
++        int ret;
++
++	if (off > data->size)
++                return 0;
++	if (off + count > data->size)
++		count = data->size - off;
++
++	remaining = count;
++
++	while (remaining > 0) {
++		copysize = (remaining > data->page_size)
++                        ? data->page_size : remaining;
++
++		dev_dbg(&client->dev, "copysize=%d\n", copysize);
++
++		ret = data->read(client, buf, off, copysize);
++                if (ret < 0)
++                        return ret;
++
++		off += copysize;
++		buf += copysize;
++		remaining -= copysize;
++	};
++
++	return count;
++}
++
++
++static ssize_t st24cxx_eeprom_write(struct kobject *kobj, struct bin_attribute *attr,
++				char *buf, loff_t off, size_t count)
++{
++	struct i2c_client *client = to_i2c_client(container_of(kobj, struct device, kobj));
++        struct st24cxx_eeprom_data *data = i2c_get_clientdata(client);
++	int remaining, copysize;
++        int ret;
++
++	if (off > data->size)
++                return 0;
++	if (off + count > data->size)
++		count = data->size - off;
++
++	/* Write region should be aligned */
++	copysize = (count > data->page_size)
++                ? data->page_size : count;
++	if ((off >> data->page_size_shift) != ((off + copysize) >> data->page_size_shift))
++		copysize = data->page_size - (off & (data->page_size - 1));
++
++	dev_dbg(&client->dev, "offset=%lli\n", off);
++	remaining = count;
++
++	while (remaining > 0) {
++		dev_dbg(&client->dev, "copysize=%d\n", copysize);
++
++		ret = data->write(client, buf, off, copysize);
++                if (ret < 0)
++                        return ret;
++
++		off += copysize;
++		buf += copysize;
++		remaining -= copysize;
++
++		copysize = (remaining > data->page_size)
++                        ? data->page_size : remaining;
++	};
++
++	return count;
++}
++
++
++static int st24cxx_eeprom_attach_adapter(struct i2c_adapter *adapter)
++{
++        return i2c_probe(adapter, &addr_data, st24cxx_eeprom_detect);
++}
++
++
++/* This function is called by i2c_detect */
++int st24cxx_eeprom_detect(struct i2c_adapter *adapter, int address, int kind)
++{
++	struct i2c_client *new_client;
++	struct st24cxx_eeprom_data *data;
++	int err = 0;
++
++	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
++		goto exit;
++
++	/* OK. For now, we presume we have a valid client. We now create the
++	   client structure, even though we cannot fill it completely yet.
++	   But it allows us to access eeprom_{read,write}_value. */
++	if (!(data = kmalloc(sizeof(struct st24cxx_eeprom_data), GFP_KERNEL))) {
++		err = -ENOMEM;
++		goto exit;
++	}
++	memset(data, 0, sizeof(struct st24cxx_eeprom_data));
++
++	new_client = &data->client;
++	i2c_set_clientdata(new_client, data);
++	new_client->addr = address;
++	new_client->adapter = adapter;
++	new_client->driver = &st24cxx_eeprom_driver;
++	new_client->flags = 0;
++
++	/* prevent 24RF08 corruption */
++	i2c_smbus_write_quick(new_client, 0);
++
++	switch (kind) {
++	case st24c02:
++		break;
++	case m24w32:
++		break;
++	case at24c256:
++		break;
++	case m24512:
++		break;
++	case -1:
++		dev_info(&adapter->dev,"no eeprom type given. assuming 24c02\n");
++		kind = st24c02;
++		break;
++	default:
++		return -ENODEV;
++		break;
++	}
++
++	/* Fill in the remaining client fields */
++	strncpy(new_client->name, eeprom_conf[kind].name, I2C_NAME_SIZE);
++
++        /* Fill in the remaining data fields */
++        data->size = eeprom_conf[kind].size;
++        data->page_size = 1 << eeprom_conf[kind].page_size_shift;
++        data->page_size_shift = eeprom_conf[kind].page_size_shift;
++
++        /* detect if we need 8 or 16 bit to address the eeprom offset */
++        if ((data->size - 1)>> 8) {  /* 16 bit */
++                data->read = st24cxx_read_16;
++                data->write = st24cxx_write_16;
++        } else {                /*  8 bit */
++                data->read = st24cxx_read_8;
++                data->write = st24cxx_write_8;
++        }
++
++        /* Fill in the bin_attribute structure */
++        {
++                struct bin_attribute *bin_attr = &data->bin_attr;
++
++                bin_attr->attr.name = "eeprom";
++                bin_attr->attr.mode = S_IWUSR|S_IRUGO;
++                bin_attr->attr.owner = THIS_MODULE;
++
++                bin_attr->size = data->size;
++                bin_attr->read = st24cxx_eeprom_read;
++                bin_attr->write = st24cxx_eeprom_write;
++        }
++
++	/* Tell the I2C layer a new client has arrived */
++	if ((err = i2c_attach_client(new_client)))
++		goto exit_kfree;
++
++	/* create the sysfs eeprom file */
++	if ((err = sysfs_create_bin_file(&new_client->dev.kobj, &data->bin_attr)))
++                goto exit_detach_client;
++
++	return 0;
++
++/*  exit_remove_bin_file: */
++/*         sysfs_remove_bin_file(&new_client->dev.kobj, &data->bin_attr); */
++ exit_detach_client:
++        i2c_detach_client(new_client);
++ exit_kfree:
++	kfree(data);
++ exit:
++	return err;
++}
++
++
++static int st24cxx_eeprom_detach_client(struct i2c_client *client)
++{
++        struct st24cxx_eeprom_data *data = i2c_get_clientdata(client);
++	int ret;
++
++	sysfs_remove_bin_file(&client->dev.kobj, &data->bin_attr);
++
++	ret = i2c_detach_client(client);
++	if (ret) {
++		dev_err(&client->dev, "Client deregistration failed, client not detached.\n");
++		return ret;
++	}
++
++	kfree(i2c_get_clientdata(client));
++
++	return 0;
++}
++
++
++static int __init st24cxx_eeprom_init(void)
++{
++        int ret;
++
++        ret = i2c_add_driver(&st24cxx_eeprom_driver);
++        if (ret < 0)
++                goto exit;
++
++        return 0;
++
++/*  exit_del_driver: */
++/*         i2c_del_driver(&st24cxx_eeprom_driver); */
++ exit:
++        return ret;
++}
++
++
++static void __exit st24cxx_eeprom_exit(void)
++{
++	i2c_del_driver(&st24cxx_eeprom_driver);
++}
++
++
++MODULE_AUTHOR("Marc Kleine-Budde <mkl@pengutronix.de>");
++MODULE_DESCRIPTION("I2C EEPROM driver");
++MODULE_LICENSE("GPL");
++
++module_init(st24cxx_eeprom_init);
++module_exit(st24cxx_eeprom_exit);
+Index: drivers/i2c/chips/Kconfig
+===================================================================
+--- drivers/i2c/chips/Kconfig.orig
++++ drivers/i2c/chips/Kconfig
+@@ -163,4 +163,14 @@ config MENELAUS
+ 	  and other features that are often used in portable devices like
+ 	  cell phones and PDAs.
+ 
++config ST24CXX
++	tristate "24cxx eeproms"
++	depends on I2C && EXPERIMENTAL
++	help
++	  If you say yes here you get support for the ST 24Cxx EEPROM chip.
++	  Its is known as experimental, so use with caution.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called st24cxx.
++
+ endmenu
+Index: drivers/i2c/chips/Makefile
+===================================================================
+--- drivers/i2c/chips/Makefile.orig
++++ drivers/i2c/chips/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_SENSORS_PCF8574)	+= pcf8574
+ obj-$(CONFIG_SENSORS_PCF8591)	+= pcf8591.o
+ obj-$(CONFIG_ISP1301_OMAP)	+= isp1301_omap.o
+ obj-$(CONFIG_TPS65010)		+= tps65010.o
++obj-$(CONFIG_ST24CXX)		+= st24cxx.o
+ obj-$(CONFIG_MENELAUS)		+= menelaus.o
+ obj-$(CONFIG_SENSORS_TSL2550)	+= tsl2550.o
+ 
+Index: drivers/i2c/chips/st24cxx.h
+===================================================================
+--- /dev/null
++++ drivers/i2c/chips/st24cxx.h
+@@ -0,0 +1,9 @@
++#define I2C_DRIVERID_ST24CXX_EEPROM     0xf0
++
++#define ST24CXX_WRITE_WAIT              (2*HZ/100)
++
++#define ST24CXX_EEPROM_MODULE_NAME      "24cxx-eeprom"
++
++/* ST24CXX Device Identifier */
++#define DEVID_ST24CXX_EEPROM_LOWER	0x50
++#define DEVID_ST24CXX_EEPROM_UPPER      0x57

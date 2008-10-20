@@ -1,0 +1,640 @@
+ arch/arm/mach-pxa/Kconfig      |    9 
+ arch/arm/mach-pxa/Makefile     |    2 
+ arch/arm/mach-pxa/pxa27x_pwm.c |  597 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 608 insertions(+)
+
+Index: arch/arm/mach-pxa/Makefile
+===================================================================
+--- arch/arm/mach-pxa/Makefile.orig
++++ arch/arm/mach-pxa/Makefile
+@@ -29,6 +29,8 @@ led-$(CONFIG_MACH_TRIZEPS4) += leds-triz
+ 
+ obj-$(CONFIG_LEDS) += $(led-y)
+ 
++obj-$(CONFIG_ARCH_PXA_PWM) += pxa27x_pwm.o
++
+ # Misc features
+ obj-$(CONFIG_PM) += pm.o sleep.o
+ obj-$(CONFIG_PXA_SSP) += ssp.o
+Index: arch/arm/mach-pxa/Kconfig
+===================================================================
+--- arch/arm/mach-pxa/Kconfig.orig
++++ arch/arm/mach-pxa/Kconfig
+@@ -75,6 +75,15 @@ endchoice
+ 
+ endif
+ 
++config ARCH_PXA_PWM
++	tristate "Support for Pulse Width Modulation device on PXA27x"
++	depends PXA27x
++	default n
++	help
++	  Enable PWM Support on PXA27x processor. This processor
++	  supports up to 4 PWM. Check your design, if they are
++	  all available due to multi pin assignments before use.
++
+ endmenu
+ 
+ config MACH_POODLE
+Index: arch/arm/mach-pxa/pxa27x_pwm.c
+===================================================================
+--- /dev/null
++++ arch/arm/mach-pxa/pxa27x_pwm.c
+@@ -0,0 +1,597 @@
++/*
++ * arch/arm/mach-pxa/pxa27x_pwm.c
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * How to use this driver:
++ *
++ * This driver creats some additional sysfs entries you can work with
++ * from userland. The more ready-to-use PWM units this driver finds the
++ * more entries it creates.
++ *
++ * /sys/class/pwm/pwm(1|2|3|4)/active
++ * Write a '1' into this entry to activate the PWM. Default is '0' and
++ * the corresponding PWM pin is always at low level
++ *
++ * /sys/class/pwm/pwm(1|2|3|4)/period
++ * Write the period the PWM should have into this entry. Unit is us (1E-6)
++ * and valid numbers are 1...5000 (1us ... 5ms)
++ *
++ * /sys/class/pwm/pwm(1|2|3|4)/duty
++ * Write the duty the PWM should have into this entry. Unit is percent with
++ * one position after decimal point. So valid numbers are 0 ... 1000 (0% ... 100.0%)
++ *
++ */
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <linux/sysdev.h>
++#include <linux/init.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++
++#define DRIVER_NAME "pxa27x-pwm"
++#define MAX_DUTY 1000
++
++struct pwm_table {
++	long period;	/* in us */
++	unsigned max_period_val;
++	unsigned prescaler;
++};
++
++/*
++ * Ready to use calulations
++ */
++static const struct pwm_table pwm_table[]={
++	{
++		.period=1,	/* 1 us */
++		.max_period_val = 13,
++		.prescaler=1,
++	},
++	{
++		.period=5,	/* 5 us */
++		.max_period_val = 65,
++		.prescaler=1,
++	},
++	{
++		.period=10,	/* 10 us */
++		.max_period_val = 130,
++		.prescaler=1,
++	},
++	{
++		.period=20,	/* 20 us */
++		.max_period_val = 260,
++		.prescaler=1,
++	},
++	{
++		.period=50,	/* 50 us */
++		.max_period_val = 650,
++		.prescaler=1,
++	},
++	{
++		.period=100,	/* 100 us */
++		.max_period_val = 650,
++		.prescaler=2,
++	},
++	{
++		.period=500,	/* 500 us */
++		.max_period_val = 929,
++		.prescaler=7,
++	},
++	{
++		.period=1000,	/* 1ms */
++		.max_period_val = 1000,
++		.prescaler=13,
++	},
++	{
++		.period=2000,	/* 2ms */
++		.max_period_val = 1000,
++		.prescaler=26,
++	},
++	{
++		.period=3000,	/* 3ms */
++		.max_period_val = 1000,
++		.prescaler=39,
++	},
++	{
++		.period=4000,	/* 4ms */
++		.max_period_val = 1020,
++		.prescaler=51,
++	},
++	{
++		.period=5000,	/* 5ms */
++		.max_period_val = 1016,
++		.prescaler=64,
++	}
++};
++
++struct pwm_device {
++	u32 reg;
++	int active;
++	unsigned duty;
++	const struct pwm_table *entry;
++	struct class_device class_dev;
++};
++
++static struct class pwm_class;	/* forward declaration only */
++
++#define to_pwm_device(d) container_of(d, struct pwm_device, class_dev)
++
++/**
++ * setup_pwm_unit - common setup function whenever something was changed
++ * @ppd: PWM unit to work with
++ */
++static void setup_pwm_unit(struct pwm_device *ppd)
++{
++	if (ppd->entry == NULL)
++		return;	/* do nothing, not fully configured yet */
++
++	/* setup prescaler */
++	if ((__REG(ppd->reg) & 0x3F) != (ppd->entry->prescaler-1))
++		__REG(ppd->reg) = ((ppd->entry->prescaler-1) | 0x40) & 0x7F;
++
++	/* setup period */
++	if ((__REG2(ppd->reg,8)&0x3FF) != ppd->entry->max_period_val-1)
++		__REG2(ppd->reg,8)=(ppd->entry->max_period_val-1)&0x3FF;
++
++	/* setup duty, if active */
++	if (ppd->active) {
++		unsigned duty;
++
++		if (ppd->duty == MAX_DUTY)
++			duty=ppd->entry->max_period_val-1;	/* FIXME: Solve with bit 10 in this register */
++		else
++			duty=((ppd->entry->max_period_val-1)*ppd->duty)/MAX_DUTY;
++
++		if ((__REG2(ppd->reg,4)&0x3FF) != duty)
++			__REG2(ppd->reg,4) = duty;
++	}
++	else {
++		if ((__REG2(ppd->reg,4)&0x3FF) != 0)
++			__REG2(ppd->reg,4) = 0;	/* force output to low */
++	}
++}
++
++/**
++ * pwm_show_duty - return current duty setting
++ * @dev: device to work with
++ * @buf: space to write the current value in
++ */
++static ssize_t pwm_show_duty(struct class_device *dev, char *buf)
++{
++	ssize_t ret_size = 0;
++	struct pwm_device *ppd=to_pwm_device(dev);
++
++	ret_size=sprintf(buf,"%u",ppd->duty);
++	return ret_size;
++}
++
++/**
++ * pwm_store_duty - set new duty
++ * @dev: device to work with
++ * @buf: buffer with new value in ASCII
++ * @size: size of buffer
++ *
++ * Returns the given @size or -EIO
++ *
++ * Duty value can be 0 ... 1000. Without floating point you can take
++ * one position after decimal point into account. The internal counters
++ * supports 10 bit resolution, so it makes sense to support such a thing
++ * like 66.6% or 33.3% (given as 666 and 333 values)
++ */
++static ssize_t pwm_store_duty(struct class_device *dev, const char *buf, size_t size)
++{
++	long value;
++	struct pwm_device *ppd=to_pwm_device(dev);
++
++	value = simple_strtol(buf, NULL, 10);
++	if ((value < 0) || (value > 1000))
++		return -EIO;
++
++	ppd->duty=(unsigned)value;
++
++	setup_pwm_unit(ppd);
++	return size;
++}
++
++/**
++ * pwm_show_period - return current period setting
++ * @dev: device to work with
++ * @buf: space to write the current value in
++ */
++static ssize_t pwm_show_period(struct class_device *dev, char *buf)
++{
++	ssize_t ret_size = 0;
++	struct pwm_device *ppd=to_pwm_device(dev);
++
++	if (ppd->entry)	/* already initialized? */
++		ret_size=sprintf(buf,"%ld",ppd->entry->period);
++	else
++		ret_size=sprintf(buf,"0");
++
++	return ret_size;
++}
++
++/**
++ * pwm_store_period - set new period setting
++ * @dev: device to work with
++ * @buf: buffer with new value in ASCII
++ * @size: size of buffer
++ *
++ * Returns the given @size or -EIO
++ *
++ * The min/max period depends on processors features.
++ * Currently the PXA27x uses the internal 13MHz clock. You can prescale
++ * this clock up to 1/64 (down to 203.125kHz).
++ * The period is based on this prescaled clock and it's width depends on
++ * the period control register. This register is 10 bits width.
++ * So, the min. period is (no prescale, period control = 1): ~240ns
++ * Max period is (max prescale, period control = 0x3FF): ~5.2ms
++ *
++ * The unit of the given value should be "us" (1E-6) and the value
++ * between 1 and 5000.
++ */
++static ssize_t pwm_store_period(struct class_device *dev, const char *buf, size_t size)
++{
++	long value,i;
++	struct pwm_device *ppd=to_pwm_device(dev);
++
++	value = simple_strtol(buf, NULL, 10);
++	if ((value < 1) && (value > 5000))
++		return -EIO;
++
++	for (i=0;i<ARRAY_SIZE(pwm_table);i++) {
++		if (pwm_table[i].period >= value)
++			break;
++	}
++	if (i==ARRAY_SIZE(pwm_table))	/* period not found in table? */
++		return -EIO;
++
++	ppd->entry=&pwm_table[i];
++	printk(KERN_INFO "New period should be %ld us, and is %ld us\n",
++		value,ppd->entry->period);
++
++	setup_pwm_unit(ppd);
++	return size;
++}
++
++/**
++ * pwm_show_state - return current state setting
++ * @dev: device to work with
++ * @buf: space to write the current value in
++ */
++static ssize_t pwm_show_state(struct class_device *dev, char *buf)
++{
++	ssize_t ret_size = 0;
++	struct pwm_device *ppd=to_pwm_device(dev);
++
++	ret_size=sprintf(buf,"%d",ppd->active);
++	return ret_size;
++}
++
++/**
++ * pwm_store_state - set new state setting
++ * @dev: device to work with
++ * @buf: buffer with new value in ASCII
++ * @size: size of buffer
++ *
++ * Returns the given @size
++ */
++static ssize_t pwm_store_state(struct class_device *dev, const char *buf, size_t size)
++{
++	long value;
++	struct pwm_device *ppd=to_pwm_device(dev);
++
++	value = simple_strtol(buf, NULL, 10);
++	if (value != 0)
++		ppd->active=1;
++	else
++		ppd->active=0;
++
++	setup_pwm_unit(ppd);
++	return size;
++}
++
++/*
++ * Attribute: /sys/class/pwm/pwmX/duty
++ */
++static struct class_device_attribute attr_pwm_duty = {
++	.attr = { .name = "duty", .mode = 0644, .owner = THIS_MODULE },
++	.show = pwm_show_duty,
++	.store = pwm_store_duty,
++};
++
++/*
++ * Attribute: /sys/class/pwm/pwmX/period
++ */
++static struct class_device_attribute attr_pwm_period = {
++	.attr = { .name = "period", .mode = 0644, .owner = THIS_MODULE },
++	.show = pwm_show_period,
++	.store = pwm_store_period,
++};
++
++/*
++ * Attribute: /sys/class/pwm/pwmX/active
++ */
++static struct class_device_attribute attr_pwm_active = {
++	.attr = { .name = "active", .mode = 0644, .owner = THIS_MODULE },
++	.show = pwm_show_state,
++	.store = pwm_store_state,
++};
++
++/**
++ * init_userinterface - setup the device and things the user will see
++ * @pdev: platform device to work with
++ * @address: physical address of this device
++ *
++ * Return 0 on success
++ */
++static int init_userinterface(struct platform_device *pdev,u32 address)
++{
++	int rc;
++	struct pwm_device *ppd;
++
++	if (unlikely((ppd = kmalloc(sizeof(struct pwm_device), GFP_KERNEL)) == NULL))
++		return -ENOMEM;
++
++	memset(&ppd->class_dev, 0, sizeof(struct class_device));
++	ppd->class_dev.class = &pwm_class;
++	ppd->class_dev.dev=&pdev->dev;
++	snprintf(ppd->class_dev.class_id, BUS_ID_SIZE, "pwm%i", pdev->id);
++	ppd->reg=address;
++	ppd->entry=NULL;
++	ppd->active=0;
++	ppd->duty=0;
++
++	rc = class_device_register(&ppd->class_dev);
++	if (unlikely(rc)) {
++		printk(KERN_ERR "%s: class registering failed\n", DRIVER_NAME);
++		goto err_ppd;
++	}
++	/*
++	 * register the attributes
++	 */
++	rc = class_device_create_file(&ppd->class_dev,&attr_pwm_duty);
++	if (unlikely(rc)) {
++		printk(KERN_ERR "%s: couldn't create file for duty parameter\n", DRIVER_NAME);
++		goto err_unreg_classdev;
++	}
++
++	rc = class_device_create_file(&ppd->class_dev,&attr_pwm_period);
++	if (unlikely(rc)) {
++		printk(KERN_ERR "%s: couldn't create file for period parameter\n", DRIVER_NAME);
++		goto err_free_duty;
++	}
++
++	rc = class_device_create_file(&ppd->class_dev,&attr_pwm_active);
++	if (unlikely(rc)) {
++		printk(KERN_ERR "%s: couldn't create file for active parameter\n", DRIVER_NAME);
++		goto err_free_period;
++	}
++
++	pdev->dev.driver_data=ppd;
++
++	return 0;
++
++err_free_period:
++	class_device_remove_file(&ppd->class_dev, &attr_pwm_period);
++err_free_duty:
++	class_device_remove_file(&ppd->class_dev, &attr_pwm_duty);
++err_unreg_classdev:
++	class_device_unregister(&ppd->class_dev);
++err_ppd:
++	kfree(ppd);
++	return rc;
++}
++
++/**
++ * pxa27x_pwm_drv_probe - claim resources
++ * @pdev: platform device to work with
++ *
++ * CAUTION: This functions rejects a PWM unit if its
++ * not forwarded to any possible GPIO pin! In this case
++ * it also returns -ENODEV
++ *
++ * Returns -ENODEV if there is no such device on this SoC, -EBUSY if this
++ * resource is already claimed
++ */
++static int pxa27x_pwm_drv_probe(struct platform_device *pdev)
++{
++	int err=-ENODEV;
++	struct resource *res;
++
++	printk(KERN_INFO " Initializing PWM#%u...",pdev->id);
++
++	switch (pdev->id) {
++	case 0:	/* PWM#0 */
++		if ((GAFR0_U & 0x03) != 0x02)	/* PWM#0 could be at GPIO16 */
++			goto exit;
++		break;
++
++	case 1:	/* PWM#1 */
++		if (((GAFR0_U & 0x0C) != 0x08) &&		/* PWM#1 could be at GPIO17, */
++			((GAFR1_L & 0x3000) != 0x3000) &&	/* ...or at GPIO38, */
++			((GAFR3_U & 0xC0) != 0xC0)) /* ...or at GPIO115 */
++			goto exit;
++		break;
++
++	case 2:	/* PWM#2 */
++		if (((GAFR0_L & 0xC00000) != 0x800000) &&	/* PWM#2 could be at GPIO11, */
++			((GAFR1_L & 0x30000000) != 0x20000000) &&	/* ...or at GPIO46, */
++			((GAFR2_L & 0xC0000000) != 0xC0000000))	/* ...or at GPIO79 */
++			goto exit;
++		break;
++
++	case 3:	/* PWM#3 */
++		if (((GAFR0_L & 0x3000000) != 0x2000000) && /* PWM#3 could be at GPIO12, */
++			((GAFR1_L & 0xC0000000) != 0xC0000000) && /* ...or at GPIO47, */
++			((GAFR2_U & 0x3) != 0x3))	/* ...or at GPIO80 */
++			goto exit;
++		break;
++
++	default:
++		printk("failed. Unknown device\n");
++		return err;
++	}
++
++	if (unlikely(!(res = platform_get_resource(pdev, IORESOURCE_MEM, 0))))
++		goto exit;
++
++	if (unlikely(!request_mem_region(res->start, res->end - res->start + 1, "px27x-pwm"))) {
++		err = -EBUSY;
++		goto exit;
++	}
++
++	if (unlikely((err=init_userinterface(pdev,res->start))))
++		goto release;
++
++	printk("done.\n");
++	return(0);
++
++release:
++	release_mem_region(res->start, res->end - res->start + 1);
++exit:
++	printk(KERN_INFO "not available.\n");
++	return err;
++}
++
++/**
++ * pxa27x_pwm_drv_remove - free claimed resources
++ * @pdev: platform device to work with
++ */
++static int pxa27x_pwm_drv_remove (struct platform_device *pdev)
++{
++	struct resource *res;
++	struct pwm_device *ppd=(struct pwm_device*)pdev->dev.driver_data;
++
++	class_device_remove_file(&ppd->class_dev,&attr_pwm_active);
++	class_device_remove_file(&ppd->class_dev,&attr_pwm_period);
++	class_device_remove_file(&ppd->class_dev,&attr_pwm_duty);
++
++	class_device_unregister(&ppd->class_dev);
++
++	kfree(ppd);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	release_mem_region(res->start, res->end - res->start + 1);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM
++/**
++ * pxa27x_pwm_drv_suspend - power down
++ * @dev: platform device to work with
++ * @state: state to reach
++ */
++static int pxa27x_pwm_drv_suspend (struct platform_device *pdev, pm_message_t state)
++{
++	printk("%s\n",__FUNCTION__);
++	return 0;
++}
++
++/**
++ * pxa27x_pwm_drv_resume - power up and continue
++ * @pdev: platform device to work with
++ */
++static int pxa27x_pwm_drv_resume (struct platform_device *pdev)
++{
++	printk("%s\n",__FUNCTION__);
++	return 0;
++}
++#else
++
++# define pxa27x_pwm_drv_suspend NULL
++# define pxa27x_pwm_drv_resume NULL
++
++#endif /* CONFIG_PM */
++
++/**
++ * pwm_class_release -
++ * @dev:
++ */
++static void pwm_class_release(struct class_device *dev)
++{
++	return;
++}
++
++static struct platform_driver pxa27x_pwm_driver = {
++	.probe		= pxa27x_pwm_drv_probe,
++	.remove		= pxa27x_pwm_drv_remove,
++	.suspend	= pxa27x_pwm_drv_suspend,
++	.resume		= pxa27x_pwm_drv_resume,
++	.driver		= {
++		.name	= DRIVER_NAME,
++	},
++};
++
++static struct sysdev_class pwm_sysclass = {
++	set_kset_name("pwm"),
++};
++
++static struct sys_device pwm_sys_device = {
++	.id		= 0,
++	.cls		= &pwm_sysclass,
++};
++
++static struct class pwm_class = {
++	.name		= "pwm",
++	.release	= pwm_class_release,
++};
++
++/**
++ * pxa_pwm_init - register the PWM driver
++ *
++ */
++int __init pxa_pwm_init(void)
++{
++	int ret;
++
++	printk(KERN_INFO "Initializing PWM class.\n");
++
++	if (unlikely((ret = class_register(&pwm_class)))) {
++		printk(KERN_ERR "%s: couldn't register class, exiting\n", DRIVER_NAME);
++		return ret;
++	}
++
++	if (unlikely((ret = sysdev_class_register(&pwm_sysclass)))) {
++		printk(KERN_ERR "%s: couldn't register sysdev class, exiting\n", DRIVER_NAME);
++		goto out_sysdev_class;
++	}
++
++	if (unlikely((ret = sysdev_register(&pwm_sys_device)))) {
++		printk(KERN_ERR "%s: couldn't register sysdev, exiting\n", DRIVER_NAME);
++		goto out_sysdev_register;
++	}
++
++	return platform_driver_register(&pxa27x_pwm_driver);
++
++out_sysdev_register:
++	sysdev_class_unregister(&pwm_sysclass);
++out_sysdev_class:
++	class_unregister(&pwm_class);
++	return ret;
++}
++
++/**
++ * pxa_pwm_exit - clean up
++ **/
++void __exit pxa_pwm_exit(void)
++{
++	platform_driver_unregister(&pxa27x_pwm_driver);
++	sysdev_unregister(&pwm_sys_device);
++	sysdev_class_unregister(&pwm_sysclass);
++	class_unregister(&pwm_class);
++}
++
++/* subsys_initcall(pxa_pwm_init); */
++module_init(pxa_pwm_init);
++module_exit(pxa_pwm_exit);
++
++MODULE_AUTHOR("Juergen Beisert");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Generic PXA27x PWM support");
++
++/* end of file pxa27x_pwm.c */

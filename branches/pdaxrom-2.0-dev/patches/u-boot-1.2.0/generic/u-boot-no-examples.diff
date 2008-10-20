@@ -1,0 +1,12 @@
+Index: Makefile
+===================================================================
+--- Makefile.orig
++++ Makefile
+@@ -220,7 +220,6 @@ PLATFORM_LIBS += -L $(shell dirname `$(C
+ # The "tools" are needed early, so put this first
+ # Don't include stuff already done in $(LIBS)
+ SUBDIRS	= tools \
+-	  examples \
+ 	  post \
+ 	  post/cpu
+ .PHONY : $(SUBDIRS)

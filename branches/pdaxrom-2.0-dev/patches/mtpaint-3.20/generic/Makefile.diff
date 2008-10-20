@@ -1,0 +1,11 @@
+--- s/src/Makefile-	2007-11-11 02:10:54.000000000 +0600
++++ s/src/Makefile	2008-05-11 04:29:24.000000000 +0700
+@@ -16,7 +16,7 @@
+ 	toolbar.o channels.o csel.o shifter.o spawn.o font.o
+ 
+ $(BIN): main.o $(OBJS)
+-	$(CC) main.o $(OBJS) -o $(BIN) $(LDFLAGS)
++	$(CC) main.o $(OBJS) -o $(BIN) $(LDFLAGS) -lxcb -lxcb-xlib -lXau -lexpat
+ 
+ .c.o:
+ 	$(CC) $(CFLAGS) -c -o $*.o $*.c

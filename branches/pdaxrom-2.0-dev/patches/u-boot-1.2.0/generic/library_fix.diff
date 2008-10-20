@@ -1,0 +1,30 @@
+Subject: Remove compilers private library to avoid any leakage
+From: Juergen Beisert <j.beisert@pengutronix.de>
+
+This patch avoids a compiler leakage into u-boot. Seen on some
+compilers and/or parameters where functions from the lib are used
+while they should be used from the U-Boot libaries.
+
+Intended for mainline? Not sure. But it should be used for u-boot-v2!
+
+Signed-off-by: Juergen Beisert <j.beisert@pengutronix.de>
+
+---
+ Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: Makefile
+===================================================================
+--- Makefile.orig
++++ Makefile
+@@ -214,8 +214,8 @@ LIBS += $(BOARDLIBS)
+ LIBS := $(addprefix $(obj),$(LIBS))
+ .PHONY : $(LIBS)
+ 
+-# Add GCC lib
+-PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc
++# Don't add GCC lib!
++PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`)
+ 
+ # The "tools" are needed early, so put this first
+ # Don't include stuff already done in $(LIBS)

@@ -1,0 +1,27 @@
+diff -Nur skipstone-1.0.1/src/Makefile.webkit skipstone-1.0.1-new/src/Makefile.webkit
+--- skipstone-1.0.1/src/Makefile.webkit	2008-04-14 13:10:18.000000000 +0700
++++ skipstone-1.0.1-new/src/Makefile.webkit	2008-05-14 13:38:08.000000000 +0700
+@@ -10,10 +10,10 @@
+ 	chmod 755 skipstone
+ 
+ skipstone-bin-webkit: $(OBJS)
+-	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(MOZILLA_LIBS)
++	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(MOZILLA_LIBS) $(GTK_LIBS)
+ 
+ skipdownload: $(DOWNLOADOBJS)
+-	$(CC) $< -o $@ $(GTK_LIBS)
++	$(CC) $< -o $@ $(LDFLAGS) $(MOZILLA_LIBS) $(GTK_LIBS)
+ 
+ clean:
+ 	(cd ../locale && ${MAKE} clean)
+@@ -37,9 +37,7 @@
+ 	$(INSTALL) -d $(PREFIX)/share/skipstone/pixmaps/default
+ 	$(INSTALL) -c -m644 $(srcdir)/../pixmaps/*.png $(PREFIX)/share/skipstone/pixmaps/default
+ 	$(INSTALL) -c -m644 $(srcdir)/../pixmaps/*.gif $(PREFIX)/share/skipstone/pixmaps/default
+-	$(STRIP) skipstone-bin
+-	$(STRIP) skipdownload
+-	$(INSTALL) -c skipstone-bin $(PREFIX)/bin
++	$(INSTALL) -c skipstone-bin-webkit $(PREFIX)/bin/skipstone-bin
+ 	$(INSTALL) -c -m755 skipstone $(PREFIX)/bin
+ 	$(INSTALL) -c skipdownload $(PREFIX)/bin
+ 

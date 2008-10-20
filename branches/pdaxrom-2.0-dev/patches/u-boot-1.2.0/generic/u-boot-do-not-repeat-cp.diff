@@ -1,0 +1,50 @@
+Subject: do not repeat cp
+From: Sascha Hauer <s.hauer@pengutronix.de>
+
+I cannot think of why anyone would repeat the last cp, cmp or crc
+command by hitting return. So disable it.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+
+---
+ common/cmd_mem.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+Index: common/cmd_mem.c
+===================================================================
+--- common/cmd_mem.c.orig
++++ common/cmd_mem.c
+@@ -1214,13 +1214,13 @@ U_BOOT_CMD(
+ );
+ 
+ U_BOOT_CMD(
+-	cp,    4,    1,    do_mem_cp,
++	cp,    4,    0,    do_mem_cp,
+ 	"cp      - memory copy\n",
+ 	"[.b, .w, .l] source target count\n    - copy memory\n"
+ );
+ 
+ U_BOOT_CMD(
+-	cmp,    4,     1,     do_mem_cmp,
++	cmp,    4,     0,     do_mem_cmp,
+ 	"cmp     - memory compare\n",
+ 	"[.b, .w, .l] addr1 addr2 count\n    - compare memory\n"
+ );
+@@ -1228,7 +1228,7 @@ U_BOOT_CMD(
+ #ifndef CONFIG_CRC32_VERIFY
+ 
+ U_BOOT_CMD(
+-	crc32,    4,    1,     do_mem_crc,
++	crc32,    4,    0,     do_mem_crc,
+ 	"crc32   - checksum calculation\n",
+ 	"address count [addr]\n    - compute CRC32 checksum [save at addr]\n"
+ );
+@@ -1236,7 +1236,7 @@ U_BOOT_CMD(
+ #else	/* CONFIG_CRC32_VERIFY */
+ 
+ U_BOOT_CMD(
+-	crc32,    5,    1,     do_mem_crc,
++	crc32,    5,    0,     do_mem_crc,
+ 	"crc32   - checksum calculation\n",
+ 	"address count [addr]\n    - compute CRC32 checksum [save at addr]\n"
+ 	"-v address count crc\n    - verify crc of memory area\n"

@@ -1,0 +1,12 @@
+--- s/src/skipstone.in-	2008-05-14 16:03:58.000000000 +0700
++++ s/src/skipstone.in	2008-05-14 16:05:00.000000000 +0700
+@@ -12,6 +12,9 @@
+ elif  [ -f @MOZILLA_LIB_HOME@/libgtkembedmoz.dylib ]; then
+ 	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:@MOZILLA_LIB_HOME@
+ 	export MOZILLA_FIVE_HOME=@MOZILLA_LIB_HOME@
++elif [ -f /usr/lib/firefox/libgtkembedmoz.so ]; then
++	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/firefox
++	export MOZILLA_FIVE_HOME=/usr/lib/firefox
+ elif [ -f /usr/local/lib/mozilla/libgtkembedmoz.so ]; then
+ 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/mozilla
+ 	export MOZILLA_FIVE_HOME=/usr/local/lib/mozilla

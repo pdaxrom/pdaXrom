@@ -1,0 +1,26 @@
+--- linux-2.6.23/arch/arm/mach-pxa/spitz.c-	2008-04-08 23:02:02.000000000 +0700
++++ linux-2.6.23/arch/arm/mach-pxa/spitz.c	2008-04-08 23:02:30.000000000 +0700
+@@ -593,6 +593,7 @@
+ #ifdef CONFIG_MACH_SPITZ
+ MACHINE_START(SPITZ, "SHARP Spitz")
+ 	.phys_io	= 0x40000000,
++	.boot_params	= 0xa0000100,	/* BLOB boot parameter setting */
+ 	.io_pg_offst	= (io_p2v(0x40000000) >> 18) & 0xfffc,
+ 	.fixup		= fixup_spitz,
+ 	.map_io		= pxa_map_io,
+@@ -605,6 +606,7 @@
+ #ifdef CONFIG_MACH_BORZOI
+ MACHINE_START(BORZOI, "SHARP Borzoi")
+ 	.phys_io	= 0x40000000,
++	.boot_params	= 0xa0000100,	/* BLOB boot parameter setting */
+ 	.io_pg_offst	= (io_p2v(0x40000000) >> 18) & 0xfffc,
+ 	.fixup		= fixup_spitz,
+ 	.map_io		= pxa_map_io,
+@@ -617,6 +619,7 @@
+ #ifdef CONFIG_MACH_AKITA
+ MACHINE_START(AKITA, "SHARP Akita")
+ 	.phys_io	= 0x40000000,
++	.boot_params	= 0xa0000100,	/* BLOB boot parameter setting */
+ 	.io_pg_offst	= (io_p2v(0x40000000) >> 18) & 0xfffc,
+ 	.fixup		= fixup_spitz,
+ 	.map_io		= pxa_map_io,

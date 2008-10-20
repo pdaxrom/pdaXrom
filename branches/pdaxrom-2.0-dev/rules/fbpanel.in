@@ -1,0 +1,12 @@
+config FBPANEL
+	bool
+	prompt "fbpanel"
+	select XORG_LIB_XEXT
+	select XORG_LIB_X11
+	select XORG_LIB_SM
+	select XORG_LIB_ICE
+	select XORG_LIB_XPM
+	select XORG_LIB_XMU
+	select GTK
+	help
+	  lightweight X11 desktop panel.

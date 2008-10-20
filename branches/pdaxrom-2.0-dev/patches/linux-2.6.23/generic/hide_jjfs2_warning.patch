@@ -1,0 +1,13 @@
+--- linux-2.6.23/fs/jffs2/scan.c-	2008-04-09 15:18:34.000000000 +0700
++++ linux-2.6.23/fs/jffs2/scan.c	2008-04-09 15:20:04.000000000 +0700
+@@ -646,8 +646,10 @@
+ 			inbuf_ofs = ofs - buf_ofs;
+ 			while (inbuf_ofs < scan_end) {
+ 				if (unlikely(*(uint32_t *)(&buf[inbuf_ofs]) != 0xffffffff)) {
++#if 0
+ 					printk(KERN_WARNING "Empty flash at 0x%08x ends at 0x%08x\n",
+ 					       empty_start, ofs);
++#endif
+ 					if ((err = jffs2_scan_dirty_space(c, jeb, ofs-empty_start)))
+ 						return err;
+ 					goto scan_more;

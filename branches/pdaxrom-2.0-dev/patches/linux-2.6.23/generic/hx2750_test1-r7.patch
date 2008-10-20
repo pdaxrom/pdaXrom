@@ -1,0 +1,691 @@
+---
+ arch/arm/mach-pxa/hx2750_test.c |  482 +++++++++++++++++++++++++++++-----------
+ 1 file changed, 360 insertions(+), 122 deletions(-)
+
+Index: linux-2.6.22/arch/arm/mach-pxa/hx2750_test.c
+===================================================================
+--- linux-2.6.22.orig/arch/arm/mach-pxa/hx2750_test.c	2007-08-28 20:44:08.000000000 +0100
++++ linux-2.6.22/arch/arm/mach-pxa/hx2750_test.c	2007-08-28 20:51:24.000000000 +0100
+@@ -14,15 +14,17 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/ioport.h>
+-#include <linux/device.h>
++#include <linux/platform_device.h>
+ #include <linux/input.h>
+-#include <linux/delay.h>
+ #include <linux/interrupt.h>
++#include <linux/delay.h>
++#include <linux/irq.h>
+ 
+ #include <asm/mach-types.h>
+ #include <asm/hardware.h>
+ #include <asm/mach/arch.h>
+ 
++#include <asm/arch/pm.h>
+ #include <asm/arch/hx2750.h>
+ #include <asm/arch/pxa-regs.h>
+ 
+@@ -32,7 +34,7 @@ static int prodval;
+ /*
+  * Sysfs functions
+  */
+-static ssize_t test1_show(struct device *dev, char *buf)
++static ssize_t test1_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+ 	unsigned long rp;
+ 
+@@ -56,7 +58,7 @@ static ssize_t test1_show(struct device 
+ extern void tsc2101_print_miscdata(struct device *dev);
+ extern struct platform_device tsc2101_device;
+ 
+-static ssize_t test1_store(struct device *dev, const char *buf, size_t count)
++static ssize_t test1_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	prodval = simple_strtoul(buf, NULL, 10);
+ 
+@@ -67,7 +69,7 @@ static ssize_t test1_store(struct device
+ 
+ static DEVICE_ATTR(test1, 0644, test1_show, test1_store);
+ 
+-static ssize_t test2_show(struct device *dev, char *buf)
++static ssize_t test2_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+ 	printk(KERN_ERR "SSCR0_P2: %08x\n", SSCR0_P2);
+ 	printk(KERN_ERR "SSCR1_P2: %08x\n", SSCR1_P2);
+@@ -94,28 +96,39 @@ static DEVICE_ATTR(test2, 0444, test2_sh
+ 
+ extern unsigned int hx2750_egpio_current;
+ 
+-static ssize_t setegpio_show(struct device *dev, char *buf)
++static ssize_t setegpio_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+ 	return sprintf(buf, "%x\n",hx2750_egpio_current);
+ }
+ 
+-static ssize_t setegpio_store(struct device *dev, const char *buf, size_t count)
++static ssize_t setegpio_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	unsigned int val = simple_strtoul(buf, NULL, 10);
+ 
+-	hx2750_set_egpio(1 << val);
++	hx2750_set_egpio(val);
+ 
+ 	return count;
+ }
+ 
+ static DEVICE_ATTR(setegpio, 0644, setegpio_show, setegpio_store);
+ 
+-static ssize_t clregpio_show(struct device *dev, char *buf)
++static ssize_t clregpio_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+ 	return sprintf(buf, "%x\n",hx2750_egpio_current);
+ }
+ 
+-static ssize_t gpio_show(struct device *dev, char *buf)
++static ssize_t clregpio_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
++{
++	unsigned int val = simple_strtoul(buf, NULL, 10);
++
++	hx2750_clear_egpio(val);
++
++	return count;
++}
++
++static DEVICE_ATTR(clregpio, 0644, clregpio_show, clregpio_store);
++
++static ssize_t gpio_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+ 	int i;
+ 
+@@ -141,19 +154,7 @@ static ssize_t gpio_show(struct device *
+ 	return sprintf(buf, "EGPIO: %x\n",hx2750_egpio_current);
+ }
+ 
+-static ssize_t clregpio_store(struct device *dev, const char *buf, size_t count)
+-{
+-	unsigned int val = simple_strtoul(buf, NULL, 10);
+-
+-	hx2750_clear_egpio(1 << val);
+-
+-	return count;
+-}
+-
+-static DEVICE_ATTR(clregpio, 0644, clregpio_show, clregpio_store);
+-
+-
+-static ssize_t gpioclr_store(struct device *dev, const char *buf, size_t count)
++static ssize_t gpioclr_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	int prod;
+ 	prod = simple_strtoul(buf, NULL, 10);
+@@ -165,7 +166,7 @@ static ssize_t gpioclr_store(struct devi
+ 
+ static DEVICE_ATTR(gpioclr, 0644, gpio_show, gpioclr_store);
+ 
+-static ssize_t gpioset_store(struct device *dev, const char *buf, size_t count)
++static ssize_t gpioset_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	int prod;
+ 	prod = simple_strtoul(buf, NULL, 10);
+@@ -177,47 +178,48 @@ static ssize_t gpioset_store(struct devi
+ 
+ static DEVICE_ATTR(gpioset, 0644, gpio_show, gpioset_store);
+ 
++void do_ds2760(void);
+ 
+-static ssize_t ssp2read_store(struct device *dev, const char *buf, size_t count)
++static ssize_t ssp2read_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	unsigned int val = simple_strtoul(buf, NULL, 16);
++	//unsigned int val = simple_strtoul(buf, NULL, 16);
+ 
+-	printk("Read: %08x\n",hx2750_ssp2_read(val));
++	//printk("Read: %08x\n",hx2750_ssp2_read(val));
++	do_ds2760();
+ 
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(ssp2read, 0200, NULL, ssp2read_store);
+-
+-static ssize_t ssp2write_store(struct device *dev, const char *buf, size_t count)
++static DEVICE_ATTR(ssp2read, 0200, NULL, ssp2read_store);
++
++static ssize_t ssp2write_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	unsigned int val = simple_strtoul(buf, NULL, 16);
++	//unsigned int val = simple_strtoul(buf, NULL, 16);
+ 
+-	printk("Write: %08x\n",hx2750_ssp2_write(val));
++	//printk("Write: %08x\n",hx2750_ssp2_write(val));
+ 
+ 	return count;
+ }
+ 
+ static DEVICE_ATTR(ssp2write, 0200, NULL, ssp2write_store);
+ 
+-
+-static ssize_t sspr_store(struct device *dev, const char *buf, size_t count)
+++static ssize_t sspr_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	unsigned long val,ret;
+ 	val = simple_strtoul(buf, NULL, 0);
+ 
+ 	hx2750_tsc2101_send(1<<15,val,&ret,1);
+ 
+-	printk("Response: %x\n",ret);
++	printk("Response: %lx\n",ret);
+ 
+ 	return count;
+ }
+ 
+ static DEVICE_ATTR(sspr, 0200, NULL, sspr_store);
+ 
+-static ssize_t sspw_store(struct device *dev, const char *buf, size_t count)
++static ssize_t sspw_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	int val,ret;
++	unsigned long val,ret;
+ 	sscanf(buf, "%lx %lx", &val, &ret);
+ 
+ 	hx2750_tsc2101_send(0,val,&ret,1);
+@@ -228,31 +230,29 @@ static ssize_t sspw_store(struct device 
+ static DEVICE_ATTR(sspw, 0200, NULL, sspw_store);
+ 
+ 
+-extern struct pm_ops pxa_pm_ops;
+ extern void pxa_cpu_resume(void);
+ extern unsigned long pxa_pm_pspr_value;
++extern void hx2750_send_egpio(unsigned int val);
+ 
+-static int (*pxa_pm_enter_orig)(suspend_state_t state);
+-
+-//static struct {
+-//	u32 ffier, fflcr, ffmcr, ffspr, ffisr, ffdll, ffdlh;
+-//} sys_ctx;
++/*static struct {
++	u32 ffier, fflcr, ffmcr, ffspr, ffisr, ffdll, ffdlh;
++} sys_ctx;*/
+ 
+ u32 resstruct[20];
+ 
+ static int hx2750_pxa_pm_enter(suspend_state_t state)
+ {
+-	int i;
+-	u32 save[10];
++	//int i;
++	//u32 save[10];
+ 
+ 	PWER = 0xC0000003;// | PWER_RTC;
+ 	PFER = 0x00000003;
+ 	PRER = 0x00000003;
+ 
+-	PGSR0=0x00000018;
+-	PGSR1=0x00000380;
+-	PGSR2=0x00800000;
+-	PGSR3=0x00500400;
++	PGSR0 = 0x00000018;
++	PGSR1 = 0x00000380;
++	PGSR2 = 0x00800000;
++	PGSR3 = 0x00500400;
+ 
+ 	//PVCR=0x494; or 0x14;
+ 	//PVCR=0x14;
+@@ -262,53 +262,57 @@ static int hx2750_pxa_pm_enter(suspend_s
+ 
+ 	//PCFR=0x457;
+ 	//PCFR=0x70; // Does not resume from sleep
+-	PCFR=0x077; // was 0x477
+-	PSLR=0xff100004;
++	PCFR = 0x077; // was 0x477
++	PSLR = 0xff100004;
+ 
+-	resstruct[0]=0x0000b4e6;
+-	resstruct[1]=0x00000001;
+-	resstruct[2]=virt_to_phys(pxa_cpu_resume);
+-	resstruct[3]=0xffffffff; //value for r0
++	resstruct[0] = 0x0000b4e6;
++	resstruct[1] = 0x00000001;
++	resstruct[2] = virt_to_phys(pxa_cpu_resume);
++	resstruct[3] = 0xffffffff; //value for r0
+ 
+-	resstruct[14]=0x00000078;  //mcr	15, 0, r0, cr1, cr0, {0}
+-	resstruct[15]=0x00000000;  //mcr	15, 0, r0, cr1, cr1, {0} 0xffffffff
+-	resstruct[16]=0xa0000000;  //mcr	15, 0, r0, cr2, cr0, {0} 0xa0748000
+-	resstruct[17]=0x00000001;  //mcr	15, 0, r0, cr3, cr0, {0} 0x00000015
+-	resstruct[18]=0x00000000;  //mcr	15, 0, r0, cr13, cr0, {0} 0x00000000
++	resstruct[14] = 0x00000078;  //mcr	15, 0, r0, cr1, cr0, {0}
++	resstruct[15] = 0x00000000;  //mcr	15, 0, r0, cr1, cr1, {0} 0xffffffff
++	resstruct[16] = 0xa0000000;  //mcr	15, 0, r0, cr2, cr0, {0} 0xa0748000
++	resstruct[17] = 0x00000001;  //mcr	15, 0, r0, cr3, cr0, {0} 0x00000015
++	resstruct[18] = 0x00000000;  //mcr	15, 0, r0, cr13, cr0, {0} 0x00000000
+ 
+ 	pxa_pm_pspr_value=virt_to_phys(&resstruct[0]);
+ 
+-	hx2750_send_egpio(3);
++	//hx2750_send_egpio(3);
+ 
+ 	pxa_gpio_mode(87 | GPIO_OUT  | GPIO_DFLT_HIGH);
+ 
+-	//sys_ctx.ffier = FFIER;
+-	//sys_ctx.fflcr = FFLCR;
+-	//sys_ctx.ffmcr = FFMCR;
+-	//sys_ctx.ffspr = FFSPR;
+-	//sys_ctx.ffisr = FFISR;
+-	//FFLCR |= 0x80;
+-	//sys_ctx.ffdll = FFDLL;
+-	//sys_ctx.ffdlh = FFDLH;
+-	//FFLCR &= 0xef;
++	/*printk("Suspending, Bye!\n");
+ 
+-	pxa_pm_enter_orig(state);
++	sys_ctx.ffier = FFIER;
++	sys_ctx.fflcr = FFLCR;
++	sys_ctx.ffmcr = FFMCR;
++	sys_ctx.ffspr = FFSPR;
++	sys_ctx.ffisr = FFISR;
++	FFLCR |= 0x80;
++	sys_ctx.ffdll = FFDLL;
++	sys_ctx.ffdlh = FFDLH;
++	FFLCR &= 0xef;*/
+ 
+-	//FFMCR = sys_ctx.ffmcr;
+-	//FFSPR = sys_ctx.ffspr;
+-	//FFLCR = sys_ctx.fflcr;
+-	//FFLCR |= 0x80;
+-	//FFDLH = sys_ctx.ffdlh;
+-	//FFDLL = sys_ctx.ffdll;
+-	//FFLCR = sys_ctx.fflcr;
+-	//FFISR = sys_ctx.ffisr;
+-	//FFLCR = 0x07;
+-	//FFIER = sys_ctx.ffier;
++	pxa_pm_enter(state);
++
++	/*FFMCR = sys_ctx.ffmcr;
++	FFSPR = sys_ctx.ffspr;
++	FFLCR = sys_ctx.fflcr;
++	FFLCR |= 0x80;
++	FFDLH = sys_ctx.ffdlh;
++	FFDLL = sys_ctx.ffdll;
++	FFLCR = sys_ctx.fflcr;
++	FFISR = sys_ctx.ffisr;
++	FFLCR = 0x07;
++	FFIER = sys_ctx.ffier;
++
++	printk("Resuming!\n");*/
+ 
+ 	return 0;
+ }
+ 
+-static irqreturn_t hx2750_charge_int(int irq, void *dev_id, struct pt_regs *regs)
++static irqreturn_t hx2750_charge_int(int irq, void *dev_id)
+ {
+ 	if ((GPLR(HX2750_GPIO_EXTPWR) & GPIO_bit(HX2750_GPIO_EXTPWR)) == 0) {
+ 		printk("Charging On\n");
+@@ -324,16 +328,28 @@ static irqreturn_t hx2750_charge_int(int
+ 
+ 
+ 
+-static irqreturn_t hx2750_interrupt(int irq, void *dev_id, struct pt_regs *regs)
++static irqreturn_t hx2750_interrupt(int irq, void *dev_id)
+ {
+     printk("Input %d changed.\n", irq-32);
+ 
+ 	return IRQ_HANDLED;
+ }
+ 
++static struct pm_ops hx2750_pm_ops = {
++	.pm_disk_mode	= PM_DISK_FIRMWARE,
++	.prepare	= pxa_pm_prepare,
++	.enter		= hx2750_pxa_pm_enter,
++	.finish		= pxa_pm_finish,
++};
+ 
+-static int __init hx2750_test_probe(struct device *dev)
++
++static int __init hx2750_test_probe(struct platform_device *pdev)
+ {
++	int ret;
++
++	pxa_gpio_mode(86 | GPIO_IN);
++	pxa_gpio_mode(87 | GPIO_OUT | GPIO_DFLT_HIGH);
++
+ 	pxa_gpio_mode(21 | GPIO_OUT | GPIO_DFLT_HIGH);
+ 	pxa_gpio_mode(HX2750_GPIO_CHARGE | GPIO_OUT | GPIO_DFLT_HIGH);
+ 	pxa_gpio_mode(83 | GPIO_OUT | GPIO_DFLT_HIGH);
+@@ -351,6 +367,7 @@ static int __init hx2750_test_probe(stru
+ 	pxa_gpio_mode(107 | GPIO_OUT | GPIO_DFLT_LOW);
+ 	pxa_gpio_mode(114 | GPIO_OUT | GPIO_DFLT_LOW);
+ 
++
+ 	pxa_gpio_mode(HX2750_GPIO_BATTCOVER1 | GPIO_IN);
+ 	pxa_gpio_mode(HX2750_GPIO_BATTCOVER2 | GPIO_IN);
+ 	pxa_gpio_mode(HX2750_GPIO_CF_IRQ | GPIO_IN);
+@@ -365,48 +382,37 @@ static int __init hx2750_test_probe(stru
+ 	pxa_gpio_mode(115 | GPIO_IN);
+ 	pxa_gpio_mode(119 | GPIO_IN);
+ 
+-	request_irq(IRQ_GPIO(HX2750_GPIO_BATLVL), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-	//request_irq(IRQ_GPIO(HX2750_GPIO_CF_WIFIIRQ), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-	request_irq(IRQ_GPIO(80), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-	request_irq(IRQ_GPIO(115), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-	request_irq(IRQ_GPIO(119), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-	request_irq(IRQ_GPIO(HX2750_GPIO_SR_CLK2), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-
+-	//request_irq(IRQ_GPIO(10), hx2750_interrupt, SA_INTERRUPT, "hx2750test", NULL);
+-
+-	set_irq_type(IRQ_GPIO(HX2750_GPIO_BATLVL),IRQT_BOTHEDGE);
+-	//set_irq_type(IRQ_GPIO(HX2750_GPIO_CF_WIFIIRQ),IRQT_BOTHEDGE);
+-	set_irq_type(IRQ_GPIO(80),IRQT_BOTHEDGE);
+-	set_irq_type(IRQ_GPIO(115),IRQT_BOTHEDGE);
+-	set_irq_type(IRQ_GPIO(119),IRQT_BOTHEDGE);
+-	set_irq_type(IRQ_GPIO(HX2750_GPIO_SR_CLK2),IRQT_BOTHEDGE);
+-
+-	//set_irq_type(IRQ_GPIO(10),IRQT_BOTHEDGE);
++	request_irq(IRQ_GPIO(HX2750_GPIO_BATLVL), hx2750_interrupt, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750test", NULL);
++	//request_irq(IRQ_GPIO(HX2750_GPIO_CF_WIFIIRQ), hx2750_interrupt, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750test", NULL);
++	request_irq(IRQ_GPIO(80), hx2750_interrupt, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750test", NULL);
++	request_irq(IRQ_GPIO(115), hx2750_interrupt, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750test", NULL);
++	request_irq(IRQ_GPIO(119), hx2750_interrupt, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750test", NULL);
++	request_irq(IRQ_GPIO(HX2750_GPIO_SR_CLK2), hx2750_interrupt, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750test", NULL);
+ 
+ 	printk("hx2750 Test Code Initialized.\n");
+-	device_create_file(dev, &dev_attr_test1);
+-	device_create_file(dev, &dev_attr_test2);
+-	device_create_file(dev, &dev_attr_setegpio);
+-	device_create_file(dev, &dev_attr_clregpio);
+-	device_create_file(dev, &dev_attr_gpioset);
+-	device_create_file(dev, &dev_attr_gpioclr);
+-	device_create_file(dev, &dev_attr_sspr);
+-	device_create_file(dev, &dev_attr_sspw);
+-	device_create_file(dev, &dev_attr_ssp2read);
+-	device_create_file(dev, &dev_attr_ssp2write);
++	// FIXME - return values.
++	ret = device_create_file(&pdev->dev, &dev_attr_test1);
++	ret = device_create_file(&pdev->dev, &dev_attr_test2);
++	ret = device_create_file(&pdev->dev, &dev_attr_setegpio);
++	ret = device_create_file(&pdev->dev, &dev_attr_clregpio);
++	ret = device_create_file(&pdev->dev, &dev_attr_gpioset);
++	ret = device_create_file(&pdev->dev, &dev_attr_gpioclr);
++	ret = device_create_file(&pdev->dev, &dev_attr_sspr);
++	ret = device_create_file(&pdev->dev, &dev_attr_sspw);
++	ret = device_create_file(&pdev->dev, &dev_attr_ssp2read);
++	ret = device_create_file(&pdev->dev, &dev_attr_ssp2write);
+ 
+-	request_irq(HX2750_IRQ_GPIO_EXTPWR, hx2750_charge_int, SA_INTERRUPT, "hx2750_extpwr", NULL);
+-	set_irq_type(HX2750_IRQ_GPIO_EXTPWR, IRQT_BOTHEDGE);
++	request_irq(HX2750_IRQ_GPIO_EXTPWR, hx2750_charge_int, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "hx2750_extpwr", NULL);
+ 
+-	pxa_pm_enter_orig=pxa_pm_ops.enter;
+-	pxa_pm_ops.enter=hx2750_pxa_pm_enter;
++	pm_set_ops(&hx2750_pm_ops);
+ 
+ 	return 0;
+ }
+ 
+-static struct device_driver hx2750_test_driver = {
+-	.name		= "hx2750-test",
+-	.bus		= &platform_bus_type,
++static struct platform_driver hx2750_test_driver = {
++	.driver	   = {
++		.name	= "hx2750-test",
++	},
+ 	.probe		= hx2750_test_probe,
+ //	.remove		= hx2750_bl_remove,
+ //	.suspend	= hx2750_bl_suspend,
+@@ -416,18 +422,250 @@ static struct device_driver hx2750_test_
+ 
+ static int __init hx2750_test_init(void)
+ {
+-	return driver_register(&hx2750_test_driver);
++	return platform_driver_register(&hx2750_test_driver);
+ }
+ 
+ 
+ static void __exit hx2750_test_exit(void)
+ {
+- 	driver_unregister(&hx2750_test_driver);
++ 	platform_driver_unregister(&hx2750_test_driver);
+ }
+ 
+-module_init(hx2750_test_init);
++late_initcall(hx2750_test_init);
+ module_exit(hx2750_test_exit);
+ 
+ MODULE_AUTHOR("Richard Purdie <richard@o-hand.com>");
+-MODULE_DESCRIPTION("iPAQ hx2750 Backlight Driver");
++MODULE_DESCRIPTION("iPAQ hx2750 Test Code");
+ MODULE_LICENSE("GPLv2");
++
++/*(SSCR0_TI | (SSCR0_DSS & 0x09 )) , 0, 0, SSCR0_SerClkDiv(212)
++Serial Bit Rate = 13Mhz / 106
++122641.5khz
++0.0000163s
++0.0163ms
++Each half clock pulse lasts 16.3us
++32.6us pulse length
++10 Bit TI Mode*/
++
++
++static void setportlow(void)
++{
++	GPCR(87) = GPIO_bit(87);
++}
++
++void setporthigh(void)
++{
++	GPSR(87) = GPIO_bit(87);
++}
++
++static int readport(void)
++{
++	if (GPLR(86) & GPIO_bit(86))
++		return 1;
++	return 0;
++}
++
++// Pause for exactly 'tick' number of ticks = 0.25us
++static void tickDelay(int tick)
++{
++	udelay(tick/4);
++}
++// 'tick' values
++static int A,B,C,D,E,F,G,H,I,J;
++//-----------------------------------------------------------------------------
++// Set the 1-Wire timing to 'standard' (standard=1) or 'overdrive' (standard=0).
++//
++static void SetSpeed(int standard)
++{
++		// Standard Speed
++		A = 6 * 4;
++		B = 64 * 4;
++		C = 60 * 4;
++		D = 10 * 4;
++		E = 9 * 4;
++		F = 55 * 4;
++		G = 0;
++		H = 480 * 4;
++		I = 70 * 4;
++		J = 410 * 4;
++}
++
++//-----------------------------------------------------------------------------
++// Generate a 1-Wire reset, return 1 if no presence detect was found,
++// return 0 otherwise.
++// (NOTE: Does not handle alarm presence from DS2404/DS1994)
++//
++static int OWTouchReset(void)
++{
++	int result;
++	tickDelay(G);
++	setportlow(); // Drives DQ low
++	tickDelay(H);
++	setporthigh(); // Releases the bus
++	tickDelay(I);
++	result = readport(); // Sample for presence pulse from slave
++	tickDelay(J); // Complete the reset sequence recovery
++	return result; // Return sample presence pulse result
++}
++//-----------------------------------------------------------------------------
++// Send a 1-Wire write bit. Provide 10us recovery time.
++//
++static void OWWriteBit(int bit)
++{
++	if (bit)
++	{
++		// Write '1' bit
++		setportlow(); // Drives DQ low
++		tickDelay(A);
++		setporthigh(); // Releases the bus
++		tickDelay(B); // Complete the time slot and 10us recovery
++	}
++	else
++	{
++		// Write '0' bit
++		setportlow(); // Drives DQ low
++		tickDelay(C);
++		setporthigh(); // Releases the bus
++		tickDelay(D);
++	}
++}
++//-----------------------------------------------------------------------------
++// Read a bit from the 1-Wire bus and return it. Provide 10us recovery time.
++//
++static int OWReadBit(void)
++{
++	int result;
++	setportlow(); // Drives DQ low
++	tickDelay(A);
++	setporthigh(); // Releases the bus
++	tickDelay(E);
++	result = readport(); // Sample the bit value from the slave
++	tickDelay(F); // Complete the time slot and 10us recovery
++	return result;
++}
++
++
++
++//-----------------------------------------------------------------------------
++// Write 1-Wire data byte
++//
++static void OWWriteByte(int data)
++{
++	int loop;
++	// Loop to write each bit in the byte, LS-bit first
++	for (loop = 0; loop < 8; loop++)
++	{
++		OWWriteBit(data & 0x01);
++		// shift the data byte for the next bit
++		data >>= 1;
++	}
++}
++//-----------------------------------------------------------------------------
++// Read 1-Wire data byte and return it
++//
++static int OWReadByte(void)
++{
++	int loop, result=0;
++	for (loop = 0; loop < 8; loop++)
++	{
++		// shift the result to get it ready for the next bit
++		result >>= 1;
++		// if result is one, then set MS bit
++		if (OWReadBit())
++			result |= 0x80;
++	}
++	return result;
++}
++//-----------------------------------------------------------------------------
++// Write a 1-Wire data byte and return the sampled result.
++//
++//static int OWTouchByte(int data)
++//{
++//	int loop, result=0;
++//	for (loop = 0; loop < 8; loop++)
++//	{
++//		// shift the result to get it ready for the next bit
++//		result >>= 1;
++//		// If sending a '1' then read a bit else write a '0'
++//		if (data & 0x01)
++//		{
++//			if (OWReadBit())
++//				result |= 0x80;
++//		}
++//		else
++//			OWWriteBit(0);
++//		// shift the data byte for the next bit
++//		data >>= 1;
++//	}
++//	return result;
++//}
++
++//-----------------------------------------------------------------------------
++// Write a block 1-Wire data bytes and return the sampled result in the same
++// buffer.
++//
++//static void OWBlock(unsigned char *data, int data_len)
++//{
++//	int loop;
++//	for (loop = 0; loop < data_len; loop++)
++//	{
++//		data[loop] = OWTouchByte(data[loop]);
++//	}
++//}
++//-----------------------------------------------------------------------------
++// Set all devices on 1-Wire to overdrive speed. Return '1' if at least one
++// overdrive capable device is detected.
++//
++//static int OWOverdriveSkip(unsigned char *data, int data_len)
++//{
++	// set the speed to 'standard'
++//	SetSpeed(1);
++	// reset all devices
++//	if (OWTouchReset()) // Reset the 1-Wire bus
++//		return 0; // Return if no devices found
++	// overdrive skip command
++//	OWWriteByte(0x3C);
++	// set the speed to 'overdrive'
++//	SetSpeed(0);
++	// do a 1-Wire reset in 'overdrive' and return presence result
++//	return OWTouchReset();
++//}
++
++
++
++// DS2760 Code
++
++int ReadPageData(int page, unsigned char *page_data)
++{
++	int i;
++	// set the speed to 'standard'
++	SetSpeed(1);
++	// select the device
++	if (OWTouchReset()) // Reset the 1-Wire bus
++		return 0; // Return if no devices found
++	OWWriteByte(0xCC); // Send Skip ROM command to select single device
++	// read the page
++	OWWriteByte(0x69); // Read Page command
++	OWWriteByte(0); // Start reading at byte 0
++	// read the page data
++	for (i = 0; i < 32; i++)
++		page_data[i] = OWReadByte();
++	OWWriteByte(0xFF);
++	return 1;
++}
++
++void do_ds2760(void)
++{
++	unsigned char data[32];
++	int i;
++	if (ReadPageData(0,&data[0]))
++	{
++		printk("Data Received: ");
++		for (i = 0; i < 32; i++)
++			printk("%02x ",data[i]);
++		printk("\n");
++
++	} else
++		printk("Couldn't reset 1 wire bus\n");
++
++}

@@ -1,0 +1,377 @@
+ arch/arm/mach-pxa/Kconfig            |   10 +
+ arch/arm/mach-pxa/Makefile           |    1 
+ arch/arm/mach-pxa/pxa27x_gpioevent.c |  334 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 345 insertions(+)
+
+Index: arch/arm/mach-pxa/Makefile
+===================================================================
+--- arch/arm/mach-pxa/Makefile.orig
++++ arch/arm/mach-pxa/Makefile
+@@ -30,6 +30,7 @@ led-$(CONFIG_MACH_TRIZEPS4) += leds-triz
+ obj-$(CONFIG_LEDS) += $(led-y)
+ 
+ obj-$(CONFIG_ARCH_PXA_PWM) += pxa27x_pwm.o
++obj-$(CONFIG_ARCH_PXA_GPIOEVENT) += pxa27x_gpioevent.o
+ 
+ # Misc features
+ obj-$(CONFIG_PM) += pm.o sleep.o
+Index: arch/arm/mach-pxa/pxa27x_gpioevent.c
+===================================================================
+--- /dev/null
++++ arch/arm/mach-pxa/pxa27x_gpioevent.c
+@@ -0,0 +1,334 @@
++/*
++ * arch/arm/mach-pxa/pxa27x_gpioevent.c
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * How to use this driver:
++ *
++ * Its a platform device driver.
++ * Generate a list of "struct resource" with interrupt channel definitions,
++ * and also "struct platform_device" with the name "pxa27x-gpioevent" with
++ * this resorces. Thats all.
++ *
++ * This driver creats some additional sysfs entries you can work with
++ * from userland. The more free GPIO this driver finds, the more sysfs
++ * entries it creates.
++ *
++ * /sys/class/gpioevents/gpio?/events
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <linux/sysdev.h>
++#include <linux/init.h>
++#include <linux/irq.h>
++#include <linux/interrupt.h>
++#include <asm/hardware.h>
++#include <asm/arch/pxa-regs.h>
++
++#define DRIVER_NAME "pxa27x-gpioevent"
++
++struct gpio_event_device {
++	u32 irqChannel;
++	u32 events;	/* event counter */
++	struct class_device class_dev;
++};
++
++static struct class gpio_event_class;	/* forward declaration only */
++
++#define to_gpio_event_device(d) container_of(d, struct gpio_event_device, class_dev)
++
++/**
++ * gpio_event_interrupt - handle the events
++ * @irq: interrupt channel
++ * @dev_id: our gpio event device
++ * @regs: kontext snapshot
++ **/
++static irqreturn_t gpio_event_interrupt(int irq, void *dev_id)
++{
++	struct gpio_event_device *ped = (struct gpio_event_device*) dev_id;
++
++	ped->events++;
++
++	return IRQ_HANDLED;
++}
++
++/**
++ * gpio_event_show_event - returns events since last call
++ * @dev: device to work with
++ * @buf: space to write the current value in
++ * @loff: offset to read from
++ * @count: Size of buffer
++ */
++static ssize_t gpio_event_show_event(struct kobject *dev, struct bin_attribute *attr, char *buf, loff_t loff, size_t count)
++{
++	u32 temp;
++	ssize_t ret_size = 0;
++	struct class_device *class_dev = container_of(dev, struct class_device, kobj);
++	struct gpio_event_device *ped = to_gpio_event_device(class_dev);
++ /*
++  * we need at least 10 characters to give back the *correct* result.
++  * If the given buffer is smaller, we answers with an error
++  */
++	if (count < 10)
++		return -ERANGE;	/* works only if also a .size is defined in attr_gpio_event_event????? */
++
++/* FIXME: This is RAAACCCYYYY!!!!!!!!! */
++	temp = ped->events;
++	ped->events=0;
++
++	if (temp == 0)	/* FIXME: Ugly hack to stop "cat" from reading forever! Works with libpv */
++		return 0;
++
++	ret_size = sprintf(buf, "%u", temp);
++	return ret_size;
++}
++
++/*
++ * Attribute: /sys/class/gpio_events/gpio_eventX/event
++ * We do not use the regular attributs due to the fact,
++ * we *cant* read continously from this sysfs entry!
++ */
++static struct bin_attribute attr_gpio_event_event = {
++	.attr = {
++		.name = "event",
++		.mode = S_IRUGO,	/* this is a read only entry */
++		.owner = THIS_MODULE,
++	},
++	.read = gpio_event_show_event,
++/*	.size = 10 FIXME: This fails with the -ERANGE message! */
++};
++
++/**
++ * init_userinterface - setup the device and things the user will see
++ * @pdev: platform device to work with
++ * @ped: current channel instance
++ * @interrupt: Interrupt to use
++ */
++static int init_userinterface(struct platform_device *pdev,struct gpio_event_device *ped,
++	u32 interrupt)
++{
++	int rc;
++
++	ped->class_dev.class = &gpio_event_class;
++	ped->class_dev.dev=&pdev->dev;
++	snprintf(ped->class_dev.class_id, BUS_ID_SIZE, "gpio_event%i",
++		IRQ_TO_GPIO(interrupt));
++
++	rc = class_device_register(&ped->class_dev);
++	if (unlikely(rc)) {
++		printk(KERN_ERR "%s: class registering failed\n", DRIVER_NAME);
++		return rc;
++	}
++	/*
++	 * register the attribute
++	 */
++	if (unlikely((rc=class_device_create_bin_file(&ped->class_dev,&attr_gpio_event_event)))) {
++		printk(KERN_ERR "%s: Creating entry in sysfs failed\n", DRIVER_NAME);
++		goto out_class_device_create;
++	}
++
++	if (unlikely((rc=set_irq_type(interrupt,IRQT_RISING))))
++		goto out_request_irq;
++
++	if (unlikely((rc = request_irq(interrupt,gpio_event_interrupt,0,DRIVER_NAME,ped)))) {
++		printk(KERN_ERR "%s: Requesting IRQ %u failed\n", DRIVER_NAME,interrupt);
++	}
++
++	ped->irqChannel=interrupt;
++
++	return 0;
++
++out_request_irq:
++	class_device_remove_bin_file(&ped->class_dev,&attr_gpio_event_event);
++out_class_device_create:
++	class_device_unregister(&ped->class_dev);
++	memset(ped,0,sizeof(struct gpio_event_device));
++
++	return rc;
++}
++
++/**
++ * pxa27x_gpio_event_drv_probe - claim all given GPIO for IRQs
++ * @pdev: platform device to work with
++ *
++ * CAUTION: This functions rejects a GPIO if its
++ * not configured as interrupt input! In this case
++ * it also returns -ENODEV
++ *
++ * Returns -ENODEV if there is no such device on this SoC, -EBUSY if this
++ * resource is already claimed
++ */
++static int pxa27x_gpio_event_drv_probe(struct platform_device *pdev)
++{
++	int irqChannel,rc;
++	unsigned int i;
++	struct gpio_event_device *ped;
++
++	/*
++	 * we use an array to work
++	 * (its easier than a linked list ;-)
++	 */
++	if (unlikely((ped = kmalloc(sizeof(struct gpio_event_device)*pdev->num_resources,
++		GFP_KERNEL)) == NULL))
++		return -ENOMEM;
++	memset(ped, 0,sizeof(struct gpio_event_device)*pdev->num_resources);
++	platform_set_drvdata(pdev,ped);
++	/*
++	 * all resources are interrupt channels
++	 * claim at once
++	 */
++	for (i=0; i < pdev->num_resources; i++) {
++		irqChannel = platform_get_irq(pdev,i);
++		if (irqChannel == 0)	/* FIXME: 0 may be a valid IRQ channel! */
++			break;
++		/*
++		 * FIXME: Should the whole driver fails
++		 * if one interrupt channel fails?
++		 */
++		if ((rc=init_userinterface(pdev,&ped[i],irqChannel))) {
++			printk(KERN_ERR "%s: Failed to instantiate devices\n",__FUNCTION__);
++			return rc;
++		}
++	}
++
++	return(0);
++}
++
++/**
++ * pxa27x_gpio_event_drv_remove - free claimed resources
++ * @pdev: platform device to work with
++ */
++static int pxa27x_gpio_event_drv_remove (struct platform_device *pdev)
++{
++	unsigned int i;
++	struct gpio_event_device *ped=(struct gpio_event_device*)platform_get_drvdata(pdev);
++
++	for (i=0; i < pdev->num_resources; i++) {
++		free_irq(ped[i].irqChannel,ped);	/* This also disables the interrupt */
++		class_device_remove_bin_file(&ped[i].class_dev,&attr_gpio_event_event);
++		class_device_unregister(&ped[i].class_dev);
++	}
++
++	kfree(ped);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM
++/**
++ * pxa27x_gpio_event_drv_suspend - power down
++ * @dev: platform device to work with
++ * @state: state to reach
++ */
++static int pxa27x_gpio_event_drv_suspend (struct platform_device *pdev, pm_message_t state)
++{
++	printk("%s\n",__FUNCTION__);
++	return 0;
++}
++
++/**
++ * pxa27x_gpio_event_drv_resume - power up and continue
++ * @pdev: platform device to work with
++ */
++static int pxa27x_gpio_event_drv_resume (struct platform_device *pdev)
++{
++	printk("%s\n",__FUNCTION__);
++	return 0;
++}
++#else
++
++# define pxa27x_gpio_event_drv_suspend NULL
++# define pxa27x_gpio_event_drv_resume NULL
++
++#endif /* CONFIG_PM */
++
++/**
++ * gpio_event_class_release -
++ * @dev:
++ */
++static void gpio_event_class_release(struct class_device *dev)
++{
++	return;
++}
++
++static struct platform_driver pxa27x_gpio_event_driver = {
++	.probe		= pxa27x_gpio_event_drv_probe,
++	.remove		= pxa27x_gpio_event_drv_remove,
++	.suspend	= pxa27x_gpio_event_drv_suspend,
++	.resume		= pxa27x_gpio_event_drv_resume,
++	.driver		= {
++		.name	= DRIVER_NAME,
++	},
++};
++
++static struct sysdev_class gpio_event_sysclass = {
++	set_kset_name("gpio_event"),
++};
++
++static struct sys_device gpio_event_sys_device = {
++	.id		= 0,
++	.cls		= &gpio_event_sysclass,
++};
++
++static struct class gpio_event_class = {
++	.name		= "gpio_events",
++	.release	= gpio_event_class_release,
++};
++
++/**
++ * pxa_gpio_event_init - register the GPIO event driver
++ *
++ */
++static int __init pxa_gpio_event_init(void)
++{
++	int ret;
++
++	if (unlikely((ret = class_register(&gpio_event_class)))) {
++		printk(KERN_ERR "%s: couldn't register class, exiting\n", DRIVER_NAME);
++		return ret;
++	}
++
++	if (unlikely((ret = sysdev_class_register(&gpio_event_sysclass)))) {
++		printk(KERN_ERR "%s: couldn't register sysdev class, exiting\n", DRIVER_NAME);
++		goto out_sysdev_class;
++	}
++
++	if (unlikely((ret = sysdev_register(&gpio_event_sys_device)))) {
++		printk(KERN_ERR "%s: couldn't register sysdev, exiting\n", DRIVER_NAME);
++		goto out_sysdev_register;
++	}
++
++	if (likely(!(ret = platform_driver_register(&pxa27x_gpio_event_driver))))
++		return 0;	/* return happy */
++
++	printk(KERN_ERR "%s: couldn't register platform driver, exiting\n", DRIVER_NAME);
++	sysdev_unregister(&gpio_event_sys_device);
++out_sysdev_register:
++	sysdev_class_unregister(&gpio_event_sysclass);
++out_sysdev_class:
++	class_unregister(&gpio_event_class);
++	return ret;
++}
++/**
++ * pxa_gpio_event_exit - clean up
++ **/
++static void __exit pxa_gpio_event_exit(void)
++{
++	platform_driver_unregister(&pxa27x_gpio_event_driver);
++	sysdev_unregister(&gpio_event_sys_device);
++	sysdev_class_unregister(&gpio_event_sysclass);
++	class_unregister(&gpio_event_class);
++}
++
++module_init(pxa_gpio_event_init);
++module_exit(pxa_gpio_event_exit);
++
++MODULE_AUTHOR("Juergen Beisert");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Generic PXA27x GPIO event support");
++
++/* end of file pxa27x_gpioevent.c */
+Index: arch/arm/mach-pxa/Kconfig
+===================================================================
+--- arch/arm/mach-pxa/Kconfig.orig
++++ arch/arm/mach-pxa/Kconfig
+@@ -84,6 +84,16 @@ config ARCH_PXA_PWM
+ 	  supports up to 4 PWM. Check your design, if they are
+ 	  all available due to multi pin assignments before use.
+ 
++config ARCH_PXA_GPIOEVENT
++	tristate "Support for GPIO based event notification on PXA27x"
++	depends PXA27x
++	default n
++	help
++	  Enable GPIO based event notification on PXA27x processor.
++	  This processor supports to setup its GPIO to be interrupt
++	  sources. Use this driver to simply get notifications when
++	  the input level at a GPIO changes.
++
+ endmenu
+ 
+ config MACH_POODLE

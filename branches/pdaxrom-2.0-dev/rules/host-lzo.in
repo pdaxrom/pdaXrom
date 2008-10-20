@@ -1,0 +1,5 @@
+config HOST_LZO
+	bool
+	prompt "host lzo"
+	help
+	  lzo compressor/decompressor library

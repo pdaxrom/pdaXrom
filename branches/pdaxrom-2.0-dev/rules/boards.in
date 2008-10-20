@@ -1,0 +1,36 @@
+menu "Target boards"
+
+choice
+prompt "Select target board"
+config ITELEC_DAVINCI
+	prompt "Elecard iTelec 61x"
+	bool
+	
+config PHYCORE_PXA270
+	prompt "PhyCORE PXA270"
+	bool
+
+config SHARP_AKITA
+	prompt "Sharp Zaurus SL-C1000 (Akita)"
+	bool
+
+config SHARP_CORGI
+	prompt "Sharp Zaurus SL-C7x0"
+	bool
+
+config QEMU_ARM
+	prompt "Qemu ARM Emulator"
+	bool
+
+config QEMU_X86
+	prompt "Qemu x86 Emulator"
+	bool
+endchoice
+    
+config PHYCORE_KSP0061
+	prompt "KSP0061"
+	bool
+	depends on PHYCORE_PXA270
+	default y
+
+endmenu

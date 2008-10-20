@@ -1,0 +1,6 @@
+config ICU
+	bool
+	prompt "icu"
+	select HOST_ICU
+	help
+	  icu

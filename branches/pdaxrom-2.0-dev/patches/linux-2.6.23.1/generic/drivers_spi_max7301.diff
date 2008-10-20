@@ -1,0 +1,551 @@
+Subject: spi: Adds max7301 support via spi bus
+From: Juergen Beisert <j.beisert@pengutronix.de>
+
+Maxim's MAX7301 is a GPIO expander with 28 general purpose GPIOs.
+The chip is controlled via SPI bus, so it uses the SPI framework.
+Note: MAX7301's interrupt feature is not supported yet.
+
+Signed-off-by: Juergen Beisert <j.beisert@pengutronix.de>
+
+---
+
+ drivers/spi/Kconfig   |    6 
+ drivers/spi/Makefile  |    1 
+ drivers/spi/max7301.c |  502 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 509 insertions(+)
+
+Index: drivers/spi/max7301.c
+===================================================================
+--- /dev/null
++++ drivers/spi/max7301.c
+@@ -0,0 +1,502 @@
++/**
++ * drivers/spi/max7301.c
++ *
++ * Copyright (C) 2006 Juergen Beisert, Pengutronix
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * The Maxim's MAX7301 device is an SPI driven GPIO expander. There are
++ * 28 GPIOs. 8 of them can trigger an interrupt. See datasheet for more
++ * details
++ * Note:
++ * - DIN must be stable at the rising edge of clock.
++ * - when writing:
++ *   - always clock in 16 clocks at once
++ *   - at DIN: D15 first, D0 last
++ *   - D0..D7 = databyte, D8..D14 = commandbyte
++ *   - D15 = low -> write command
++ * - when reading
++ *   - always clock in 16 clocks at once
++ *   - at DIN: D15 first, D0 last
++ *   - D0..D7 = dummy, D8..D14 = register address
++ *   - D15 = high -> read command
++ *   - raise CS and assert it again
++ *   - always clock in 16 clocks at once
++ *   - at DOUT: D15 first, D0 last
++ *   - D0..D7 contains the data from the first cycle
++ *
++ * How to use this driver from userspace:
++ *
++ * This driver creates some additional sysfs entries you can work with
++ * from userland.
++ *
++ * /sys/class/egpio/egpio??/level
++ * For an input or output egpio pin you can read back its current level or setting.
++ * To switch the pin to input, write prior:
++ * -2 to set pin as input only
++ * -1 to set pin is input with internal pullup enabled
++ * For an output egpio pin you can write its new level:
++ * 0 to set pin as output and its level to low
++ * 1 to set pin as output and its level to high
++ */
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/sysdev.h>
++#include <asm/semaphore.h>
++#include <linux/spi/spi.h>
++
++#define DRIVER_NAME "max7301"
++
++static struct class spi_gpio_class;
++
++/*
++ * Pin configurations, see MAX7301 datasheet page 6
++ */
++#define PIN_CONFIG_MASK 0x03
++#define PIN_CONFIG_IN_PULLUP 0x03
++#define PIN_CONFIG_IN_WO_PULLUP 0x02
++#define PIN_CONFIG_OUT 0x01
++
++/**
++ * each pins has properties number and current level
++ * To support hardware features the current level could
++ * be of -2 up to 1.
++ * -2 means pin is input only
++ * -1 means pin is input and the internal pullup is enabled
++ * 0 means pin is output and its level is low
++ * 1 means pin is output and its level is high
++ */
++struct gpio_properties {
++	unsigned int	pin_nr;
++	signed char		pin_level;
++};
++
++struct gpio_device {
++	struct gpio_properties properties;
++	struct class_device class_dev;
++};
++
++/*
++ * Some registers must be read back to modify.
++ * To save time we cache them here in memory
++ */
++struct max7301 {
++	struct semaphore lock;
++	u8	configuration;
++	u8	port_config[8];	/* field 0 is unused */
++	int	cnt;
++	struct gpio_device *gpio_device;
++};
++
++#define to_egpio_device(d) container_of(d, struct gpio_device, class_dev)
++#define class_device_to_spi_device(d) container_of(d,struct spi_device,dev)
++
++/**
++ * max_7301_write - Write a new register content
++ * @spi: The device to work with
++ * @reg: Register offset
++ * @val: Value to write
++ *
++ * A write to the MAX7301 means one message with one transfer
++ *
++ * Returns 0 if successfull or a negative value on error
++ **/
++static int max_7301_write(struct spi_device *spi,unsigned int reg,unsigned int val)
++{
++	u16 word;
++
++	word=((reg&0x7F)<<8) | (val&0xFF);
++	return spi_write(spi,(const u8*)&word,sizeof(word));
++}
++
++/**
++ * max_7301_read - Read back register content
++ * @spi: The device to work with
++ * @reg: Register offset
++ *
++ * A read from the MAX7301 means one message with two transfers
++ *
++ * Returns positive 8 bit value from device if successfull or a
++ * negative value on error
++ **/
++static int max_7301_read(struct spi_device *spi,unsigned int reg)
++{
++	int status;
++	u16 word;
++
++	word=0x8000 | ((reg<<8));
++	if ((status=spi_write(spi,(const u8*)&word,sizeof(word))) != 0)
++		return status;
++	/*
++	 * FIXME: This read should write 0x0000 (=NOOP at MAX7301 side)
++	 */
++	if ((status=spi_read(spi,(u8*)&word,sizeof(word))) != 0)
++		return status;
++	return (int)word;
++}
++
++/**
++ * spi_gpio_show_level - shows the current level of an input EGPIO pin
++ *                   or the current setting of an output pin
++ * @cdev: The device to work with
++ * @buf: Textbuffer to write results in
++ *
++ * Called when a read from /sys/class/egpio/egpioX/level occures
++ */
++static ssize_t spi_gpio_show_level(struct class_device *cdev, char *buf)
++{
++	struct gpio_device *gpio_dev = to_egpio_device(cdev);
++	struct spi_device *spi=class_device_to_spi_device(cdev->dev);
++	ssize_t ret_size = 0;
++
++	if (gpio_dev->properties.pin_level >= 0) {
++	/*
++	 * if the pin is an output simple return the cached value
++	 */
++		ret_size += sprintf(buf, "%u\n", gpio_dev->properties.pin_level);
++	}
++	else {
++	/*
++	 * the pin is an input. Read back its current value
++	 */
++		ret_size += sprintf(buf, "%d\n",max_7301_read(spi,0x20+gpio_dev->properties.pin_nr)&0x01);
++	}
++
++	return ret_size;
++}
++
++/**
++ * spi_gpio_store_level - sets a new level for an output EGPIO pin
++ * @cdev: The divice to work with
++ * @buf: New value for the pin in text format
++ * @size: Size of buffer
++ *
++ * Called when a write to /sys/class/egpio/egpioX/level occures
++ */
++static ssize_t spi_gpio_store_level(struct class_device *cdev, const char *buf, size_t size)
++{
++	struct gpio_device *gpio_dev = to_egpio_device(cdev);
++	struct max7301 *device=dev_get_drvdata(cdev->dev);
++	struct spi_device *spi=class_device_to_spi_device(cdev->dev);
++	long value;
++	int index,position;
++
++	value = simple_strtol(buf, NULL, 10);
++
++	index=gpio_dev->properties.pin_nr>>2;
++	position =(gpio_dev->properties.pin_nr&0x03)<<1;
++
++	down(&device->lock);
++	switch (value) {
++	case -2:	/* input without internal pullup */
++		if (gpio_dev->properties.pin_level != -2) {
++			device->port_config[index] &= ~(PIN_CONFIG_MASK << position);
++			device->port_config[index] |= (PIN_CONFIG_IN_WO_PULLUP<<position);
++			max_7301_write(spi,0x08+index,device->port_config[index]);
++			gpio_dev->properties.pin_level=-2;
++		}
++		break;
++
++	case -1:	/* input with internal pullup */
++		if (gpio_dev->properties.pin_level != -1) {
++			device->port_config[index] |= (PIN_CONFIG_IN_PULLUP << position);
++			max_7301_write(spi,0x08+index,device->port_config[index]);
++			gpio_dev->properties.pin_level=-1;
++		}
++		break;
++
++	case 0:	/* output and low */
++		if (gpio_dev->properties.pin_level != 0)
++			max_7301_write(spi,0x20+gpio_dev->properties.pin_nr,0x00);	/* set pin low first */
++
++		if (gpio_dev->properties.pin_level < 0) {
++			device->port_config[index] &= ~(PIN_CONFIG_MASK << position);
++			device->port_config[index] |= (PIN_CONFIG_OUT << position);
++			max_7301_write(spi,0x08+index,device->port_config[index]);	/* switch to output */
++		}
++		gpio_dev->properties.pin_level=0;
++		break;
++
++	case 1:	/* output and high */
++		if (gpio_dev->properties.pin_level != 1)
++			max_7301_write(spi,0x20+gpio_dev->properties.pin_nr,0x01);	/* set pin high first */
++
++		if (gpio_dev->properties.pin_level < 0) {
++			device->port_config[index] &= ~(PIN_CONFIG_MASK << position);
++			device->port_config[index] |= (0x01<<position);
++			max_7301_write(spi,0x08+index,device->port_config[index]);	/* switch to output */
++		}
++		gpio_dev->properties.pin_level=1;
++		break;
++
++	default:
++		size=-EINVAL;
++	}
++	up(&device->lock);
++
++	return size;
++}
++
++/*
++ * Attribute: /sys/class/egpio/egpioX/level
++ */
++static struct class_device_attribute attr_egpio_level = {
++	.attr = { .name = "level", .mode = 0644, .owner = THIS_MODULE },
++	.show = spi_gpio_show_level,
++	.store = spi_gpio_store_level,
++};
++
++/**
++ * register_gpios - register a bunch of GPIOs at once
++ * @spi: Device to register gpios for
++ * @pins: Pointer to array of pin definitions
++ * @cnt: Count of elements in the array
++ *
++ * Returns 0 if successfull for *all* pins, a negative value else
++ **/
++static int register_gpios(struct spi_device *spi,struct gpio_device *pins,unsigned int cnt)
++{
++	unsigned int i,rc;
++
++	for (i=0;i<cnt;i++) {
++		pins[i].class_dev.class = &spi_gpio_class;
++		pins[i].class_dev.dev=&spi->dev;
++		snprintf(pins[i].class_dev.class_id, BUS_ID_SIZE, "egpio%u",pins[i].properties.pin_nr);
++		rc = class_device_register(&pins[i].class_dev);
++		if (unlikely(rc)) {
++			printk(KERN_ERR "%s: class registering failed\n", DRIVER_NAME);
++			while (i)
++				class_device_unregister(&pins[--i].class_dev);
++			return rc;
++		}
++		rc = class_device_create_file(&pins[i].class_dev,&attr_egpio_level);
++		if (unlikely(rc)) {
++			printk(KERN_ERR "%s: couldn't create class device file\n", DRIVER_NAME);
++			while (i)
++				class_device_unregister(&pins[--i].class_dev);
++			return rc;
++		}
++	}
++	return 0;
++}
++
++/**
++ * max7301_probe - create sysfs entries for this device
++ * @spi: Device to work with
++ *
++ * Returns -ENODEV if there is no such device
++ **/
++static int __devinit max7301_probe(struct spi_device *spi)
++{
++	struct gpio_device *pins;
++	struct max7301 *ts;
++	unsigned int i;
++
++	/*
++	 * setup everything the master must be know
++	 * to support this chip correctly
++	 */
++	spi->mode=SPI_MODE_0;
++	spi->bits_per_word=16;
++	spi->max_speed_hz=13000000;
++
++	(spi->master->setup)(spi);
++
++	ts = kzalloc(sizeof(struct max7301), GFP_KERNEL);
++
++	init_MUTEX(&ts->lock);
++
++	if (ts == NULL)
++		return -ENOMEM;
++
++	dev_set_drvdata(&spi->dev, ts);
++	/*
++	 * tristate all pins in hardware and cache the
++	 * register values for later use.
++	 */
++	max_7301_write(spi,0x04,0x01);	/* Power up the chip and disable IRQ output */
++	ts->configuration=0x01;
++	max_7301_write(spi,0x09,0xAA);	/* 0xAA means input with internal pullup disabled */
++	ts->port_config[1]=0xAA;
++	max_7301_write(spi,0x0A,0xAA);
++	ts->port_config[2]=0xAA;
++	max_7301_write(spi,0x0B,0xAA);
++	ts->port_config[3]=0xAA;
++	max_7301_write(spi,0x0C,0xAA);
++	ts->port_config[4]=0xAA;
++	max_7301_write(spi,0x0D,0xAA);
++	ts->port_config[5]=0xAA;
++	max_7301_write(spi,0x0E,0xAA);
++	ts->port_config[6]=0xAA;
++	max_7301_write(spi,0x0F,0xAA);
++	ts->port_config[7]=0xAA;
++
++	pins = kzalloc(sizeof(struct gpio_device)*28, GFP_KERNEL);
++
++	if (pins != NULL) {
++		for (i=0;i<28;i++) {
++			pins[i].properties.pin_nr=i+4;
++			pins[i].properties.pin_level=-2;
++		}
++
++		register_gpios(spi,pins,28);
++	}
++	else {
++		kfree(ts);
++		return -ENOMEM;
++	}
++
++	ts->cnt=28;
++	ts->gpio_device=pins;
++
++	return 0;
++}
++
++/**
++ * max7301_remove - remove the device
++ * @spi: Device to remove
++ **/
++static int max7301_remove(struct spi_device *spi)
++{
++	struct max7301 *ts;
++	int i;
++
++	ts=dev_get_drvdata(&spi->dev);
++
++	if (ts == NULL)
++		return -ENODEV;
++
++	max_7301_write(spi,0x04,0x00);	/* Power down the chip and disable IRQ output */
++
++	for (i=0;i<ts->cnt;i++)
++		class_device_unregister(&ts->gpio_device[i].class_dev);
++
++	kfree(ts->gpio_device);
++	kfree(ts);
++	dev_set_drvdata(&spi->dev,NULL);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM
++/**
++ * max7301_suspend -
++ * @spi:
++ * @mesg:
++ **/
++static int max7301_suspend(struct spi_device *spi, pm_message_t mesg)
++{
++	return 0;
++}
++
++/**
++ * max7301_resume -
++ * @spi:
++ **/
++static int max7301_resume(struct spi_device *spi)
++{
++	return 0;
++}
++#else
++
++# define max7301_suspend NULL
++# define max7301_resume NULL
++
++#endif /* CONFIG_PM */
++
++static struct spi_driver max7301_driver = {
++	.driver = {
++		.name		= DRIVER_NAME,
++		.bus		= &spi_bus_type,
++		.owner		= THIS_MODULE,
++	},
++	.probe		= max7301_probe,
++	.remove		= __devexit_p(max7301_remove),
++	.shutdown	= NULL,
++	.suspend	= max7301_suspend,
++	.resume		= max7301_resume,
++};
++
++/**
++ * gpio_class_release -
++ * @dev:
++ */
++static void gpio_class_release(struct class_device *dev)
++{
++	return;
++}
++
++static struct sysdev_class spi_gpio_sysclass = {
++	set_kset_name("egpio"),
++};
++
++static struct sys_device spi_gpio_sys_device = {
++	.id		= 0,
++	.cls		= &spi_gpio_sysclass,
++};
++
++static struct class spi_gpio_class = {
++	.name		= "egpio",
++	.release	= gpio_class_release,
++};
++
++/**
++ * max7301_init - register driver and create sysfs entries
++ **/
++int __init max7301_init(void)
++{
++int ret;
++
++	if (unlikely((ret = class_register(&spi_gpio_class)))) {
++		printk(KERN_ERR "%s: couldn't register class, exiting\n", DRIVER_NAME);
++		return ret;
++	}
++
++	if (unlikely((ret = sysdev_class_register(&spi_gpio_sysclass)))) {
++		printk(KERN_ERR "%s: couldn't register sysdev class, exiting\n", DRIVER_NAME);
++		goto out_sysdev_class;
++	}
++
++	if (unlikely((ret = sysdev_register(&spi_gpio_sys_device)))) {
++		printk(KERN_ERR "%s: couldn't register sysdev, exiting\n", DRIVER_NAME);
++		goto out_sysdev_register;
++	}
++
++	if (unlikely((ret = spi_register_driver(&max7301_driver)))) {
++		printk(KERN_ERR "%s: couldn't register driver, exiting\n", DRIVER_NAME);
++		goto out_spi_driver;
++	}
++
++	return 0;
++
++out_spi_driver:
++	sysdev_unregister(&spi_gpio_sys_device);
++out_sysdev_register:
++	sysdev_class_unregister(&spi_gpio_sysclass);
++out_sysdev_class:
++	class_unregister(&spi_gpio_class);
++	return ret;
++}
++
++/**
++ * max7301_exit - clean up
++ **/
++void __exit max7301_exit(void)
++{
++	sysdev_unregister(&spi_gpio_sys_device);
++	sysdev_class_unregister(&spi_gpio_sysclass);
++	class_unregister(&spi_gpio_class);
++	spi_unregister_driver(&max7301_driver);
++}
++
++module_init(max7301_init);
++module_exit(max7301_exit);
++
++MODULE_AUTHOR("Juergen Beisert");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("MAX7301 SPI based GPIO-Expander");
++
++/* end of file max7301.c */
+Index: drivers/spi/Kconfig
+===================================================================
+--- drivers/spi/Kconfig.orig
++++ drivers/spi/Kconfig
+@@ -236,5 +236,11 @@ config SPI_TLE62X0
+ 
+ # (slave support would go here)
+ 
++config SPI_SLAVE_MAX7301
++	tristate "Maxim MAX7301 GPIO expander"
++	depends on SPI
++	help
++	 This enables support for Maxim's MAX7301 GPIO expander.
++
+ endmenu # "SPI support"
+ 
+Index: drivers/spi/Makefile
+===================================================================
+--- drivers/spi/Makefile.orig
++++ drivers/spi/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_SPI_TLE62X0)	+= tle62x0.o
+ 
+ # SPI slave controller drivers (upstream link)
+ # 	... add above this line ...
++obj-$(CONFIG_SPI_SLAVE_MAX7301)	+= max7301.o
+ 
+ # SPI slave drivers (protocol for that link)
+ # 	... add above this line ...

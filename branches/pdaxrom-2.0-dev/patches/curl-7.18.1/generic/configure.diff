@@ -1,0 +1,24 @@
+--- src/configure~	2005-12-20 17:20:56.000000000 +0000
++++ src/configure	2005-12-20 17:26:20.000000000 +0000
+@@ -26897,8 +26897,8 @@
+   if test "$OPENSSL_ENABLED" = "1"; then
+     if test -n "$LIB_OPENSSL"; then
+ 
+-       LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LIB_OPENSSL"
+-       export LD_LIBRARY_PATH
++       #LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LIB_OPENSSL"
++       #export LD_LIBRARY_PATH
+        { echo "$as_me:$LINENO: Added $LIB_OPENSSL to LD_LIBRARY_PATH" >&5
+ echo "$as_me: Added $LIB_OPENSSL to LD_LIBRARY_PATH" >&6;}
+     fi
+@@ -27092,8 +27092,8 @@
+ echo "$as_me: detected GnuTLS version $version" >&6;}
+ 
+ 
+-        LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$gtlsprefix/lib$libsuff"
+-        export LD_LIBRARY_PATH
++        #LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$gtlsprefix/lib$libsuff"
++        #export LD_LIBRARY_PATH
+         { echo "$as_me:$LINENO: Added $gtlsprefix/lib$libsuff to LD_LIBRARY_PATH" >&5
+ echo "$as_me: Added $gtlsprefix/lib$libsuff to LD_LIBRARY_PATH" >&6;}
+       fi

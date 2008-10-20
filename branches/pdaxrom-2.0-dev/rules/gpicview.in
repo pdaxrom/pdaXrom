@@ -1,0 +1,5 @@
+config GPICVIEW
+	bool
+	prompt "gpicview"
+	help
+	  FIXME

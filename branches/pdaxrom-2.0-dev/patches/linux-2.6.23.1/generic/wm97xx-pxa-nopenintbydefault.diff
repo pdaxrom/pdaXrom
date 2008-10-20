@@ -1,0 +1,27 @@
+Subject: Disable pen_interrupt by default
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+
+The pen_interrupt though depending on the wm->id is hardcoded.
+Enabling it by default may cause unknown effects if a different
+interrupt source is physically attached to that hardwired PXA-GPIO pin.
+Be conservative and disable the pen_int by default.
+
+Signed-off-by: Marc Kleine-Budde <mkl@penugtronix.de>
+
+---
+ drivers/input/touchscreen/pxa-wm97xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: drivers/input/touchscreen/pxa-wm97xx.c
+===================================================================
+--- drivers/input/touchscreen/pxa-wm97xx.c.orig
++++ drivers/input/touchscreen/pxa-wm97xx.c
+@@ -83,7 +83,7 @@ MODULE_PARM_DESC(cont_rate, "Sampling ra
+  * This driver can either poll or use an interrupt to indicate a pen down
+  * event. If the irq request fails then it will fall back to polling mode.
+  */
+-static int pen_int = 1;
++static int pen_int = 0;
+ module_param(pen_int, int, 0);
+ MODULE_PARM_DESC(pen_int, "Pen down detection (1 = interrupt, 0 = polling)");
+ 

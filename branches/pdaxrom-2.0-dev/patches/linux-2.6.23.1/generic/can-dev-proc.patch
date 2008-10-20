@@ -1,0 +1,207 @@
+List CAN device parameters with /proc/net/dev_can
+
+This patch permits to list CAN device parameters and counters via
+/proc/net/dev_can:
+
+$ cat /proc/net/dev_can 
+i-face can-clock bitrate canstate err-warn err-pass buserrors overruns arb-lost wakeups restarts
+  can0   8000000  125000   active        5        3        92        0        0       0        6
+  can1   8000000  500000  stopped        0        0         0        0        0       0        0
+
+Signed-off-by: Wolfgang Grandegger <wg@grandegger.com>
+
+Index: net/can/proc.c
+===================================================================
+--- net/can/proc.c.orig
++++ net/can/proc.c
+@@ -47,6 +47,10 @@
+ #include <linux/list.h>
+ #include <linux/rcupdate.h>
+ #include <linux/can/core.h>
++#include <linux/seq_file.h>
++#include <linux/can/dev.h>
++
++#include <linux/if_arp.h>
+ 
+ #include "af_can.h"
+ 
+@@ -435,6 +439,164 @@ static int can_proc_read_rcvlist_sff(cha
+ 	return len;
+ }
+ 
++#if 0 /* LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,21) */
++static __inline__ struct net_device *dev_get_idx(loff_t pos)
++{
++	struct net_device *dev;
++	loff_t i;
++
++	for (i = 0, dev = dev_base; dev && i < pos; ++i, dev = dev->next);
++
++	return i == pos ? dev : NULL;
++}
++#endif
++
++void *can_seq_start(struct seq_file *seq, loff_t *pos)
++{
++#if 1 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,21) */
++#if 0 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,23) */
++	struct net *net = seq->private;
++#endif
++	loff_t off;
++	struct net_device *dev;
++
++	read_lock(&dev_base_lock);
++	if (!*pos)
++		return SEQ_START_TOKEN;
++
++	off = 1;
++#if 0 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,23) */
++	for_each_netdev(net, dev)
++#else
++	for_each_netdev(dev)
++#endif
++		if (off++ == *pos)
++			return dev;
++	return NULL;
++#else
++	read_lock(&dev_base_lock);
++	return *pos ? dev_get_idx(*pos - 1) : SEQ_START_TOKEN;
++#endif
++}
++
++void *can_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++{
++#if 0 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,23) */
++	struct net *net = seq->private;
++	++*pos;
++	return v == SEQ_START_TOKEN ?
++		first_net_device(net) : next_net_device((struct net_device *)v);
++#elif 1 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,21) */
++	++*pos;
++	return v == SEQ_START_TOKEN ?
++		first_net_device() : next_net_device((struct net_device *)v);
++#else
++	++*pos;
++	return v == SEQ_START_TOKEN ? dev_base : ((struct net_device *)v)->next;
++#endif
++}
++
++void can_seq_stop(struct seq_file *seq, void *v)
++{
++	read_unlock(&dev_base_lock);
++}
++
++/*
++ * i-face can-clock bitrate canstate err-warn err-pass buserrors overruns arb-lost wakeups restarts
++ *   can0 133000000 1000000  stopped 12345678 12345678 123456789 12345678 12345678 1234567 12345678
++ *   can0 133000000 1000000 scanning
++ */
++
++static char *can_state_names[] = {
++    "active", "bus-warn", "bus-pass" , "bus-off",
++    "scanning", "stopped", "sleeping", "unkown"
++};
++
++static void can_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
++{
++	struct can_priv *priv;
++	struct can_device_stats *stats;
++	char *state_name;
++
++	if (dev->type != ARPHRD_CAN || !(priv = netdev_priv(dev)))
++		return;
++
++	stats = &priv->can_stats;
++	state_name = (priv->state > 6) ?
++		can_state_names[7] : can_state_names[priv->state];
++
++	seq_printf(seq, "%6s %9d %7d %8s %8d %8d %9d %8d %8d %7d %8d\n",
++		   dev->name,
++		   priv->can_sys_clock,
++		   priv->baudrate,
++		   state_name,
++		   stats->error_warning,
++		   stats->error_passive,
++		   stats->bus_error,
++		   stats->data_overrun,
++		   stats->arbitration_lost,
++		   stats->wakeup,
++		   stats->restarts);
++}
++
++static int can_seq_show(struct seq_file *seq, void *v)
++{
++	if (v == SEQ_START_TOKEN)
++		seq_puts(seq, "i-face can-clock bitrate canstate err-warn "
++			 "err-pass buserrors overruns arb-lost wakeups restarts\n");
++	else
++		can_seq_printf_stats(seq, v);
++	return 0;
++}
++
++static const struct seq_operations can_seq_ops = {
++	.start = can_seq_start,
++	.next  = can_seq_next,
++	.stop  = can_seq_stop,
++	.show  = can_seq_show,
++};
++
++static int can_seq_open(struct inode *inode, struct file *file)
++{
++#if 0 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,23) */
++	struct seq_file *seq;
++	int res;
++	res =  seq_open(file, &can_seq_ops);
++	if (!res) {
++		seq = file->private_data;
++		seq->private = get_proc_net(inode);
++		if (!seq->private) {
++			seq_release(inode, file);
++			res = -ENXIO;
++		}
++	}
++	return res;
++#else
++	return seq_open(file, &can_seq_ops);
++#endif
++}
++
++#if 0 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,23) */
++static int can_seq_release(struct inode *inode, struct file *file)
++{
++	struct seq_file *seq = file->private_data;
++	struct net *net = seq->private;
++	put_net(net);
++	return seq_release(inode, file);
++}
++#endif
++
++static const struct file_operations can_seq_fops = {
++	.owner	 = THIS_MODULE,
++	.open    = can_seq_open,
++	.read    = seq_read,
++	.llseek  = seq_lseek,
++#if 1 /* LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,23) */
++	.release = seq_release,
++#endif
++};
++
++
+ /*
+  * proc utility functions
+  */
+@@ -492,6 +654,14 @@ void can_init_proc(void)
+ 					can_proc_read_rcvlist, (void *)RX_EFF);
+ 	pde_rcvlist_sff = can_create_proc_readentry(CAN_PROC_RCVLIST_SFF, 0644,
+ 					can_proc_read_rcvlist_sff, NULL);
++
++
++#if 0 /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,23) */
++	if (!proc_net_fops_create(&init_net, "dev_can", S_IRUGO, &can_seq_fops))
++#else
++	if (!proc_net_fops_create("dev_can", S_IRUGO, &can_seq_fops))
++#endif
++		printk(KERN_ERR "Could not create /proc/net/dev_can\n");
+ }
+ 
+ /*

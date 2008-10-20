@@ -1,0 +1,74 @@
+Subject: do not autoload on dhcp
+From: Sascha Hauer <s.hauer@pengutronix.de>
+
+Do not autoload images on dhcp requests. Nobody ever needs
+such crap.
+jbe: Why not? Its one of the main features of dhcp!
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de
+
+---
+ net/bootp.c |   43 +++----------------------------------------
+ 1 file changed, 3 insertions(+), 40 deletions(-)
+
+Index: net/bootp.c
+===================================================================
+--- net/bootp.c.orig
++++ net/bootp.c
+@@ -336,26 +336,8 @@ BootpHandler(uchar * pkt, unsigned dest,
+ 
+ 	debug ("Got good BOOTP\n");
+ 
+-	if ((s = getenv("autoload")) != NULL) {
+-		if (*s == 'n') {
+-			/*
+-			 * Just use BOOTP to configure system;
+-			 * Do not use TFTP to load the bootfile.
+-			 */
+-			NetState = NETLOOP_SUCCESS;
+-			return;
+-#if (CONFIG_COMMANDS & CFG_CMD_NFS)
+-		} else if (strcmp(s, "NFS") == 0) {
+-			/*
+-			 * Use NFS to load the bootfile.
+-			 */
+-			NfsStart();
+-			return;
+-#endif
+-		}
+-	}
+-
+-	TftpStart();
++	NetState = NETLOOP_SUCCESS;
++	return;
+ }
+ #endif	/* !CFG_CMD_DHCP */
+ 
+@@ -941,26 +923,7 @@ DhcpHandler(uchar * pkt, unsigned dest, 
+ 			print_IPaddr(NetOurIP);
+ 			putc ('\n');
+ 
+-			/* Obey the 'autoload' setting */
+-			if ((s = getenv("autoload")) != NULL) {
+-				if (*s == 'n') {
+-					/*
+-					 * Just use BOOTP to configure system;
+-					 * Do not use TFTP to load the bootfile.
+-					 */
+-					NetState = NETLOOP_SUCCESS;
+-					return;
+-#if (CONFIG_COMMANDS & CFG_CMD_NFS)
+-				} else if (strcmp(s, "NFS") == 0) {
+-					/*
+-					 * Use NFS to load the bootfile.
+-					 */
+-					NfsStart();
+-					return;
+-#endif
+-				}
+-			}
+-			TftpStart();
++			NetState = NETLOOP_SUCCESS;
+ 			return;
+ 		}
+ 		break;

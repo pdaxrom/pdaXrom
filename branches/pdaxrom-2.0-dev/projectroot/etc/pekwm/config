@@ -1,0 +1,65 @@
+Files {
+	Keys = "/etc/pekwm/keys"
+	Mouse = "/etc/pekwm/mouse"
+	Menu = "/etc/pekwm/menu"
+	Start = "/etc/pekwm/start"
+	AutoProps = "/etc/pekwm/autoproperties"	
+	Theme = "/etc/pekwm/themes/default"
+}
+
+MoveResize {
+	EdgeAttract = "10"
+	EdgeResist = "10"
+	FrameAttract = "10"
+	FrameResist = "10"
+	OpaqueMove = "true"
+	OpaqueResize = "true"
+	GrabWhenResize = "True"
+}
+
+Screen {
+	Workspaces = "4"
+	PixmapCacheSize = "20"
+	EdgeSize = "3"
+	DoubleClickTime = "250"
+
+	ShowFrameList = "True"
+	Placement {
+		Model = "Smart MouseCentered"
+		Smart {
+			Row = "False"
+			TopToBottom = "True"
+			LeftToRight = "True"
+		}
+	}
+
+	ClientUniqueNames = "True" {
+		Pre = " #";
+		Post = "";
+	}
+
+	Viewports {
+		Columns = "2"
+		Rows = "2"
+	}
+}
+
+Menu {
+        # ButtonPress ButtonRelease DoubleClick Motion
+        Select = "Motion"
+        Enter = "Motion"
+        Exec = "ButtonPress"
+}
+
+Harbour {
+	OnTop = "True"
+	MaximizeOver = "False"
+	Head = "0"
+
+	Placement = "Right"
+	Orientation = "TopToBottom"
+	DockApp {
+		SideMin = "64"
+		SideMax = "64"
+	}
+}
