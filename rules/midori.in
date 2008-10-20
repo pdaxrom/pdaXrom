@@ -1,0 +1,9 @@
+config MIDORI
+	bool
+	prompt "midori"
+	select GTK
+	select LIBSEXY
+	select LIBXML2
+	select WEBKIT
+	help
+	  Midori is a lightweight web browser.

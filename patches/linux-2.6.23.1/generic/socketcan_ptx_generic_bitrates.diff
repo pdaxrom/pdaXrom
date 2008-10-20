@@ -1,0 +1,238 @@
+Subject: [PATCH 1/1] Socket-CAN: Provide custom bitrate settings
+From: Juergen Beisert <j.beisert@pengutronix.de>
+
+This patch provides a custom bitrate setting for cases where it is impossible
+to use the SIOCSCANCUSTOMBITTIME ioctl instead (for example closed source), but
+a special hardware setting is required to meet external constraints. Or this
+feature can be used, when the auto calculation for the CAN settings fails.
+
+This works on a per interface base and baudrate base. If not used, everything
+falls back to the previous behaviour.
+
+Signed-off-by: Juergen Beisert <j.beisert@pengutronix.de>
+
+ include/linux/can/dev.h   |    9 +++
+ include/linux/can/ioctl.h |   14 +++++
+ net/can/dev.c             |  115 ++++++++++++++++++++++++++++++++++++++++++++--
+ 3 files changed, 135 insertions(+), 3 deletions(-)
+
+---
+
+Index: include/linux/can/dev.h
+===================================================================
+--- include/linux/can/dev.h.orig
++++ include/linux/can/dev.h
+@@ -13,6 +13,13 @@
+ 
+ #include <linux/can/error.h>
+ #include <linux/can/ioctl.h>
++#include <linux/list.h>
++
++struct custom_mode_setting {
++	struct list_head link;
++	u32 bit_rate;	/* bit rate these settings are valid for */
++	struct can_bittime_std custom_setting;
++};
+ 
+ struct can_priv {
+ 	struct can_device_stats can_stats;
+@@ -41,6 +48,8 @@ struct can_priv {
+ 	can_mode_t  mode;
+ 	can_ctrlmode_t ctrlmode;
+ 
++	struct list_head custom_modes;
++
+ 	int (*do_set_bit_time)(struct net_device *dev, struct can_bittime *br);
+ 	int (*do_get_state)   (struct net_device *dev, can_state_t *state);
+ 	int (*do_set_mode)    (struct net_device *dev, can_mode_t mode);
+Index: include/linux/can/ioctl.h
+===================================================================
+--- include/linux/can/ioctl.h.orig
++++ include/linux/can/ioctl.h
+@@ -36,6 +36,8 @@
+ #define SIOCSCANERRORCONFIG	(SIOCDEVPRIVATE+12)
+ #define SIOCGCANERRORCONFIG	(SIOCDEVPRIVATE+13)
+ 
++#define SIOCSCANDEDBITTIME	(SIOCDEVPRIVATE+14)
++
+ /* parameters for ioctls */
+ 
+ /* SIOC[SG]CANBAUDRATE */
+@@ -64,6 +66,18 @@ struct can_bittime_std {
+ 	__u8  sam:1;      /* 1 - enable triple sampling */
+ };
+ 
++/* when using this IOCTL you should know what you are doing! */
++struct can_bit_time_custom {
++	__u32 bit_rate;		/* target bit rate these values should be used */
++	__u32 bit_error;	/* max. allowed bit error in [bit_error] = ppm */
++	__u32 tq;		/* time quanta in ns */
++	__u8 prop_seg;		/* from 1 to 8 */
++	__u8 phase_seg1;	/* from 1 to 8 */
++	__u8 phase_seg2;	/* from 1 to 8 */
++	__u8 sjw:7;		/* from 1 to 4 */
++	__u8 sam:1;		/* 1 = enable triple sampling */
++};
++
+ struct can_bittime_btr {
+ 	__u8  btr0;
+ 	__u8  btr1;
+Index: net/can/dev.c
+===================================================================
+--- net/can/dev.c.orig
++++ net/can/dev.c
+@@ -143,11 +143,84 @@ int can_calc_bit_time(struct can_priv *c
+ }
+ EXPORT_SYMBOL(can_calc_bit_time);
+ 
++/*
++ * feed back custom setting (if exists)
++ */
++static struct custom_mode_setting *can_search_custom_list(struct can_priv *can,
++			u32 baudrate, struct can_bittime *bit_time)
++{
++	struct custom_mode_setting *mode;
++	struct list_head *lh;
++
++	if (list_empty(&can->custom_modes))
++		return NULL;
++
++	list_for_each(lh,&can->custom_modes) {
++		mode = list_entry(lh, struct custom_mode_setting, link);
++		if (mode->bit_rate == baudrate) {
++			if (bit_time)
++				memcpy(&bit_time->std, &mode->custom_setting, sizeof(struct can_bittime_std));
++			return mode;
++		}
++	}
++	return NULL;
++}
++
++/*
++ * calculate BRP value from the given tq value
++ */
++static int custom_mode_calc(struct can_priv *can,
++			struct can_bittime_std *custom_mode,
++			struct can_bit_time_custom *cbt)
++{
++	u32 brp, tq, bit_time;
++	u64 bit_rate, brp_64, diff_64;
++
++	brp_64 = (u64)can->can_sys_clock * (u64)cbt->tq;
++	brp_64 +=       500000000UL;
++	do_div(brp_64, 1000000000UL);	/* the practicable BRP */
++	brp = (u32)brp_64;
++	brp_64 *= 1000000000UL;
++
++	do_div(brp_64, can->can_sys_clock);
++	tq = (u32)brp_64;	/* the practicable Tq */
++
++	/* the practicable bit time */
++	bit_time = tq * (1 + cbt->prop_seg + cbt->phase_seg1 + cbt->phase_seg2);
++
++	bit_rate = 1000000000ULL;
++	do_div(bit_rate, bit_time);	/* the practicable bit rate */
++
++	diff_64 = bit_rate > cbt->bit_rate ?
++			bit_rate - cbt->bit_rate : cbt->bit_rate - bit_rate;
++
++	/* check if we are below the given error */
++
++	if (diff_64 > cbt->bit_rate)	/* check for serious mistake */
++		return -EDOM;
++
++	diff_64 *= 1000000UL;
++	do_div(diff_64, cbt->bit_rate);	/* build ppm error */
++
++	if (diff_64 > cbt->bit_error)
++		return -EDOM;
++
++	custom_mode->brp = brp;
++	custom_mode->prop_seg = cbt->prop_seg;
++	custom_mode->phase_seg1 = cbt->phase_seg1;
++	custom_mode->phase_seg2 = cbt->phase_seg2;
++	custom_mode->sjw = cbt->sjw;
++	custom_mode->sam = cbt->sam;
++
++	return 0;
++}
++
+ static int can_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ {
+ 	struct can_priv *can = netdev_priv(dev);
+ 	struct can_bittime *bt = (struct can_bittime *)&ifr->ifr_ifru;
+ 	ulong *baudrate = (ulong *)&ifr->ifr_ifru;
++	struct can_bit_time_custom *cbt = (struct can_bit_time_custom *)&ifr->ifr_ifru;
+ 	int ret = -EOPNOTSUPP;
+ 
+ 	dev_dbg(ND2D(dev), "(%s) 0x%08x %p\n", __FUNCTION__, cmd, &ifr->ifr_ifru);
+@@ -156,9 +229,11 @@ static int can_ioctl(struct net_device *
+ 	case SIOCSCANBAUDRATE:
+ 		if (can->do_set_bit_time) {
+ 			struct can_bittime bit_time;
+-			ret = can_calc_bit_time(can, *baudrate, &bit_time.std);
+-			if (ret != 0)
+-				break;
++			if (can_search_custom_list(can,*baudrate,&bit_time) == NULL) {
++				ret = can_calc_bit_time(can, *baudrate, &bit_time.std);
++				if (ret != 0)
++					break;
++			}
+ 			bit_time.type = CAN_BITTIME_STD;
+ 			ret = can->do_set_bit_time(dev, &bit_time);
+ 			if (!ret) {
+@@ -184,6 +259,29 @@ static int can_ioctl(struct net_device *
+ 			}
+ 		}
+ 		break;
++	case SIOCSCANDEDBITTIME: {
++		struct can_bittime_std custom_setting;
++		struct custom_mode_setting *cms;
++
++		ret = custom_mode_calc(can, &custom_setting, cbt);
++		if (ret)
++			break;
++		cms = can_search_custom_list(can, cbt->bit_rate, NULL);
++		if (cms == NULL) {
++			cms = kzalloc(sizeof(struct custom_mode_setting), GFP_KERNEL);
++			if (cms == NULL) {
++				ret = -ENOMEM;
++				break;
++			}
++			memcpy(&cms->custom_setting, &custom_setting, sizeof(struct can_bittime_std));
++			cms->bit_rate = cbt->bit_rate;
++			list_add(&cms->link, &can->custom_modes);
++		}
++		else
++			memcpy(&cms->custom_setting, &custom_setting, sizeof(struct can_bittime_std));
++		ret = 0;
++		}
++		break;
+ 	case SIOCGCANCUSTOMBITTIME:
+ 		*bt = can->bit_time;
+ 		ret = 0;
+@@ -263,6 +361,7 @@ struct net_device *alloc_candev(int size
+ 	priv->max_brp  = DEFAULT_MAX_BRP;
+ 	priv->max_sjw  = DEFAULT_MAX_SJW;
+ 	spin_lock_init(&priv->irq_lock);
++	INIT_LIST_HEAD(&priv->custom_modes);
+ 
+ 	return dev;
+ }
+@@ -270,6 +369,16 @@ EXPORT_SYMBOL(alloc_candev);
+ 
+ void free_candev(struct net_device *dev)
+ {
++	struct can_priv *can = netdev_priv(dev);
++	struct custom_mode_setting *mode;
++	struct list_head *lh,*temp;
++
++	list_for_each_safe(lh, temp, &can->custom_modes) {
++		mode = list_entry(lh, struct custom_mode_setting, link);
++		list_del(lh);
++		kfree(mode);
++	}
++
+ 	free_netdev(dev);
+ }
+ EXPORT_SYMBOL(free_candev);

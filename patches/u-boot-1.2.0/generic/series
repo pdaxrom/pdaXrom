@@ -1,0 +1,41 @@
+# -ptx1-svn
+u-boot-version.diff -p0
+
+#
+# patch the Makefile to use out toolchains
+#
+u-boot-phycore-pxa270-toolchain.diff -p0
+
+#
+# stuff everybody can use
+#
+u-boot-no-tftp-in-flash.diff -p0
+u-boot-new-machtypes.diff -p0
+u-boot-do-not-repeat-erase.diff -p0
+u-boot-do-not-repeat-cp.diff -p0
+dhcp_no_autoload.diff -p0
+u-boot-cmd-splash.diff -p0
+
+#
+# our boards
+#
+u-boot-phycore-pxa270.diff -p0
+
+#
+# some pxa specific stuff
+#
+u-boot-pxa27x-reg2fix.diff -p0
+u-boot-pxa27x-lcd.diff -p0
+u-boot-pxa-serial-enable-fifos.diff -p0
+u-boot-pxa-gpio-cmds.diff -p0
+pxafb_fix_invert_colors.diff -p0
+
+# do not compile examples, there is a bug in the makefile
+u-boot-no-examples.diff -p0
+
+#
+# avoid using functions from wrong libraries
+#
+library_fix.diff -p0
+architecture-fix.diff -p0
+

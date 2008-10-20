@@ -1,0 +1,7 @@
+config CURL
+	bool
+	prompt "curl"
+	select OPENSSL
+	select ZLIB
+	help
+	  curl

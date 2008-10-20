@@ -1,0 +1,2251 @@
+---
+ Makefile                              |    3 
+ board/phycore_pxa270/Makefile         |   47 +
+ board/phycore_pxa270/config.mk        |   10 
+ board/phycore_pxa270/lowlevel_init.S  |  466 +++++++++++++++++
+ board/phycore_pxa270/mmc.c            |   34 +
+ board/phycore_pxa270/pcmcia.c         |   75 ++
+ board/phycore_pxa270/phycore_pxa270.c |  116 ++++
+ board/phycore_pxa270/phycore_pxa270.h |  262 +++++++++
+ board/phycore_pxa270/pxavoltage.S     |  170 ++++++
+ board/phycore_pxa270/u-boot.lds       |   56 ++
+ cpu/pxa/pxafb.c                       |   32 +
+ include/configs/phycore_pxa270.h      |  892 ++++++++++++++++++++++++++++++++++
+ 12 files changed, 2163 insertions(+)
+
+Index: board/phycore_pxa270/config.mk
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/config.mk
+@@ -0,0 +1,10 @@
++#
++# This is config used for compilation of WEP EP250 sources
++#
++# You might change location of U-Boot in memory by setting right TEXT_BASE.
++# This allows for example having one copy located at the end of ram and stored
++# in flash device and later on while developing use other location to test
++# the code in RAM device only.
++#
++
++TEXT_BASE = 0xa1fd0000
+Index: board/phycore_pxa270/lowlevel_init.S
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/lowlevel_init.S
+@@ -0,0 +1,466 @@
++/*
++ * This was originally from the Lubbock u-boot port.
++ *
++ * Most of this taken from Redboot hal_platform_setup.h with cleanup
++ *
++ * NOTE: I haven't clean this up considerably, just enough to get it
++ * running. See hal_platform_setup.h for the source. See
++ * board/cradle/lowlevel_init.S for another PXA250 setup that is
++ * much cleaner.
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <config.h>
++#include <version.h>
++#include <asm/arch/pxa-regs.h>
++
++/* wait for coprocessor write complete */
++   .macro CPWAIT reg
++   mrc	p15,0,\reg,c2,c0,0
++   mov	\reg,\reg
++   sub	pc,pc,#4
++   .endm
++
++
++/*
++ *	Memory setup
++ */
++
++.globl lowlevel_init
++lowlevel_init:
++
++	/* Set up GPIO pins first ----------------------------------------- */
++
++	ldr		r0,	=GPSR0
++	ldr		r1,	=CFG_GPSR0_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPSR1
++	ldr		r1,	=CFG_GPSR1_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPSR2
++	ldr		r1,	=CFG_GPSR2_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPSR3
++	ldr		r1,	=CFG_GPSR3_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPCR0
++	ldr		r1,	=CFG_GPCR0_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPCR1
++	ldr		r1,	=CFG_GPCR1_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPCR2
++	ldr		r1,	=CFG_GPCR2_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPCR3
++	ldr		r1,	=CFG_GPCR3_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPDR0
++	ldr		r1,	=CFG_GPDR0_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPDR1
++	ldr		r1,	=CFG_GPDR1_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPDR2
++	ldr		r1,	=CFG_GPDR2_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GPDR3
++	ldr		r1,	=CFG_GPDR3_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR0_L
++	ldr		r1,	=CFG_GAFR0_L_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR0_U
++	ldr		r1,	=CFG_GAFR0_U_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR1_L
++	ldr		r1,	=CFG_GAFR1_L_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR1_U
++	ldr		r1,	=CFG_GAFR1_U_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR2_L
++	ldr		r1,	=CFG_GAFR2_L_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR2_U
++	ldr		r1,	=CFG_GAFR2_U_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR3_L
++	ldr		r1,	=CFG_GAFR3_L_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=GAFR3_U
++	ldr		r1,	=CFG_GAFR3_U_VAL
++	str		r1,   [r0]
++
++	ldr		r0,	=PSSR		/* enable GPIO pins */
++	ldr		r1,	=CFG_PSSR_VAL
++	str		r1,   [r0]
++
++	/* ---------------------------------------------------------------- */
++	/* Enable memory interface					    */
++	/*								    */
++	/* The sequence below is based on the recommended init steps	    */
++	/* detailed in the Intel PXA250 Operating Systems Developers Guide, */
++	/* Chapter 10.							    */
++	/* ---------------------------------------------------------------- */
++
++	/* ---------------------------------------------------------------- */
++	/* Step 1: Wait for at least 200 microsedonds to allow internal	    */
++	/*	   clocks to settle. Only necessary after hard reset...	    */
++	/*	   FIXME: can be optimized later			    */
++	/* ---------------------------------------------------------------- */
++
++	ldr r3, =OSCR			/* reset the OS Timer Count to zero */
++	mov r2, #0
++	str r2, [r3]
++	ldr r4, =0x300			/* really 0x2E1 is about 200usec,   */
++					/* so 0x300 should be plenty	    */
++1:
++	ldr r2, [r3]
++	cmp r4, r2
++	bgt 1b
++
++mem_init:
++
++	ldr	r1,  =MEMC_BASE		/* get memory controller base addr. */
++
++	/* ---------------------------------------------------------------- */
++	/* Step 2a: Initialize Asynchronous static memory controller	    */
++	/* ---------------------------------------------------------------- */
++
++	/* MSC registers: timing, bus width, mem type			    */
++
++	/* MSC0: nCS(0,1)						    */
++	ldr	r2,   =CFG_MSC0_VAL
++	str	r2,   [r1, #MSC0_OFFSET]
++	ldr	r2,   [r1, #MSC0_OFFSET]	/* read back to ensure	    */
++						/* that data latches	    */
++	/* MSC1: nCS(2,3)						    */
++	ldr	r2,  =CFG_MSC1_VAL
++	str	r2,  [r1, #MSC1_OFFSET]
++	ldr	r2,  [r1, #MSC1_OFFSET]
++
++	/* MSC2: nCS(4,5)						    */
++	ldr	r2,  =CFG_MSC2_VAL
++	str	r2,  [r1, #MSC2_OFFSET]
++	ldr	r2,  [r1, #MSC2_OFFSET]
++
++	/* ---------------------------------------------------------------- */
++	/* Step 2b: Initialize Card Interface				    */
++	/* ---------------------------------------------------------------- */
++
++	/* MECR: Memory Expansion Card Register				    */
++	ldr	r2,  =CFG_MECR_VAL
++	str	r2,  [r1, #MECR_OFFSET]
++	ldr	r2,	[r1, #MECR_OFFSET]
++
++	/* MCMEM0: Card Interface slot 0 timing				    */
++	ldr	r2,  =CFG_MCMEM0_VAL
++	str	r2,  [r1, #MCMEM0_OFFSET]
++	ldr	r2,	[r1, #MCMEM0_OFFSET]
++
++	/* MCMEM1: Card Interface slot 1 timing				    */
++	ldr	r2,  =CFG_MCMEM1_VAL
++	str	r2,  [r1, #MCMEM1_OFFSET]
++	ldr	r2,	[r1, #MCMEM1_OFFSET]
++
++	/* MCATT0: Card Interface Attribute Space Timing, slot 0	    */
++	ldr	r2,  =CFG_MCATT0_VAL
++	str	r2,  [r1, #MCATT0_OFFSET]
++	ldr	r2,	[r1, #MCATT0_OFFSET]
++
++	/* MCATT1: Card Interface Attribute Space Timing, slot 1	    */
++	ldr	r2,  =CFG_MCATT1_VAL
++	str	r2,  [r1, #MCATT1_OFFSET]
++	ldr	r2,	[r1, #MCATT1_OFFSET]
++
++	/* MCIO0: Card Interface I/O Space Timing, slot 0		    */
++	ldr	r2,  =CFG_MCIO0_VAL
++	str	r2,  [r1, #MCIO0_OFFSET]
++	ldr	r2,	[r1, #MCIO0_OFFSET]
++
++	/* MCIO1: Card Interface I/O Space Timing, slot 1		    */
++	ldr	r2,  =CFG_MCIO1_VAL
++	str	r2,  [r1, #MCIO1_OFFSET]
++	ldr	r2,	[r1, #MCIO1_OFFSET]
++
++	/* ---------------------------------------------------------------- */
++	/* Step 2c: Write FLYCNFG  FIXME: what's that???		    */
++	/* ---------------------------------------------------------------- */
++	ldr	r2,  =CFG_FLYCNFG_VAL
++	str	r2,  [r1, #FLYCNFG_OFFSET]
++	str	r2,	[r1, #FLYCNFG_OFFSET]
++
++	/* ---------------------------------------------------------------- */
++	/* Step 2d: Initialize Timing for Sync Memory (SDCLK0)		    */
++	/* ---------------------------------------------------------------- */
++
++	/* Before accessing MDREFR we need a valid DRI field, so we set	    */
++	/* this to power on defaults + DRI field.			    */
++
++	ldr	r4,	[r1, #MDREFR_OFFSET]
++	ldr	r2,	=0xFFF
++	bic	r4,	r4, r2
++
++	ldr	r3,	=CFG_MDREFR_VAL
++	and	r3,	r3,  r2
++
++	orr	r4,	r4, r3
++	str	r4,	[r1, #MDREFR_OFFSET]	/* write back MDREFR	    */
++
++	orr	r4,  r4, #MDREFR_K0RUN
++	orr	r4,  r4, #MDREFR_K0DB4
++	orr	r4,  r4, #MDREFR_K0FREE
++	orr	r4,  r4, #MDREFR_K2FREE
++	orr	r4,  r4, #MDREFR_K0DB2
++	orr	r4,  r4, #MDREFR_K1DB2
++	bic	r4,  r4, #MDREFR_K1FREE
++
++	str	r4,	[r1, #MDREFR_OFFSET]	/* write back MDREFR	    */
++	ldr	r4,  [r1, #MDREFR_OFFSET]
++
++	/* Note: preserve the mdrefr value in r4			    */
++
++
++	/* ---------------------------------------------------------------- */
++	/* Step 3: Initialize Synchronous Static Memory (Flash/Peripherals) */
++	/* ---------------------------------------------------------------- */
++
++	/* Initialize SXCNFG register. Assert the enable bits		    */
++
++	/* Write SXMRS to cause an MRS command to all enabled banks of	    */
++	/* synchronous static memory. Note that SXLCR need not be written   */
++	/* at this time.						    */
++
++	ldr	r2,  =CFG_SXCNFG_VAL
++	str	r2,  [r1, #SXCNFG_OFFSET]
++
++	/* ---------------------------------------------------------------- */
++	/* Step 4: Initialize SDRAM					    */
++	/* ---------------------------------------------------------------- */
++
++	bic	r4, r4, #(MDREFR_K1FREE | MDREFR_K0FREE)
++
++	orr	r4, r4, #MDREFR_K1RUN
++	orr	r4, r4, #MDREFR_K2FREE
++	bic	r4, r4, #MDREFR_K2DB2
++	str	r4, [r1, #MDREFR_OFFSET]
++	ldr	r4, [r1, #MDREFR_OFFSET]
++
++	bic	r4, r4, #MDREFR_SLFRSH
++	str	r4, [r1, #MDREFR_OFFSET]
++	ldr	r4, [r1, #MDREFR_OFFSET]
++
++	orr	r4, r4, #MDREFR_E1PIN
++	str	r4, [r1, #MDREFR_OFFSET]
++	ldr	r4, [r1, #MDREFR_OFFSET]
++
++	nop
++	nop
++
++
++	/* Step 4d: write MDCNFG with MDCNFG:DEx deasserted (set to 0), to  */
++	/*	    configure but not enable each SDRAM partition pair.	    */
++
++	ldr	r4,	=CFG_MDCNFG_VAL
++	bic	r4,	r4,	#(MDCNFG_DE0|MDCNFG_DE1)
++	bic	r4,	r4,	#(MDCNFG_DE2|MDCNFG_DE3)
++
++	str	r4,	[r1, #MDCNFG_OFFSET]	/* write back MDCNFG	    */
++	ldr	r4,	[r1, #MDCNFG_OFFSET]
++
++
++	/* Step 4e: Wait for the clock to the SDRAMs to stabilize,	    */
++	/*	    100..200 µsec.					    */
++
++	ldr r3, =OSCR			/* reset the OS Timer Count to zero */
++	mov r2, #0
++	str r2, [r3]
++	ldr r4, =0x300			/* really 0x2E1 is about 200usec,   */
++					/* so 0x300 should be plenty	    */
++1:
++	    ldr r2, [r3]
++	    cmp r4, r2
++	    bgt 1b
++
++
++	/* Step 4f: Trigger a number (usually 8) refresh cycles by	    */
++	/*	    attempting non-burst read or write accesses to disabled */
++	/*	    SDRAM, as commonly specified in the power up sequence   */
++	/*	    documented in SDRAM data sheets. The address(es) used   */
++	/*	    for this purpose must not be cacheable.		    */
++
++	ldr	r3,	=CFG_DRAM_BASE
++	str	r2,	[r3]
++	str	r2,	[r3]
++	str	r2,	[r3]
++	str	r2,	[r3]
++	str	r2,	[r3]
++	str	r2,	[r3]
++	str	r2,	[r3]
++	str	r2,	[r3]
++
++
++	/* Step 4g: Write MDCNFG with enable bits asserted		    */
++	/*	    (MDCNFG:DEx set to 1).				    */
++
++	ldr	r3,	[r1, #MDCNFG_OFFSET]
++	mov	r4, r3
++	orr	r3,	r3,	#MDCNFG_DE0
++	str	r3,	[r1, #MDCNFG_OFFSET]
++	mov	r0, r3
++
++	/* Step 4h: Write MDMRS.					    */
++
++	ldr	r2,  =CFG_MDMRS_VAL
++	str	r2,  [r1, #MDMRS_OFFSET]
++
++	/* enable APD */
++	ldr	r3,  [r1, #MDREFR_OFFSET]
++	orr	r3,  r3,  #MDREFR_APD
++	str	r3,  [r1, #MDREFR_OFFSET]
++
++	/* We are finished with Intel's memory controller initialisation    */
++
++setvoltage:
++
++
++	mov	r10,	lr
++	bl	initPXAvoltage	/* In case the board is rebooting with a    */
++	mov	lr,	r10	/* low voltage raise it up to a good one.   */
++
++wakeup:
++	/* Are we waking from sleep? */
++	ldr	r0,	=RCSR
++	ldr	r1,	[r0]
++	and	r1,	r1, #(RCSR_GPR | RCSR_SMR | RCSR_WDR | RCSR_HWR)
++	str	r1,	[r0]
++	teq	r1,	#RCSR_SMR
++
++	bne	initirqs
++
++	ldr	r0,	=PSSR
++	mov	r1,	#PSSR_PH
++	str	r1,	[r0]
++
++	/* if so, resume at PSPR */
++	ldr	r0,	=PSPR
++	ldr	r1,	[r0]
++	mov	pc,	r1
++
++	/* ---------------------------------------------------------------- */
++	/* Disable (mask) all interrupts at interrupt controller	    */
++	/* ---------------------------------------------------------------- */
++
++initirqs:
++
++	mov	r1,  #0		/* clear int. level register (IRQ, not FIQ) */
++	ldr	r2,  =ICLR
++	str	r1,  [r2]
++
++	ldr	r2,  =ICMR	/* mask all interrupts at the controller    */
++	str	r1,  [r2]
++
++	/* ---------------------------------------------------------------- */
++	/* Clock initialisation						    */
++	/* ---------------------------------------------------------------- */
++
++initclks:
++
++	/* Disable the peripheral clocks, and set the core clock frequency  */
++
++	/* Turn Off on-chip peripheral clocks (except for memory)	    */
++	/* for re-configuration.					    */
++	ldr	r1,  =CKEN
++	ldr	r2,  =CFG_CKEN
++	str	r2,  [r1]
++
++	/* ... and write the core clock config register			    */
++	ldr	r2,  =CFG_CCCR
++	ldr	r1,  =CCCR
++	str	r2,  [r1]
++
++	/* Turn on turbo mode */
++	mrc	p14, 0, r2, c6, c0, 0
++	orr	r2, r2, #0xB		/* Turbo, Fast-Bus, Freq change**/
++	mcr	p14, 0, r2, c6, c0, 0
++
++	/* Re-write MDREFR */
++	ldr	r1, =MEMC_BASE
++	ldr	r2, [r1, #MDREFR_OFFSET]
++	str	r2, [r1, #MDREFR_OFFSET]
++
++	/* enable the 32Khz oscillator for RTC and PowerManager		    */
++	ldr	r1,  =OSCC
++	mov	r2,  #OSCC_OON
++	str	r2,  [r1]
++
++	/* NOTE:  Other boards wait here for the pll to become stable       */
++	/*        I think the pll can do without us (sha)                   */
++
++	/* Interrupt init: Mask all interrupts				    */
++    ldr r0, =ICMR /* enable no sources */
++	mov r1, #0
++    str r1, [r0]
++	/* FIXME */
++
++#ifdef NODEBUG
++	/*Disable software and data breakpoints */
++	mov	r0,#0
++	mcr	p15,0,r0,c14,c8,0  /* ibcr0 */
++	mcr	p15,0,r0,c14,c9,0  /* ibcr1 */
++	mcr	p15,0,r0,c14,c4,0  /* dbcon */
++
++	/*Enable all debug functionality */
++	mov	r0,#0x80000000
++	mcr	p14,0,r0,c10,c0,0  /* dcsr */
++#endif
++
++	/* ---------------------------------------------------------------- */
++	/* End lowlevel_init							    */
++	/* ---------------------------------------------------------------- */
++
++endlowlevel_init:
++#if 0
++	ldr	r0,=GPDR2
++	ldr	r1,=CFG_GPDR2_VAL
++	and	r1,r1,#0xFBFFFFFF	/* switch off LED0 (GPIO 90) */
++	str	r1,[r0]
++#endif
++	mov	pc, lr
+Index: board/phycore_pxa270/Makefile
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/Makefile
+@@ -0,0 +1,47 @@
++#
++# (C) Copyright 2000, 2002
++# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++#
++# See file CREDITS for list of people who contributed to this
++# project.
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License as
++# published by the Free Software Foundation; either version 2 of
++# the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++# MA 02111-1307 USA
++#
++
++include $(TOPDIR)/config.mk
++
++LIB	= lib$(BOARD).a
++
++OBJS	:= $(BOARD).o pcmcia.o mmc.o
++SOBJS	:= lowlevel_init.o pxavoltage.o
++
++$(LIB):	$(OBJS) $(SOBJS)
++	$(AR) crv $@ $(OBJS) $(SOBJS)
++
++clean:
++	rm -f $(SOBJS) $(OBJS)
++
++distclean:	clean
++	rm -f $(LIB) core *.bak .depend
++
++#########################################################################
++
++.depend:	Makefile $(SOBJS:.o=.S) $(OBJS:.o=.c)
++		$(CC) -M $(CPPFLAGS) $(SOBJS:.o=.S) $(OBJS:.o=.c) > $@
++
++-include .depend
++
++#########################################################################
+Index: board/phycore_pxa270/mmc.c
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/mmc.c
+@@ -0,0 +1,34 @@
++/*
++ * (C) Copyright 2005
++ * Juergen Kilb, Phytec Messtechnik GmbH, armlinux@phytec.de
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <common.h>
++#include <asm/arch/pxa-regs.h>
++#include "phycore_pxa270.h"
++
++void mmc_power_on(void)
++{
++	/* MMC2 Power at PCM985	*/
++	__PHYCORE_PXA270_CTRL_REG(PHYCORE_PXA270_CTRL_PHYS + PHYCORE_PXA270_CTRL_REG5) =
++		PHYCORE_PXA270_CTRL_MMC2PWR + PHYCORE_PXA270_CTRL_MMC2LED;
++
++}
+\ No newline at end of file
+Index: board/phycore_pxa270/phycore_pxa270.c
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/phycore_pxa270.c
+@@ -0,0 +1,116 @@
++/*
++ * Copyright (C) 2003 ETC s.r.o.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ *
++ * Written by Peter Figuli <peposh@etc.sk>, 2003.
++ *
++ */
++
++#include <common.h>
++#include <asm/arch/pxa-regs.h>
++#include "phycore_pxa270.h"
++
++int board_init( void ){
++	DECLARE_GLOBAL_DATA_PTR;
++
++	icache_enable();
++
++	gd->bd->bi_arch_number = MACH_TYPE_PCM027;
++	gd->bd->bi_boot_params = 0xa0000100;
++	gd->bd->bi_baudrate    = CONFIG_BAUDRATE;
++#if (PHYCORE_PXA270_USE_IDE==1)
++	/* IDE Drive		*/
++	/* Enable IDE Latches	*/
++	__PHYCORE_PXA270_IDE_PLD_REG(PHYCORE_PXA270_IDE_PLD_PHYS + PHYCORE_PXA270_IDE_PLD_REG3) =
++		PHYCORE_PXA270_IDE_IDEOE + PHYCORE_PXA270_IDE_IDEON + PHYCORE_PXA270_IDE_IDEIN;
++
++	/* Enable Power		*/
++	__PHYCORE_PXA270_IDE_PLD_REG(PHYCORE_PXA270_IDE_PLD_PHYS + PHYCORE_PXA270_IDE_PLD_REG4) =
++		PHYCORE_PXA270_IDE_PWRENA;
++
++	/* Some harddisks need some time for it's initialization.
++	 * Therefore the next delay of 5s. */
++#endif
++
++#if (PHYCORE_PXA270_USE_LCD==1)
++	/* LCD Display		*/
++	/* Enable LCD and Power	*/
++	__PHYCORE_PXA270_CTRL_REG(PHYCORE_PXA270_CTRL_PHYS + PHYCORE_PXA270_CTRL_REG3) =
++		PHYCORE_PXA270_CTRL_LCDPWR + PHYCORE_PXA270_CTRL_LCDON;
++#endif
++  return 0;
++}
++
++/**
++ * i2c_init_board - reset i2c bus. When the board is powercycled during a
++ * bus transfer it might hang; for details see doc/I2C_Edge_Conditions.
++ * The Phytec board has GPIO117 connected to SCLK which can be toggled
++ * until all chips think that their current cycles are finished.
++ */
++int i2c_init_board(void)
++{
++	int i, icr;
++
++	/* disable I2C controller first, otherwhise it thinks we want to    */
++	/* talk to the slave port...                                        */
++	icr = ICR;
++	ICR &= ~(ICR_SCLE | ICR_IUE);
++
++	/* set gpio pin low _before_ we change direction to output          */
++	GPCR(117) = GPIO_bit(117);
++
++	/* now toggle between output=low and high-impedance                 */
++	for (i = 0; i < 20; i++) {
++		GPDR(117) |= GPIO_bit(117);  /* output */
++		udelay(10);
++		GPDR(117) &= ~GPIO_bit(117); /* input  */
++		udelay(10);
++	}
++
++	ICR = icr;
++
++	return 0;
++}
++
++int board_late_init(void)
++{
++    setenv ("stdout","serial");
++    setenv ("stdout","serial");
++    return 0;
++}
++
++int dram_init( void ){
++  DECLARE_GLOBAL_DATA_PTR;
++
++#if ( CONFIG_NR_DRAM_BANKS > 0 )
++  gd->bd->bi_dram[0].start = CFG_SDRAM_1;
++  gd->bd->bi_dram[0].size  = CFG_SDRAM_1_SIZE;
++#endif
++#if ( CONFIG_NR_DRAM_BANKS > 1 )
++  gd->bd->bi_dram[1].start = CFG_SDRAM_2;
++  gd->bd->bi_dram[1].size  = CFG_SDRAM_2_SIZE;
++#endif
++
++  return 0;
++}
++
++int checkboard (void)
++{
++	puts(CONFIG_BOARDINFO);
++	puts("\n");
++	return 0;
++}
+Index: board/phycore_pxa270/phycore_pxa270.h
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/phycore_pxa270.h
+@@ -0,0 +1,262 @@
++/*
++ * linux/include/asm-arm/arch-pxa/phycore_pxa270.h
++ *
++ * (c) 2003 Phytec Messtechnik GmbH <armlinux@phytec.de>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/*
++ * GPIOs  Interrupt Source
++ */
++//#define GPIO_PHYCORE_PXA270_RTC		0		/* GPIO-0 bei Baseboard über GPIO 1 WAKEUP erreichbar */
++#define GPIO_PHYCORE_PXA270_WAKEUP	1			/* GPIO-1  INT-24			*/
++#define GPIO_PHYCORE_PXA270_ETH		2			/* GPIO-2  INT-25			*/
++#define GPIO_PHYCORE_PXA270_USB_INT1	3			/* GPIO-3  INT-26			*/
++#define GPIO_PHYCORE_PXA270_USB_INT2	4			/* GPIO-4  INT-27			*/
++#define GPIO_PHYCORE_PXA270_CAN		5			/* GPIO-5  INT-28			*/
++#define GPIO_PCM990_CAN0	83			/* GPIO-82 INT-106			*/
++#define GPIO_PCM990_CAN1	81			/* GPIO-81 INT-104			*/
++
++#define GPIO_PHYCORE_PXA270_CTRL_INT	7			/* GPIO-7  INT-30			*/
++
++#define GPIO_PHYCORE_PXA270_AC97	10			/* GPIO-10 INT-33 			*/
++#define GPIO_PHYCORE_PXA270_CF		11			/* GPIO-11 INT-34			*/
++
++#define GPIO_PHYCORE_PXA270_IDE		13			/* GPIO-13 INT-36  			*/
++#define GPIO_PHYCORE_PXA270_CTRL_PWR	14			/* GPIO-14 INT-37 			*/
++
++/*
++ * ethernet chip (SMSC91C111)
++ */
++#define PHYCORE_PXA270_ETH_PHYS		PXA_CS5_PHYS
++#define PHYCORE_PXA270_ETH_BASE		(0xf0000000)		/* phys 0x14000000 			*/
++#define PHYCORE_PXA270_ETH_SIZE		(1*1024*1024)
++#define PHYCORE_PXA270_ETH_IRQ		IRQ_GPIO(GPIO_PHYCORE_PXA270_ETH)
++#define PHYCORE_PXA270_ETH_IRQ_EDGE	GPIO_RISING_EDGE
++
++/*
++ * Control PLD Regs
++ */
++
++#define PHYCORE_PXA270_CTRL_PHYS		0x04000000	//16-Bit
++#define PHYCORE_PXA270_CTRL_SIZE		(1*1024*1024)
++#define PHYCORE_PXA270_CTRL_INT_IRQ		IRQ_GPIO(GPIO_PHYCORE_PXA270_CTRL_INT)
++#define PHYCORE_PXA270_CTRL_PWR_IRQ		IRQ_GPIO(GPIO_PHYCORE_PXA270_CTRL_PWR)
++#define PHYCORE_PXA270_CTRL_IRQ_EDGE		GPIO_FALLING_EDGE
++
++//#define PHYCORE_PXA270_CTRL_REG0		0x00000000 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */ ^[C
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG1		0x00000002 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG2		0x00000004 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++#define PHYCORE_PXA270_CTRL_REG3		0x00000006      /* LCD CTRL REGISTER 3			*/
++#define PHYCORE_PXA270_CTRL_LCDPWR		0x0001	 	/* RW	LCD Power on			*/
++#define PHYCORE_PXA270_CTRL_LCDON		0x0002	 	/* RW	LCD Latch on  			*/
++#define PHYCORE_PXA270_CTRL_LCDPOS1		0x0004	 	/* RW 	POS 1				*/
++#define PHYCORE_PXA270_CTRL_LCDPOS2		0x0008	 	/* RW	POS 2	 			*/
++#define PHYCORE_PXA270_CTRL_REG4		0x00000008 	/* MMC1 CTRL REGISTER 4			*/
++#define PHYCORE_PXA270_CTRL_MMC1PWR		0x0001	 	/* RW	MMC1 Power on 			*/
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* R=0	not used		 	*/
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* R=0	not used		 	*/
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* R=0	not used		 	*/
++#define PHYCORE_PXA270_CTRL_REG5		0x0000000A 	/* MMC2 CTRL REGISTER 5			*/
++#define PHYCORE_PXA270_CTRL_MMC2PWR		0x0001	 	/* RW 	MMC2 Power on			*/
++#define PHYCORE_PXA270_CTRL_MMC2LED		0x0002	 	/* RW	MMC2 LED 			*/
++#define PHYCORE_PXA270_CTRL_MMC2DE		0x0004	 	/* R 	MMC2 Card detect		*/
++#define PHYCORE_PXA270_CTRL_MMC2WP		0x0008	 	/* R    MMC2 Card write protect		*/
++//#define PHYCORE_PXA270_CTRL_REG6		0x0000000C /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG7		0x0000000E /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG8		0x00000010 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG9		0x00000012 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG10		0x00000014 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG11		0x00000016 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG12		0x00000018 /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG13		0x0000001A /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG14		0x0000001C /* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0001	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0002	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0004	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_			0x0008	 	/* RESET REGISTER */
++//#define PHYCORE_PXA270_CTRL_REG15		0x0000001E /* RESET REGISTER */
++
++
++#define  __PHYCORE_PXA270_CTRL_REG(x)	(*((volatile unsigned char *)(x)))
++
++/*
++ * IDE
++ */
++
++#define PHYCORE_PXA270_IDE_IRQ			IRQ_GPIO(GPIO_PHYCORE_PXA270_IDE)
++#define PHYCORE_PXA270_IDE_IRQ_EDGE		GPIO_RISING_EDGE
++
++#define PHYCORE_PXA270_IDE_PLD_PHYS		0x20000000	/* 16-Bit Zugriff			*/
++#define PHYCORE_PXA270_IDE_PLD_BASE		0xf6000000
++#define PHYCORE_PXA270_IDE_PLD_SIZE		(1*1024*1024)
++
++#define PHYCORE_PXA270_IDE_PLD_REG0		0x00001000 	/* OFFSET IDE REGISTER 0 	 	*/
++/*#define PHYCORE_PXA270_IDE_			0x0001*/ 	/* R=0	not used		 	*/
++/*#define PHYCORE_PXA270_IDE_			0x0002*/ 	/* R=0	not used			*/
++#define PHYCORE_PXA270_IDE_PM5V			0x0004	 	/* R	System VCC_5V 			*/
++#define PHYCORE_PXA270_IDE_STBY			0x0008	 	/* R	System StandBy 			*/
++
++#define PHYCORE_PXA270_IDE_PLD_REG1		0x00001002      /* OFFSET IDE REGISTER 1 		*/
++#define PHYCORE_PXA270_IDE_IDEMODE		0x0001	 	/* R	TrueIDE Mode 			*/
++/*#define PHYCORE_PXA270_IDE_			0x0002*/	/* R=0	not used 			*/
++#define PHYCORE_PXA270_IDE_DMAENA		0x0004	 	/* RW	DMA Enable			*/
++#define PHYCORE_PXA270_IDE_DMA1_0		0x0008	 	/* RW	1=DREQ1 0=DREQ0 		*/
++
++#define PHYCORE_PXA270_IDE_PLD_REG2		0x00001004 	/* OFFSET IDE REGISTER 2 		*/
++#define PHYCORE_PXA270_IDE_RESENA		0x0001	 	/* RW	IDE Reset Bit enable  		*/
++#define PHYCORE_PXA270_IDE_RES			0x0002	 	/* RW	IDE Reset Bit 			*/
++/*#define PHYCORE_PXA270_IDE_			0x0004*/ 	/* R=0					*/
++#define PHYCORE_PXA270_IDE_RDY			0x0008	 	/* RDY 					*/
++
++#define PHYCORE_PXA270_IDE_PLD_REG3		0x00001006 	/* OFFSET IDE REGISTER 3 		*/
++#define PHYCORE_PXA270_IDE_IDEOE		0x0001	 	/* RW 	Latch on Databus		*/
++#define PHYCORE_PXA270_IDE_IDEON		0x0002	 	/* RW 	Latch on Control Address	*/
++#define PHYCORE_PXA270_IDE_IDEIN		0x0004	 	/* RW 	Latch on Interrupt usw.		*/
++/*#define PHYCORE_PXA270_IDE_			0x0008*/ 	/* R=0 	not used 			*/
++
++#define PHYCORE_PXA270_IDE_PLD_REG4		0x00001008      /* OFFSET IDE REGISTER 4 		*/
++#define PHYCORE_PXA270_IDE_PWRENA		0x0001	 	/* RW	IDE Power enable 		*/
++#define PHYCORE_PXA270_IDE_5V			0x0002	 	/* R	IDE Power 5V 			*/
++/*#define PHYCORE_PXA270_IDE_			0x0004*/	/* R=0	not used 			*/
++#define PHYCORE_PXA270_IDE_PWG			0x0008	 	/* R	IDE Power is on 		*/
++
++/*#define PHYCORE_PXA270_IDE_PLD_REG5		0x0000100E*/ 	/* OFFSET IDE REGISTER 5 		*/
++/*#define PHYCORE_PXA270_IDE_REG5_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG5_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG5_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG5_		0x0008*/ 	/* R=0 	not used 			*/
++
++/*#define PHYCORE_PXA270_IDE_PLD_REG6		0x00001010*/ 	/* OFFSET IDE REGISTER 6 		*/
++/*#define PHYCORE_PXA270_IDE_REG6_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG6_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG6_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG6_		0x0008*/ 	/* R=0 	not used 			*/
++
++/*#define PHYCORE_PXA270_IDE_PLD_REG7		0x00001012*/ 	/* OFFSET IDE REGISTER 7 		*/
++/*#define PHYCORE_PXA270_IDE_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_IDE_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++
++
++#define  __PHYCORE_PXA270_IDE_PLD_REG(x)	(*((volatile unsigned char *)(x)))
++
++/*
++ * Compact Flash
++ */
++#define PHYCORE_PXA270_CF_IRQ			IRQ_GPIO(GPIO_PHYCORE_PXA270_CF)
++#define PHYCORE_PXA270_CF_IRQ_EDGE		GPIO_RISING_EDGE
++
++
++#define PHYCORE_PXA270_CF_PLD_PHYS		0x30001000	//16-Bit
++#define PHYCORE_PXA270_CF_PLD_SIZE		(1*1024*1024)
++
++#define PHYCORE_PXA270_CF_PLD_REG0		0x00000000 	/* OFFSET CF REGISTER 0 		*/
++#define PHYCORE_PXA270_CF_REG0_LED		0x0001	 	/* RW	LED an           		*/
++#define PHYCORE_PXA270_CF_REG0_BLK		0x0002	 	/* RW	LED Blink bei Zugriff		*/
++#define PHYCORE_PXA270_CF_REG0_PM5V		0x0004 	 	/* R	System VCC_5V an  		*/
++#define PHYCORE_PXA270_CF_REG0_STBY		0x0008	 	/* R	System StandBy  		*/
++
++#define PHYCORE_PXA270_CF_PLD_REG1		0x00000002      /* OFFSET CF REGISTER 1 		*/
++#define PHYCORE_PXA270_CF_REG1_IDEMODE		0x0001	 	/* RW	CF-Card als TrueIDE 		*/
++#define PHYCORE_PXA270_CF_REG1_CF0		0x0002	 	/* RW	CF-Card auf ADDR 0x28000000 	*/
++/*#define PHYCORE_PXA270_CF_REG1_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_CF_REG1_		0x0008*/ 	/* R=0 	not used 			*/
++
++#define PHYCORE_PXA270_CF_PLD_REG2		0x00000004 	/* OFFSET CF REGISTER 2 		*/
++#define PHYCORE_PXA270_CF_REG2_RESENA		0x0001	 	/* RW   CF RESET BIT Enable 		*/
++#define PHYCORE_PXA270_CF_REG2_RES		0x0002	 	/* RW	CF RESET BIT 			*/
++#define PHYCORE_PXA270_CF_REG2_RDYENA		0x0004	 	/* RW	Enabele CF_RDY   		*/
++#define PHYCORE_PXA270_CF_REG2_RDY		0x0008	 	/* R	CF_RDY auf PWAIT 		*/
++
++#define PHYCORE_PXA270_CF_PLD_REG3		0x00000006 	/* OFFSET CF REGISTER 3	        	*/
++#define PHYCORE_PXA270_CF_REG3_CFOE		0x0001	 	/* RW	Latch on Databus		*/
++#define PHYCORE_PXA270_CF_REG3_CFON		0x0002	 	/* RW	Latch on Control Address	*/
++#define PHYCORE_PXA270_CF_REG3_CFIN		0x0004	 	/* RW	Latch on Interrupt usw. 	*/
++#define PHYCORE_PXA270_CF_REG3_CFCD		0x0008	 	/* RW	Latch on CD1/2 VS1/2 usw     	*/
++
++#define PHYCORE_PXA270_CF_PLD_REG4		0x00000008      /* OFFSET CF REGISTER 4 		*/
++#define PHYCORE_PXA270_CF_REG4_PWRENA		0x0001	 	/* RW	CF Power on (CD1/2 = "00")   	*/
++#define PHYCORE_PXA270_CF_REG4_5_3V		0x0002	 	/* RW	1 = 5V CF_VCC 0 = 3 V CF_VCC 	*/
++#define PHYCORE_PXA270_CF_REG4_3B		0x0004	 	/* RW 	3.0V Backup aus VCC (5_3V=0)	*/
++#define PHYCORE_PXA270_CF_REG4_PWG		0x0008	 	/* R	CF-Power is on			*/
++
++#define PHYCORE_PXA270_CF_PLD_REG5		0x0000000A 	/* OFFSET CF REGISTER 5 		*/
++#define PHYCORE_PXA270_CF_REG5_BVD1		0x0001	 	/* R 	CF /BVD1 			*/
++#define PHYCORE_PXA270_CF_REG5_BVD2		0x0002	 	/* R 	CF /BVD2			*/
++#define PHYCORE_PXA270_CF_REG5_VS1		0x0004	 	/* R 	CF /VS1				*/
++#define PHYCORE_PXA270_CF_REG5_VS2		0x0008	 	/* R	CF /VS2 			*/
++
++#define PHYCORE_PXA270_CF_PLD_REG6		0x0000000C 	/* OFFSET CF REGISTER 6 		*/
++#define PHYCORE_PXA270_CF_REG6_CD1		0x0001	 	/* R	CF Card_Detect1 		*/
++#define PHYCORE_PXA270_CF_REG6_CD2		0x0002	 	/* R	CF Card_Detect2 		*/
++/*#define PHYCORE_PXA270_CF_REG1_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_CF_REG1_		0x0008*/ 	/* R=0 	not used 			*/
++
++/*#define PHYCORE_PXA270_CF_PLD_REG7		0x0000000E*/ 	/* OFFSET CF REGISTER 7 		*/
++/*#define PHYCORE_PXA270_CF_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_CF_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_CF_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PHYCORE_PXA270_CF_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++
++
++#define  __PHYCORE_PXA270_CF_PLD_REG(x)	(*((volatile unsigned char *)(x)))
++
+Index: board/phycore_pxa270/pcmcia.c
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/pcmcia.c
+@@ -0,0 +1,75 @@
++/*
++ * (C) Copyright 2004
++ * Robert Whaley, Applied Data Systems, Inc. rwhaley@applieddata.net
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <common.h>
++#include <asm/arch/pxa-regs.h>
++#include "phycore_pxa270.h"
++
++void pcmcia_power_on(void)
++{
++	/* CF Drive				*/
++	/* switch to true-IDE Mode */
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG1) =
++		PHYCORE_PXA270_CF_REG1_IDEMODE;
++	/* reset CF-Card	   */
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG2) =
++		PHYCORE_PXA270_CF_REG2_RESENA + PHYCORE_PXA270_CF_REG2_RES;;
++	/* Enable Power		*/
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG4) =
++		PHYCORE_PXA270_CF_REG4_PWRENA;
++		/* Enable CF Latches	*/
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG3) =
++		PHYCORE_PXA270_CF_REG3_CFOE + PHYCORE_PXA270_CF_REG3_CFON
++		+ PHYCORE_PXA270_CF_REG3_CFIN + PHYCORE_PXA270_CF_REG3_CFCD;
++
++	/* release reset from CF-Card	   */
++	udelay(10000);
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG2) =
++		PHYCORE_PXA270_CF_REG2_RESENA;
++	udelay(10000);
++}
++
++void pcmcia_power_off(void)
++{
++	/* CF Drive				*/
++	/* reset CF-Card	   */
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG2) =
++		PHYCORE_PXA270_CF_REG2_RESENA + PHYCORE_PXA270_CF_REG2_RES;;
++	/* Disable CF Latches		*/
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG3) = 0;
++	/* Disable Power		*/
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG4) = 0;
++}
++
++void ide_led(uchar led, uchar status)
++{
++    if (status)
++    {
++	/* CF-Led on */
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG0) = 1;
++    } else
++    {
++	/* CF-Led off */
++	__PHYCORE_PXA270_CF_PLD_REG(PHYCORE_PXA270_CF_PLD_PHYS + PHYCORE_PXA270_CF_PLD_REG0) = 0;
++    }
++}
+\ No newline at end of file
+Index: board/phycore_pxa270/pxavoltage.S
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/pxavoltage.S
+@@ -0,0 +1,170 @@
++/*
++ * (C) Copyright 2004
++ * Robert Whaley, Applied Data Systems, Inc. rwhaley@applieddata.net
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <asm/arch/pxa-regs.h>
++#include <config.h>
++#define LTC1663_ADDR    0x0C
++
++#define VOLT_1_50       0x0D    /* DAC value for 1.50V */
++
++		.global	initPXAvoltage
++
++@ Set the voltage to 1.55V early in the boot process so we can run
++@ at a high clock speed and boot quickly.  Note that this is necessary
++@ because the reset button does not reset the CPU voltage, so if the
++@ voltage was low (say 0.85V) then the CPU would crash without this
++@ routine
++
++@ This routine clobbers r0-r4
++
++initializei2c:
++
++		ldr	r2, =CKEN
++		ldr	r3, [r2]
++		orr	r3, r3, #CKEN15_PWRI2C
++		str	r3, [r2]
++
++		ldr	r2, =PCFR
++		ldr	r3, [r2]
++		orr	r3, r3, #PCFR_PI2C_EN
++		str	r3, [r2]
++
++		/* delay for about 250msec
++		 */
++		ldr	r3, =OSCR
++		mov	r2, #0
++		str	r2, [r3]
++		ldr	r1, =0xC0000
++1:
++		ldr	r2, [r3]
++		cmp	r1, r2
++		bgt	1b
++		/* end delay */
++
++		ldr	r0, =PWRICR
++		ldr	r1, [r0]
++		bic	r1, r1, #(ICR_MA | ICR_START | ICR_STOP)
++		str	r1, [r0]
++
++		orr	r1, r1, #ICR_UR /* Reset Pi2C Unit */
++		str	r1, [r0]
++
++		ldr	r2, =PWRISR /* clear all interrupts */
++		ldr	r3, =0x7ff
++		str	r3, [r2]
++
++		bic	r1, r1, #ICR_UR	/* clear PI2C reset bit in PWRICR (r0) */
++		str	r1, [r0]
++
++		mov	r1, #(ICR_GCD | ICR_SCLE) /* disable general call and enable SCL */
++		str	r1, [r0]
++
++		orr	r1, r1, #ICR_IUE	/* enable PI2C unit */
++		str	r1, [r0]
++
++		orr	r1, r1, #ICR_FM		/* use 160kbps */
++		str	r1, [r0]
++
++		/* delay for about 1msec
++		 */
++		ldr	r3, =OSCR
++		mov	r2, #0
++		str	r2, [r3]
++		ldr	r1, =0xC00	@11,32msec
++
++1:
++		ldr	r2, [r3]
++		cmp	r1, r2
++		bgt	1b
++		/* end delay */
++
++		mov	pc, lr
++
++sendbytei2c:
++		ldr	r3, =PWRIDBR
++		str	r0, [r3]
++		ldr	r3, =PWRICR
++		ldr	r0, [r3]
++		orr	r0, r0, r1
++		bic	r0, r0, r2
++		str	r0, [r3]
++		orr	r0, r0, #ICR_TB
++		str	r0, [r3]
++
++		mov	r2, #0x100
++
++waitfortxemptyi2c:
++
++		ldr	r0, =PWRISR
++		ldr	r1, [r0]
++
++		/* take it from the top if we don't get empty after a while */
++		subs	r2, r2, #1
++		moveq	lr, r4
++		beq	initPXAvoltage
++
++		tst	r1, #ISR_ITE
++
++		beq	waitfortxemptyi2c
++
++		orr	r1, r1, #ISR_ITE
++		str	r1, [r0]
++
++		mov	pc, lr
++
++initPXAvoltage:
++
++		mov	r4, lr
++
++		bl	initializei2c
++
++		/* now send the real message to set the correct voltage */
++		ldr	r0, =LTC1663_ADDR
++		mov	r0, r0, LSL #1
++		mov	r1, #ICR_START	/* set bits in ICR */
++		ldr	r2, =(ICR_STOP | ICR_ALDIE | ICR_ACKNAK) /* clear Bits in ICR */
++		bl	sendbytei2c
++
++		ldr	r0, =VOLT_1_50
++		and	r0, r0, #0xff
++		ldr	r1, =(ICR_STOP | ICR_ALDIE)
++		mov	r2, #ICR_START
++		bl	sendbytei2c
++
++	ldr	r0,=GPDR2
++	ldr	r1,=CFG_GPDR2_VAL
++	and	r1,r1,#0xFBFFFFFF	/* switch off LED0 (GPIO 90) */
++	str	r1,[r0]
++
++		@ delay a little for the volatage to stablize
++		ldr	r3, =OSCR
++		mov	r2, #0
++		str	r2, [r3]
++		ldr	r1, =0xC0c
++
++1:
++		ldr	r2, [r3]
++		cmp	r1, r2
++		bgt	1b
++		mov	pc, r4
++
+Index: board/phycore_pxa270/u-boot.lds
+===================================================================
+--- /dev/null
++++ board/phycore_pxa270/u-boot.lds
+@@ -0,0 +1,56 @@
++/*
++ * (C) Copyright 2000
++ * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
++OUTPUT_ARCH(arm)
++ENTRY(_start)
++SECTIONS
++{
++	. = 0x00000000;
++
++	. = ALIGN(4);
++	.text      :
++	{
++	  cpu/pxa/start.o	(.text)
++	  *(.text)
++	}
++
++	. = ALIGN(4);
++	.rodata : { *(.rodata) }
++
++	. = ALIGN(4);
++	.data : { *(.data) }
++
++	. = ALIGN(4);
++	.got : { *(.got) }
++
++	. = .;
++	__u_boot_cmd_start = .;
++	.u_boot_cmd : { *(.u_boot_cmd) }
++	__u_boot_cmd_end = .;
++
++	. = ALIGN(4);
++	__bss_start = .;
++	.bss : { *(.bss) }
++	_end = .;
++}
+Index: include/configs/phycore_pxa270.h
+===================================================================
+--- /dev/null
++++ include/configs/phycore_pxa270.h
+@@ -0,0 +1,891 @@
++/*
++ * Copyright (C) 2005 Phytec Messtechnik GmbH
++ * Juergen Kilb, H. Klaholz <armlinux@phytec.de>
++ *
++ * Copyright (C) 2006 Pengutronix
++ * Sascha Hauer <s.hauer@pengutronix.de>
++ * Robert Schwebel <r.schwebel@pengutronix.de>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ *
++ */
++
++#ifndef __CONFIG_H
++#define __CONFIG_H
++
++#define CONFIG_BOARDINFO "Phytec phyCORE-pxa270"
++
++/*
++ * phyCORE-PXA270 configuration settings
++ * Set these to 0/1 to enable or disable the features.
++ */
++
++#define PHYCORE_PXA270_USE_LCD		1
++#define PHYCORE_PXA270_USE_MMC		1
++#define PHYCORE_PXA270_USE_IDE		0
++#define PHYCORE_PXA270_USE_CF		1
++#define PHYCORE_PXA270_USE_FFUART	1
++#define PHYCORE_PXA270_USE_BTUART	1
++#define PHYCORE_PXA270_USE_IRUART	1
++#define PHYCORE_PXA270_USE_AC97		1
++#define PHYCORE_PXA270_USE_SSP		1
++#define PHYCORE_PXA270_USE_SSP3		1
++#define PHYCORE_PXA270_USE_K3FLASH	0
++
++/* 260 MHz or 520 MHZ */
++#define PHYCORE_PXA270_SPEED		520
++
++/*********************************************************************
++ * CONFIG PXA270 GPIO settings                                       *
++ *********************************************************************/
++#if PHYCORE_PXA270_USE_LCD == 1
++/** REG GPSR0
++ * GP16 is 1 */
++#define GPSR0_LCD	0x00010000	/* GPIO16 is 1 */
++/** REG GPDR0
++ * GP16 == PWM0      is output
++ ** REG GPDR1
++ * GP58 == LDD0      is output
++ * GP59 == LDD1      is output
++ * GP60 == LDD2      is output
++ * GP61 == LDD3      is output
++ * GP62 == LDD4      is output
++ * GP63 == LDD5      is output
++ *** REG GPDR2
++ * GP64 == LDD6      is output
++ * GP65 == LDD7      is output
++ * GP66 == LDD8      is output
++ * GP67 == LDD9      is output
++ * GP68 == LDD10     is output
++ * GP69 == LDD11     is output
++ * GP70 == LDD12     is output
++ * GP71 == LDD13     is output
++ * GP72 == LDD14     is output
++ * GP73 == LDD15     is output
++ * GP74 == LCDFCLK   is output
++ * GP75 == LCDLCLK   is output
++ * GP76 == LCDPCLK   is output
++ * GP77 == LCDBIAS   is output */
++#define GPDR0_LCD 	0x00010000	/* GPIO 16 Output */
++#define GPDR1_LCD 	0xFC000000	/* GPIO 58 - 63 Output */
++#define GPDR2_LCD 	0x00003FFF	/* GPIO 64 - 77 Output */
++#define GAFR1_U_LCD	0xAAA00000	/* GPIO 58 - 63 AF 02  */
++#define GAFR2_L_LCD	0x0AAAAAAA	/* GPIO 64 - 77 AF 02  */
++#else
++#define GPDR0_LCD 	0x00000000
++#define GPSR0_LCD	0x00000000
++#define GPDR1_LCD 	0x00000000
++#define GPDR2_LCD 	0x00000000
++#define GAFR1_U_LCD	0x00000000
++#define GAFR2_L_LCD	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_MMC == 1
++/* REG GPDR1
++ * GP32 == MMCCLK     is output */
++#define GPDR1_MMC	0x00000001 	/* GPIO32 is OUTPUT */
++/** REG GAFR1_L
++ * GP32 == MMCLK     is AF10
++ ** REG GAFR2_U
++ * GP92 == MMDAT0    is AF01
++ ** REG GAFR3_L
++ * GP109== MMDAT1    is AF01
++ * GP110== MMCS0     is AF01
++ * GP111== MMCS1     is AF01
++ ** REG GAFR3_U
++ * GP112== MMCMD     is AF01 */
++#define GAFR1_L_MMC	0x00000002	/* GPIO 32 is AF10 */
++#define GAFR2_U_MMC	0x01000000	/* GPIO 92 AF 01  */
++#define GAFR3_L_MMC	0x54000000	/* GPIO 109 - 111 AF 01 */
++#define GAFR3_U_MMC	0x00000001	/* GPIO 112 AF 01 */
++#else
++#define GPDR1_MMC	0x00000000
++#define GAFR2_U_MMC	0x00000000
++#define GAFR3_L_MMC	0x00000000
++#define GAFR3_U_MMC	0x00000000
++#endif
++
++#if ((PHYCORE_PXA270_USE_IDE == 1) || (PHYCORE_PXA270_USE_CF == 1))
++/** REG GPSR1
++ * GP48 == nPOE      is 1
++ * GP49 == nPWE      is 1
++ * GP50 == nPIOR     is 1
++ * GP51 == nPIOW     is 1
++ * GP54 == nPCE2     is 1
++ * GP55 == nPREG     is 1
++ ** REG GPSR2
++ * GP85 == nPCE1     is 1 */
++#define GPSR1_IDECF	0x00CF0000	/* GPIO 48-51, 54-55 is 1 */
++#define GPSR2_IDECF	0x00200000	/* GPIO 85 is 1 */
++/* REG GPDR1
++ * GP48 == nPOE      is output
++ * GP49 == nPWE      is output
++ * GP50 == nPIOR     is output
++ * GP51 == nPIOW     is output
++ * GP54 == nPCE2     is output
++ * GP55 == nPREG     is output
++ * REG GPDR2
++ * GP79 == PSKTSEL   is output
++ * GP85 == nPCE1     is output */
++#define GPDR1_IDECF	0x00CF0000	/* GPIO 48-51, 54-57 is output */
++#define GPDR2_IDECF	0x00208000	/* GPIO 79,85 is output */
++/** REG GAFR1_U
++ * GP48 == nPOE      is AF10
++ * GP49 == nPWE      is AF10
++ * GP50 == nPIOR     is AF10
++ * GP51 == nPIOW     is AF10
++ * GP54 == nPCE2     is AF10
++ * GP55 == nPREG     is AF10
++ * GP56 == nPWAIT    is AF01
++ * GP57 == nPIOIS16  is AF01
++ * REG GAFR2_L
++ * GP79 == PSKTSEL   is AF01
++ * REG GAFR2_U
++ * GP85 == nPCE1     is AF01 */
++#define GAFR1_U_IDECF	0x0005A0AA	/* GPIO 48-55 AF 10, 56-57 AF01 */
++#define GAFR2_L_IDECF	0x40000000	/* GPIO 79 AF 01 */
++#define GAFR2_U_IDECF	0x00000400	/* GPIO 85 AF 01 */
++#else
++#define GPSR1_IDECF	0x00000000
++#define GPSR2_IDECF	0x00000000
++#define GPDR1_IDECF	0x00000000
++#define GPDR2_IDECF	0x00000000
++#define GAFR1_U_IDECF	0x00000000
++#define GAFR2_L_IDECF	0x00000000
++#define GAFR2_U_IDECF	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_FFUART == 1
++/* REG GPSR1
++ * GP41 == FFRTS     is 1 */
++#define GPSR1_FFUART	0x00000200	/* GPIO 41 is 1 */
++/* REG GPDR1
++ * GP39 == FFTXD     is output
++ * GP40 == FFDTR     is output
++ * GP41 == FFRTS     is output */
++#define GPDR1_FFUART	0x00000380	/* GPIO 39-41 is OUTPUT */
++/* REG GAFR1_L
++ * GP34 == FFRXD     is AF01
++ * GP35 == FFCTS     is AF01
++ * GP36 == FFDCD     is AF01
++ * GP37 == FFDSR     is AF01
++ * GP38 == FFRI      is AF01
++ * GP39 == FFTXD     is AF10
++ * GP40 == FFDTR     is AF10
++ * GP41 == FFRTS     is AF10 */
++#define GAFR1_L_FFUART	0x000A9550	/* GPIO 34-38 is AF01, 39-41 is AF10 */
++#else
++#define GPSR1_FFUART	0x00000000
++#define GPDR1_FFUART	0x00000000
++#define GAFR1_L_FFUART	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_BTUART == 1
++/* REG GPSR1
++ * GP45 == BTRTS      is 1*/
++#define GPSR1_BTUART	0x00002000	/* GPIO 45 is 1 */
++/* REG GPDR1
++ * GP43 == BTRXD     is output
++ * GP45 == BTRTS     is output */
++#define GPDR1_BTUART	0x00002800	/* GPIO 43,45 is OUTPUT */
++/* REG GAFR1_L
++ * GP42 == BTRXD     is AF01
++ * GP43 == BTTXD     is AF10
++ * GP44 == BTCTS     is AF01
++ * GP45 == BTRTS     is AF10 */
++#define GAFR1_L_BTUART	0x09900000	/* GPIO 42,44 is AF01, 43,45 is AF10 */
++#else
++#define GPSR1_BTUART	0x00000000
++#define GPDR1_BTUART	0x00000000
++#define GAFR1_L_BTUART	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_IRUART == 1
++/* REG GPDR1
++ * GP47 == STDTXD     is output */
++#define GPDR1_IRUART	0x00008000	/* GPIO 47 is OUTPUT */
++/* REG GAFR1_L
++ * GP46 == STDRXD     is AF10
++ * GP47 == STDTXD     is AF01 */
++#define GAFR1_L_IRUART	0x60000000	/* GPIO 46 is AF10, 47 is AF01 */
++#else
++#define GPDR1_IRUART	0x00000000
++#define GAFR1_L_IRUART	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_AC97 == 1
++/* REG GPDR0
++ * GP30 == AC97DatO  is output
++ * GP31 == AC97Sync  is output
++ ** REG GPDR3
++ * GP113== nAC97_RESET is output */
++#define GPDR0_AC97	0xC0000000	/* GPIO 30,31 is OUTPUT */
++#define GPDR3_AC97	0x00020000	/* GPIO 113 is OUTPUT */
++/* REG GAFR0_L
++ * GP28 == AC97CLK   is AF01
++ * GP29 == AC97DatIn is AF01
++ * GP30 == AC97DatO  is AF10
++ * GP31 == AC97SYNC  is AF10
++ * GP113== AC97_RES  is AF10 */
++#define GAFR0_U_AC97	0xA5000000	/* GPIO 28,29 is AF01, 30,31 is AF10 */
++#define GAFR3_U_AC97	0x00000008	/* GPIO 113 is AF10 */
++#else
++#define GPDR0_AC97	0x00000000
++#define GPDR3_AC97	0x00000000
++#define GAFR0_U_AC97	0x00000000
++#define GAFR3_U_AC97	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_SSP == 1
++/** REG GPSR0
++ * GP24 == SSPSFRM   is 1 */
++#define GPSR0_SSP	0x01000000	/* GPIO24 is 1 */
++/* REG GPDR0
++ * GP23 == SSPCLK    is output
++ * GP24 == SSPSFRM   is output
++ * GP25 == SSPTXD    is output
++ ** REG GPDR1
++ * GP53==  SSPSYSCLK is output */
++#define GPDR0_SSP	0x03800000	/* GPIO 23-25 is OUTPUT */
++#define GPDR1_SSP	0x00200000	/* GPIO 53 is OUTPUT */
++/** REG GAFR0_L
++ * GP23 == SSPSCLK   is AF10
++ * GP24 == SSPSFRM   is AF10
++ * GP25 == SSPTXD    is AF10
++ * GP26 == SSPRXD    is AF01
++ * GP27 == SSPEXTCLK is AF01
++ ** REG GAFR1_U
++ * GP53 == SSPSYSCLK is AF11 */
++#define GAFR0_U_SSP	0x005A8000	/* GPIO 23-25 is AF10, 26,27 is AF01 */
++#define GAFR1_U_SSP	0x00000C00	/* GPIO 113 is AF10 */
++#else
++#define GPSR0_SSP	0x00000000
++#define GPDR0_SSP	0x00000000
++#define GPDR1_SSP	0x00000000
++#define GAFR0_U_SSP	0x00000000
++#define GAFR1_U_SSP	0x00000000
++#endif
++
++#if PHYCORE_PXA270_USE_SSP3 == 1
++/** REG GPSR2
++ * GP83 == SSPSFRM3   is 1 */
++#define GPSR2_SSP3	0x00080000	/* GPIO83 is 1 */
++/* REG GPDR2
++ * GP81 == SSPXD3	is output
++ * GP83 == SSPFRM3	is output
++ * GP84 == SSPCLK3	is output */
++#define GPDR2_SSP3	0x001A0000	/* GPIO 81,83,84 is OUTPUT */
++/** REG GAFR0_L
++ * GP81 == SSPTXD3   is AF01
++ * GP82 == SSPRXD3   is AF01
++ * GP83 == SSPSFRM   is AF01
++ * GP84 == SSPCLK3   is AF01 */
++#define GAFR2_U_SSP3	0x00000154	/* GPIO 81-84 is AF01 */
++#else
++#define GPSR2_SSP3	0x00000000
++#define GPDR2_SSP3	0x00000000
++#define GAFR2_U_SSP3	0x00000000
++#endif
++
++/*
++ * GPIO set "1"
++ *
++ *** REG GPSR0
++ * GP15 == nCS1      is 1
++ * GP20 == nSDCS2    is 1
++ * GP21 == nSDCS3    is 1
++ *** REG GPSR1
++ * GP33 == nCS5      is 1
++ *** REG GPSR2
++ * GP78 == nCS2      is 1
++ * GP80 == nCS4      is 1
++ */
++#define GPSR0_DFT	0x00308000
++#define GPSR1_DFT	0x00000002
++#define GPSR2_DFT	0x00014000
++#define GPSR3_DFT	0x00000000
++
++#define CFG_GPSR0_VAL	GPSR0_DFT | GPSR0_LCD   | GPSR0_SSP
++#define CFG_GPSR1_VAL   GPSR1_DFT | GPSR1_IDECF | GPSR1_FFUART | GPSR1_BTUART
++#define CFG_GPSR2_VAL   GPSR2_DFT | GPSR2_IDECF | GPSR2_SSP3
++#define CFG_GPSR3_VAL   GPSR3_DFT
++
++/*
++#define CFG_GPSR0_VAL       0x01308000
++#define CFG_GPSR1_VAL       0x03CFAA82
++#define CFG_GPSR2_VAL       0x00214000
++#define CFG_GPSR3_VAL       0x00000000
++*/
++
++/*
++ * GPIO clear "0"
++ */
++#define CFG_GPCR0_VAL       0x00000000
++#define CFG_GPCR1_VAL       0x00000000
++#define CFG_GPCR2_VAL       0x00000000
++#define CFG_GPCR3_VAL       0x00000000
++
++/*
++ * set Direction "1" GPIO == output else input
++ *
++ ** REG GPDR0
++ * GP03 == PWR_SDA   is output
++ * GP04 == PWR_SCL   is output
++ * GP15 == nCS1      is output
++ * GP20 == nSDCS2    is output
++ * GP21 == nSDCS3    is output
++ ** REG GPDR1
++ * GP33 == nCS5      is output
++ ** REG GPDR2
++ * GP78 == nCS2      is output
++ * GP80 == nCS4      is output
++ * GP90 == LED0      is output
++ * GP91 == LED1      is output
++ ** REG GPDR3
++ * GP117== SCL       is output
++ * GP118== SDA       is output
++ */
++
++#define GPDR0_DFT	0x00308018
++#define GPDR1_DFT	0x00000002
++#define GPDR2_DFT	0x0C014000
++#define GPDR3_DFT	0x00600000
++
++#define CFG_GPDR0_VAL   GPDR0_DFT | GPDR0_LCD | GPDR0_AC97 | GPDR0_SSP
++#define CFG_GPDR1_VAL   GPDR1_DFT | GPDR1_LCD | GPDR1_MMC  | GPDR1_IDECF | GPDR1_FFUART | GPDR1_BTUART | GPDR1_IRUART | GPDR1_SSP
++#define CFG_GPDR2_VAL	GPDR2_DFT | GPDR2_LCD | GPDR2_SSP3 | GPDR2_IDECF
++#define CFG_GPDR3_VAL   GPDR3_DFT | GPDR3_AC97
++
++/*
++ * set Alternate Funktions
++ *
++ ** REG GAFR0_L
++ * GP15 == nCS1      is AF10
++ ** REG GAFR0_U
++ * GP18 == RDY       is AF01
++ * GP20 == nSDCS2    is AF01
++ * GP21 == nSDCS3    is AF01
++ ** REG GAFR1_L
++ * GP33 == nCS5      is AF10
++ ** REG GAFR2_L
++ * GP78 == nCS2      is AF10
++ ** REG GAFR2_U
++ * GP80 == nCS4      is AF10
++ ** REG GAFR3_U
++ * GP117== SCL       is AF01
++ * GP118== SDA       is AF01
++ */
++
++#define GAFR0_L_DFT	0x80000000
++#define GAFR0_U_DFT	0x00000510
++#define GAFR1_L_DFT	0x00000008
++#define GAFR1_U_DFT	0x00000000
++#define GAFR2_L_DFT	0x20000000
++#define GAFR2_U_DFT	0x00000002
++#define GAFR3_L_DFT	0x00000000
++#define GAFR3_U_DFT	0x00001400
++
++#define CFG_GAFR0_L_VAL	GAFR0_L_DFT
++#define CFG_GAFR0_U_VAL GAFR0_U_DFT | GAFR0_U_AC97   | GAFR0_U_SSP
++#define CFG_GAFR1_L_VAL GAFR1_L_DFT | GAFR1_L_FFUART | GAFR1_L_BTUART | GAFR1_L_IRUART | GAFR1_L_MMC
++#define CFG_GAFR1_U_VAL GAFR1_U_DFT | GAFR1_U_LCD    | GAFR1_U_IDECF  | GAFR1_U_SSP
++#define CFG_GAFR2_L_VAL GAFR2_L_DFT | GAFR2_L_LCD    | GAFR2_L_IDECF
++#define CFG_GAFR2_U_VAL GAFR2_U_DFT | GAFR2_U_IDECF  | GAFR2_U_SSP3 | GAFR2_U_MMC
++#define CFG_GAFR3_L_VAL GAFR3_L_DFT | GAFR3_L_MMC
++#define CFG_GAFR3_U_VAL GAFR3_U_DFT | GAFR3_U_MMC    | GAFR3_U_AC97
++
++/*
++#define CFG_GAFR0_L_VAL     0x90000000
++#define CFG_GAFR0_U_VAL     0xA55A859A
++#define CFG_GAFR1_L_VAL     0x699A955A
++#define CFG_GAFR1_U_VAL     0xAAA5ACAA
++#define CFG_GAFR2_L_VAL     0x6AAAAAAA
++#define CFG_GAFR2_U_VAL     0x01000556
++#define CFG_GAFR3_L_VAL     0x54000000
++#define CFG_GAFR3_U_VAL     0x00001549
++*/
++
++/*
++ * Power Manager Sleep Status Register (PSSR)
++ *
++ * FIXME: RSC: are these registers set correctly???
++ *
++ * [6] = 0   OTG pad is not holding it's state
++ * [5] = 1   Read Disable Hold: receivers of all gpio pins are disabled
++ * [4] = 1   gpio pins are held in their sleep mode state
++ * [3] = 0   The processor has not been placed in standby mode by
++ *           configuring the PWRMODE register since STS was cleared
++ *           by a reset or by software.
++ * [2] = 1   nVDD_FAULT has been asserted and caused the processor to
++ *           enter deep-sleep mode.
++ * [1] = 1   nBATT_FAULT has been asserted and caused the processor to
++ *           enter deep-sleep mode.
++ * [0] = 1   The processor was placed in sleep mode by configuring the
++ *           PWRMODE register.
++ */
++
++/* #define CFG_PSSR_VAL		0x20 */
++#define CFG_PSSR_VAL		0x37
++
++
++/*********************************************************************
++ * CONFIG PXA270 Chipselect settings                                 *
++ *********************************************************************/
++
++/*
++ * Memory settings
++ *
++ * FIXME: RSC: fix documentation
++ *
++ * This is the configuration for nCS1/0 -> PLD / flash
++ * configuration for nCS1:
++ * [31]    0    - Slower Device
++ * [30:28] 001  - CS deselect to CS time: 1*(2*MemClk) = 20 ns
++ * [27:24] 0010 - Address to data valid in bursts: (2+1)*MemClk = 30 ns
++ * [23:20] 1011 - " for first access: (11+2)*MemClk = 130 ns
++ * [19]    1    - 16 Bit bus width
++ * [18:16] 011  - burst RAM or FLASH
++ * configuration for nCS0 (J3 Flash):
++ * [15]    0    - Slower Device
++ * [14:12] 001  - CS deselect to CS time: 1*(2*MemClk) = 20 ns
++ * [11:08] 0010 - Address to data valid in bursts: (2+1)*MemClk = 30 ns
++ * [07:04] 1011 - " for first access: (11+2)*MemClk = 130 ns
++ * [03]    0    - 32 Bit bus width
++ * [02:00] 011  - burst RAM or FLASH
++ */
++#if PHYCORE_PXA270_USE_K3FLASH == 0
++#define CFG_MSC0_VAL		0x128C1262
++#else
++/* configuration for nCS0 (K3 Flash):
++ * [15]    0    - Slower Device
++ * [14:12] 001  - CS deselect to CS time: 1*(2*MemClk) = 20 ns
++ * [11:08] 0010 - Address to data valid in bursts: (2+1)*MemClk = 30 ns
++ * [07:04] 1011 - " for first access: (11+2)*MemClk = 130 ns
++ * [03]    0    - 32 Bit bus width
++ * [02:00] 011  - burst RAM or FLASH
++ */
++#define CFG_MSC0_VAL		0x128C12B3
++#endif
++
++/*
++ * This is the configuration for nCS3/2 -> FIXME / FIXME
++ * configuration for nCS3: POWER
++ *
++ * [31]    0    - Slower Device
++ * [30:28] 111  - RRR3: CS deselect to CS time: 7*(2*MemClk) = 140 ns
++ * [27:24] 1111 - RDN3: Address to data valid in bursts: (15+1)*MemClk = 160 ns
++ * [23:20] 1111 - RDF3: Address for first access: (23+1)*MemClk = 240 ns
++ * [19]    0    - 32 Bit bus width
++ * [18:16] 100  - variable latency I/O
++ * configuration for nCS2: PLD
++ * [15]    0    - Slower Device
++ * [14:12] 111  - RRR2: CS deselect to CS time: 7*(2*MemClk) = 140 ns
++ * [11:08] 1111 - RDN2: Address to data valid in bursts: (15+1)*MemClk = 160 ns
++ * [07:04] 1111 - RDF2: Address for first access: (23+1)*MemClk = 240 ns
++ * [03]    1    - 16 Bit bus width
++ * [02:00] 100  - variable latency I/O
++ */
++#define CFG_MSC1_VAL		0x128c128c
++
++/*
++ * This is the configuration for nCS5/4 -> FIXME / FIXME
++ *
++ * configuration for nCS5: LAN Controller
++ * [31]    0    - Slower Device
++ * [30:28] 001  - RRR5: CS deselect to CS time: 1*(2*MemClk) = 20 ns
++ * [27:24] 0010 - RDN5: Address to data valid in bursts: (2+1)*MemClk = 30 ns
++ * [23:20] 0011 - RDF5: Address for first access: (3+1)*MemClk = 40 ns
++ * [19]    0    - 32 Bit bus width
++ * [18:16] 100  - variable latency I/O
++ * configuration for nCS4: USB
++ * [15]    0    - Slower Device
++ * [14:12] 111  - RRR4: CS deselect to CS time: 7*(2*MemClk) = 140 ns
++ * [11:08] 1111 - RDN4: Address to data valid in bursts: (15+1)*MemClk = 160 ns
++ * [07:04] 1111 - RDF4: Address for first access: (23+1)*MemClk = 240 ns
++ * [03]    1    - 16 Bit bus width
++ * [02:00] 100  - variable latency I/O
++ */
++#define CFG_MSC2_VAL		0x1234128C
++
++/*********************************************************************
++ * Configuration for FLASH memory				     *
++ *********************************************************************/
++#define CFG_FLASH_BASE		0x00000000
++#define CFG_FLASH_CFI		1	/* Flash is CFI conformant */
++#define CFG_FLASH_CFI_DRIVER	1	/* Use the common driver */
++#define CFG_FLASH_BANKS_LIST	{ CFG_FLASH_BASE }
++#define CFG_FLASH_EMPTY_INFO
++#define CFG_FLASH_SIZE		0x02000000 /* 32 MByte */
++#define CFG_MAX_FLASH_SECT	128	/* max num of sects on one chip */
++#define CFG_MAX_FLASH_BANKS	1	 /* max num of flash banks (= chip selects) */
++#define CFG_FLASH_USE_BUFFER_WRITE 1
++#define CFG_FLASH_PROTECTION	1
++/*********************************************************************
++ * CONFIG PXA270 SDRAM settings                                      *
++ *********************************************************************/
++
++/*
++ * SDRAM Memory Map
++ */
++#define CONFIG_NR_DRAM_BANKS        1           /* we have 1 bank of SDRAM */
++#define CFG_DRAM_BASE		    0xa0000000
++#define CFG_SDRAM_1		    0xa0000000	/* SDRAM Bank #1            */
++#define CFG_SDRAM_1_SIZE	    0x04000000	/* 64 MB                    */
++
++#define CFG_DRAM_BASE           0xa0000000
++#define CFG_DRAM_SIZE           0x04000000
++
++/* MDCNFG: SDRAM Configuration Register FIXME: RSC: check!!
++ *
++ * [31]      0	 - Stack1
++ * [30]      0   - dcacx2
++ * [20]      0   - reserved
++ * [31:29]   000 - reserved
++ * [28]      1	 - SA1111 compatiblity mode
++ * [27]      1   - latch return data with return clock
++ * [26]      0   - alternate addressing for pair 2/3
++ * [25:24]   10  - timings
++ * [23]      1   - internal banks in lower partition 2/3 (not used)
++ * [22:21]   10  - row address bits for partition 2/3 (not used)
++ * [20:19]   01  - column address bits for partition 2/3 (not used)
++ * [18]      0   - SDRAM partition 2/3 width is 32 bit
++ * [17]      0   - SDRAM partition 3 disabled
++ * [16]      0   - SDRAM partition 2 disabled
++ * [15]      0	 - Stack1
++ * [14]      0   - dcacx0
++ * [13]      0   - Stack0
++ * [12]      0	 - SA1110 compatiblity mode
++ * [11]      1   - always 1
++ * [10]      0   - no alternate addressing for pair 0/1
++ * [09:08]   10  - tRP=2*MemClk CL=2 tRCD=2*MemClk tRAS=5*MemClk tRC=8*MemClk
++ * [7]       1   - 4 internal banks in lower partition pair
++ * [06:05]   10  - 13 row address bits for partition 0/1
++ * [04:03]   01  - 9 column address bits for partition 0/1
++ * [02]      0   - SDRAM partition 0/1 width is 32 bit
++ * [01]      0   - disable SDRAM partition 1
++ * [00]      1   - enable  SDRAM partition 0
++ */
++
++/* K4S561633*/
++#define CFG_MDCNFG_VAL		0x0AC90AC9
++
++/* MDREFR: SDRAM Refresh Control Register
++ *
++ * [31]    0     - ALTREFA
++ * [30]    0     - ALTREFB
++ * [29]    1     - K0DB4
++ * [28]    0     - reserved
++ * [27]    0     - reserved
++ * [26]    0     - reserved
++ * [25]    1     - K2FREE: not free running
++ * [24]    0     - K1FREE: not free running
++ * [23]    1     - K0FREE: not free running
++ * [22]    0     - SLFRSH: self refresh disabled
++ * [21]    0     - reserved
++ * [20]    0     - APD: no auto power down
++ * [19]    0     - K2DB2: SDCLK2 is MemClk
++ * [18]    0     - K2RUN: disable SDCLK2
++ * [17]    0     - K1DB2: SDCLK1 is MemClk
++ * [16]    1     - K1RUN: enable SDCLK1
++ * [15]    1     - E1PIN: SDRAM clock enable
++ * [14]    1     - K0DB2: SDCLK0 is MemClk
++ * [13]    0     - K0RUN: disable SDCLK0
++ * [12]    0     - RESERVED
++ * [11:00] 000000011000 - (64ms/8192)*MemClkFreq/32 = 24
++ */
++#define CFG_MDREFR_VAL		0x2281C018
++
++/* MDMRS: Mode Register Set Configuration Register
++ *
++ * [31]      0       - reserved
++ * [30:23]   00000000- MDMRS2: SDRAM2/3 MRS Value. (not used)
++ * [22:20]   000     - MDCL2:  SDRAM2/3 Cas Latency.  (not used)
++ * [19]      0       - MDADD2: SDRAM2/3 burst Type. Fixed to sequential.  (not used)
++ * [18:16]   010     - MDBL2:  SDRAM2/3 burst Length. Fixed to 4.  (not used)
++ * [15]      0       - reserved
++ * [14:07]   00000000- MDMRS0: SDRAM0/1 MRS Value.
++ * [06:04]   010     - MDCL0:  SDRAM0/1 Cas Latency.
++ * [03]      0       - MDADD0: SDRAM0/1 burst Type. Fixed to sequential.
++ * [02:00]   010     - MDBL0:  SDRAM0/1 burst Length. Fixed to 4.
++ */
++#define CFG_MDMRS_VAL		0x00020022
++
++/*********************************************************************
++ * CONFIG PXA270 Clock generation                                    *
++ *********************************************************************/
++#define CFG_FLYCNFG_VAL		0x00010001
++#define CFG_SXCNFG_VAL		0x40044004
++#define CFG_CKEN		0x005002D0	/* Memory, Int.Memory, OS Timer, BTUART, FFUART, STUART */
++
++#if PHYCORE_PXA270_SPEED == 520
++#define CFG_CCCR		0x00000290	/* Memory Clock is f. Table;         N=2.5, L=16 => 16x13=208, 208x2,5=520 MHz */
++#elif PHYCORE_PXA270_SPEED == 260
++#define CFG_CCCR		0x02000288	/* Memory Clock is System-Bus Freq., N=2.5, L=8  =>  8x13=104, 104x2,5=260 MHz */
++#else
++#error You have specified an illegal speed.
++#endif
++
++/*********************************************************************
++ * CONFIG PXA270 CF interface                                        *
++ *********************************************************************/
++#define CFG_MECR_VAL          0x00000003
++#define CFG_MCMEM0_VAL        0x00010504
++#define CFG_MCMEM1_VAL        0x00010504
++#define CFG_MCATT0_VAL        0x00010504
++#define CFG_MCATT1_VAL        0x00010504
++#define CFG_MCIO0_VAL         0x00004715
++#define CFG_MCIO1_VAL         0x00004715
++
++/*********************************************************************
++ * CONFIG PXA270 IDE interface                                       *
++ *********************************************************************/
++#if ((PHYCORE_PXA270_USE_IDE == 1) || (PHYCORE_PXA270_USE_CF == 1))
++#define CONFIG_DOS_PARTITION	1
++#define CONFIG_ATAPI		1
++#define CONFIG_SUPORT_VFAT	1
++#define CONFIG_PXA_PCMCIA	1
++#define CONFIG_PXA_IDE		1
++#undef CONFIG_IDE_LED		/* no led supported */
++#define CONFIG_PCMCIA_SLOT_A	1	/* just to keep build system happy */
++#define CFG_PCMCIA_MEM_ADDR	0x38000000
++#define CFG_PCMCIA_MEM_SIZE	0x04000000
++
++#if ((PHYCORE_PXA270_USE_IDE == 1) && (PHYCORE_PXA270_USE_CF == 1))
++#define CFG_IDE_MAXBUS		2	/* max. 2 IDE bus */
++#define CFG_IDE_MAXDEVICE	4	/* max. 2 drive per IDE bus */
++#define CFG_ATA_BASE_ADDR	0x20000000
++#define CFG_ATA_IDE0_OFFSET	0x0000
++#define CFG_ATA_IDE1_OFFSET	0x10000000
++#endif
++#if ((PHYCORE_PXA270_USE_IDE == 1) && (PHYCORE_PXA270_USE_CF == 0))
++#define CFG_IDE_MAXBUS		1	/* max. 1 IDE bus */
++#define CFG_IDE_MAXDEVICE	2	/* max. 2 drive per IDE bus */
++#define CFG_ATA_BASE_ADDR	0x20000000
++#define CFG_ATA_IDE0_OFFSET	0x0000
++#endif
++#if ((PHYCORE_PXA270_USE_IDE == 0) && (PHYCORE_PXA270_USE_CF == 1))
++#define CFG_IDE_MAXBUS		1	/* max. 1 IDE bus */
++#define CFG_IDE_MAXDEVICE	1	/* max. 1 drive per IDE bus */
++#define CFG_ATA_BASE_ADDR	0x30000000
++#define CFG_ATA_IDE0_OFFSET	0x0000
++#endif
++
++#define CFG_ATA_DATA_OFFSET	0x0
++#define CFG_ATA_REG_OFFSET	0x0
++#define CFG_ATA_ALT_OFFSET	0x800
++#endif
++/*********************************************************************
++ * CONFIG PXA270 MMC interface                                       *
++ *********************************************************************/
++#if PHYCORE_PXA270_USE_MMC == 1
++#define CONFIG_MMC	       1
++#define CFG_MMC_BASE	       0xF0000000
++#define CONFIG_DOS_PARTITION   1
++#define CONFIG_SUPORT_VFAT     1
++#endif
++/*********************************************************************
++ * CONFIG Ethernet SMSC91C111                                        *
++ *********************************************************************/
++
++#define CONFIG_DRIVER_SMC91111	     1
++#define CONFIG_SMC91111_BASE	     0x14000300 /* CHIP Select 5 */
++#define CONFIG_SMC_USE_32_BIT
++#define CONFIG_NET_RETRY_COUNT	     10
++
++/*********************************************************************
++ * CONFIG PXA270 LCD                                                 *
++ *********************************************************************/
++#if PHYCORE_PXA270_USE_LCD == 1
++#define CONFIG_LCD
++#define CONFIG_SHARP_LQ084V1DG21
++#define CFG_WHITE_ON_BLACK
++#endif
++/*********************************************************************
++ * CONFIG PXA270 I2C                                                 *
++ *********************************************************************/
++#define CONFIG_HARD_I2C 		1
++#define CFG_I2C_SPEED 			50000
++#define CFG_I2C_SLAVE 			0xfe
++
++#define CFG_ENV_IS_IN_EEPROM 		1
++
++#define CFG_ENV_OFFSET			0x00	/* environment starts here     */
++#define CFG_ENV_SIZE			2048	/* 1 KiB                       */
++#define CFG_I2C_EEPROM_ADDR		0x54	/* A0=0, A1=0 (hardwired)      */
++						/* without R/W-Bit !           */
++#define CFG_EEPROM_PAGE_WRITE_BITS	5	/* 5 bits = 32 octets          */
++#define CFG_EEPROM_PAGE_WRITE_DELAY_MS	15	/* between stop and start      */
++#define CFG_I2C_EEPROM_ADDR_LEN		2	/* length of byte address      */
++#define CFG_EEPROM_SIZE			4096	/* size in bytes               */
++#undef  CFG_I2C_INIT_BOARD			/* board hasn't it's own init  */
++#define BOARD_LATE_INIT			1
++
++
++/*
++ #####################################################################
++ #								     #
++ # U-BOOT settings                                                   #
++ #								     #
++ #####################################################################
++ */
++
++/*
++ * If we are developing, we might want to start armboot from ram
++ * so we MUST NOT initialize critical regs like mem-timing ...
++ */
++#undef CONFIG_SKIP_LOWLEVEL_INIT
++
++/*
++ * Select u-boot PXA270 configuration
++ */
++#define CONFIG_PXA27X          1        /* this is an PXA270 CPU     */
++#define CONFIG_PHYCORE_PXA270          1        /* config for Phytec PCM-027 board */
++#undef  CONFIG_USE_IRQ                  /* don't need use IRQ/FIQ    */
++
++/*
++ * Select serial console configuration
++ */
++#define CONFIG_FFUART          1       /* FFUART is default */
++#define CONFIG_BAUDRATE        115200
++#define CFG_BAUDRATE_TABLE     { 9600, 19200, 38400, 57600, 115200 }
++
++/*
++ * Select support for RTC PCF8564 (fully comp. to PCF8563 from Philips)
++ */
++#define CONFIG_RTC_PCF8563	1
++#define CFG_I2C_RTC_ADDR	0x51
++/*
++ * Definition of u-boot build in commands. Check out CONFIG_CMD_DFL if
++ * neccessary in include/cmd_confdefs.h file. (Un)comment for getting
++ * functionality or size of u-boot code.
++ */
++#if ((PHYCORE_PXA270_USE_IDE == 1) || (PHYCORE_PXA270_USE_CF == 1) || (PHYCORE_PXA270_USE_MMC == 1))
++#define CONFIG_STORAGE_COMMANDS CFG_CMD_FAT | CFG_CMD_EXT2
++#endif
++
++#if ((PHYCORE_PXA270_USE_IDE == 1) || (PHYCORE_PXA270_USE_CF == 1))
++#define CONFIG_IDECF_COMMANDS 	CFG_CMD_IDE | CFG_CMD_PCMCIA
++#endif
++
++#if (PHYCORE_PXA270_USE_MMC == 1)
++#define CONFIG_MMC_COMMANDS 	CFG_CMD_MMC
++#endif
++
++#define CONFIG_COMMANDS         ( CONFIG_CMD_DFL | CFG_CMD_JFFS2 | CFG_CMD_DHCP | \
++				 CFG_CMD_I2C | CFG_CMD_EEPROM | CFG_CMD_PING | \
++				 CFG_CMD_DATE | \
++				 CONFIG_STORAGE_COMMANDS | \
++				 CONFIG_IDECF_COMMANDS | \
++				 CONFIG_MMC_COMMANDS )
++
++#include <cmd_confdefs.h>
++
++/*
++ * low level support for gdb debugger
++ *
++ */
++#if (CONFIG_COMMANDS & CFG_CMD_KGDB)
++#define CONFIG_KGDB_BAUDRATE	230400		/* speed to run kgdb serial port */
++#define CONFIG_KGDB_SER_INDEX	2		/* which serial port to use */
++#endif
++
++/*
++ * Boot options. Setting delay to -1 stops autostart count down.
++ */
++#define CONFIG_BOOTDELAY   3
++#define CONFIG_BOOTARGS    ""
++#define CONFIG_BOOTCOMMAND ""
++#define CONFIG_ZERO_BOOTDELAY_CHECK /* allow stopping of boot process even with bootdelay=0 */
++
++/*
++ * General options for u-boot. Modify to save memory foot print
++ */
++#define CFG_LONGHELP                                  /* undef saves memory  */
++#define CFG_PROMPT              "uboot> "            /* prompt string       */
++#define CFG_CBSIZE              1024                  /* console I/O buffer  */
++#define CFG_PBSIZE (CFG_CBSIZE+sizeof(CFG_PROMPT)+16) /* print buffer size   */
++#define CFG_MAXARGS             16                    /* max command args    */
++#define CFG_BARGSIZE            CFG_CBSIZE            /* boot args buf size  */
++#define CFG_MEMTEST_START       0xa0400000            /* memtest test area   */
++#define CFG_MEMTEST_END         0xa0800000
++#undef  CFG_CLKS_IN_HZ                       /* use HZ for freq. display     */
++#define CFG_HZ                  3686400      /* incrementer freq: 3.6864 MHz */
++#define CONFIG_DISPLAY_BOARDINFO 1
++#define CONFIG_CMDLINE_EDITING  1
++
++/* phytec */
++// #define CFG_CPUSPEED		0x141			/* core clock - register value  */
++#define CFG_CPUSPEED		0x0a000290		/* for 520 MHz */
++
++/*
++ * Definitions related to passing arguments to kernel.
++ */
++#define CONFIG_CMDLINE_TAG           1   /* send commandline to Kernel       */
++#define CONFIG_SETUP_MEMORY_TAGS     1   /* send memory definition to kernel */
++#define CONFIG_INITRD_TAG            1   /* send initrd params               */
++
++
++/*
++ * Malloc pool need to host env + 128 Kb reserve for other allocations.
++ */
++#define CFG_MALLOC_LEN	  	     (CFG_ENV_SIZE + (128<<10))
++#define CFG_GBL_DATA_SIZE	     128	/* size in bytes reserved for initial data */
++#define CONFIG_STACKSIZE             (120<<10)      /* stack size */
++
++#ifdef  CONFIG_USE_IRQ
++#define CONFIG_STACKSIZE_IRQ    (4<<10)        /* IRQ stack  */
++#define CONFIG_STACKSIZE_FIQ    (4<<10)        /* FIQ stack  */
++#endif
++
++/*
++ * This is setting for JFFS2 support in u-boot.
++ * Right now there is no gain for user, but later on booting kernel might be
++ * possible. Consider using XIP kernel running from flash to save RAM
++ * footprint.
++ * NOTE: Enable CFG_CMD_JFFS2 for JFFS2 support.
++ */
++#define CFG_JFFS2_FIRST_BANK		0
++#define CFG_JFFS2_FIRST_SECTOR		5
++#define CFG_JFFS2_NUM_BANKS		1
++#define CONFIG_JFFS2_CMDLINE
++#define MTDIDS_DEFAULT			"nor0=phys_mapped_flash"
++#define MTDPARTS_DEFAULT		"mtdparts=phys_mapped_flash:256k(u-boot)ro,1536k(kernel),-(root)"
++
++/*
++ * Environment setup. Definitions of monitor location and size with
++ * definition of environment setup ends up in 2 possibilities.
++ * 1. Embeded environment - in u-boot code is space for environment
++ * 2. Environment is read from predefined sector of flash
++ * Right now we support 2. possiblity, but expecting no env placed
++ * on mentioned address right now. This also needs to provide whole
++ * sector for it - for us 256Kb is really waste of memory. U-boot uses
++ * default env. and until kernel parameters could be sent to kernel
++ * env. has no sense to us.
++ */
++#define CFG_MONITOR_BASE	CFG_FLASH_BASE
++#define CFG_MONITOR_LEN		0x20000		/* 128kb ( 1 flash sector )  */
++#define CONFIG_ENV_OVERWRITE                    /* env is not writable now   */
++
++/*
++ * Well this has to be defined, but on the other hand it is used differently
++ * one may expect. For instance loadb command do not cares :-)
++ * So advice is - do not relay on this...
++ */
++#define CFG_LOAD_ADDR		0xa3000000
++
++#define CFG_SPLASH
++
++#endif  /* __CONFIG_H */
+Index: Makefile
+===================================================================
+--- Makefile.orig
++++ Makefile
+@@ -2098,6 +2098,9 @@ pdnb3_config	:	unconfig
+ pxa255_idp_config:	unconfig
+ 	@$(MKCONFIG) $(@:_config=) arm pxa pxa255_idp
+ 
++phycore_pxa270_config	:	unconfig
++	@./mkconfig $(@:_config=) arm pxa phycore_pxa270
++
+ wepep250_config	:	unconfig
+ 	@$(MKCONFIG) $(@:_config=) arm pxa wepep250
+ 
+Index: cpu/pxa/pxafb.c
+===================================================================
+--- cpu/pxa/pxafb.c.orig
++++ cpu/pxa/pxafb.c
+@@ -147,6 +147,38 @@ vidinfo_t panel_info = {
+ #endif /* CONFIG_HITACHI_SX14 */
+ 
+ /*----------------------------------------------------------------------*/
++#ifdef CONFIG_SHARP_LQ084V1DG21
++
++# define LCD_BPP	LCD_COLOR8
++# define LCD_INVERT_COLORS	/* Needed for colors to be correct, but why?	*/
++
++/* you have to set lccr0 and lccr3 (including pcd) */
++# define REG_LCCR0	0x003008F9
++# define REG_LCCR3	0x03700001
++
++vidinfo_t panel_info = {
++	vl_col:		640,
++	vl_row:		480,
++	vl_width:	171,
++	vl_height:	130,
++	vl_clkp:	CFG_LOW,
++	vl_oep:		CFG_HIGH,
++	vl_hsp:		CFG_LOW,
++	vl_vsp:		CFG_LOW,
++	vl_dp:		CFG_HIGH, /* not used by PXA */
++	vl_bpix:	LCD_BPP,
++	vl_lbw:		1,
++	vl_splt:	0,
++	vl_clor:	1,
++	vl_tft:		1,
++	vl_hpw:		20,
++	vl_blw:		103,
++	vl_elw:		47,
++	vl_vpw:		6,
++	vl_bfw:		28,
++	vl_efw:		5,
++};
++#endif /* CONFIG_SHARP_LQ084V1DG21 */
+ 
+ #if LCD_BPP == LCD_COLOR8
+ void lcd_setcolreg (ushort regno, ushort red, ushort green, ushort blue);

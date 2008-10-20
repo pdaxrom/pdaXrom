@@ -1,0 +1,7 @@
+config MB_APPLET_VOLUME
+	bool
+	prompt "mb-applet-volume"
+	select MATCHBOX_PANEL
+	help
+	  matchbox applet volume
+

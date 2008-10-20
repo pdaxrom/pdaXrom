@@ -1,8 +1,0 @@
-config NVIDIA_NFORCE
-	bool
-	prompt "NVIDIA NForce modules"
-
-config NVIDIA_NFORCE_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on NVIDIA_NFORCE

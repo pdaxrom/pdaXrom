@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+#
+BOARD_MODULE=pcm027can
+CAN_CONFIG_PROG=/sbin/canconfig
+BAUDRATE=250
+
+modprobe can_raw
+modprobe $BOARD_MODULE
+
+# $IFACE from "ifup" command
+#
+$CAN_CONFIG_PROG $IFACE baudrate $BAUDRATE

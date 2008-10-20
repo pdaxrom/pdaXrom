@@ -1,0 +1,26 @@
+menuconfig CONSOLE_TOOLS
+	bool
+	prompt "console-tools       "
+	help
+	  The Linux Console Tools is a set of tools allowing a Linux user to set up his/her console's behaviour. This does not include X11 features, which use a different mechanism.
+
+    config CONSOLE_TOOLS_DUMPKEYS
+	bool
+	prompt "dumpkeys"
+	depends on CONSOLE_TOOLS
+	help
+	  dumpkeys
+
+    config CONSOLE_TOOLS_LOADKEYS
+	bool
+	prompt "loadkeys"
+	depends on CONSOLE_TOOLS
+	help
+	  loadkeys
+
+    config CONSOLE_TOOLS_LOADKEYS_INIT
+	bool
+	prompt "init.d"
+	depends on CONSOLE_TOOLS_LOADKEYS
+	help
+	  initialize keymap on bootup

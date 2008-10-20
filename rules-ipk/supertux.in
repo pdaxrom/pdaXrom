@@ -1,8 +1,0 @@
-config SUPERTUX
-	bool
-	prompt "supertux"
-
-config SUPERTUX_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on SUPERTUX

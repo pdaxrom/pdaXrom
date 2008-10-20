@@ -1,0 +1,387 @@
+SJA1000 error frame generation
+
+This patch adds the generation of error frames for the SJA1000
+in case of error conditions. If the CAN controller gets restarted
+an error frame with CAN_ERR_RESTARTED is generated. Please check
+the file "include/linux/can/error.h" for further information.
+
+Note that the comprehensive debug output in case of errors could be
+removed because the information is visible through the error frames
+as well.
+
+Signed-off-by: Wolfgang Grandegger <wg@grandegger.com>
+
+Index: drivers/net/can/sja1000dev/sja1000dev.c
+===================================================================
+--- drivers/net/can/sja1000dev/sja1000dev.c.orig
++++ drivers/net/can/sja1000dev/sja1000dev.c
+@@ -68,8 +68,10 @@
+ #include <linux/can/ioctl.h>	/* for struct can_device_stats */
+ #include "sja1000dev.h"
+ 
++#if 0
+ #include <linux/can/version.h>	/* for RCSID. Removed by mkpatch script */
+ RCSID("$Id: sja1000.c 531 2007-10-19 07:38:29Z hartkopp $");
++#endif
+ 
+ MODULE_AUTHOR("Oliver Hartkopp <oliver.hartkopp@volkswagen.de>");
+ MODULE_LICENSE("Dual BSD/GPL");
+@@ -186,6 +188,9 @@ static int sja1000_probe_chip(struct net
+ static void can_restart_now(struct net_device *dev)
+ {
+ 	struct sja1000_priv *priv = netdev_priv(dev);
++	struct net_device_stats *stats = dev->get_stats(dev);
++	struct sk_buff *skb;
++	struct can_frame *cf;
+ 
+ 	/* Cancel restart in progress */
+ 	if (priv->timer.expires) {
+@@ -197,6 +202,23 @@ static void can_restart_now(struct net_d
+ 	/* count number of restarts */
+ 	priv->can.can_stats.restarts++;
+ 	chipset_init(dev, 1);
++
++	/* send restart message upstream */
++	skb = dev_alloc_skb(sizeof(struct can_frame));
++	if (skb == NULL)
++		return;
++	skb->dev = dev;
++	skb->protocol = htons(ETH_P_CAN);
++	cf = (struct can_frame *)skb_put(skb, sizeof(struct can_frame));
++	memset(cf, 0, sizeof(struct can_frame));
++	cf->can_id = CAN_ERR_FLAG | CAN_ERR_RESTARTED;
++	cf->can_dlc = CAN_ERR_DLC;
++
++	netif_rx(skb);
++
++	dev->last_rx = jiffies;
++	stats->rx_packets++;
++	stats->rx_bytes += cf->can_dlc;
+ }
+ 
+ int set_reset_mode(struct net_device *dev)
+@@ -332,7 +354,6 @@ static int can_set_bittime(struct net_de
+ 	struct sja1000_priv *priv = netdev_priv(dev);
+ 	u8 btr0, btr1;
+ 	int state;
+-
+ 	switch (bt->type) {
+ 	case CAN_BITTIME_BTR:
+ 		btr0 = bt->btr.btr0;
+@@ -571,9 +592,6 @@ static void can_restart_on(struct net_de
+ {
+ 	struct sja1000_priv *priv = netdev_priv(dev);
+ 
+-	if (!restart_ms)	/* restart disabled? */
+-		return;
+-
+ 	if (!(priv->timer.expires)) {	/* no restart on the run */
+ 
+ 		set_reset_mode(dev);
+@@ -664,6 +682,168 @@ static void can_rx(struct net_device *de
+ 	stats->rx_bytes += dlc;
+ }
+ 
++static int can_err(struct net_device *dev,
++		   uint8_t isrc, uint8_t status, int n)
++{
++	struct sja1000_priv *priv = netdev_priv(dev);
++	struct net_device_stats *stats = dev->get_stats(dev);
++	struct can_frame *cf;
++	struct sk_buff *skb;
++	can_state_t state = priv->can.state;
++	uint8_t ecc, alc;
++	int restart = 0;
++
++	skb = dev_alloc_skb(sizeof(struct can_frame));
++	if (skb == NULL)
++		return -ENOMEM;
++	skb->dev = dev;
++	skb->protocol = htons(ETH_P_CAN);
++	cf = (struct can_frame *)skb_put(skb, sizeof(struct can_frame));
++	memset(cf, 0, sizeof(struct can_frame));
++	cf->can_id = CAN_ERR_FLAG;
++	cf->can_dlc = CAN_ERR_DLC;
++
++	if (isrc & IRQ_DOI) {
++		/* data overrun interrupt */
++		iiDBG(KERN_INFO "%s: data overrun isrc=0x%02X "
++		      "status=0x%02X\n", dev->name, isrc, status);
++		iDBG(KERN_INFO "%s: DOI #%d#\n", dev->name, n);
++		cf->can_id |= CAN_ERR_CRTL;
++		cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
++		priv->can.can_stats.data_overrun++;
++		priv->write_reg(dev, REG_CMR, CMD_CDO);	/* clear bit */
++	}
++
++	if (isrc & IRQ_EI) {
++		/* error warning interrupt */
++		iiDBG(KERN_INFO "%s: error warning isrc=0x%02X "
++		      "status=0x%02X\n", dev->name, isrc, status);
++		iDBG(KERN_INFO "%s: EI #%d#\n", dev->name, n);
++		priv->can.can_stats.error_warning++;
++
++		if (status & SR_BS) {
++			state = CAN_STATE_BUS_OFF;
++			cf->can_id |= CAN_ERR_BUSOFF;
++			iDBG(KERN_INFO "%s: BUS OFF\n", dev->name);
++			restart++;
++		} else if (status & SR_ES) {
++			state = CAN_STATE_BUS_WARNING;
++			cf->can_id |= CAN_ERR_BUSOFF;
++			iDBG(KERN_INFO "%s: error\n", dev->name);
++		} else
++			state = CAN_STATE_ACTIVE;
++	}
++	if (isrc & IRQ_BEI) {
++		/* bus error interrupt */
++		iiDBG(KERN_INFO "%s: bus error isrc=0x%02X "
++		      "status=0x%02X\n", dev->name, isrc, status);
++		iDBG(KERN_INFO "%s: BEI #%d# [%d]\n", dev->name, n,
++		     priv->can.can_stats.bus_error -
++		     priv->can.can_stats.bus_error_at_init);
++		priv->can.can_stats.bus_error++;
++		ecc = priv->read_reg(dev, REG_ECC);
++		iDBG(KERN_INFO "%s: ECC = 0x%02X (%s, %s, %s)\n",
++		     dev->name, ecc,
++		     (ecc & ECC_DIR) ? "RX" : "TX",
++		     ecc_types[ecc >> ECC_ERR],
++		     ecc_errors[ecc & ECC_SEG]);
++
++		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
++
++		switch (ecc & ECC_MASK) {
++		case ECC_BIT:
++			cf->data[2] |= CAN_ERR_PROT_BIT;
++			break;
++		case ECC_FORM:
++			cf->data[2] |= CAN_ERR_PROT_FORM;
++			break;
++		case ECC_STUFF:
++			cf->data[2] |= CAN_ERR_PROT_STUFF;
++			break;
++		default:
++			cf->data[2] |= CAN_ERR_PROT_UNSPEC;
++			cf->data[3] = ecc & ECC_SEG;
++			break;
++		}
++		/* Error occured during transmission? */
++		if ((ecc & ECC_DIR) == 0)
++			cf->data[2] |= CAN_ERR_PROT_TX;
++
++		/* when the bus errors flood the system, */
++		/* restart the controller                */
++		if ((priv->can.can_stats.bus_error_at_init +
++		     MAX_BUS_ERRORS < priv->can.can_stats.bus_error)) {
++			iDBG(KERN_INFO "%s: heavy bus errors\n", dev->name);
++			restart++;
++		}
++#if 1
++		/* don't know, if this is a good idea, */
++		/* but it works fine ...               */
++		if (priv->read_reg(dev, REG_RXERR) > 128) {
++			iDBG(KERN_INFO "%s: RX_ERR > 128\n", dev->name);
++			state = CAN_STATE_BUS_PASSIVE;
++			restart++;
++		}
++#endif
++	}
++	if (isrc & IRQ_EPI) {
++		/* error passive interrupt */
++		iiDBG(KERN_INFO "%s: error passive isrc=0x%02X"
++		      " status=0x%02X\n", dev->name, isrc, status);
++		iDBG(KERN_INFO "%s: EPI #%d#\n", dev->name, n);
++		priv->can.can_stats.error_passive++;
++		if (status & SR_ES) {
++			iDBG(KERN_INFO "%s: ERROR PASSIVE\n", dev->name);
++			state = CAN_STATE_BUS_PASSIVE;
++			restart++;
++		} else {
++			iDBG(KERN_INFO "%s: ERROR ACTIVE\n", dev->name);
++			state = CAN_STATE_BUS_WARNING;
++		}
++	}
++	if (isrc & IRQ_ALI) {
++		/* arbitration lost interrupt */
++		iiDBG(KERN_INFO "%s: error arbitration lost "
++		      "isrc=0x%02X status=0x%02X\n",
++		      dev->name, isrc, status);
++		iDBG(KERN_INFO "%s: ALI #%d#\n", dev->name, n);
++		alc = priv->read_reg(dev, REG_ALC);
++		iDBG(KERN_INFO "%s: ALC = 0x%02X\n", dev->name, alc);
++		priv->can.can_stats.arbitration_lost++;
++		cf->can_id |= CAN_ERR_LOSTARB;
++		cf->data[0] = alc & 0x1f;
++	}
++
++	if (state != priv->can.state && (state == CAN_STATE_BUS_WARNING ||
++					 state == CAN_STATE_BUS_PASSIVE)) {
++		uint8_t rxerr = priv->read_reg(dev, REG_RXERR);
++		uint8_t txerr = priv->read_reg(dev, REG_TXERR);
++		cf->can_id |= CAN_ERR_PROT;
++		if (state == CAN_STATE_BUS_WARNING)
++			cf->data[1] = (txerr > rxerr) ?
++				CAN_ERR_CRTL_TX_WARNING :
++				CAN_ERR_CRTL_RX_WARNING;
++		else
++			cf->data[1] = (txerr > rxerr) ?
++				CAN_ERR_CRTL_TX_PASSIVE :
++				CAN_ERR_CRTL_RX_PASSIVE;
++	}
++
++	netif_rx(skb);
++
++	dev->last_rx = jiffies;
++	stats->rx_packets++;
++	stats->rx_bytes += cf->can_dlc;
++
++	if (restart_ms && restart) {
++		iDBG(KERN_INFO "%s: restarting device\n", dev->name);
++		can_restart_on(dev);
++		return restart;
++	}
++
++	return 0;
++}
++
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
+ static irqreturn_t can_interrupt(int irq, void *dev_id, struct pt_regs *regs)
+ #else
+@@ -673,7 +853,7 @@ static irqreturn_t can_interrupt(int irq
+ 	struct net_device *dev = (struct net_device *)dev_id;
+ 	struct sja1000_priv *priv = netdev_priv(dev);
+ 	struct net_device_stats *stats = dev->get_stats(dev);
+-	uint8_t isrc, status, ecc, alc;
++	uint8_t isrc, status;
+ 	int n = 0;
+ 
+ 	if (priv->pre_irq)
+@@ -711,105 +891,18 @@ static irqreturn_t can_interrupt(int irq
+ 		}
+ 		if (isrc & IRQ_RI) {
+ 			/* receive interrupt */
+-
+ 			while (status & SR_RBS) {
+ 				can_rx(dev);
+ 				status = priv->read_reg(dev, REG_SR);
+ 			}
+ 		}
+-		if (isrc & IRQ_DOI) {
+-			/* data overrun interrupt */
+-			iiDBG(KERN_INFO "%s: data overrun isrc=0x%02X "
+-			      "status=0x%02X\n", dev->name, isrc, status);
+-			iDBG(KERN_INFO "%s: DOI #%d#\n", dev->name, n);
+-			priv->can.can_stats.data_overrun++;
+-			priv->write_reg(dev, REG_CMR, CMD_CDO);	/* clear bit */
+-		}
+-		if (isrc & IRQ_EI) {
+-			/* error warning interrupt */
+-			iiDBG(KERN_INFO "%s: error warning isrc=0x%02X "
+-			      "status=0x%02X\n", dev->name, isrc, status);
+-			iDBG(KERN_INFO "%s: EI #%d#\n", dev->name, n);
+-			priv->can.can_stats.error_warning++;
+-
+-			if (status & SR_BS) {
+-				printk(KERN_INFO "%s: BUS OFF, "
+-				       "restarting device\n", dev->name);
+ 
+-				priv->can.state = CAN_STATE_BUS_OFF;
+-				can_restart_on(dev);
+-				break;
+-			} else if (status & SR_ES) {
+-				priv->can.state = CAN_STATE_BUS_WARNING;
+-				iDBG(KERN_INFO "%s: error\n", dev->name);
+-			} else
+-				priv->can.state = CAN_STATE_ACTIVE;
+-		}
+-		if (isrc & IRQ_BEI) {
+-			/* bus error interrupt */
+-			iiDBG(KERN_INFO "%s: bus error isrc=0x%02X "
+-			      "status=0x%02X\n", dev->name, isrc, status);
+-			iDBG(KERN_INFO "%s: BEI #%d# [%d]\n", dev->name, n,
+-			     priv->can.can_stats.bus_error -
+-			     priv->can.can_stats.bus_error_at_init);
+-			priv->can.can_stats.bus_error++;
+-			ecc = priv->read_reg(dev, REG_ECC);
+-			iDBG(KERN_INFO "%s: ECC = 0x%02X (%s, %s, %s)\n",
+-			     dev->name, ecc,
+-			     (ecc & ECC_DIR) ? "RX" : "TX",
+-			     ecc_types[ecc >> ECC_ERR],
+-			     ecc_errors[ecc & ECC_SEG]);
+-
+-			/* when the bus errors flood the system, */
+-			/* restart the controller                */
+-			if (restart_ms &&
+-			    (priv->can.can_stats.bus_error_at_init +
+-			     MAX_BUS_ERRORS < priv->can.can_stats.bus_error)) {
+-				iDBG(KERN_INFO "%s: heavy bus errors,"
+-				     " restarting device\n", dev->name);
+-				can_restart_on(dev);
+-				break;
+-			}
+-#if 1
+-			/* don't know, if this is a good idea, */
+-			/* but it works fine ...               */
+-			if (priv->read_reg(dev, REG_RXERR) > 128) {
+-				iDBG(KERN_INFO "%s: RX_ERR > 128,"
+-				     " restarting device\n", dev->name);
+-				priv->can.state = CAN_STATE_BUS_PASSIVE;
+-				can_restart_on(dev);
+-				break;
+-			}
+-#endif
+-		}
+-		if (isrc & IRQ_EPI) {
+-			/* error passive interrupt */
+-			iiDBG(KERN_INFO "%s: error passive isrc=0x%02X"
+-			      " status=0x%02X\n", dev->name, isrc, status);
+-			iDBG(KERN_INFO "%s: EPI #%d#\n", dev->name, n);
+-			priv->can.can_stats.error_passive++;
+-			if (status & SR_ES) {
+-				iDBG(KERN_INFO "%s: -> ERROR PASSIVE, "
+-				     "restarting device\n", dev->name);
+-				priv->can.state = CAN_STATE_BUS_PASSIVE;
+-				can_restart_on(dev);
++		if (isrc & (IRQ_DOI | IRQ_EI | IRQ_BEI | IRQ_EPI | IRQ_ALI)) {
++			/* error interrupt */
++			if (can_err(dev, isrc, status, n))
+ 				break;
+-			} else {
+-				priv->can.state = CAN_STATE_BUS_WARNING;
+-				iDBG(KERN_INFO "%s: -> ERROR ACTIVE\n",
+-				     dev->name);
+-			}
+-		}
+-		if (isrc & IRQ_ALI) {
+-			/* arbitration lost interrupt */
+-			iiDBG(KERN_INFO "%s: error arbitration lost "
+-			      "isrc=0x%02X status=0x%02X\n",
+-			      dev->name, isrc, status);
+-			iDBG(KERN_INFO "%s: ALI #%d#\n", dev->name, n);
+-			priv->can.can_stats.arbitration_lost++;
+-			alc = priv->read_reg(dev, REG_ALC);
+-			iDBG(KERN_INFO "%s: ALC = 0x%02X\n", dev->name, alc);
+ 		}
++
+ 	}
+ 	if (n > 1) {
+ 		iDBG(KERN_INFO "%s: handled %d IRQs\n", dev->name, n);
+Index: drivers/net/can/sja1000dev/sja1000dev.h
+===================================================================
+--- drivers/net/can/sja1000dev/sja1000dev.h.orig
++++ drivers/net/can/sja1000dev/sja1000dev.h
+@@ -138,9 +138,13 @@
+ #define SR_CRIT (SR_BS|SR_ES)
+ 
+ /* ECC register */
+-#define ECC_DIR		0x20
+ #define ECC_SEG		0x1F
++#define ECC_DIR		0x20
+ #define ECC_ERR		6
++#define ECC_BIT		0x00
++#define ECC_FORM	0x40
++#define ECC_STUFF	0x80
++#define ECC_MASK	0xc0
+ 
+ /* clock divider register */
+ #define CDR_CLKOUT_MASK 0x07

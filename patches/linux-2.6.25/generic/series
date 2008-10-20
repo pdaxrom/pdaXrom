@@ -1,0 +1,7 @@
+linux-davinci-2.6.25.patch
+stb610-nand.patch
+davinci-alsa.patch
+itelec610-i2c.patch
+stb610-bigroot.patch
+stb610-soc-aic33-27MHz.patch
+stb610-oss-aic33-27MHz.patch

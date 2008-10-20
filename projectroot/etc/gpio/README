@@ -1,0 +1,6 @@
+charset iso8859-15
+
+The gpio file in this folder is used to setup GPIO pins
+at runtime. You may add additional pins or remove some if unused.
+This file gets copieds into target's rootfs from local
+rules/pyhCORE-pcm027.make

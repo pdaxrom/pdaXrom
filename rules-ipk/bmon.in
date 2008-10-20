@@ -1,8 +1,0 @@
-config BMON
-	bool
-	prompt "bmon"
-
-config BMON_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on BMON

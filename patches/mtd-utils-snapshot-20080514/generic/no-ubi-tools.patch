@@ -1,0 +1,51 @@
+--- s/Makefile-	2008-05-14 23:40:07.000000000 +0700
++++ s/Makefile	2008-05-15 00:40:46.000000000 +0700
+@@ -2,9 +2,10 @@
+ # -*- sh -*-
+ 
+ OPTFLAGS := -O2 -Wall
+-SBINDIR=/usr/sbin
+-MANDIR=/usr/share/man
+-INCLUDEDIR=/usr/include
++PREFIX=/usr
++SBINDIR=$(PREFIX)/sbin
++MANDIR=$(PREFIX)/share/man
++INCLUDEDIR=$(PREFIX)/include
+ #CROSS=arm-linux-
+ CC := $(CROSS)gcc
+ CFLAGS := -I./include $(OPTFLAGS)
+@@ -16,7 +17,7 @@
+   BUILDDIR := $(CROSS:-=)
+ endif
+ 
+-ifeq ($(WITHOUT_XATTR), 1)
++ifneq ($(WITHOUT_XATTR), 0)
+   CFLAGS += -DWITHOUT_XATTR
+ endif
+ 
+@@ -34,16 +35,16 @@
+ SYMLINKS =
+ 
+ %: %.o
+-	$(CC) $(CFLAGS) $(LDFLAGS) -g -o $@ $^
++	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -g -o $@ $^
+ 
+ $(BUILDDIR)/%.o: %.c
+ 	mkdir -p $(BUILDDIR)
+-	$(CC) $(CFLAGS) -g -c -o $@ $< -g -Wp,-MD,$(BUILDDIR)/.$(<F).dep
++	$(CC) $(CFLAGS) $(CPPFLAGS) -g -c -o $@ $< -g -Wp,-MD,$(BUILDDIR)/.$(<F).dep
+ 
+ .SUFFIXES:
+ 
+ all: $(TARGETS)
+-	make -C $(BUILDDIR)/ubi-utils
++#	make -C $(BUILDDIR)/ubi-utils
+ 
+ IGNORE=${wildcard $(BUILDDIR)/.*.c.dep}
+ -include ${IGNORE}
+@@ -93,4 +94,4 @@
+ 	install -m0755 ${TARGETS} ${DESTDIR}/${SBINDIR}/
+ 	mkdir -p ${DESTDIR}/${MANDIR}/man1
+ 	gzip -9c mkfs.jffs2.1 > ${DESTDIR}/${MANDIR}/man1/mkfs.jffs2.1.gz
+-	make -C $(BUILDDIR)/ubi-utils install
++	#make -C $(BUILDDIR)/ubi-utils install

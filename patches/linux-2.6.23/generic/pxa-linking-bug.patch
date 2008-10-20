@@ -1,0 +1,28 @@
+
+#
+# Patch managed by http://www.holgerschurig.de/patcher.html
+#
+
+--- linux/arch/arm/boot/compressed/head.S~pxa-linking-bug
++++ linux/arch/arm/boot/compressed/head.S
+@@ -783,5 +783,9 @@
+ reloc_end:
+ 
+ 		.align
++#if defined(CONFIG_MACH_POODLE) || defined(CONFIG_PXA_SHARPSL)
++		.section ".stack", "aw"
++#else
+ 		.section ".stack", "w"
++#endif
+ user_stack:	.space	4096
+--- linux/arch/arm/boot/compressed/vmlinux.lds.in~pxa-linking-bug
++++ linux/arch/arm/boot/compressed/vmlinux.lds.in
+@@ -42,7 +42,7 @@
+   .bss			: { *(.bss) }
+   _end = .;
+ 
+-  .stack (NOLOAD)	: { *(.stack) }
++  .stack 		: { *(.stack) }
+ 
+   .stab 0		: { *(.stab) }
+   .stabstr 0		: { *(.stabstr) }

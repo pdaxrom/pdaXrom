@@ -1,0 +1,9 @@
+config MATCHBOX_PANEL
+	bool
+	prompt "matchbox-panel"
+	select LIBMATCHBOX
+	select MATCHBOX_COMMON
+	select GTK
+	help
+	  matchbox panel
+

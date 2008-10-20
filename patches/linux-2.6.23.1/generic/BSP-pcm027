@@ -1,0 +1,1052 @@
+---
+ arch/arm/mach-pxa/leds-pcm027.c   |  170 +++++++++++++++
+ arch/arm/mach-pxa/leds.c          |    2 
+ arch/arm/mach-pxa/leds.h          |    2 
+ arch/arm/mach-pxa/pcm027.c        |  428 ++++++++++++++++++++++++++++++++++++++
+ include/asm-arm/arch-pxa/irqs.h   |    9 
+ include/asm-arm/arch-pxa/pcm027.h |  383 ++++++++++++++++++++++++++++++++++
+ 6 files changed, 993 insertions(+), 1 deletion(-)
+
+Index: arch/arm/mach-pxa/pcm027.c
+===================================================================
+--- /dev/null
++++ arch/arm/mach-pxa/pcm027.c
+@@ -0,0 +1,428 @@
++/*
++ *  linux/arch/arm/mach-pxa/pcm027.c
++ *
++ *  Support for the Phytec phyCORE-PXA270 Development Platform.
++ *
++ *  Author:	Juergen Kilb
++ *  Created:	April 05, 2005
++ *  Copyright:	Phytec Messtechnik GmbH
++ *  e-Mail:	armlinux@phytec.de
++ *
++ *  based on Intel Mainstone Board
++ *
++ *  Modified for kernel 2.6.15 by Juergen Beisert @ Pengutronix (jbe@pengutronix.de)
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2 as
++ *  published by the Free Software Foundation.
++ */
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/sched.h>
++#include <linux/bitops.h>
++#include <linux/fb.h>
++#include <linux/delay.h>
++#include <linux/mtd/physmap.h>
++
++#include <asm/types.h>
++#include <asm/setup.h>
++#include <asm/memory.h>
++#include <asm/mach-types.h>
++#include <asm/hardware.h>
++#include <asm/irq.h>
++
++#include <asm/mach/arch.h>
++#include <asm/mach/map.h>
++#include <asm/mach/irq.h>
++
++#include <asm/arch/pxa-regs.h>
++#include <asm/arch/pcm027.h>
++#include <asm/arch/pxafb.h>
++
++#include <linux/spi/spi.h>
++#include <asm/arch/pxa2xx_spi.h>
++
++#include <asm/arch/ohci.h>
++#include "generic.h"
++
++/**
++ * ABSTRACT:
++ *
++ * The PXA270 Prozessor comes with a bunch of hardware
++ * on its silicon.
++ * Not all of this hardware can be used at the same time
++ * and not all is routed to module's connectors.
++ *
++ * This file supports the following processor configuration:
++ *
++ * - LCD support is in use
++ *  - GPIO16 is output for back light on/off with PWM
++ *  - GPIO58 ... GPIO73 are outputs for display data
++ *  - GPIO74 is output output for LCDFCLK
++ *  - GPIO75 is output for LCDLCLK
++ *  - GPIO76 is output for LCDPCLK
++ *  - GPIO77 is output for LCDBIAS
++ * - MMC support is in use
++ *  - GPIO32 is output for MMCCLK
++ *  - GPIO92 is MMDAT0
++ *  - GPIO109 is MMDAT1
++ *  - GPIO110 is MMCS0
++ *  - GPIO111 is MMCS1
++ *  - GPIO112 is MMCMD
++ * - IDE/CF card is in use
++ *  - GPIO48 is output /POE
++ *  - GPIO49 is output /PWE
++ *  - GPIO50 is output /PIOR
++ *  - GPIO51 is output /PIOW
++ *  - GPIO54 is output /PCE2
++ *  - GPIO55 is output /PREG
++ *  - GPIO79 is output PSKTSEL
++ *  - GPIO85 is output /PCE1
++ * - FFUART is in use
++ *  - GPIO34 is input FFRXD
++ *  - GPIO35 is input FFCTS
++ *  - GPIO36 is input FFDCD
++ *  - GPIO37 is input FFDSR
++ *  - GPIO38 is input FFRI
++ *  - GPIO39 is output FFTXD
++ *  - GPIO40 is output FFDTR
++ *  - GPIO41 is output FFRTS
++ * - BTUART is in use
++ *  - GPIO42 is input BTRXD
++ *  - GPIO43 is output BTTXD
++ *  - GPIO44 is input BTCTS
++ *  - GPIO45 is output BTRTS
++ * - IRUART is in use
++ *  - GPIO46 is input STDRXD
++ *  - GPIO47 is output STDTXD
++ * - AC97 is in use
++ *  - GPIO28 is input AC97CLK
++ *  - GPIO29 is input AC97DatIn
++ *  - GPIO30 is output AC97DatO
++ *  - GPIO31 is output AC97SYNC
++ *  - GPIO113 is output AC97_RES
++ * - SSP is in use
++ *  - GPIO23 is output SSPSCLK
++ *  - GPIO24 is output chip select to Max7301
++ *  - GPIO25 is output SSPTXD
++ *  - GPIO26 is input SSPRXD
++ *  - GPIO27 is input for Max7301 IRQ
++ *  - GPIO53 is input SSPSYSCLK
++ * - SSP3 is in use
++ *  - GPIO81 is output SSPTXD3
++ *  - GPIO82 is input SSPRXD3
++ *  - GPIO83 is output SSPSFRM
++ *  - GPIO84 is output SSPCLK3
++ *
++ * Otherwise claimed GPIOs:
++ * GPIO0 -> IRQ input from RTC
++ * GPIO1 -> IRQ from user switch*)
++ * GPIO3 -> PWR_SCL
++ * GPIO4 -> PWR_SDA
++ * GPIO9 -> IRQ from power management*)
++ * GPIO10 -> IRQ from WML9712 AC97 controller*)
++ * GPIO11 -> IRQ from IDE controller*)
++ * GPIO12 -> IRQ from CF controller*)
++ * GPIO13 -> IRQ from CF controller*)
++ * GPIO14 -> GPIO
++ * GPIO15 -> /CS1
++ * GPIO19 -> GPIO
++ * GPIO20 -> /CS2
++ * GPIO21 -> /CS3
++ * GPIO33 -> /CS5
++ * GPIO52 -> IRQ from network controller
++ * GPIO78 -> /CS2
++ * GPIO80 -> /CS4
++ * GPIO86 -> GPIO
++ * GPIO87 -> GPIO
++ * GPIO90 -> LED0
++ * GPIO91 -> LED1
++ * GPIO114 -> IRQ from CAN controller
++ * GPIO117 -> SCL
++ * GPIO118 -> SDA
++ *
++ * *) only when Development board is in use
++ *
++ * In this design the following GPIOs are available:
++ *
++ * GPIO2
++ * GPIO5..8
++ * GPIO17..18
++ * GPIO56..57
++ * GPIO89
++ * GPIO93..108
++ * GPIO115..116
++ * GPIO119..120
++ */
++
++static unsigned long pcm027_irq_enabled = 0;
++
++static void pcm027_mask_irq(unsigned int irq)
++{
++	int pcm027_irq = (irq - PCM027_IRQ(0));
++	PCM027_INTMSKENA = (pcm027_irq_enabled &= ~(1 << pcm027_irq));
++}
++
++static void pcm027_unmask_irq(unsigned int irq)
++{
++	int pcm027_irq = (irq - PCM027_IRQ(0));
++	/* the irq can be acknowledged only if deasserted, so it's done here */
++	PCM027_INTSETCLR |= 1 << pcm027_irq;
++	PCM027_INTMSKENA  = (pcm027_irq_enabled |= (1 << pcm027_irq));
++}
++
++static struct irq_chip pcm027_irq_chip = {
++	.ack		= pcm027_mask_irq,
++	.mask		= pcm027_mask_irq,
++	.unmask		= pcm027_unmask_irq,
++};
++
++static void pcm027_irq_handler(unsigned int irq, struct irq_desc *desc)
++{
++	unsigned long pending = (~PCM027_INTSETCLR) & pcm027_irq_enabled;
++
++	do {
++		GEDR(GPIO_PCM027_CTRL_INT) = GPIO_bit(GPIO_PCM027_CTRL_INT);
++		if (likely(pending)) {
++			irq = PCM027_IRQ(0) + __ffs(pending);
++			desc = irq_desc + irq;
++			desc_handle_irq(irq, desc);
++		}
++		pending = (~PCM027_INTSETCLR) & pcm027_irq_enabled;
++	} while (pending);
++}
++
++static void __init pcm027_init_irq(void)
++{
++	int irq;
++
++	pxa27x_init_irq();
++
++	/* setup extra PCM027 irqs */
++	for(irq = PCM027_IRQ(0); irq <= PCM027_IRQ(3); irq++) {
++		set_irq_chip(irq, &pcm027_irq_chip);
++		set_irq_handler(irq, handle_level_irq);
++		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
++	}
++
++	PCM027_INTMSKENA = 0x00;	/* disable all Interrupts */
++	PCM027_INTSETCLR = 0xFF;
++
++	set_irq_chained_handler(PCM027_CTRL_INT_IRQ, pcm027_irq_handler);
++	set_irq_type(PCM027_CTRL_INT_IRQ, PCM027_CTRL_INT_IRQ_EDGE);
++}
++
++/*
++ * SMC91x network controller specific stuff
++ */
++static struct resource smc91x_resources[] = {
++	[0] = {
++		.start	= (PCM027_ETH_PHYS + 0x300),
++		.end	= (PCM027_ETH_PHYS + PCM027_ETH_SIZE),
++		.flags	= IORESOURCE_MEM,
++	},
++	[1] = {
++		.start	= PCM027_ETH_IRQ,
++		.end	= PCM027_ETH_IRQ,
++		.flags	= IORESOURCE_IRQ,
++	}
++};
++
++static struct platform_device smc91x_device = {
++	.name		= "smc91x",
++	.id		= 0,
++	.num_resources	= ARRAY_SIZE(smc91x_resources),
++	.resource	= smc91x_resources,
++};
++
++/*
++ * SJA1000 CAN controller specific stuff
++ */
++static struct resource sja1000_resources[] = {
++	[0] = {
++		.start	= 0x22000000,
++		.end	= 0x22000000 + 0x100,
++		.flags	= IORESOURCE_MEM,
++	},
++	[1] = {
++		.start	= IRQ_GPIO(114),
++		.end	= IRQ_GPIO(114),
++		.flags	= IORESOURCE_IRQ,
++	}
++};
++
++static struct platform_device sja1000_device = {
++	.name		= "pcm027can",
++	.id		= 0,
++	.num_resources	= ARRAY_SIZE(sja1000_resources),
++	.resource	= sja1000_resources,
++};
++
++static struct pxa2xx_spi_chip max_7301_info=
++{
++	.tx_threshold	= 12,
++	.rx_threshold	= 4,
++	.cs_control	= NULL,
++	.timeout	= 50,
++};
++
++static struct spi_board_info pcm027_spi_info[] __initdata =
++{
++	[0]={
++		.modalias	= "max7301",		/* Name of spi_driver for this device */
++		.max_speed_hz	= 13000000,		/* Run SSP as fast a possbile */
++		.bus_num	= 1,			/* Framework bus number */
++		.chip_select	= 0,			/* FIXME Framework chip select */
++		.platform_data	= NULL,			/* No spi_driver specific config */
++		.controller_data = &max_7301_info,	/* Master chip config */
++		.irq		= PCM027_EGPIO_IRQ	/* Slave device interrupt */
++	}
++};
++
++static struct resource pxa_ssp_resources[] = {
++	[0] = {
++		.start	= __PREG(SSCR0_P(1)),/* SSP#1 start */
++		.end	= __PREG(SSCR0_P(1)) + 0x3F,
++		.flags	= IORESOURCE_MEM,
++	},
++	[1] = {
++		.start	= IRQ_SSP,
++		.end	= IRQ_SSP,
++		.flags	= IORESOURCE_IRQ,
++	},
++};
++
++static struct pxa2xx_spi_master pxa_ssp_master_info = {
++	.ssp_type	= PXA27x_SSP,
++	.clock_enable	= CKEN_SSP1,
++	.num_chipselect	= 1,
++};
++
++static struct platform_device pxa_ssp = {
++	.name		= "pxa2xx-spi",
++	.id		= 1,	/* Framework bus number */
++	.resource	= pxa_ssp_resources,
++	.num_resources	= ARRAY_SIZE(pxa_ssp_resources),
++	.dev = {
++		.platform_data	= &pxa_ssp_master_info,
++	},
++};
++
++static struct physmap_flash_data pcm027_flash_data = {
++	.width  = 4,
++};
++
++static struct resource pcm027_flash_resource = {
++	.start          = 0x0,
++	.end            = 0x01ffffff,
++	.flags          = IORESOURCE_MEM,
++};
++
++static struct platform_device pcm027_flash = {
++	.name           = "physmap-flash",
++	.id             = 0,
++	.dev            = {
++		.platform_data  = &pcm027_flash_data,
++	},
++	.resource       = &pcm027_flash_resource,
++	.num_resources  = 1,
++};
++
++/*
++ * devices - define the available device resources on this board
++ */
++static struct platform_device *devices[] __initdata = {
++	&smc91x_device,
++	&sja1000_device,
++	&pxa_ssp,
++	&pcm027_flash,
++};
++
++/**
++ * pcm027_init - breath some life into the board
++ **/
++static void __init pcm027_init(void)
++{
++  	/* system bus arbiter setting
++	 * - Core_Park
++	 * - LCD_wt:DMA_wt:CORE_Wt = 2:3:4
++	 */
++	/* ARB_CNTRL = ARB_CORE_PARK | 0x234; */
++	platform_add_devices(devices, ARRAY_SIZE(devices));
++
++	/* SSP data pins */
++	pxa_gpio_mode(GPIO23_SCLK_MD);
++	pxa_gpio_mode(GPIO25_STXD_MD);
++	pxa_gpio_mode(GPIO26_SRXD_MD);
++	/*
++	 * FIXME: Switch to GPIO if more than one device is
++	 * connected to this SPI bus
++	 */
++	pxa_gpio_mode(GPIO24_SFRM_MD);
++	pxa_gpio_mode(27 | GPIO_IN);		/* Used as IRQ */
++	spi_register_board_info(pcm027_spi_info,
++		ARRAY_SIZE(pcm027_spi_info));
++
++	/* smc91111 ethernet irq	*/
++	set_irq_type(PCM027_ETH_IRQ, PCM027_ETH_IRQ_EDGE);
++
++	/* CAN				*/
++	/* switch on transformer	*/
++	__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG1) |= PCM027_CTRL_CANPWR;
++	set_irq_type(PCM027_CAN_IRQ, PCM027_CAN_IRQ_EDGE);
++
++	/* ac97				*/
++	/* set_GPIO_IRQ_edge(GPIO_PCM022_AC97,PCM022_AC97_IRQ_EDGE); */
++
++	/* PLD irq			*/
++	/* set_irq_type(IRQ_GPIO(GPIO_PCM027_CTRL_INT), PCM027_CTRL_IRQ_EDGE); */
++	set_irq_type(PCM027_CTRL_PWR_IRQ, PCM027_CTRL_PWR_IRQ_EDGE);
++
++	/* LEDs				*/
++#ifdef CONFIG_LEDS_CPU
++	pxa_gpio_mode(90 | GPIO_OUT);	/* system busy LED */
++#endif
++
++#ifdef CONFIG_LEDS_TIMER
++	pxa_gpio_mode(91 | GPIO_OUT);	/* heart beat LED */
++#endif
++}
++
++static struct map_desc pcm027_io_desc[] __initdata = {
++	{.virtual=PCM027_CTRL_BASE,
++	.pfn=__phys_to_pfn(PCM027_CTRL_PHYS),
++	.length=PCM027_CTRL_SIZE,
++	.type=MT_DEVICE}, 		/* CPLD 	*/
++	{.virtual=PCM027_CF_PLD_BASE,
++	.pfn=__phys_to_pfn(PCM027_CF_PLD_PHYS),
++	.length=PCM027_CF_PLD_SIZE,
++	.type=MT_DEVICE}, 		/* CPLD 	*/
++};
++
++static void __init pcm027_map_io(void)
++{
++	pxa_map_io();
++	iotable_init(pcm027_io_desc, ARRAY_SIZE(pcm027_io_desc));
++
++	/* initialize sleep mode regs (wake-up sources, etc) */
++	PGSR0 = 0x01308000;
++	PGSR1 = 0x00CF0002;
++	PGSR2 = 0x0E294000;
++	PGSR3 = 0x0000C000;
++	PWER  = 0xC0000003;
++	PRER  = 0x00000000;
++	PFER  = 0x00000003;
++}
++
++MACHINE_START(PCM027, "Phytec Messtechnik GmbH phyCORE-PXA270")
++/* Maintainer: Phytec Messtechnik GmbH */
++	.boot_params	= 0xa0000100,
++	.phys_io	= 0x40000000,
++	.io_pg_offst	= (io_p2v(0x40000000) >> 18) & 0xfffc,
++	.map_io		= pcm027_map_io,
++	.init_irq	= pcm027_init_irq,
++	.timer		= &pxa_timer,
++	.init_machine	= pcm027_init,
++MACHINE_END
+Index: arch/arm/mach-pxa/leds.c
+===================================================================
+--- arch/arm/mach-pxa/leds.c.orig
++++ arch/arm/mach-pxa/leds.c
+@@ -26,6 +26,8 @@ pxa_leds_init(void)
+ 		leds_event = idp_leds_event;
+ 	if (machine_is_trizeps4())
+ 		leds_event = trizeps4_leds_event;
++	if (machine_is_pcm027())
++		leds_event = pcm027_leds_event;
+ 
+ 	leds_event(led_start);
+ 	return 0;
+Index: arch/arm/mach-pxa/leds.h
+===================================================================
+--- arch/arm/mach-pxa/leds.h.orig
++++ arch/arm/mach-pxa/leds.h
+@@ -11,3 +11,4 @@ extern void idp_leds_event(led_event_t e
+ extern void lubbock_leds_event(led_event_t evt);
+ extern void mainstone_leds_event(led_event_t evt);
+ extern void trizeps4_leds_event(led_event_t evt);
++extern void pcm027_leds_event(led_event_t evt);
+\ No newline at end of file
+Index: arch/arm/mach-pxa/leds-pcm027.c
+===================================================================
+--- /dev/null
++++ arch/arm/mach-pxa/leds-pcm027.c
+@@ -0,0 +1,170 @@
++/*
++ *  linux/arch/arm/mach-pxa/leds-pcm027.c
++ *
++ *  Copyright (C) 2000 John Dorsey <john+@cs.cmu.edu>
++ *
++ *  Copyright (c) 2001 Jeff Sutherland <jeffs@accelent.com>
++ *
++ *  Copyright (c) 2005 Phytec Messtechnik GmbH <armlinux@phytec.de>
++ *
++ *  Original (leds-footbridge.c) by Russell King
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2 as
++ *  published by the Free Software Foundation.
++ */
++
++
++#include <linux/config.h>
++#include <linux/init.h>
++
++#include <asm/hardware.h>
++#include <asm/leds.h>
++#include <asm/system.h>
++#include <asm/arch/pxa-regs.h>
++#include <asm/arch/pcm027.h>
++
++#include "leds.h"
++
++#define LED_STATE_ENABLED	1
++#define LED_STATE_CLAIMED	2
++
++static unsigned int led_state;
++static unsigned int hw_led_state;
++
++void pcm027_leds_event(led_event_t evt)
++{
++	unsigned long flags;
++
++	local_irq_save(flags);
++
++	switch (evt) {
++	case led_start:
++		hw_led_state = PCM027_HEARTBEAT_LED;
++		led_state = LED_STATE_ENABLED;
++		break;
++
++	case led_stop:
++		led_state &= ~LED_STATE_ENABLED;
++		break;
++
++	case led_claim:
++		led_state |= LED_STATE_CLAIMED;
++		hw_led_state = PCM027_HEARTBEAT_LED;
++		break;
++
++	case led_release:
++		led_state &= ~LED_STATE_CLAIMED;
++		hw_led_state = PCM027_HEARTBEAT_LED;
++		break;
++
++#ifdef CONFIG_LEDS_TIMER
++	case led_timer:
++		if (!(led_state & LED_STATE_CLAIMED))
++			hw_led_state ^= PCM027_HEARTBEAT_LED;
++		break;
++#endif
++
++#ifdef CONFIG_LEDS_CPU
++	case led_idle_start:
++		if (!(led_state & LED_STATE_CLAIMED))
++			hw_led_state |= PCM027_SYS_BUSY_LED;
++		break;
++
++	case led_idle_end:
++		if (!(led_state & LED_STATE_CLAIMED))
++			hw_led_state &= ~PCM027_SYS_BUSY_LED;
++		break;
++#endif
++
++	case led_halted:
++		break;
++
++	case led_green_on:
++		if (led_state & LED_STATE_CLAIMED)
++			hw_led_state &= ~PCM027_HEARTBEAT_LED;
++		break;
++
++	case led_green_off:
++		if (led_state & LED_STATE_CLAIMED)
++			hw_led_state |= PCM027_HEARTBEAT_LED;
++		break;
++
++	case led_amber_on:
++		break;
++
++	case led_amber_off:
++		break;
++
++#ifndef CONFIG_ARCH_PXA_PCM027
++	case led_red_on:
++		if (led_state & LED_STATE_CLAIMED)
++			hw_led_state &= ~PCM027_SYS_BUSY_LED;
++		break;
++
++	case led_red_off:
++		if (led_state & LED_STATE_CLAIMED)
++			hw_led_state |= PCM027_SYS_BUSY_LED;
++		break;
++#endif
++	default:
++		break;
++	}
++
++	if  (led_state & LED_STATE_ENABLED)
++	{
++		switch (hw_led_state) {
++		/*
++		 * all on
++		 */
++		case 0:
++			GPCR2 = 0x08000000;	/*	PCM027_HEARTBEAT_LED_ON */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) | PCM027_CTRL_LEDPWR;
++
++			GPCR2 = 0x04000000;	/* PCM027_SYS_BUSY_LED_ON */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) | PCM027_CTRL_LEDBAS;
++			break;
++		/*
++		 * turn off heartbeat, status on
++		 */
++		case 1:
++			GPSR2  = 0x08000000;	/*	PCM027_HEARTBEAT_LED_OFF */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) & ~PCM027_CTRL_LEDPWR;
++			GPCR2  = 0x04000000;	/* PCM027_SYS_BUSY_LED_ON */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) | PCM027_CTRL_LEDBAS;
++			break;
++
++		case 2:
++		/*
++		 * status off, heartbeat on
++		 */
++			GPCR2 = 0x08000000;	/* PCM027_HEARTBEAT_LED_ON */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) | PCM027_CTRL_LEDPWR;
++			GPSR2  = 0x04000000;	/* PCM027_SYS_BUSY_LED_OFF */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) & ~PCM027_CTRL_LEDBAS;
++			break;
++
++		case 3:
++		/*
++		 * turn them both off...
++		 */
++			GPSR2 = 0x08000000;	/* PCM027_HEARTBEAT_LED_OFF */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) & ~PCM027_CTRL_LEDPWR;
++			GPSR2 = 0x04000000;	/* PCM027_SYS_BUSY_LED_OFF */
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)=
++			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2) & ~PCM027_CTRL_LEDBAS;
++			break;
++
++		default:
++			break;
++		}
++	}
++	local_irq_restore(flags);
++}
+Index: include/asm-arm/arch-pxa/pcm027.h
+===================================================================
+--- /dev/null
++++ include/asm-arm/arch-pxa/pcm027.h
+@@ -0,0 +1,383 @@
++/*
++ * linux/include/asm-arm/arch-pxa/pcm027.h
++ *
++ * (c) 2003 Phytec Messtechnik GmbH <armlinux@phytec.de>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/*
++ * GPIOs  Interrupt Source
++ */
++//#define GPIO_PCM027_RTC		0		/* GPIO-0 bei Baseboard ber GPIO 1 WAKEUP erreichbar */
++#define GPIO_PCM027_WAKEUP	1			/* GPIO-1  INT-24			*/
++#define GPIO_PCM027_ETH		52			/* GPIO-52  INT-??			*/
++#define GPIO_PCM027_CAN		114			/* GPIO-114  INT-??			*/
++
++#define GPIO_PCM027_CTRL_INT	9			/* GPIO-9  INT-??			*/
++
++#define GPIO_PCM027_AC97	10			/* GPIO-10 INT-33 			*/
++#define GPIO_PCM027_CF_INT	11			/* GPIO-11 INT-34			*/
++#define GPIO_PCM027_CF_CD	12			/* GPIO-12 INT-35			*/
++
++#define GPIO_PCM027_IDE		13			/* GPIO-13 INT-36  			*/
++#define GPIO_PCM027_CTRL_PWR	14			/* GPIO-14 INT-37 			*/
++
++/*
++ * ethernet chip (SMSC91C111)
++ */
++#define PCM027_ETH_PHYS		PXA_CS5_PHYS
++#define PCM027_ETH_SIZE		(1*1024*1024)
++#define PCM027_ETH_IRQ		IRQ_GPIO(GPIO_PCM027_ETH)
++#define PCM027_ETH_IRQ_EDGE	IRQT_RISING
++
++/*
++ * Control PLD Regs
++ */
++#ifndef __ASSEMBLY__
++ extern unsigned int ulpcm027_contr_reg;
++#endif
++
++#define PCM027_CTRL_PHYS		PXA_CS1_PHYS	//16-Bit
++#define PCM027_CTRL_BASE		0xea000000
++#define PCM027_CTRL_SIZE		(1*1024*1024)
++#define PCM027_CTRL_INT_IRQ		IRQ_GPIO(GPIO_PCM027_CTRL_INT)
++#define PCM027_CTRL_INT_IRQ_EDGE	IRQT_RISING
++#define PCM027_CTRL_PWR_IRQ		IRQ_GPIO(GPIO_PCM027_CTRL_PWR)
++#define PCM027_CTRL_PWR_IRQ_EDGE	IRQT_RISING
++
++#define PCM027_CTRL_REG0		0x00000000 /* RESET REGISTER 				*/
++#define PCM027_CTRL_SYSRES		0x0001	 	/* System RESET REGISTER 		*/
++#define PCM027_CTRL_RESOUT		0x0002	 	/* RESETOUT Enable REGISTER 		*/
++#define PCM027_CTRL_RESGPIO		0x0004	 	/* RESETGPIO Enable REGISTER 		*/
++//#define PCM027_CTRL_			0x0008	 	/* not used 				*/
++
++#define PCM027_CTRL_REG1		0x00000002 /* Power REGISTER 				*/
++#define PCM027_CTRL_5VOFF		0x0001	 	/* Disable  5V Regulators 		*/
++//#define PCM027_CTRL_			0x0002	 	/* note used 				*/
++#define PCM027_CTRL_CANPWR		0x0004	 	/* Enable CANPWR ADUM 			*/
++#define PCM027_CTRL_PM_5V		0x0008	 	/* Read 5V OK 				*/
++
++#define PCM027_CTRL_REG2		0x00000004 /* LED REGISTER 				*/
++#define PCM027_CTRL_LEDPWR		0x0001	 	/* POWER LED enable 			*/
++#define PCM027_CTRL_LEDBAS		0x0002	 	/* BASIS LED enable 			*/
++#define PCM027_CTRL_LEDUSR		0x0004	 	/* USER LED enable 			*/
++//#define PCM027_CTRL_			0x0008	 	/* RESET REGISTER 			*/
++
++#define PCM027_CTRL_REG3		0x00000006      /* LCD CTRL REGISTER 3			*/
++#define PCM027_CTRL_LCDPWR		0x0001	 	/* RW	LCD Power on			*/
++#define PCM027_CTRL_LCDON		0x0002	 	/* RW	LCD Latch on  			*/
++#define PCM027_CTRL_LCDPOS1		0x0004	 	/* RW 	POS 1				*/
++#define PCM027_CTRL_LCDPOS2		0x0008	 	/* RW	POS 2	 			*/
++
++#define PCM027_CTRL_REG4		0x00000008 	/* MMC1 CTRL REGISTER 4			*/
++#define PCM027_CTRL_MMC1PWR		0x0001	 	/* RW	MMC1 Power on 			*/
++//#define PCM027_CTRL_			0x0002	 	/* R=0	not used		 	*/
++//#define PCM027_CTRL_			0x0004	 	/* R=0	not used		 	*/
++//#define PCM027_CTRL_			0x0008	 	/* R=0	not used		 	*/
++
++#define PCM027_CTRL_REG5		0x0000000A 	/* MMC2 CTRL REGISTER 5			*/
++#define PCM027_CTRL_MMC2PWR		0x0001	 	/* RW 	MMC2 Power on			*/
++#define PCM027_CTRL_MMC2LED		0x0002	 	/* RW	MMC2 LED 			*/
++#define PCM027_CTRL_MMC2DE		0x0004	 	/* R 	MMC2 Card detect		*/
++#define PCM027_CTRL_MMC2WP		0x0008	 	/* R    MMC2 Card write protect		*/
++
++#define PCM027_CTRL_REG6		0x0000000C /* Interrupt Clear REGISTER 			*/
++#define PCM027_CTRL_INTC0		0x0001	 	/* Clear Reg BT Detect 			*/
++#define PCM027_CTRL_INTC1		0x0002	 	/* Clear Reg FR RI 			*/
++#define PCM027_CTRL_INTC2		0x0004	 	/* Clear Reg MMC1 Detect 		*/
++#define PCM027_CTRL_INTC3		0x0008	 	/* Clear Reg PM_5V off 			*/
++
++#define PCM027_CTRL_REG7		0x0000000E /* Interrupt Enable REGISTER 		*/
++#define PCM027_CTRL_ENAINT0		0x0001	 	/* Enable Int BT Detect 		*/
++#define PCM027_CTRL_ENAINT1		0x0002	 	/* Enable Int FR RI 			*/
++#define PCM027_CTRL_ENAINT2		0x0004	 	/* Enable Int MMC1 Detect 		*/
++#define PCM027_CTRL_ENAINT3		0x0008	 	/* Enable Int PM_5V off 		*/
++
++#define PCM027_CTRL_REG8		0x00000014 /* Uart REGISTER 				*/
++#define PCM027_CTRL_FFSD		0x0001	 	/* BT Uart Enable 			*/
++#define PCM027_CTRL_BTSD		0x0002	 	/* FF Uart Enable 			*/
++#define PCM027_CTRL_FFRI		0x0004	 	/* FF Uart RI detect 			*/
++#define PCM027_CTRL_BTRX		0x0008	 	/* BT Uart Rx detect 			*/
++
++#define PCM027_CTRL_REG9		0x00000010 /* AC97 Flash REGISTER 			*/
++#define PCM027_CTRL_FLWP		0x0001	 	/* pC Flash Write Protect 		*/
++#define PCM027_CTRL_FLDIS		0x0002	 	/* pC Flash Disable 			*/
++#define PCM027_CTRL_AC97ENA		0x0004	 	/* Enable AC97 Expansion 		*/
++//#define PCM027_CTRL_			0x0008	 	/* note used 				*/
++
++#define PCM027_CTRL_REG10		0x00000012 /* GPS- REGISTER 				*/
++//#define PCM027_CTRL_			0x0001	 	/* not used 				*/
++//#define PCM027_CTRL_			0x0002	 	/* not used 				*/
++#define PCM027_CTRL_GPSPWR		0x0004	 	/* GPS-Modul Power on 			*/
++#define PCM027_CTRL_GPSENA		0x0008	 	/* GPS-Modul Enable 			*/
++
++#define PCM027_CTRL_REG11		0x00000014 /* Akku REGISTER 				*/
++#define PCM027_CTRL_ACENA		0x0001	 	/* Charge Enable 			*/
++#define PCM027_CTRL_ACSEL		0x0002	 	/* Charge Akku -> DC Enable		*/
++#define PCM027_CTRL_ACPRES		0x0004	 	/* DC Present 				*/
++#define PCM027_CTRL_ACALARM		0x0008	 	/* Error Akku	 			*/
++
++
++
++#define PCM027_CTRL_P2V(x)		((x) - PCM027_CTRL_PHYS + PCM027_CTRL_BASE)
++#define PCM027_CTRL_V2P(x)		((x) - PCM027_CTRL_BASE + PCM027_CTRL_PHYS)
++
++#ifndef __ASSEMBLY__
++#  define __PCM027_CTRL_REG(x)		(*((volatile unsigned char *)PCM027_CTRL_P2V(x)))
++#else
++#  define __PCM027_CTRL_REG(x)		PCM027_CTRL_P2V(x)
++#endif
++
++#define PCM027_INTMSKENA		__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG7)
++#define PCM027_INTSETCLR		__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG6)
++
++#define PCM027_CTRL0			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG0)
++#define PCM027_CTRL1			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG1)
++#define PCM027_CTRL2			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG2)
++#define PCM027_CTRL3			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG3)
++#define PCM027_CTRL4			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG4)
++#define PCM027_CTRL5			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG5)
++#define PCM027_CTRL6			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG6)
++#define PCM027_CTRL7			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG7)
++#define PCM027_CTRL8			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG8)
++#define PCM027_CTRL9			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG9)
++#define PCM027_CTRL10			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG10)
++#define PCM027_CTRL11			__PCM027_CTRL_REG(PCM027_CTRL_PHYS + PCM027_CTRL_REG11)
++
++/*
++ * IDE
++ */
++
++#define PCM027_IDE_IRQ		IRQ_GPIO(GPIO_PCM027_IDE)
++#define PCM027_IDE_IRQ_EDGE	IRQT_RISING
++
++#ifndef __ASSEMBLY__
++ extern unsigned int ulpcm027_ide_reg;
++#endif
++
++
++#define PCM027_IDE_PLD_PHYS		0x20000000	/* 16-Bit Zugriff			*/
++#define PCM027_IDE_PLD_BASE		0xee000000
++#define PCM027_IDE_PLD_SIZE		(1*1024*1024)
++
++#define PCM027_IDE_PLD_REG0		0x00001000 	/* OFFSET IDE REGISTER 0 	 	*/
++/*#define PCM027_IDE_			0x0001*/ 	/* R=0	not used		 	*/
++/*#define PCM027_IDE_			0x0002*/ 	/* R=0	not used			*/
++#define PCM027_IDE_PM5V			0x0004	 	/* R	System VCC_5V 			*/
++#define PCM027_IDE_STBY			0x0008	 	/* R	System StandBy 			*/
++
++#define PCM027_IDE_PLD_REG1		0x00001002      /* OFFSET IDE REGISTER 1 		*/
++#define PCM027_IDE_IDEMODE		0x0001	 	/* R	TrueIDE Mode 			*/
++/*#define PCM027_IDE_			0x0002*/	/* R=0	not used 			*/
++#define PCM027_IDE_DMAENA		0x0004	 	/* RW	DMA Enable			*/
++#define PCM027_IDE_DMA1_0		0x0008	 	/* RW	1=DREQ1 0=DREQ0 		*/
++
++#define PCM027_IDE_PLD_REG2		0x00001004 	/* OFFSET IDE REGISTER 2 		*/
++#define PCM027_IDE_RESENA		0x0001	 	/* RW	IDE Reset Bit enable  		*/
++#define PCM027_IDE_RES			0x0002	 	/* RW	IDE Reset Bit 			*/
++/*#define PCM027_IDE_			0x0004*/ 	/* R=0					*/
++#define PCM027_IDE_RDY			0x0008	 	/* RDY 					*/
++
++#define PCM027_IDE_PLD_REG3		0x00001006 	/* OFFSET IDE REGISTER 3 		*/
++#define PCM027_IDE_IDEOE		0x0001	 	/* RW 	Latch on Databus		*/
++#define PCM027_IDE_IDEON		0x0002	 	/* RW 	Latch on Control Address	*/
++#define PCM027_IDE_IDEIN		0x0004	 	/* RW 	Latch on Interrupt usw.		*/
++/*#define PCM027_IDE_			0x0008*/ 	/* R=0 	not used 			*/
++
++#define PCM027_IDE_PLD_REG4		0x00001008      /* OFFSET IDE REGISTER 4 		*/
++#define PCM027_IDE_PWRENA		0x0001	 	/* RW	IDE Power enable 		*/
++#define PCM027_IDE_5V			0x0002	 	/* R	IDE Power 5V 			*/
++/*#define PCM027_IDE_			0x0004*/	/* R=0	not used 			*/
++#define PCM027_IDE_PWG			0x0008	 	/* R	IDE Power is on 		*/
++
++/*#define PCM027_IDE_PLD_REG5		0x0000100E*/ 	/* OFFSET IDE REGISTER 5 		*/
++/*#define PCM027_IDE_REG5_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG5_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG5_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG5_		0x0008*/ 	/* R=0 	not used 			*/
++
++/*#define PCM027_IDE_PLD_REG6		0x00001010*/ 	/* OFFSET IDE REGISTER 6 		*/
++/*#define PCM027_IDE_REG6_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG6_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG6_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG6_		0x0008*/ 	/* R=0 	not used 			*/
++
++/*#define PCM027_IDE_PLD_REG7		0x00001012*/ 	/* OFFSET IDE REGISTER 7 		*/
++/*#define PCM027_IDE_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_IDE_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++
++
++#define PCM027_IDE_PLD_P2V(x)		((x) - PCM027_IDE_PLD_PHYS + PCM027_IDE_PLD_BASE)
++#define PCM027_IDE_PLD_V2P(x)		((x) - PCM027_IDE_PLD_BASE + PCM027_IDE_PLD_PHYS)
++
++#ifndef __ASSEMBLY__
++#  define  __PCM027_IDE_PLD_REG(x)	(*((volatile unsigned char *)PCM027_IDE_PLD_P2V(x)))
++#else
++#  define  __PCM027_IDE_PLD_REG(x)	PCM027_IDE_PLD_P2V(x)
++#endif
++
++#define PCM027_IDE0			__PCM027_IDE_PLD_REG(PCM027_IDE_PLD_PHYS + PCM027_IDE_PLD_REG0)
++#define PCM027_IDE1			__PCM027_IDE_PLD_REG(PCM027_IDE_PLD_PHYS + PCM027_IDE_PLD_REG1)
++#define PCM027_IDE2			__PCM027_IDE_PLD_REG(PCM027_IDE_PLD_PHYS + PCM027_IDE_PLD_REG2)
++#define PCM027_IDE3			__PCM027_IDE_PLD_REG(PCM027_IDE_PLD_PHYS + PCM027_IDE_PLD_REG3)
++#define PCM027_IDE4			__PCM027_IDE_PLD_REG(PCM027_IDE_PLD_PHYS + PCM027_IDE_PLD_REG4)
++
++/*
++ * Compact Flash
++ */
++#define PCM027_CF_IRQ		IRQ_GPIO(GPIO_PCM027_CF_INT)
++#define PCM027_CF_IRQ_EDGE	IRQT_RISING
++#define PCM027_CF_CD		IRQ_GPIO(GPIO_PCM027_CF_CD)
++#define PCM027_CF_CD_EDGE	IRQT_RISING
++
++#ifndef __ASSEMBLY__
++ extern unsigned int ulpcm027_ide_reg;
++#endif
++
++#define PCM027_CF_PLD_PHYS		0x30000000	//16-Bit
++#define PCM027_CF_PLD_BASE		0xef000000
++#define PCM027_CF_PLD_SIZE		(1*1024*1024)
++#define PCM027_CF_PLD_P2V(x)		((x) - PCM027_CF_PLD_PHYS + PCM027_CF_PLD_BASE)
++#define PCM027_CF_PLD_V2P(x)		((x) - PCM027_CF_PLD_BASE + PCM027_CF_PLD_PHYS)
++
++#define PCM027_CF_PLD_REG0		0x00001000 	/* OFFSET CF REGISTER 0 		*/
++#define PCM027_CF_REG0_LED		0x0001	 	/* RW	LED an           		*/
++#define PCM027_CF_REG0_BLK		0x0002	 	/* RW	LED Blink bei Zugriff		*/
++#define PCM027_CF_REG0_PM5V		0x0004 	 	/* R	System VCC_5V an  		*/
++#define PCM027_CF_REG0_STBY		0x0008	 	/* R	System StandBy  		*/
++
++#define PCM027_CF_PLD_REG1		0x00001002      /* OFFSET CF REGISTER 1 		*/
++#define PCM027_CF_REG1_IDEMODE		0x0001	 	/* RW	CF-Card als TrueIDE 		*/
++#define PCM027_CF_REG1_CF0		0x0002	 	/* RW	CF-Card auf ADDR 0x28000000 	*/
++/*#define PCM027_CF_REG1_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_CF_REG1_		0x0008*/ 	/* R=0 	not used 			*/
++
++#define PCM027_CF_PLD_REG2		0x00001004 	/* OFFSET CF REGISTER 2 		*/
++/*#define PCM027_CF_REG2_		0x0001*/ 	/* R=1  not used	 		*/
++#define PCM027_CF_REG2_RES		0x0002	 	/* RW	CF RESET BIT 			*/
++#define PCM027_CF_REG2_RDYENA		0x0004	 	/* RW	Enabele CF_RDY   		*/
++#define PCM027_CF_REG2_RDY		0x0008	 	/* R	CF_RDY auf PWAIT 		*/
++
++#define PCM027_CF_PLD_REG3		0x00001006 	/* OFFSET CF REGISTER 3	        	*/
++#define PCM027_CF_REG3_CFOE		0x0001	 	/* RW	Latch on Databus		*/
++#define PCM027_CF_REG3_CFON		0x0002	 	/* RW	Latch on Control Address	*/
++#define PCM027_CF_REG3_CFIN		0x0004	 	/* RW	Latch on Interrupt usw. 	*/
++#define PCM027_CF_REG3_CFCD		0x0008	 	/* RW	Latch on CD1/2 VS1/2 usw     	*/
++
++#define PCM027_CF_PLD_REG4		0x00001008      /* OFFSET CF REGISTER 4 		*/
++#define PCM027_CF_REG4_PWRENA		0x0001	 	/* RW	CF Power on (CD1/2 = "00")   	*/
++#define PCM027_CF_REG4_5_3V		0x0002	 	/* RW	1 = 5V CF_VCC 0 = 3 V CF_VCC 	*/
++#define PCM027_CF_REG4_3B		0x0004	 	/* RW 	3.0V Backup aus VCC (5_3V=0)	*/
++#define PCM027_CF_REG4_PWG		0x0008	 	/* R	CF-Power is on			*/
++
++#define PCM027_CF_PLD_REG5		0x0000100A 	/* OFFSET CF REGISTER 5 		*/
++#define PCM027_CF_REG5_BVD1		0x0001	 	/* R 	CF /BVD1 			*/
++#define PCM027_CF_REG5_BVD2		0x0002	 	/* R 	CF /BVD2			*/
++#define PCM027_CF_REG5_VS1		0x0004	 	/* R 	CF /VS1				*/
++#define PCM027_CF_REG5_VS2		0x0008	 	/* R	CF /VS2 			*/
++
++#define PCM027_CF_PLD_REG6		0x0000100C 	/* OFFSET CF REGISTER 6 		*/
++#define PCM027_CF_REG6_CD1		0x0001	 	/* R	CF Card_Detect1 		*/
++#define PCM027_CF_REG6_CD2		0x0002	 	/* R	CF Card_Detect2 		*/
++/*#define PCM027_CF_REG1_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_CF_REG1_		0x0008*/ 	/* R=0 	not used 			*/
++
++/*#define PCM027_CF_PLD_REG7		0x0000100E*/ 	/* OFFSET CF REGISTER 7 		*/
++/*#define PCM027_CF_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_CF_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++/*#define PCM027_CF_REG7_		0x0004*/ 	/* R=0 	not used 			*/
++/*#define PCM027_CF_REG7_		0x0008*/ 	/* R=0 	not used 			*/
++
++
++#ifndef __ASSEMBLY__
++#  define  __PCM027_CF_PLD_REG(x)	(*((volatile unsigned char *)PCM027_CF_PLD_P2V(x)))
++#else
++#  define  __PCM027_CF_PLD_REG(x)	PCM027_CF_PLD_P2V(x)
++#endif
++
++#define PCM027_CF0			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG0)
++#define PCM027_CF1			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG1)
++#define PCM027_CF2			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG2)
++#define PCM027_CF3			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG3)
++#define PCM027_CF4			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG4)
++#define PCM027_CF5			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG5)
++#define PCM027_CF6			__PCM027_CF_PLD_REG(PCM027_CF_PLD_PHYS + PCM027_CF_PLD_REG6)
++
++
++/*
++ * Wolfson AC97 Touch
++ */
++#define PCM027_AC97_IRQ			IRQ_GPIO(GPIO_PCM027_AC97)
++#define PCM027_AC97_IRQ_EDGE		IRQT_RISING
++
++/*
++ * phyCORE-Led's
++ */
++
++#define PCM027_HEARTBEAT_LED 		0x1
++#define PCM027_SYS_BUSY_LED  		0x2
++
++#define PCM027_HEARTBEAT_LED_GPIO 	0x00200000 /* GPIO_21 */
++#define PCM027_SYS_BUSY_LED_GPIO  	0x00400000 /* GPIO_22 */
++
++#define PCM027_HEARTBEAT_LED_ON		(GPCR0 =  PCM027_HEARTBEAT_LED_GPIO)
++#define PCM027_HEARTBEAT_LED_OFF	(GPSR0 =  PCM027_HEARTBEAT_LED_GPIO)
++#define PCM027_SYS_BUSY_LED_ON		(GPCR0 =  PCM027_SYS_BUSY_LED_GPIO )
++#define PCM027_SYS_BUSY_LED_OFF		(GPSR0 =  PCM027_SYS_BUSY_LED_GPIO )
++
++/*
++ * Base-Led's
++ */
++
++/*
++#define PCM027_BASE_HEARTBEAT_LED 0x1
++#define PCM027_BASE_SYS_BUSY_LED  0x2
++*/
++
++/*
++ * EGPIO EXPANDER
++ */
++#define PCM027_EGPIO_IRQ IRQ_GPIO(27)
++#define PCM027_EGPIO_CS 24
++
++/*
++ * MMC phyCORE
++ */
++#define GPIO_PCM027_MMC0	9
++#define PCM027_MMC0_IRQ		IRQ_GPIO(GPIO_PCM027_MMC0)
++#define PCM027_MMC0_IRQ_EDGE	IRQT_FALLING
++
++
++/*
++ * MMC Baseboard
++ */
++
++/*
++ * USB phyCore
++ */
++#define PCM_027_USB_OVERCURRENT (88 | GPIO_ALT_FN_1_IN)
++#define PCM_027_USB_PWR_EN (89 | GPIO_ALT_FN_2_OUT)
++
++/*
++ * CAN
++ */
++
++#define PCM027_CAN_IRQ		IRQ_GPIO(GPIO_PCM027_CAN)
++#define PCM027_CAN_IRQ_EDGE	IRQT_FALLING
++
++/* board level registers  */
+Index: include/asm-arm/arch-pxa/irqs.h
+===================================================================
+--- include/asm-arm/arch-pxa/irqs.h.orig
++++ include/asm-arm/arch-pxa/irqs.h
+@@ -170,7 +170,8 @@
+ #define NR_IRQS			(IRQ_LOCOMO_SPI_TEND + 1)
+ #elif defined(CONFIG_ARCH_LUBBOCK) || \
+       defined(CONFIG_MACH_LOGICPD_PXA270) || \
+-      defined(CONFIG_MACH_MAINSTONE)
++      defined(CONFIG_MACH_MAINSTONE) || \
++      defined(CONFIG_MACH_PCM027)
+ #define NR_IRQS			(IRQ_BOARD_END)
+ #else
+ #define NR_IRQS			(IRQ_BOARD_START)
+@@ -216,3 +217,9 @@
+ #define IRQ_LOCOMO_GPIO_BASE	(IRQ_BOARD_START + 1)
+ #define IRQ_LOCOMO_LT_BASE	(IRQ_BOARD_START + 2)
+ #define IRQ_LOCOMO_SPI_BASE	(IRQ_BOARD_START + 3)
++
++#define PCM027_IRQ(x)          (IRQ_BOARD_START + (x))
++#define PCM027_BTDET_IRQ       PCM027_IRQ(0)
++#define PCM027_FF_RI_IRQ       PCM027_IRQ(1)
++#define PCM027_MMCDET_IRQ      PCM027_IRQ(2)
++#define PCM027_PM_5V_IRQ       PCM027_IRQ(3)

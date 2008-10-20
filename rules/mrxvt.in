@@ -1,0 +1,5 @@
+config MRXVT
+	bool
+	prompt "mrxvt"
+	help
+	  FIXME

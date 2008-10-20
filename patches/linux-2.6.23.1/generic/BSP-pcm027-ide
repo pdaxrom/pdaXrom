@@ -1,0 +1,77 @@
+ drivers/ide/Kconfig       |    2 +-
+ drivers/ide/arm/ide_arm.c |   41 +++++++++++++++++++++++++++++++++++------
+ 2 files changed, 36 insertions(+), 7 deletions(-)
+
+Index: drivers/ide/arm/ide_arm.c
+===================================================================
+--- drivers/ide/arm/ide_arm.c.orig
++++ drivers/ide/arm/ide_arm.c
+@@ -16,20 +16,49 @@
+ 
+ #ifdef CONFIG_ARCH_CLPS7500
+ # include <asm/arch/hardware.h>
+-#
+ # define IDE_ARM_IO	(ISASLOT_IO + 0x1f0)
+ # define IDE_ARM_IRQ	IRQ_ISA_14
++# define IDE_ARM_CTL_OFS 0x206
++#elif defined(CONFIG_MACH_PCM027)
++# include <asm/arch/pcm027.h>
++# define IDE_ARM_IO	PCM027_IDE_PLD_BASE
++# define IDE_ARM_IRQ	PCM027_IDE_IRQ
++# define IDE_ARM_CTL_OFS 0x800
+ #else
+ # define IDE_ARM_IO	0x1f0
+ # define IDE_ARM_IRQ	IRQ_HARDDISK
++# define IDE_ARM_CTL_OFS 0x206
+ #endif
+ 
+-void __init ide_arm_init(void)
++#if (defined CONFIG_MACH_PCM027 && !defined CONFIG_PCMCIA)
++static void cf_pcm027_init(void)
+ {
+-	hw_regs_t hw;
++	int ret;
+ 
++	hw_regs_t hw;
+ 	memset(&hw, 0, sizeof(hw));
+-	ide_std_init_ports(&hw, IDE_ARM_IO, IDE_ARM_IO + 0x206);
+-	hw.irq = IDE_ARM_IRQ;
+-	ide_register_hw(&hw, 1, NULL);
++	ide_std_init_ports(&hw, PCM027_CF_PLD_BASE, PCM027_CF_PLD_BASE + IDE_ARM_CTL_OFS);
++	hw.irq = PCM027_CF_IRQ;
++	ret = ide_register_hw(&hw, NULL);
++	probe_hwif_init(&ide_hwifs[ret]);
++}
++#endif
++
++void __init ide_arm_init(void)
++{
++	int ret;
++
++	if (IDE_ARM_HOST) {
++		hw_regs_t hw;
++
++		memset(&hw, 0, sizeof(hw));
++		ide_std_init_ports(&hw, IDE_ARM_IO, IDE_ARM_IO + IDE_ARM_CTL_OFS);
++		hw.irq = IDE_ARM_IRQ;
++		ret = ide_register_hw(&hw, NULL);
++		probe_hwif_init(&ide_hwifs[ret]);
++	}
++#if (defined CONFIG_MACH_PCM027 && !defined CONFIG_PCMCIA)
++	cf_pcm027_init();
++#endif
+ }
++
+Index: drivers/ide/Kconfig
+===================================================================
+--- drivers/ide/Kconfig.orig
++++ drivers/ide/Kconfig
+@@ -834,7 +834,7 @@ config BLK_DEV_IDE_AU1XXX_SEQTS_PER_RQ
+        depends on BLK_DEV_IDE_AU1XXX
+ 
+ config IDE_ARM
+-	def_bool ARM && (ARCH_CLPS7500 || ARCH_RPC || ARCH_SHARK)
++	def_bool ARM && (ARCH_CLPS7500 || ARCH_RPC || ARCH_SHARK || MACH_PCM027)
+ 	select IDE_GENERIC
+ 
+ config BLK_DEV_IDE_ICSIDE

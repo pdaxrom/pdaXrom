@@ -1,0 +1,108 @@
+From jordan.crouse@amd.com Mon Apr 10 20:47:33 2006
+Return-Path: <jcrouse@cosmic.amd.com>
+X-Spam-Checker-Version: SpamAssassin 3.1.1 (2006-03-10) on tim.rpsys.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00 autolearn=ham 
+	version=3.1.1
+Received: from localhost (localhost [127.0.0.1]) by tim.rpsys.net
+	(8.13.6/8.13.6) with ESMTP id k3AJlX70000398 for <rpurdie@rpsys.net>; Mon,
+	10 Apr 2006 20:47:33 +0100
+Received: from tim.rpsys.net ([127.0.0.1]) by localhost (tim.rpsys.net
+	[127.0.0.1]) (amavisd-new, port 10024) with LMTP id 10182-03 for
+	<rpurdie@rpsys.net>; Mon, 10 Apr 2006 20:47:31 +0100 (BST)
+Received: from amdext4.amd.com (amdext4.amd.com [163.181.251.6]) by
+	tim.rpsys.net (8.13.6/8.13.6) with ESMTP id k3AJkoMR031198 for
+	<rpurdie@rpsys.net>; Mon, 10 Apr 2006 20:46:51 +0100
+Received: from SAUSGW01.amd.com (sausgw01.amd.com [163.181.250.21]) by
+	amdext4.amd.com (8.12.11/8.12.11/AMD) with ESMTP id k3AJkg4E004205 for
+	<rpurdie@rpsys.net>; Mon, 10 Apr 2006 14:46:42 -0500
+Received: from 163.181.22.101 by SAUSGW02.amd.com with ESMTP (AMD SMTP
+	Relay (Email Firewall v6.1.0)); Mon, 10 Apr 2006 14:46:33 -0500
+X-Server-Uuid: 5FC0E2DF-CD44-48CD-883A-0ED95B391E89
+Received: from ldcmail.amd.com ([147.5.200.40]) by sausexbh1.amd.com with
+	Microsoft SMTPSVC(6.0.3790.2499); Mon, 10 Apr 2006 14:46:32 -0500
+Received: from cosmic.amd.com (cosmic.amd.com [147.5.201.206]) by
+	ldcmail.amd.com (Postfix) with ESMTP id 4AB2F2028 for <rpurdie@rpsys.net>;
+	Mon, 10 Apr 2006 13:46:32 -0600 (MDT)
+Received: from cosmic.amd.com (localhost [127.0.0.1]) by cosmic.amd.com
+	(8.13.4/8.13.4) with ESMTP id k3AKRiVM001176 for <rpurdie@rpsys.net>; Mon,
+	10 Apr 2006 14:27:45 -0600
+Received: (from jcrouse@localhost) by cosmic.amd.com (
+	8.13.4/8.13.4/Submit) id k3AKRibV001175 for rpurdie@rpsys.net; Mon, 10 Apr
+	2006 14:27:44 -0600
+Date: Mon, 10 Apr 2006 14:27:44 -0600
+From: "Jordan Crouse" <jordan.crouse@amd.com>
+To: rpurdie@rpsys.net
+Subject: SD large capacity patch
+Message-ID: <20060410202744.GH7398@cosmic.amd.com>
+MIME-Version: 1.0
+User-Agent: Mutt/1.5.11
+X-OriginalArrivalTime: 10 Apr 2006 19:46:32.0699 (UTC)
+	FILETIME=[77F644B0:01C65CD7]
+X-WSS-ID: 6824699325S615165-02-01
+Content-Type: multipart/mixed; boundary=3MwIy2ne0vdjdPXF
+Content-Disposition: inline
+X-Virus-Scanned: amavisd-new at rpsys.net
+X-Evolution-Source: imap://richard@tim.rpsys.net/
+
+
+--3MwIy2ne0vdjdPXF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+
+Here you go.  So far the only hardware I've tested it on is the Alchemy,
+but it should work for you too.
+
+-- 
+Jordan Crouse
+Senior Linux Engineer
+AMD - Personal Connectivity Solutions Group
+<www.amd.com/embeddedprocessors>
+
+--3MwIy2ne0vdjdPXF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline; filename=sd-largecap.patch
+Content-Transfer-Encoding: 8bit
+
+PATCH: Force MMC/SD to 512 byte block sizes.
+
+From: Jordan Crouse <jordan.crouse@amd.com>
+
+Angry customers and investigation into USB attached MMC/SD
+readers have lead us to believe that the SD device block size should
+be fixed at 512 bytes regardless of the block size reported by the card.
+This comes into play with >2G cards.  After applying this fix, filesystems
+written with a USB card reader can be read by the MMC subsystem and 
+vice-versa.
+
+Signed-off-by: Jordan Crouse <jordan.crouse@amd.com>
+---
+
+ drivers/mmc/card/block.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+Index: linux-2.6.21/drivers/mmc/card/block.c
+===================================================================
+--- linux-2.6.21.orig/drivers/mmc/card/block.c	2007-07-01 17:02:42.000000000 +0100
++++ linux-2.6.21/drivers/mmc/card/block.c	2007-07-01 17:05:08.000000000 +0100
+@@ -403,6 +403,7 @@ static struct mmc_blk_data *mmc_blk_allo
+ {
+ 	struct mmc_blk_data *md;
+ 	int devidx, ret;
++	unsigned long cap;
+ 
+ 	devidx = find_first_zero_bit(dev_use, MMC_NUM_MINORS);
+ 	if (devidx >= MMC_NUM_MINORS)
+@@ -467,6 +468,11 @@ static struct mmc_blk_data *mmc_blk_allo
+ 
+ 	sprintf(md->disk->disk_name, "mmcblk%d", devidx);
+ 
++	if (card->csd.read_blkbits > 9)
++		md->block_bits = 9;
++	else
++		md->block_bits = card->csd.read_blkbits;
++
+ 	blk_queue_hardsect_size(md->queue.queue, 1 << md->block_bits);
+ 
+ 	if (!mmc_card_sd(card) && mmc_card_blockaddr(card)) {

@@ -1,0 +1,12 @@
+config ROX_FILER
+	bool
+	prompt "rox-filer"
+	select XORG_LIB_XEXT
+	select XORG_LIB_X11
+	select XORG_LIB_SM
+	select XORG_LIB_ICE
+	select LIBGLADE
+	select GTK
+	select SHARED_MIME_INFO
+	help
+	  The ROX Desktop is a desktop based around ROX-Filer - a powerful file manager.

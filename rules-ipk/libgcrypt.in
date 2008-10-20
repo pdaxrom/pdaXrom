@@ -1,8 +1,0 @@
-config LIBGCRYPT
-	bool
-	prompt "libgcrypt"
-
-config LIBGCRYPT_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on LIBGCRYPT

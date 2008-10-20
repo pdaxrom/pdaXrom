@@ -1,8 +1,0 @@
-keycode 65 = Tab
-    alt     keycode 65 = Caps_Lock
-    shift   keycode 65 = Caps_Lock
-    control keycode 65 = Caps_Lock
-keycode 27 = Shift
-keycode 89 = Alt 
-keycode 88 = Control 
-keycode 112 = Shift

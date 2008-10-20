@@ -1,0 +1,17 @@
+config LINKS
+	bool
+	prompt "links"	
+	help
+	  links web browser
+
+config LINKS_X11
+	bool
+	depends on LINKS
+	prompt "enable X11"
+	select LIBPNG
+	select LIBJPEG
+	select XORG_LIB_XEXT
+	select XORG_LIB_X11
+	select XORG_LIB_XFT
+	help
+	  enable X11 GUI

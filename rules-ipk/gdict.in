@@ -1,8 +1,0 @@
-config GDICT
-	bool
-	prompt "gdict"
-
-config GDICT_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on GDICT

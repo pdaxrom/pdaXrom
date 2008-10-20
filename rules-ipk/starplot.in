@@ -1,8 +1,0 @@
-config STARPLOT
-	bool
-	prompt "starplot"
-
-config STARPLOT_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on STARPLOT

@@ -1,8 +1,0 @@
-config QC-USB
-	bool
-	prompt "qc-usb"
-
-config QC-USB_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on QC-USB

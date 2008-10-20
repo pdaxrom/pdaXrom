@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Skipstone
+Comment=Skipstone Web Browser
+Exec=skipstone
+Terminal=false
+MultipleArgs=false
+Type=Application
+Icon=skipstone.png
+Categories=Network
+SingleInstance=true

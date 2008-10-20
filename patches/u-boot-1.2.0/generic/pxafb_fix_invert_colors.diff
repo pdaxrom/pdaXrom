@@ -1,0 +1,24 @@
+Subject: pxafb: fix inverted colors
+From: Sascha Hauer <s.hauer@pengutronix.de>
+
+a comment in cpu/pxa/pxafb.c claims that we have to invert colors
+on this display. This is not true.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+
+---
+ cpu/pxa/pxafb.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+Index: cpu/pxa/pxafb.c
+===================================================================
+--- cpu/pxa/pxafb.c.orig
++++ cpu/pxa/pxafb.c
+@@ -150,7 +150,6 @@ vidinfo_t panel_info = {
+ #ifdef CONFIG_SHARP_LQ084V1DG21
+ 
+ # define LCD_BPP	LCD_COLOR8
+-# define LCD_INVERT_COLORS	/* Needed for colors to be correct, but why?	*/
+ 
+ /* you have to set lccr0 and lccr3 (including pcd) */
+ # define REG_LCCR0	0x003008F9

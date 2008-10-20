@@ -1,0 +1,9 @@
+config ATERM
+	bool
+	prompt "aterm"
+	select XORG_LIB_XEXT
+	select XORG_LIB_X11
+	select XORG_LIB_SM
+	select XORG_LIB_ICE
+	help
+	  aterm is the X Terminal Emulator.

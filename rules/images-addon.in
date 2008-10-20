@@ -1,0 +1,6 @@
+config IMAGE_CRAMFS
+	bool
+	select HOST_CRAMFS
+	prompt "Generate images/root.cramfs"
+	help
+	  Build a cramfs image of the root filesystem.

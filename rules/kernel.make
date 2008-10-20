@@ -1,7 +1,7 @@
 # -*-makefile-*-
-# $Id: kernel.make,v 1.15 2003/11/02 23:56:52 mkl Exp $
+# $Id: kernel.make 7560 2007-10-19 20:16:22Z mkl $
 #
-# Copyright (C) 2002, 2003 by Pengutronix e.K., Hildesheim, Germany
+# Copyright (C) 2002-2006 by Pengutronix e.K., Hildesheim, Germany
 #
 # See CREDITS for details about who has contributed to this project.
 #
@@ -12,83 +12,49 @@
 #
 # We provide this package
 #
-ifdef PTXCONF_OS_LINUX
-ifndef PTXCONF_DONT_COMPILE_KERNEL
-PACKAGES += kernel
-endif
-endif
+PACKAGES-$(PTXCONF_KERNEL) += kernel
+
 #
-# version stuff in now in rules/Version.make
-# NB: make s*cks
+# Paths and names
 #
+KERNEL			:= linux-$(KERNEL_VERSION)
+KERNEL_SUFFIX		:= tar.bz2
+KERNEL_TESTING		= $(shell [ -n "$$(echo $(KERNEL_VERSION) | grep rc)" ] && echo "testing/")
+KERNEL_URL		= http://www.kernel.org/pub/linux/kernel/v$(KERNEL_VERSION_MAJOR).$(KERNEL_VERSION_MINOR)/$(KERNEL_TESTING)$(KERNEL).$(KERNEL_SUFFIX)
+KERNEL_SOURCE		:= $(SRCDIR)/$(KERNEL).$(KERNEL_SUFFIX)
+KERNEL_DIR		:= $(BUILDDIR)/$(KERNEL)
 
-ifndef PTXCONF_XX_VENDOR_KERNEL
+KERNEL_CONFIG		:= $(call remove_quotes,$(PTXDIST_WORKSPACE)/$(PTXCONF_KERNEL$(KERNEL_STYLE)_CONFIG))
 
-KERNEL		= linux-$(KERNEL_VERSION)
-KERNEL_SUFFIX	= tar.bz2
-KERNEL_URL	= ftp://ftp.kernel.org/pub/linux/kernel/v$(KERNEL_VERSION_MAJOR).$(KERNEL_VERSION_MINOR)/$(KERNEL).$(KERNEL_SUFFIX)
-KERNEL_SOURCE	= $(SRCDIR)/$(KERNEL).$(KERNEL_SUFFIX)
-KERNEL_DIR	= $(BUILDDIR)/$(KERNEL)
+KERNEL_DIR_INSTALL	:= $(KERNEL_DIR)-install
 
-else
-
-KERNEL		= $(PTXCONF_XX_KERNEL)
-KERNEL_SUFFIX	= tar.bz2
-KERNEL_URL	= $(PTXCONF_XX_KERNEL_URL)/$(PTXCONF_XX_KERNEL).$(KERNEL_SUFFIX)
-KERNEL_SOURCE	= $(SRCDIR)/$(PTXCONF_XX_KERNEL).$(KERNEL_SUFFIX)
-KERNEL_DIR	= $(BUILDDIR)/$(PTXCONF_XX_KERNEL_DIR)
-
-endif
-
+#
+# Some configuration stuff for the different kernel image formats
+#
 ifdef PTXCONF_KERNEL_IMAGE_Z
-KERNEL_TARGET		= zImage
-ifdef PTXCONF_ARM_ARCH_PXA
-KERNEL_TARGET_PATH	= $(KERNEL_DIR)/arch/arm/boot/zImage
-else
-KERNEL_TARGET_PATH	= $(KERNEL_DIR)/arch/$(PTXCONF_ARCH)/boot/zImage
+KERNEL_IMAGE_PATH	:= $(KERNEL_DIR)/arch/$(PTXCONF_KERNEL_ARCH)/boot/zImage
 endif
-endif
+
 ifdef PTXCONF_KERNEL_IMAGE_BZ
-KERNEL_TARGET		= bzImage
-KERNEL_TARGET_PATH	= $(KERNEL_DIR)/arch/$(PTXCONF_ARCH)/boot/bzImage
+KERNEL_IMAGE_PATH	:= $(KERNEL_DIR)/arch/$(PTXCONF_KERNEL_ARCH)/boot/bzImage
 endif
+
 ifdef PTXCONF_KERNEL_IMAGE_U
-KERNEL_TARGET		= uImage
-KERNEL_TARGET_PATH	= $(KERNEL_DIR)/uImage
+KERNEL_IMAGE_PATH	:= \
+	$(KERNEL_DIR)/uImage \
+	$(KERNEL_DIR)/arch/$(PTXCONF_KERNEL_ARCH)/boot/uImage \
+	$(KERNEL_DIR)/arch/$(PTXCONF_KERNEL_ARCH)/boot/images/uImage \
+	$(KERNEL_DIR)/arch/$(PTXCONF_KERNEL_ARCH)/boot/images/vmlinux.UBoot
 endif
+
 ifdef PTXCONF_KERNEL_IMAGE_VMLINUX
-KERNEL_TARGET		= vmlinux
-KERNEL_TARGET_PATH	= $(KERNEL_DIR)/vmlinux
+KERNEL_IMAGE_PATH	:= $(KERNEL_DIR)/vmlinux
 endif
 
-# ----------------------------------------------------------------------------
-# Patches
-# ----------------------------------------------------------------------------
+ifdef NATIVE
+KERNEL_IMAGE_PATH	:= $(KERNEL_DIR)/vmlinux
+endif
 
-KERNEL_PATCHES	=  $(addprefix kernel-, \
-	$(call get_option_ext, s/^PTXCONF_KERNEL_[0-9]_[0-9]_[0-9]*_\(.*\)=y/\1/, sed -e 's/_/ /g' -e 's/[0-9]//g' ))
-
-# ----------------------------------------------------------------------------
-# Menuconfig
-# ----------------------------------------------------------------------------
-
-kernel_menuconfig: $(STATEDIR)/kernel.extract
-	@if [ -f $(TOPDIR)/config/kernel/$(PTXCONF_KERNEL_CONFIG) ]; then \
-		install -m 644 $(TOPDIR)/config/kernel/$(PTXCONF_KERNEL_CONFIG) \
-			$(KERNEL_DIR)/.config; \
-	fi
-
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		menuconfig
-
-	@if [ -f $(KERNEL_DIR)/.config ]; then \
-		install -m 644 $(KERNEL_DIR)/.config \
-			$(TOPDIR)/config/kernel/$(PTXCONF_KERNEL_CONFIG); \
-	fi
-
-	@if [ -f $(STATEDIR)/kernel.compile ]; then \
-		rm $(STATEDIR)/kernel.compile; \
-	fi
 
 # ----------------------------------------------------------------------------
 # Get
@@ -96,18 +62,13 @@ kernel_menuconfig: $(STATEDIR)/kernel.extract
 
 kernel_get: $(STATEDIR)/kernel.get
 
-kernel_get_deps =
-#	$(KERNEL_SOURCE)
-
-$(STATEDIR)/kernel.get: $(kernel_get_deps)
+$(STATEDIR)/kernel.get: $(kernel_get_deps_default)
 	@$(call targetinfo, $@)
-	@$(call get, $(KERNEL_URL))
-	@$(call get_patches, $(KERNEL))
-	touch $@
+	@$(call touch, $@)
 
-#$(KERNEL_SOURCE):
-#	@$(call targetinfo, $@)
-#	@$(call get, $(KERNEL_URL))
+$(KERNEL_SOURCE):
+	@$(call targetinfo, $@)
+	@$(call get, KERNEL)
 
 # ----------------------------------------------------------------------------
 # Extract
@@ -115,32 +76,12 @@ $(STATEDIR)/kernel.get: $(kernel_get_deps)
 
 kernel_extract: $(STATEDIR)/kernel.extract
 
-kernel_extract_deps = \
-	$(STATEDIR)/kernel-base.extract	\
-	$(addprefix $(STATEDIR)/, $(addsuffix .install, $(KERNEL_PATCHES)))
-
-$(STATEDIR)/kernel.extract: $(kernel_extract_deps)
-	@$(call targetinfo, $@)
-	touch $@
-
-$(STATEDIR)/kernel-base.extract: $(STATEDIR)/kernel.get
+$(STATEDIR)/kernel.extract: $(kernel_extract_deps_default)
 	@$(call targetinfo, $@)
 	@$(call clean, $(KERNEL_DIR))
-	@$(call extract, $(KERNEL_SOURCE), $(BUILDDIR))
-	@$(call patchin, $(KERNEL), $(KERNEL_DIR))
-#
-#	kernels before 2.4.19 extract to "linux" instead of "linux-<version>"
-#
-#ifeq (2.4.18,$(KERNEL_VERSION))
-#ifndef PTXCONF_KERNEL_RMK_PXA_EMBEDIX_SLC
-#	mv $(BUILDDIR)/linux $(KERNEL_DIR)
-#endif
-#endif
-ifdef PTXCONF_KERNEL_RMK6_PXA1_HH
-#	mv $(BUILDDIR)/$(KERNEL) $(KERNEL_DIR)
-	cp -a $(TOPDIR)/config/pdaXrom-ipaq/wireless-firmware/*.BIN $(KERNEL_DIR)/drivers/net/wireless
-endif
-	touch $@
+	@$(call extract, KERNEL)
+	@$(call patchin, KERNEL)
+	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
 # Prepare
@@ -148,80 +89,57 @@ endif
 
 kernel_prepare: $(STATEDIR)/kernel.prepare
 
-kernel_prepare_deps = \
-	$(STATEDIR)/virtual-xchain.install \
-	$(STATEDIR)/xchain-modutils.install \
-	$(STATEDIR)/kernel.extract
-
-ifdef PTXCONF_KERNEL_EXTERNAL_GCC
-KERNEL_PATH	= PATH=$(PTXCONF_KERNEL_EXTERNAL_GCC_PATH):$(CROSS_PATH):$$PATH
-else
-KERNEL_PATH	= PATH=$(CROSS_PATH)
-endif
-
-KERNEL_MAKEVARS	= \
+KERNEL_PATH	:= PATH=$(CROSS_PATH)
+KERNEL_ENV 	:= KCONFIG_NOTIMESTAMP=1
+KERNEL_MAKEVARS := \
+	$(PARALLELMFLAGS) \
 	HOSTCC=$(HOSTCC) \
-	GENKSYMS=$(PTXCONF_GNU_TARGET)-genksyms \
-	DEPMOD=true
-###	DEPMOD=$(PTXCONF_GNU_TARGET)-depmod
+	DEPMOD=$(PTXCONF_CROSS_PREFIX)/sbin/$(PTXCONF_GNU_TARGET)-depmod \
+	INSTALL_MOD_PATH=$(KERNEL_DIR_INSTALL) \
+	PTX_KERNEL_DIR=$(KERNEL_DIR)
 
-ifdef PTXCONF_ARCH_ARM
-ifdef PTXCONF_KERNEL_EXTERNAL_GCC
-KERNEL_MAKEVARS	+= ARCH=arm CROSS_COMPILE=arm-linux-
+ifdef NATIVE
+KERNEL_MAKEVARS += ARCH=um
+KERNEL_IMAGE	:= vmlinux
 else
-KERNEL_MAKEVARS	+= ARCH=arm CROSS_COMPILE=$(PTXCONF_GNU_TARGET)-
-endif
-else
-KERNEL_MAKEVARS	+= ARCH=$(PTXCONF_ARCH) CROSS_COMPILE=$(PTXCONF_GNU_TARGET)-
-endif
-
-ifdef PTXCONF_ARCH_MIPS
-ifdef PTXCONF_OPT_MIPSEL
- ifdef PTXCONF_KERNEL_EXTERNAL_GCC
-KERNEL_MAKEVARS	+= ARCH=mips CROSS_COMPILE=mipsEEel-linux-
- else
-KERNEL_MAKEVARS	+= ARCH=mips CROSS_COMPILE=$(PTXCONF_GNU_TARGET)-
- endif
-else
-KERNEL_MAKEVARS	+= ARCH=$(PTXCONF_ARCH) CROSS_COMPILE=$(PTXCONF_GNU_TARGET)-
-endif
+KERNEL_MAKEVARS += \
+	ARCH=$(PTXCONF_KERNEL_ARCH) \
+	CROSS_COMPILE=$(COMPILER_PREFIX)
+KERNEL_IMAGE	:= $(PTXCONF_KERNEL_IMAGE)
 endif
 
-$(STATEDIR)/kernel.prepare: $(kernel_prepare_deps)
+$(KERNEL_CONFIG):
+	@echo
+	@echo "*************************************************************************"
+	@echo "**** Please generate a kernelconfig with \"ptxdist menuconfig kernel\" ****"
+	@echo "*************************************************************************"
+	@echo
+	@echo
+	@exit 1
+
+$(STATEDIR)/kernel.prepare: $(kernel_prepare_deps_default) $(KERNEL_CONFIG)
 	@$(call targetinfo, $@)
 
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		mrproper
-
-	if [ -f $(TOPDIR)/config/kernel/$(PTXCONF_KERNEL_CONFIG) ]; then	\
-		install -m 644 $(TOPDIR)/config/kernel/$(PTXCONF_KERNEL_CONFIG) \
-		$(KERNEL_DIR)/.config;						\
+	@if [ -f $(KERNEL_CONFIG) ]; then				\
+		echo "Using kernel config file: $(KERNEL_CONFIG)";	\
+		install -m 644 $(KERNEL_CONFIG) $(KERNEL_DIR)/.config; 	\
+	else								\
+		echo "ERROR: No such kernel config: $(KERNEL_CONFIG)";	\
+		exit 1;							\
 	fi
 
-	#yes no | 
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		oldconfig
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		dep
+ifdef PTXCONF_KLIBC
+# tell the kernel where our spec file for initramfs is
+	@sed -ie 's,^CONFIG_INITRAMFS_SOURCE.*$$,CONFIG_INITRAMFS_SOURCE=\"$(KLIBC_CONTROL)\",g' \
+		$(KERNEL_DIR)/.config
+endif
 
-	touch $@
+	cd $(KERNEL_DIR) && $(KERNEL_PATH) $(KERNEL_ENV) $(MAKE) \
+		$(KERNEL_MAKEVARS) oldconfig
 
-# ----------------------------------------------------------------------------
-# Modversions-Prepare
-# ----------------------------------------------------------------------------
+	cp $(KERNEL_DIR)/.config $(KERNEL_CONFIG)
 
-#
-# Some packages (like rtnet.) need modversions.h
-#
-# we build it only when needed cause it can be build only if kernel modules
-# are selected
-#
-$(STATEDIR)/kernel-modversions.prepare: $(STATEDIR)/kernel.prepare
-	@$(call targetinfo, $@)
-
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		$(KERNEL_DIR)/include/linux/modversions.h
-	touch $@
+	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
 # Compile
@@ -229,16 +147,11 @@ $(STATEDIR)/kernel-modversions.prepare: $(STATEDIR)/kernel.prepare
 
 kernel_compile: $(STATEDIR)/kernel.compile
 
-kernel_compile_deps =  $(STATEDIR)/kernel.prepare
-ifdef PTXCONF_KERNEL_IMAGE_U
-kernel_compile_deps += $(STATEDIR)/xchain-umkimage.install
-endif
-
-$(STATEDIR)/kernel.compile: $(kernel_compile_deps)
+$(STATEDIR)/kernel.compile: $(kernel_compile_deps_default)
 	@$(call targetinfo, $@)
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		$(KERNEL_TARGET) modules
-	touch $@
+	cd $(KERNEL_DIR) && $(KERNEL_PATH) $(MAKE) \
+		$(KERNEL_MAKEVARS) $(KERNEL_IMAGE) $(PTXCONF_KERNEL_MODULES_BUILD)
+	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
 # Install
@@ -246,93 +159,111 @@ $(STATEDIR)/kernel.compile: $(kernel_compile_deps)
 
 kernel_install: $(STATEDIR)/kernel.install
 
-$(STATEDIR)/kernel.install:
+$(STATEDIR)/kernel.install: $(kernel_install_deps_default)
 	@$(call targetinfo, $@)
-	touch $@
+	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
 # Target-Install
 # ----------------------------------------------------------------------------
 
-kernel_targetinstall: $(STATEDIR)/kernel.targetinstall
+kernel_targetinstall: $(STATEDIR)/kernel.targetinstall.post
 
-$(STATEDIR)/kernel.targetinstall: $(STATEDIR)/kernel.compile
+$(STATEDIR)/kernel.targetinstall: $(kernel_targetinstall_deps_default)
 	@$(call targetinfo, $@)
-ifdef PTXCONF_KERNEL_INSTALL
-	mkdir -p $(KERNEL_DIR)/ipkg_tmp/boot
-	install $(KERNEL_TARGET_PATH) $(KERNEL_DIR)/ipkg_tmp/boot
-else
-ifdef PTXCONF_KERNEL_RMK_PXA_EMBEDIX_SLC
-	install $(KERNEL_TARGET_PATH) $(TOPDIR)/bootdisk/zImage.bin
-else
- ifdef PTXCONF_KERNEL_RMK_PXA_EMBEDIX_SL5500
-	install $(KERNEL_TARGET_PATH) $(TOPDIR)/bootdisk/zImage
- else
-    ifndef PTXCONF_ARCH_PPC
-	install $(KERNEL_TARGET_PATH) $(TOPDIR)/bootdisk
-    endif
- endif
-endif
-endif
-ifdef PTXCONF_KERNEL_MODULES_INSTALL
-	$(KERNEL_PATH) make -C $(KERNEL_DIR) $(KERNEL_MAKEVARS) \
-		modules_install INSTALL_MOD_PATH=$(KERNEL_DIR)/ipkg_tmp DEPMOD=$(XCHAIN_MODUTILS_DIR)/depmod/depmod
-endif
-ifdef PTXCONF_KERNEL_RMK_PXA_EMBEDIX_SLC
-	for MNAME in isofs ntfs reiserfs ; do													\
-	    mkdir -p $(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL ;											\
-	    mkdir -p $(KERNEL_DIR)/ipkg_tmp_$$MNAME/lib/modules/`cd $(KERNEL_DIR)/ipkg_tmp/lib/modules && ls | grep '$(KERNEL_VERSION)'`/kernel/fs/ ;	\
-	    mv -f $(KERNEL_DIR)/ipkg_tmp/lib/modules/`cd $(KERNEL_DIR)/ipkg_tmp/lib/modules && ls | grep '$(KERNEL_VERSION)'`/kernel/fs/$$MNAME 	\
-		  $(KERNEL_DIR)/ipkg_tmp_$$MNAME/lib/modules/`cd $(KERNEL_DIR)/ipkg_tmp/lib/modules && ls | grep '$(KERNEL_VERSION)'`/kernel/fs/ ;	\
-	    mkdir -p $(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL ;											\
-	    echo "Package: kernel-modules-$$MNAME" 					 >$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Priority: optional" 							>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Section: System"	 						>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 			>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Architecture: $(SHORT_TARGET)" 					>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Version: $(KERNEL_VERSION)" 						>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Depends: " 								>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "Description: $$MNAME kernel modules"					>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/control ;	\
-	    echo "#!/bin/sh"								 >$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/postinst ;	\
-	    echo "/sbin/depmod -a"							>>$(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/postinst ;	\
-	    chmod 755 $(KERNEL_DIR)/ipkg_tmp_$$MNAME/CONTROL/postinst ;										\
-	    cd $(FEEDDIR) && $(XMKIPKG) $(KERNEL_DIR)/ipkg_tmp_$$MNAME ;									\
+
+# we _always_ need the kernel in the image dir
+	@for i in $(KERNEL_IMAGE_PATH); do				\
+		if [ -f $$i ]; then					\
+			install -D $$i $(IMAGEDIR)/kernel.img;		\
+		fi;							\
 	done
+
+	@if test \! -e $(IMAGEDIR)/kernel.img; then				\
+		echo "$(PTXCONF_KERNEL_IMAGE) not found, maybe bzImage on ARM";	\
+		exit 1;								\
+	fi
+
+ifdef  PTXCONF_KERNEL_INSTALL
+	@$(call install_init,  kernel)
+	@$(call install_fixup, kernel, PACKAGE, kernel)
+	@$(call install_fixup, kernel, PRIORITY,optional)
+	@$(call install_fixup, kernel, VERSION,$(KERNEL_VERSION))
+	@$(call install_fixup, kernel, SECTION,base)
+	@$(call install_fixup, kernel, AUTHOR,"Robert Schwebel <r.schwebel\@pengutronix.de>")
+	@$(call install_fixup, kernel, DEPENDS,)
+	@$(call install_fixup, kernel, DESCRIPTION,missing)
+
+	@for i in $(KERNEL_IMAGE_PATH); do 				\
+		if [ -f $$i ]; then					\
+			$(call install_copy, kernel, 0, 0, 0644, $$i, /boot/$(KERNEL_IMAGE), n); \
+		fi;							\
+	done
+	@$(call install_finish, kernel)
 endif
-	mkdir -p $(KERNEL_DIR)/ipkg_tmp/CONTROL
-	echo "Package: kernel-modules" 						 >$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Source: $(KERNEL_URL)" 						>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Priority: optional" 						>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Section: System"	 						>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Maintainer: Alexander Chukov <sash@pdaXrom.org>" 			>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Architecture: $(SHORT_TARGET)" 					>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Version: $(KERNEL_VERSION)" 					>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Depends: " 							>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	echo "Description: kernel modules"					>>$(KERNEL_DIR)/ipkg_tmp/CONTROL/control
-	cd $(FEEDDIR) && $(XMKIPKG) $(KERNEL_DIR)/ipkg_tmp
-	touch $@
+
+ifdef PTXCONF_KERNEL_MODULES_INSTALL
+	if test -e $(KERNEL_DIR_INSTALL); then \
+		rm -rf $(KERNEL_DIR_INSTALL); \
+	fi
+	cd $(KERNEL_DIR) && $(KERNEL_PATH) $(MAKE) \
+		$(KERNEL_MAKEVARS) modules_install
+endif
+
+	@$(call touch, $@)
+
 
 # ----------------------------------------------------------------------------
-# Image-Install
+# Target-Install-post
 # ----------------------------------------------------------------------------
 
-ifdef PTXCONF_KERNEL_IPKG_INSTALL
-ROMPACKAGES += $(STATEDIR)/kernel.imageinstall
-endif
-
-kernel_imageinstall_deps = $(STATEDIR)/kernel.targetinstall \
-	$(STATEDIR)/virtual-image.install
-
-$(STATEDIR)/kernel.imageinstall: $(kernel_imageinstall_deps)
+$(STATEDIR)/kernel.targetinstall.post: $(STATEDIR)/kernel.targetinstall
 	@$(call targetinfo, $@)
-	cd $(FEEDDIR) && $(XIPKG) install kernel-modules
-	touch $@
+
+ifdef PTXCONF_KERNEL_MODULES_INSTALL
+	@$(call install_init,  kernel-modules)
+	@$(call install_fixup, kernel-modules, PACKAGE,kernel-modules)
+	@$(call install_fixup, kernel-modules, PRIORITY,optional)
+	@$(call install_fixup, kernel-modules, VERSION,$(KERNEL_VERSION))
+	@$(call install_fixup, kernel-modules, SECTION,base)
+	@$(call install_fixup, kernel-modules, AUTHOR,"Robert Schwebel <r.schwebel\@pengutronix.de>")
+	@$(call install_fixup, kernel-modules, DEPENDS,)
+	@$(call install_fixup, kernel-modules, DESCRIPTION,missing)
+
+	@cd $(KERNEL_DIR_INSTALL) &&					\
+		for file in `find . -type f | sed -e "s/\.\//\//g"`; do	\
+			$(call install_copy, kernel-modules, 0, 0, 0644, $(KERNEL_DIR_INSTALL)/$${file}, $${file}, n); \
+		done
+
+	@$(call install_finish, kernel-modules)
+endif
+
+	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------
 # Clean
 # ----------------------------------------------------------------------------
 
 kernel_clean:
-	rm -rf $(STATEDIR)/kernel.* $(KERNEL_DIR)
+	rm -rf $(STATEDIR)/kernel.*
+	rm -rf $(IMAGEDIR)/kernel_*
+	rm -rf $(KERNEL_DIR)
+
+# ----------------------------------------------------------------------------
+# oldconfig / menuconfig
+# ----------------------------------------------------------------------------
+
+kernel_oldconfig kernel_menuconfig: $(STATEDIR)/kernel.extract
+	@if test -e $(KERNEL_CONFIG); then \
+		cp $(KERNEL_CONFIG) $(KERNEL_DIR)/.config; \
+	fi
+	@cd $(KERNEL_DIR) && \
+		$(KERNEL_PATH) $(KERNEL_ENV) $(MAKE) $(KERNEL_MAKEVARS) $(subst kernel_,,$@)
+	@if cmp -s $(KERNEL_DIR)/.config $(KERNEL_CONFIG); then \
+		echo "kernel configuration unchanged"; \
+	else \
+		cp $(KERNEL_DIR)/.config $(KERNEL_CONFIG); \
+	fi
+
 
 # vim: syntax=make

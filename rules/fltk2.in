@@ -1,0 +1,6 @@
+config FLTK2
+	bool
+	prompt "FLTK2"	
+	select XORG_SERVER
+	help
+		FLTK is designed to be small and modular enough to be statically linked, but works fine as a shared library. FLTK also includes an excellent UI builder called FLUID that can be used to create applications in minutes.

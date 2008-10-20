@@ -1,0 +1,76 @@
+menu "Shells                "
+source "workspace/rules/aterm.in"
+source "workspace/rules/mrxvt.in"
+endmenu
+menu "Web Browsers          "
+source "workspace/rules/dillo.in"
+source "workspace/rules/firefox.in"
+source "workspace/rules/links.in"
+source "workspace/rules/midori.in"
+endmenu
+menu "File Browsers         "
+source "workspace/rules/rox-filer.in"
+endmenu
+menu "Instant Messagers     "
+source "workspace/rules/xchat.in"
+endmenu
+menu "Desktop/Windows Mgrs  "
+source "workspace/rules/lxpanel.in"
+source "workspace/rules/fbpanel.in"
+source "workspace/rules/matchbox.in"
+source "workspace/rules/openbox.in"
+endmenu
+menu "Games                 "
+endmenu
+menu "Networking Tools      "
+source "workspace/rules/curl.in"
+source "workspace/rules/dhcpcd.in"
+endmenu
+menu "PIM                   "
+endmenu
+menu "Graphic Tools         "
+source "workspace/rules/gpaint.in"
+source "workspace/rules/mtpaint.in"
+source "workspace/rules/gpicview.in"
+source "workspace/rules/pxacamera.in"
+source "workspace/rules/xournal.in"
+endmenu
+menu "Text Editors          "
+source "workspace/rules/leafpad.in"
+endmenu
+menu "Utilities             "
+source "workspace/rules/canutils.in"
+source "workspace/rules/console-tools.in"
+source "workspace/rules/icu.in"
+source "workspace/rules/mtd-utils.in
+source "workspace/rules/pcmciautils.in"
+source "workspace/rules/schedutils.in"
+source "workspace/rules/shared-mime-info.in"
+endmenu
+menu "Performace Test Utils "
+source "workspace/rules/hackbench.in"
+source "workspace/rules/iperf.in"
+endmenu
+menu "Supporting Libraries  "
+source "workspace/rules/fltk2.in"
+source "workspace/rules/glib.in"
+source "workspace/rules/libIDL-2.in"
+source "workspace/rules/libsexy.in"
+source "workspace/rules/lzo.in"
+source "workspace/rules/pango.in"
+source "workspace/rules/slang.in"
+endmenu
+menu "Host Apps             "
+source "workspace/rules/host-icu.in"
+source "workspace/rules/host-libidl-2.in"
+source "workspace/rules/host-lzo.in"
+source "workspace/rules/host-shared-mime-info.in"
+endmenu
+menu "Unsorted              "
+source "workspace/rules/quasar.in"
+source "workspace/rules/rcontrol.in"
+source "workspace/rules/skipstone.in"
+source "workspace/rules/u-boot.in"
+source "workspace/rules/udev096.in"
+source "workspace/rules/WebKit.in"
+endmenu

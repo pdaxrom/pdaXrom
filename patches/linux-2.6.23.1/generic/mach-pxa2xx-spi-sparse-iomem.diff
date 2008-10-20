@@ -1,0 +1,207 @@
+ drivers/spi/pxa2xx_spi.c |   46 +++++++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
+
+Index: drivers/spi/pxa2xx_spi.c
+===================================================================
+--- drivers/spi/pxa2xx_spi.c.orig
++++ drivers/spi/pxa2xx_spi.c
+@@ -58,8 +58,8 @@ MODULE_LICENSE("GPL");
+ 				| SSCR1_TFT | SSCR1_SPH | SSCR1_SPO | SSCR1_LBM)
+ 
+ #define DEFINE_SSP_REG(reg, off) \
+-static inline u32 read_##reg(void *p) { return __raw_readl(p + (off)); } \
+-static inline void write_##reg(u32 v, void *p) { __raw_writel(v, p + (off)); }
++static inline u32 read_##reg(void __iomem *p) { return __raw_readl(p + (off)); } \
++static inline void write_##reg(u32 v, void __iomem *p) { __raw_writel(v, p + (off)); }
+ 
+ DEFINE_SSP_REG(SSCR0, 0x00)
+ DEFINE_SSP_REG(SSCR1, 0x04)
+@@ -94,7 +94,7 @@ struct driver_data {
+ 	u32 *null_dma_buf;
+ 
+ 	/* SSP register addresses */
+-	void *ioaddr;
++	void __iomem *ioaddr;
+ 	u32 ssdr_physical;
+ 
+ 	/* SSP masks*/
+@@ -161,7 +161,7 @@ static int flush(struct driver_data *drv
+ {
+ 	unsigned long limit = loops_per_jiffy << 1;
+ 
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	do {
+ 		while (read_SSSR(reg) & SSSR_RNE) {
+@@ -179,7 +179,7 @@ static void null_cs_control(u32 command)
+ 
+ static int null_writer(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 	u8 n_bytes = drv_data->n_bytes;
+ 
+ 	if (((read_SSSR(reg) & 0x00000f00) == 0x00000f00)
+@@ -194,7 +194,7 @@ static int null_writer(struct driver_dat
+ 
+ static int null_reader(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 	u8 n_bytes = drv_data->n_bytes;
+ 
+ 	while ((read_SSSR(reg) & SSSR_RNE)
+@@ -208,7 +208,7 @@ static int null_reader(struct driver_dat
+ 
+ static int u8_writer(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	if (((read_SSSR(reg) & 0x00000f00) == 0x00000f00)
+ 		|| (drv_data->tx == drv_data->tx_end))
+@@ -222,7 +222,7 @@ static int u8_writer(struct driver_data 
+ 
+ static int u8_reader(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	while ((read_SSSR(reg) & SSSR_RNE)
+ 		&& (drv_data->rx < drv_data->rx_end)) {
+@@ -235,7 +235,7 @@ static int u8_reader(struct driver_data 
+ 
+ static int u16_writer(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	if (((read_SSSR(reg) & 0x00000f00) == 0x00000f00)
+ 		|| (drv_data->tx == drv_data->tx_end))
+@@ -249,7 +249,7 @@ static int u16_writer(struct driver_data
+ 
+ static int u16_reader(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	while ((read_SSSR(reg) & SSSR_RNE)
+ 		&& (drv_data->rx < drv_data->rx_end)) {
+@@ -262,7 +262,7 @@ static int u16_reader(struct driver_data
+ 
+ static int u32_writer(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	if (((read_SSSR(reg) & 0x00000f00) == 0x00000f00)
+ 		|| (drv_data->tx == drv_data->tx_end))
+@@ -276,7 +276,7 @@ static int u32_writer(struct driver_data
+ 
+ static int u32_reader(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	while ((read_SSSR(reg) & SSSR_RNE)
+ 		&& (drv_data->rx < drv_data->rx_end)) {
+@@ -400,7 +400,7 @@ static void giveback(struct driver_data 
+ 		msg->complete(msg->context);
+ }
+ 
+-static int wait_ssp_rx_stall(void *ioaddr)
++static int wait_ssp_rx_stall(void __iomem *ioaddr)
+ {
+ 	unsigned long limit = loops_per_jiffy << 1;
+ 
+@@ -422,7 +422,7 @@ static int wait_dma_channel_stop(int cha
+ 
+ void dma_error_stop(struct driver_data *drv_data, const char *msg)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	/* Stop and reset */
+ 	DCSR(drv_data->rx_channel) = RESET_DMA_CHANNEL;
+@@ -444,7 +444,7 @@ void dma_error_stop(struct driver_data *
+ 
+ static void dma_transfer_complete(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 	struct spi_message *msg = drv_data->cur_msg;
+ 
+ 	/* Clear and disable interrupts on SSP and DMA channels*/
+@@ -524,7 +524,7 @@ static void dma_handler(int channel, voi
+ static irqreturn_t dma_transfer(struct driver_data *drv_data)
+ {
+ 	u32 irq_status;
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	irq_status = read_SSSR(reg) & drv_data->mask_sr;
+ 	if (irq_status & SSSR_ROR) {
+@@ -558,7 +558,7 @@ static irqreturn_t dma_transfer(struct d
+ 
+ static void int_error_stop(struct driver_data *drv_data, const char* msg)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	/* Stop and reset SSP */
+ 	write_SSSR(drv_data->clear_sr, reg);
+@@ -576,7 +576,7 @@ static void int_error_stop(struct driver
+ 
+ static void int_transfer_complete(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	/* Stop SSP */
+ 	write_SSSR(drv_data->clear_sr, reg);
+@@ -602,7 +602,7 @@ static void int_transfer_complete(struct
+ 
+ static irqreturn_t interrupt_transfer(struct driver_data *drv_data)
+ {
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	u32 irq_mask = (read_SSCR1(reg) & SSCR1_TIE) ?
+ 			drv_data->mask_sr : drv_data->mask_sr & ~SSSR_TFS;
+@@ -663,7 +663,7 @@ static irqreturn_t interrupt_transfer(st
+ static irqreturn_t ssp_int(int irq, void *dev_id)
+ {
+ 	struct driver_data *drv_data = dev_id;
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 
+ 	if (!drv_data->cur_msg) {
+ 
+@@ -786,7 +786,7 @@ static void pump_transfers(unsigned long
+ 	struct spi_transfer *transfer = NULL;
+ 	struct spi_transfer *previous = NULL;
+ 	struct chip_data *chip = NULL;
+-	void *reg = drv_data->ioaddr;
++	void __iomem *reg = drv_data->ioaddr;
+ 	u32 clk_div = 0;
+ 	u8 bits = 0;
+ 	u32 speed = 0;
+@@ -1323,7 +1323,7 @@ static int pxa2xx_spi_probe(struct platf
+ 	struct device *dev = &pdev->dev;
+ 	struct pxa2xx_spi_master *platform_info;
+ 	struct spi_master *master;
+-	struct driver_data *drv_data = 0;
++	struct driver_data *drv_data = NULL;
+ 	struct resource *memory_resource;
+ 	int irq;
+ 	int status = 0;
+@@ -1364,7 +1364,7 @@ static int pxa2xx_spi_probe(struct platf
+ 		goto out_error_master_alloc;
+ 	}
+ 
+-	drv_data->ioaddr = (void *)io_p2v((unsigned long)(memory_resource->start));
++	drv_data->ioaddr = (void __iomem *)io_p2v((unsigned long)(memory_resource->start));
+ 	drv_data->ssdr_physical = memory_resource->start + 0x00000010;
+ 	if (platform_info->ssp_type == PXA25x_SSP) {
+ 		drv_data->int_cr1 = SSCR1_TIE | SSCR1_RIE;

@@ -1,8 +1,0 @@
-config IFTOP
-	bool
-	prompt "iftop"
-
-config IFTOP_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on IFTOP

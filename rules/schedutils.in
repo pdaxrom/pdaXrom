@@ -1,0 +1,10 @@
+
+menuconfig SCHEDUTILS
+	bool
+	prompt "schedutils"
+
+config SCHEDUTILS_CHRT
+	bool
+	prompt "chrt"
+	depends on SCHEDUTILS
+

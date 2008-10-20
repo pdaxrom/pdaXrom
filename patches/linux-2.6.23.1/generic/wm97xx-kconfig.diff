@@ -1,0 +1,21 @@
+Subject: Only show up WM97xx codec type if building WM97xx
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+
+Signed-off-by: Marc Kleine-Budde <mkl@penugtronix.de>
+
+---
+ drivers/input/touchscreen/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: drivers/input/touchscreen/Kconfig
+===================================================================
+--- drivers/input/touchscreen/Kconfig.orig
++++ drivers/input/touchscreen/Kconfig
+@@ -244,6 +244,7 @@ config TOUCHSCREEN_WM97XX
+ 
+ choice
+ 	prompt "WM97xx codec type"
++	depends on TOUCHSCREEN_WM97XX
+ 
+ config TOUCHSCREEN_WM9705
+ 	bool "WM9705 Touchscreen interface support"

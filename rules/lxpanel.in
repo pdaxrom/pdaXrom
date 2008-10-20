@@ -1,0 +1,5 @@
+config LXPANEL
+	bool
+	prompt "lxpanel"
+	help
+	  FIXME

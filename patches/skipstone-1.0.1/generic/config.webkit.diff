@@ -1,0 +1,28 @@
+diff -Nur skipstone-1.0.1/config.webkit skipstone-1.0.1.new/config.webkit
+--- skipstone-1.0.1/config.webkit	2008-04-14 13:10:19.000000000 +0700
++++ skipstone-1.0.1.new/config.webkit	2008-05-14 13:22:23.000000000 +0700
+@@ -1,17 +1,18 @@
+ prefix = /usr/local
+ PREFIX = /usr/local
+-CC = gcc
+-CXX = g++
++#CC = gcc
++#CXX = g++
+ #GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lfontconfig -lXext -lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite -lXdamage -lpango-1.0 -lcairo -lX11 -lXfixes -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
+ #GTK_INCLUDES = -DPNG_NO_MMX_CODE -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12  
+-GTK_LIBS = `pkg-config --libs gtk+-2.0`
++GTK_LIBS = `pkg-config --libs gtk+-2.0 gdk-x11-2.0 glib-2.0`
+ GTK_INCLUDES = `pkg-config --cflags gtk+-2.0`
+ CPPFLAGS = -DWebKit -DHAVE_CONFIG_H  -DSKIPSTONE_LOCAL_THEME_DIR=\"/usr/local/share/skipstone/pixmaps\" -DSKIPSTONE_LOCAL_PLUGIN_DIR=\"/usr/local/share/skipstone/plugins\"
+ CFLAGS = -g -O2 -Wall 
+ CXXFLAGS = -g -O2 -fno-rtti
+-LDFLAGS = -rdynamic  -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lfontconfig -lXext -lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite -lXdamage -lpango-1.0 -lcairo -lX11 -lXfixes -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
+-MOZILLA_INCLUDES = `pkg-config --cflags WebKitGtk`
+-MOZILLA_LIBS = `pkg-config --libs WebKitGtk` 
++LDFLAGS = -lxcb -lexpat
++#-rdynamic  -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lfontconfig -lXext -lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite -lXdamage -lpango-1.0 -lcairo -lX11 -lXfixes -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
++MOZILLA_INCLUDES = `pkg-config --cflags webkit-1.0`
++MOZILLA_LIBS = `pkg-config --libs webkit-1.0` 
+ INSTALL = /usr/bin/install -c
+ STRIP = strip
+ PLUGIN_LDFLAGS = -shared
