@@ -2,7 +2,6 @@ config MB_APPLET_STARTUP_MONITOR
 	bool
 	prompt "mb-applet-startup-monitor"
 	select MATCHBOX_PANEL
-	select STARTUP_NOTIFICATION
 	help
 	  matchbox applet startup monitor
 
