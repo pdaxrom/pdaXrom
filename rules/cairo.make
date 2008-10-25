@@ -114,9 +114,9 @@ $(STATEDIR)/cairo.targetinstall: $(cairo_targetinstall_deps_default)
 	@$(call install_fixup,cairo,DEPENDS,)
 	@$(call install_fixup,cairo,DESCRIPTION,missing)
 
-	@$(call install_copy, cairo, 0, 0, 0644, $(CAIRO_DIR)/src/.libs/libcairo.so.2.2.4, /usr/lib/libcairo.so.2.2.4)
-	@$(call install_link, cairo, libcairo.so.2.2.4, /usr/lib/libcairo.so.2)
-	@$(call install_link, cairo, libcairo.so.2.2.4, /usr/lib/libcairo.so)
+	@$(call install_copy, cairo, 0, 0, 0644, $(CAIRO_DIR)/src/.libs/libcairo.so.2.10800.0, /usr/lib/libcairo.so.2.2.4)
+	@$(call install_link, cairo, libcairo.so.2.10800.0, /usr/lib/libcairo.so.2)
+	@$(call install_link, cairo, libcairo.so.2.10800.0, /usr/lib/libcairo.so)
 
 	@$(call install_finish,cairo)
 

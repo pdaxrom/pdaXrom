@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.0.2
-# Sat Oct 25 14:53:38 2008
+# Sat Oct 25 17:03:10 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1719,7 +1719,7 @@ PTXCONF_MRXVT=y
 #
 # Web Browsers          
 #
-PTXCONF_DILLO=y
+# PTXCONF_DILLO is not set
 PTXCONF_FIREFOX=y
 PTXCONF_LINKS=y
 PTXCONF_LINKS_X11=y
@@ -1809,7 +1809,7 @@ PTXCONF_IPERF=y
 #
 # Supporting Libraries  
 #
-PTXCONF_FLTK2=y
+# PTXCONF_FLTK2 is not set
 PTXCONF_GLIB_LIBICONV_GNU=y
 # PTXCONF_GLIB_LIBICONV_NATIVE is not set
 PTXCONF_LIBIDL_2=y
@@ -1842,5 +1842,5 @@ PTXCONF_HOST_LZO=y
 # PTXCONF_RCONTROL is not set
 # PTXCONF_SKIPSTONE is not set
 # PTXCONF_UDEV096 is not set
-PTXCONF_WEBKIT=y
+# PTXCONF_WEBKIT is not set
 PTXCONF_LIBGLADE=y
