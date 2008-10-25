@@ -186,7 +186,7 @@ menu "Graphics Libraries            "
 source "rules/xorg.in"
 
 comment "X Applications"
-source "rules/gtk-menu.in"
+source "workspace/rules/gtk-menu.in"
 source "rules/fltk.in"
 source "rules/hpanel.in"
 #source "rules/qte.in"

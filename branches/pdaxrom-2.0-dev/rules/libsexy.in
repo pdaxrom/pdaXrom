@@ -2,5 +2,6 @@ config LIBSEXY
 	bool
 	prompt "libsexy"
 	select GTK
+	depends on LIBXML2
 	help
 	  Collection of GTK+ widgets that extend the functionality of such standard widgets as GtkEntry and GtkLabel by subclassing them and working around the limitations of the widgets.

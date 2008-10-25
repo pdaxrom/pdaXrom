@@ -3,4 +3,3 @@ config ICU
 	prompt "icu"
 	select HOST_ICU
 	help
-	  icu
