@@ -113,9 +113,11 @@ $(STATEDIR)/pixman.targetinstall: $(pixman_targetinstall_deps_default)
 	@$(call install_fixup, pixman,DEPENDS,)
 	@$(call install_fixup, pixman,DESCRIPTION,missing)
 
-	@$(call install_copy, pixman, 0, 0, 0755, $(PIXMAN_DIR)/foobar, /dev/null)
+	@$(call install_copy, pixman, 0, 0, 0644, $(PIXMAN_DIR)/pixman/.libs/libpixman-1.so.0.12.0, /usr/lib/libpixman-1.so.0.12.0)
+	@$(call install_link, pixman, libpixman-1.so.0.12.0, /usr/lib/libpixman-1.so)
+	@$(call install_link, pixman, libpixman-1.so.0.12.0, /usr/lib/libpixman-1.so.0)
 
-	@$(call install_finish, pixman)
+	@$(call install_finish,pixman)
 
 	@$(call touch, $@)
 
