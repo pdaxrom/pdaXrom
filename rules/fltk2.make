@@ -70,7 +70,7 @@ $(STATEDIR)/fltk2.prepare: $(fltk2_prepare_deps_default)
 	@$(call clean, $(FLTK2_DIR)/config.cache)
 	cd $(FLTK2_DIR) && \
 		$(FLTK2_PATH) $(FLTK2_ENV) \
-		./configure $(FLTK2_AUTOCONF)
+		./configure --disable-gl $(FLTK2_AUTOCONF)
 	@$(call touch, $@)
 
 # ----------------------------------------------------------------------------

@@ -1,0 +1,5 @@
+config PIXMAN
+	bool
+	prompt "pixman"
+	help
+		PIXMAN
