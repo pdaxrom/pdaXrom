@@ -1,7 +1,6 @@
 config OPENBOX
 	bool
 	select XORG_LIB_X11
-	select STARTUP_NOTIFICATION
 	select XORG_LIB_XCURSOR
 	select XORG_LIB_XFT
 	select XORG_LIB_SM
