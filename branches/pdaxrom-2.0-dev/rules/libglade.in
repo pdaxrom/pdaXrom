@@ -1,0 +1,7 @@
+config LIBGLADE
+	bool
+	depends on BROKEN
+	prompt "libglade [BROKEN]"
+	help
+	  FIXME: This item needs to be documented
+
