@@ -20,7 +20,7 @@ PACKAGES-$(PTXCONF_DHCPCD) += dhcpcd
 DHCPCD_VERSION		:= 3.2.3
 DHCPCD			:= dhcpcd-$(DHCPCD_VERSION)
 DHCPCD_SUFFIX		:= tar.bz2
-DHCPCD_URL		:= http://roy.marples.name/dhcpcd/$(DHCPCD).$(DHCPCD_SUFFIX)
+DHCPCD_URL		:= http://roy.marples.name/downloads/dhcpcd/$(DHCPCD).$(DHCPCD_SUFFIX)
 DHCPCD_SOURCE		:= $(SRCDIR)/$(DHCPCD).$(DHCPCD_SUFFIX)
 DHCPCD_DIR		:= $(BUILDDIR)/$(DHCPCD)
 
