@@ -10,4 +10,4 @@ config GPAINT
 	select LIBGLADE
 	select GTK
 	help
-	  lightweight X11 paint program.
+	  lightweight X11 paint program. *BROKEN*
