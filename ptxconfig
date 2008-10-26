@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.0.2
-# Sat Oct 25 19:03:35 2008
+# Sat Oct 25 19:36:46 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1733,7 +1733,7 @@ PTXCONF_ROX_FILER=y
 #
 # Instant Messagers     
 #
-PTXCONF_XCHAT=y
+# PTXCONF_XCHAT is not set
 
 #
 # Desktop/Windows Mgrs  

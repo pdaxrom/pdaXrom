@@ -60,6 +60,7 @@ source "workspace/rules/lzo.in"
 source "workspace/rules/pango.in"
 source "workspace/rules/slang.in"
 source "workspace/rules/pixman.in"
+source "workspace/rules/libglade.in"
 endmenu
 menu "Host Apps             "
 source "workspace/rules/host-icu.in"
