@@ -109,7 +109,7 @@ $(STATEDIR)/gpicview.targetinstall: $(gpicview_targetinstall_deps_default)
 	@$(call install_fixup, gpicview,PRIORITY,optional)
 	@$(call install_fixup, gpicview,VERSION,$(GPICVIEW_VERSION))
 	@$(call install_fixup, gpicview,SECTION,base)
-	@$(call install_fixup, gpicview,AUTHOR,"Adrian Crutchfield <insearchof@pdaXrom.org>")dr
+	@$(call install_fixup, gpicview,AUTHOR,"Adrian Crutchfield <insearchof@pdaXrom.org>")
 	@$(call install_fixup, gpicview,DEPENDS,)
 	@$(call install_fixup, gpicview,DESCRIPTION,missing)
 

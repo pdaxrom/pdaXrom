@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.0.2
-# Sat Oct 25 21:59:06 2008
+# Sat Oct 25 22:47:37 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1714,7 +1714,7 @@ PTXCONF_TESTSUITE_DIR="/usr/lib/testsuites"
 # Shells                
 #
 PTXCONF_ATERM=y
-PTXCONF_MRXVT=y
+# PTXCONF_MRXVT is not set
 
 #
 # Web Browsers          
@@ -1804,7 +1804,7 @@ PTXCONF_SHARED_MIME_INFO=y
 # Performace Test Utils 
 #
 PTXCONF_HACKBENCH=y
-PTXCONF_IPERF=y
+# PTXCONF_IPERF is not set
 
 #
 # Supporting Libraries  

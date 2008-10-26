@@ -17,7 +17,7 @@ PACKAGES-$(PTXCONF_IPERF) += iperf
 #
 # Paths and names
 #
-IPERF_VERSION	:= 2.0.2
+IPERF_VERSION	:= 2.0.4
 IPERF		:= iperf-$(IPERF_VERSION)
 IPERF_SUFFIX		:= tar.gz
 IPERF_URL		:= http://dast.nlanr.net/Projects/Iperf2.0/$(IPERF).$(IPERF_SUFFIX)
