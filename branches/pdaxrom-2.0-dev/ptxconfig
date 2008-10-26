@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # PTXdist version: 1.0.2
-# Sat Oct 25 21:48:30 2008
+# Sat Oct 25 21:59:06 2008
 #
 PTXCONF_MODULES=y
 PTXCONF_PTXCONF=y
@@ -1779,7 +1779,7 @@ PTXCONF_DHCPCD=y
 # Graphic Tools         
 #
 # PTXCONF_GPAINT is not set
-PTXCONF_MTPAINT=y
+# PTXCONF_MTPAINT is not set
 PTXCONF_GPICVIEW=y
 PTXCONF_PXACAMERA=y
 PTXCONF_XOURNAL=y

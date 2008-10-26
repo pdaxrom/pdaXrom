@@ -17,7 +17,7 @@ PACKAGES-$(PTXCONF_MTPAINT) += mtpaint
 #
 # Paths and names
 #
-MTPAINT_VERSION	:= 3.20
+MTPAINT_VERSION	:= 3.21
 MTPAINT		:= mtpaint-$(MTPAINT_VERSION)
 MTPAINT_SUFFIX	:= tar.bz2
 MTPAINT_URL	:= http://downloads.sourceforge.net/mtpaint/$(MTPAINT).$(MTPAINT_SUFFIX)
