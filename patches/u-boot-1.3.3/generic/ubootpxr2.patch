@@ -1,0 +1,1405 @@
+diff -cPr u-boot-1.3.1-orig/board/akita/akita.c u-boot-1.3.1/board/akita/akita.c
+*** u-boot-1.3.1-orig/board/akita/akita.c	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/board/akita/akita.c	2007-12-06 04:21:19.000000000 -0500
+***************
+*** 0 ****
+--- 1,70 ----
++ /*
++  * (C) Copyright 2002
++  * Kyle Harris, Nexus Technologies, Inc. kharris@nexus-tech.net
++  *
++  * (C) Copyright 2002
++  * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
++  * Marius Groeger <mgroeger@sysgo.de>
++  *
++  * See file CREDITS for list of people who contributed to this
++  * project.
++  *
++  * This program is free software; you can redistribute it and/or
++  * modify it under the terms of the GNU General Public License as
++  * published by the Free Software Foundation; either version 2 of
++  * the License, or (at your option) any later version.
++  *
++  * This program is distributed in the hope that it will be useful,
++  * but WITHOUT ANY WARRANTY; without even the implied warranty of
++  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  * GNU General Public License for more details.
++  *
++  * You should have received a copy of the GNU General Public License
++  * along with this program; if not, write to the Free Software
++  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++  * MA 02111-1307 USA
++  */
++ 
++ #include <common.h>
++ 
++ DECLARE_GLOBAL_DATA_PTR;
++ 
++ /*
++  * Miscelaneous platform dependent initialisations
++  */
++ 
++ int board_init (void)
++ {
++ 	/* memory and cpu-speed are setup before relocation */
++ 	/* so we do _nothing_ here */
++ 
++ 	/* arch number of Lubbock-Board */
++ 	gd->bd->bi_arch_number = MACH_TYPE_LUBBOCK;
++ 
++ 	/* adress of boot parameters */
++ 	gd->bd->bi_boot_params = 0xa0000100;
++ 
++ 	return 0;
++ }
++ 
++ int board_late_init(void)
++ {
++ 	setenv("stdout", "serial");
++ 	setenv("stderr", "serial");
++ 	return 0;
++ }
++ 
++ 
++ int dram_init (void)
++ {
++ 	gd->bd->bi_dram[0].start = PHYS_SDRAM_1;
++ 	gd->bd->bi_dram[0].size = PHYS_SDRAM_1_SIZE;
++ 	gd->bd->bi_dram[1].start = PHYS_SDRAM_2;
++ 	gd->bd->bi_dram[1].size = PHYS_SDRAM_2_SIZE;
++ 	gd->bd->bi_dram[2].start = PHYS_SDRAM_3;
++ 	gd->bd->bi_dram[2].size = PHYS_SDRAM_3_SIZE;
++ 	gd->bd->bi_dram[3].start = PHYS_SDRAM_4;
++ 	gd->bd->bi_dram[3].size = PHYS_SDRAM_4_SIZE;
++ 
++ 	return 0;
++ }
+diff -cPr u-boot-1.3.1-orig/board/akita/config.mk u-boot-1.3.1/board/akita/config.mk
+*** u-boot-1.3.1-orig/board/akita/config.mk	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/board/akita/config.mk	2007-12-06 04:21:19.000000000 -0500
+***************
+*** 0 ****
+--- 1,3 ----
++ #TEXT_BASE = 0xa1700000
++ TEXT_BASE = 0xa3080000
++ #TEXT_BASE = 0
+diff -cPr u-boot-1.3.1-orig/board/akita/flash.c u-boot-1.3.1/board/akita/flash.c
+*** u-boot-1.3.1-orig/board/akita/flash.c	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/board/akita/flash.c	2007-12-06 04:21:19.000000000 -0500
+***************
+*** 0 ****
+--- 1,431 ----
++ /*
++  * (C) Copyright 2001
++  * Kyle Harris, Nexus Technologies, Inc. kharris@nexus-tech.net
++  *
++  * (C) Copyright 2001
++  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++  *
++  * See file CREDITS for list of people who contributed to this
++  * project.
++  *
++  * This program is free software; you can redistribute it and/or
++  * modify it under the terms of the GNU General Public License as
++  * published by the Free Software Foundation; either version 2 of
++  * the License, or (at your option) any later version.
++  *
++  * This program is distributed in the hope that it will be useful,
++  * but WITHOUT ANY WARRANTY; without even the implied warranty of
++  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  * GNU General Public License for more details.
++  *
++  * You should have received a copy of the GNU General Public License
++  * along with this program; if not, write to the Free Software
++  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++  * MA 02111-1307 USA
++  */
++ 
++ #include <common.h>
++ #include <linux/byteorder/swab.h>
++ 
++ 
++ flash_info_t flash_info[CFG_MAX_FLASH_BANKS];	/* info for FLASH chips    */
++ 
++ /* Board support for 1 or 2 flash devices */
++ #define FLASH_PORT_WIDTH32
++ #undef FLASH_PORT_WIDTH16
++ 
++ #ifdef FLASH_PORT_WIDTH16
++ #define FLASH_PORT_WIDTH		ushort
++ #define FLASH_PORT_WIDTHV		vu_short
++ #define SWAP(x)               __swab16(x)
++ #else
++ #define FLASH_PORT_WIDTH		ulong
++ #define FLASH_PORT_WIDTHV		vu_long
++ #define SWAP(x)               __swab32(x)
++ #endif
++ 
++ #define FPW	   FLASH_PORT_WIDTH
++ #define FPWV   FLASH_PORT_WIDTHV
++ 
++ #define mb() __asm__ __volatile__ ("" : : : "memory")
++ 
++ /*-----------------------------------------------------------------------
++  * Functions
++  */
++ static ulong flash_get_size (FPW *addr, flash_info_t *info);
++ static int write_data (flash_info_t *info, ulong dest, FPW data);
++ static void flash_get_offsets (ulong base, flash_info_t *info);
++ void inline spin_wheel (void);
++ 
++ /*-----------------------------------------------------------------------
++  */
++ 
++ unsigned long flash_init (void)
++ {
++ 	int i;
++ 	ulong size = 0;
++ 
++ 	for (i = 0; i < CFG_MAX_FLASH_BANKS; i++) {
++ 		switch (i) {
++ 		case 0:
++ 			flash_get_size ((FPW *) PHYS_FLASH_1, &flash_info[i]);
++ 			flash_get_offsets (PHYS_FLASH_1, &flash_info[i]);
++ 			break;
++ 		case 1:
++ 			flash_get_size ((FPW *) PHYS_FLASH_2, &flash_info[i]);
++ 			flash_get_offsets (PHYS_FLASH_2, &flash_info[i]);
++ 			break;
++ 		default:
++ 			panic ("configured too many flash banks!\n");
++ 			break;
++ 		}
++ 		size += flash_info[i].size;
++ 	}
++ 
++ 	/* Protect monitor and environment sectors
++ 	 */
++ 	flash_protect ( FLAG_PROTECT_SET,
++ 			CFG_FLASH_BASE,
++ 			CFG_FLASH_BASE + monitor_flash_len - 1,
++ 			&flash_info[0] );
++ 
++ 	flash_protect ( FLAG_PROTECT_SET,
++ 			CFG_ENV_ADDR,
++ 			CFG_ENV_ADDR + CFG_ENV_SIZE - 1, &flash_info[0] );
++ 
++ 	return size;
++ }
++ 
++ /*-----------------------------------------------------------------------
++  */
++ static void flash_get_offsets (ulong base, flash_info_t *info)
++ {
++ 	int i;
++ 
++ 	if (info->flash_id == FLASH_UNKNOWN) {
++ 		return;
++ 	}
++ 
++ 	if ((info->flash_id & FLASH_VENDMASK) == FLASH_MAN_INTEL) {
++ 		for (i = 0; i < info->sector_count; i++) {
++ 			info->start[i] = base + (i * PHYS_FLASH_SECT_SIZE);
++ 			info->protect[i] = 0;
++ 		}
++ 	}
++ }
++ 
++ /*-----------------------------------------------------------------------
++  */
++ void flash_print_info (flash_info_t *info)
++ {
++ 	int i;
++ 
++ 	if (info->flash_id == FLASH_UNKNOWN) {
++ 		printf ("missing or unknown FLASH type\n");
++ 		return;
++ 	}
++ 
++ 	switch (info->flash_id & FLASH_VENDMASK) {
++ 	case FLASH_MAN_INTEL:
++ 		printf ("INTEL ");
++ 		break;
++ 	default:
++ 		printf ("Unknown Vendor ");
++ 		break;
++ 	}
++ 
++ 	switch (info->flash_id & FLASH_TYPEMASK) {
++ 	case FLASH_28F128J3A:
++ 		printf ("28F128J3A\n");
++ 		break;
++ 	default:
++ 		printf ("Unknown Chip Type\n");
++ 		break;
++ 	}
++ 
++ 	printf ("  Size: %ld MB in %d Sectors\n",
++ 			info->size >> 20, info->sector_count);
++ 
++ 	printf ("  Sector Start Addresses:");
++ 	for (i = 0; i < info->sector_count; ++i) {
++ 		if ((i % 5) == 0)
++ 			printf ("\n   ");
++ 		printf (" %08lX%s",
++ 			info->start[i],
++ 			info->protect[i] ? " (RO)" : "     ");
++ 	}
++ 	printf ("\n");
++ 	return;
++ }
++ 
++ /*
++  * The following code cannot be run from FLASH!
++  */
++ static ulong flash_get_size (FPW *addr, flash_info_t *info)
++ {
++ 	volatile FPW value;
++ 
++ 	/* Write auto select command: read Manufacturer ID */
++ 	addr[0x5555] = (FPW) 0x00AA00AA;
++ 	addr[0x2AAA] = (FPW) 0x00550055;
++ 	addr[0x5555] = (FPW) 0x00900090;
++ 
++ 	mb ();
++ 	value = addr[0];
++ 
++ 	switch (value) {
++ 
++ 	case (FPW) INTEL_MANUFACT:
++ 		info->flash_id = FLASH_MAN_INTEL;
++ 		break;
++ 
++ 	default:
++ 		info->flash_id = FLASH_UNKNOWN;
++ 		info->sector_count = 0;
++ 		info->size = 0;
++ 		addr[0] = (FPW) 0x00FF00FF;	/* restore read mode */
++ 		return (0);			/* no or unknown flash  */
++ 	}
++ 
++ 	mb ();
++ 	value = addr[1];			/* device ID        */
++ 
++ 	switch (value) {
++ 
++ 	case (FPW) INTEL_ID_28F128J3A:
++ 		info->flash_id += FLASH_28F128J3A;
++ 		info->sector_count = 128;
++ 		info->size = 0x02000000;
++ 		break;				/* => 16 MB     */
++ 
++ 	default:
++ 		info->flash_id = FLASH_UNKNOWN;
++ 		break;
++ 	}
++ 
++ 	if (info->sector_count > CFG_MAX_FLASH_SECT) {
++ 		printf ("** ERROR: sector count %d > max (%d) **\n",
++ 			info->sector_count, CFG_MAX_FLASH_SECT);
++ 		info->sector_count = CFG_MAX_FLASH_SECT;
++ 	}
++ 
++ 	addr[0] = (FPW) 0x00FF00FF;		/* restore read mode */
++ 
++ 	return (info->size);
++ }
++ 
++ 
++ /*-----------------------------------------------------------------------
++  */
++ 
++ int flash_erase (flash_info_t *info, int s_first, int s_last)
++ {
++ 	int flag, prot, sect;
++ 	ulong type, start, last;
++ 	int rcode = 0;
++ 
++ 	if ((s_first < 0) || (s_first > s_last)) {
++ 		if (info->flash_id == FLASH_UNKNOWN) {
++ 			printf ("- missing\n");
++ 		} else {
++ 			printf ("- no sectors to erase\n");
++ 		}
++ 		return 1;
++ 	}
++ 
++ 	type = (info->flash_id & FLASH_VENDMASK);
++ 	if ((type != FLASH_MAN_INTEL)) {
++ 		printf ("Can't erase unknown flash type %08lx - aborted\n",
++ 			info->flash_id);
++ 		return 1;
++ 	}
++ 
++ 	prot = 0;
++ 	for (sect = s_first; sect <= s_last; ++sect) {
++ 		if (info->protect[sect]) {
++ 			prot++;
++ 		}
++ 	}
++ 
++ 	if (prot) {
++ 		printf ("- Warning: %d protected sectors will not be erased!\n",
++ 			prot);
++ 	} else {
++ 		printf ("\n");
++ 	}
++ 
++ 	start = get_timer (0);
++ 	last = start;
++ 
++ 	/* Disable interrupts which might cause a timeout here */
++ 	flag = disable_interrupts ();
++ 
++ 	/* Start erase on unprotected sectors */
++ 	for (sect = s_first; sect <= s_last; sect++) {
++ 		if (info->protect[sect] == 0) {	/* not protected */
++ 			FPWV *addr = (FPWV *) (info->start[sect]);
++ 			FPW status;
++ 
++ 			printf ("Erasing sector %2d ... ", sect);
++ 
++ 			/* arm simple, non interrupt dependent timer */
++ 			reset_timer_masked ();
++ 
++ 			*addr = (FPW) 0x00500050;	/* clear status register */
++ 			*addr = (FPW) 0x00200020;	/* erase setup */
++ 			*addr = (FPW) 0x00D000D0;	/* erase confirm */
++ 
++ 			while (((status = *addr) & (FPW) 0x00800080) != (FPW) 0x00800080) {
++ 				if (get_timer_masked () > CFG_FLASH_ERASE_TOUT) {
++ 					printf ("Timeout\n");
++ 					*addr = (FPW) 0x00B000B0;	/* suspend erase     */
++ 					*addr = (FPW) 0x00FF00FF;	/* reset to read mode */
++ 					rcode = 1;
++ 					break;
++ 				}
++ 			}
++ 
++ 			*addr = 0x00500050;	/* clear status register cmd.   */
++ 			*addr = 0x00FF00FF;	/* resest to read mode          */
++ 
++ 			printf (" done\n");
++ 		}
++ 	}
++ 	return rcode;
++ }
++ 
++ /*-----------------------------------------------------------------------
++  * Copy memory to flash, returns:
++  * 0 - OK
++  * 1 - write timeout
++  * 2 - Flash not erased
++  * 4 - Flash not identified
++  */
++ 
++ int write_buff (flash_info_t *info, uchar *src, ulong addr, ulong cnt)
++ {
++ 	ulong cp, wp;
++ 	FPW data;
++ 	int count, i, l, rc, port_width;
++ 
++ 	if (info->flash_id == FLASH_UNKNOWN) {
++ 		return 4;
++ 	}
++ /* get lower word aligned address */
++ #ifdef FLASH_PORT_WIDTH16
++ 	wp = (addr & ~1);
++ 	port_width = 2;
++ #else
++ 	wp = (addr & ~3);
++ 	port_width = 4;
++ #endif
++ 
++ 	/*
++ 	 * handle unaligned start bytes
++ 	 */
++ 	if ((l = addr - wp) != 0) {
++ 		data = 0;
++ 		for (i = 0, cp = wp; i < l; ++i, ++cp) {
++ 			data = (data << 8) | (*(uchar *) cp);
++ 		}
++ 		for (; i < port_width && cnt > 0; ++i) {
++ 			data = (data << 8) | *src++;
++ 			--cnt;
++ 			++cp;
++ 		}
++ 		for (; cnt == 0 && i < port_width; ++i, ++cp) {
++ 			data = (data << 8) | (*(uchar *) cp);
++ 		}
++ 
++ 		if ((rc = write_data (info, wp, SWAP (data))) != 0) {
++ 			return (rc);
++ 		}
++ 		wp += port_width;
++ 	}
++ 
++ 	/*
++ 	 * handle word aligned part
++ 	 */
++ 	count = 0;
++ 	while (cnt >= port_width) {
++ 		data = 0;
++ 		for (i = 0; i < port_width; ++i) {
++ 			data = (data << 8) | *src++;
++ 		}
++ 		if ((rc = write_data (info, wp, SWAP (data))) != 0) {
++ 			return (rc);
++ 		}
++ 		wp += port_width;
++ 		cnt -= port_width;
++ 		if (count++ > 0x800) {
++ 			spin_wheel ();
++ 			count = 0;
++ 		}
++ 	}
++ 
++ 	if (cnt == 0) {
++ 		return (0);
++ 	}
++ 
++ 	/*
++ 	 * handle unaligned tail bytes
++ 	 */
++ 	data = 0;
++ 	for (i = 0, cp = wp; i < port_width && cnt > 0; ++i, ++cp) {
++ 		data = (data << 8) | *src++;
++ 		--cnt;
++ 	}
++ 	for (; i < port_width; ++i, ++cp) {
++ 		data = (data << 8) | (*(uchar *) cp);
++ 	}
++ 
++ 	return (write_data (info, wp, SWAP (data)));
++ }
++ 
++ /*-----------------------------------------------------------------------
++  * Write a word or halfword to Flash, returns:
++  * 0 - OK
++  * 1 - write timeout
++  * 2 - Flash not erased
++  */
++ static int write_data (flash_info_t *info, ulong dest, FPW data)
++ {
++ 	FPWV *addr = (FPWV *) dest;
++ 	ulong status;
++ 	int flag;
++ 
++ 	/* Check if Flash is (sufficiently) erased */
++ 	if ((*addr & data) != data) {
++ 		printf ("not erased at %08lx (%lx)\n", (ulong) addr, *addr);
++ 		return (2);
++ 	}
++ 	/* Disable interrupts which might cause a timeout here */
++ 	flag = disable_interrupts ();
++ 
++ 	*addr = (FPW) 0x00400040;	/* write setup */
++ 	*addr = data;
++ 
++ 	/* arm simple, non interrupt dependent timer */
++ 	reset_timer_masked ();
++ 
++ 	/* wait while polling the status register */
++ 	while (((status = *addr) & (FPW) 0x00800080) != (FPW) 0x00800080) {
++ 		if (get_timer_masked () > CFG_FLASH_WRITE_TOUT) {
++ 			*addr = (FPW) 0x00FF00FF;	/* restore read mode */
++ 			return (1);
++ 		}
++ 	}
++ 
++ 	*addr = (FPW) 0x00FF00FF;	/* restore read mode */
++ 
++ 	return (0);
++ }
++ 
++ void inline spin_wheel (void)
++ {
++ 	static int p = 0;
++ 	static char w[] = "\\/-";
++ 
++ 	printf ("\010%c", w[p]);
++ 	(++p == 3) ? (p = 0) : 0;
++ }
+diff -cPr u-boot-1.3.1-orig/board/akita/lowlevel_init.S u-boot-1.3.1/board/akita/lowlevel_init.S
+*** u-boot-1.3.1-orig/board/akita/lowlevel_init.S	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/board/akita/lowlevel_init.S	2008-11-12 22:23:00.000000000 -0500
+***************
+*** 0 ****
+--- 1,466 ----
++ /*
++  * This was originally from the Lubbock u-boot port.
++  *
++  * Most of this taken from Redboot hal_platform_setup.h with cleanup
++  *
++  * NOTE: I haven't clean this up considerably, just enough to get it
++  * running. See hal_platform_setup.h for the source. See
++  * board/cradle/lowlevel_init.S for another PXA250 setup that is
++  * much cleaner.
++  *
++  * See file CREDITS for list of people who contributed to this
++  * project.
++  *
++  * This program is free software; you can redistribute it and/or
++  * modify it under the terms of the GNU General Public License as
++  * published by the Free Software Foundation; either version 2 of
++  * the License, or (at your option) any later version.
++  *
++  * This program is distributed in the hope that it will be useful,
++  * but WITHOUT ANY WARRANTY; without even the implied warranty of
++  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
++  * GNU General Public License for more details.
++  *
++  * You should have received a copy of the GNU General Public License
++  * along with this program; if not, write to the Free Software
++  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++  * MA 02111-1307 USA
++  */
++ 
++ #include <config.h>
++ #include <version.h>
++ #include <asm/arch/pxa-regs.h>
++ 
++ /* wait for coprocessor write complete */
++    .macro CPWAIT reg
++    mrc	p15,0,\reg,c2,c0,0
++    mov	\reg,\reg
++    sub	pc,pc,#4
++    .endm
++ 
++ 
++ /*
++  *	Memory setup
++  */
++ 
++ .globl lowlevel_init
++ lowlevel_init:
++ 
++ 	/* Set up GPIO pins first ----------------------------------------- */
++ 
++ 	ldr		r0,	=GPSR0
++ 	ldr		r1,	=CFG_GPSR0_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPSR1
++ 	ldr		r1,	=CFG_GPSR1_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPSR2
++ 	ldr		r1,	=CFG_GPSR2_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPSR3
++ 	ldr		r1,	=CFG_GPSR3_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPCR0
++ 	ldr		r1,	=CFG_GPCR0_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPCR1
++ 	ldr		r1,	=CFG_GPCR1_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPCR2
++ 	ldr		r1,	=CFG_GPCR2_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPCR3
++ 	ldr		r1,	=CFG_GPCR3_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPDR0
++ 	ldr		r1,	=CFG_GPDR0_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPDR1
++ 	ldr		r1,	=CFG_GPDR1_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPDR2
++ 	ldr		r1,	=CFG_GPDR2_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GPDR3
++ 	ldr		r1,	=CFG_GPDR3_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR0_L
++ 	ldr		r1,	=CFG_GAFR0_L_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR0_U
++ 	ldr		r1,	=CFG_GAFR0_U_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR1_L
++ 	ldr		r1,	=CFG_GAFR1_L_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR1_U
++ 	ldr		r1,	=CFG_GAFR1_U_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR2_L
++ 	ldr		r1,	=CFG_GAFR2_L_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR2_U
++ 	ldr		r1,	=CFG_GAFR2_U_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR3_L
++ 	ldr		r1,	=CFG_GAFR3_L_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=GAFR3_U
++ 	ldr		r1,	=CFG_GAFR3_U_VAL
++ 	str		r1,   [r0]
++ 
++ 	ldr		r0,	=PSSR		/* enable GPIO pins */
++ 	ldr		r1,	=CFG_PSSR_VAL
++ 	str		r1,   [r0]
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Enable memory interface					    */
++ 	/*								    */
++ 	/* The sequence below is based on the recommended init steps	    */
++ 	/* detailed in the Intel PXA250 Operating Systems Developers Guide, */
++ 	/* Chapter 10.							    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 1: Wait for at least 200 microsedonds to allow internal	    */
++ 	/*	   clocks to settle. Only necessary after hard reset...	    */
++ 	/*	   FIXME: can be optimized later			    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	ldr r3, =OSCR			/* reset the OS Timer Count to zero */
++ 	mov r2, #0
++ 	str r2, [r3]
++ 	ldr r4, =0x300			/* really 0x2E1 is about 200usec,   */
++ 					/* so 0x300 should be plenty	    */
++ 1:
++ 	ldr r2, [r3]
++ 	cmp r4, r2
++ 	bgt 1b
++ 
++ mem_init:
++ 
++ 	ldr	r1,  =MEMC_BASE		/* get memory controller base addr. */
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 2a: Initialize Asynchronous static memory controller	    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	/* MSC registers: timing, bus width, mem type			    */
++ 
++ 	/* MSC0: nCS(0,1)						    */
++ 	ldr	r2,   =CFG_MSC0_VAL
++ 	str	r2,   [r1, #MSC0_OFFSET]
++ 	ldr	r2,   [r1, #MSC0_OFFSET]	/* read back to ensure	    */
++ 						/* that data latches	    */
++ 	/* MSC1: nCS(2,3)						    */
++ 	ldr	r2,  =CFG_MSC1_VAL
++ 	str	r2,  [r1, #MSC1_OFFSET]
++ 	ldr	r2,  [r1, #MSC1_OFFSET]
++ 
++ 	/* MSC2: nCS(4,5)						    */
++ 	ldr	r2,  =CFG_MSC2_VAL
++ 	str	r2,  [r1, #MSC2_OFFSET]
++ 	ldr	r2,  [r1, #MSC2_OFFSET]
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 2b: Initialize Card Interface				    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	/* MECR: Memory Expansion Card Register				    */
++ 	ldr	r2,  =CFG_MECR_VAL
++ 	str	r2,  [r1, #MECR_OFFSET]
++ 	ldr	r2,	[r1, #MECR_OFFSET]
++ 
++ 	/* MCMEM0: Card Interface slot 0 timing				    */
++ 	ldr	r2,  =CFG_MCMEM0_VAL
++ 	str	r2,  [r1, #MCMEM0_OFFSET]
++ 	ldr	r2,	[r1, #MCMEM0_OFFSET]
++ 
++ 	/* MCMEM1: Card Interface slot 1 timing				    */
++ 	ldr	r2,  =CFG_MCMEM1_VAL
++ 	str	r2,  [r1, #MCMEM1_OFFSET]
++ 	ldr	r2,	[r1, #MCMEM1_OFFSET]
++ 
++ 	/* MCATT0: Card Interface Attribute Space Timing, slot 0	    */
++ 	ldr	r2,  =CFG_MCATT0_VAL
++ 	str	r2,  [r1, #MCATT0_OFFSET]
++ 	ldr	r2,	[r1, #MCATT0_OFFSET]
++ 
++ 	/* MCATT1: Card Interface Attribute Space Timing, slot 1	    */
++ 	ldr	r2,  =CFG_MCATT1_VAL
++ 	str	r2,  [r1, #MCATT1_OFFSET]
++ 	ldr	r2,	[r1, #MCATT1_OFFSET]
++ 
++ 	/* MCIO0: Card Interface I/O Space Timing, slot 0		    */
++ 	ldr	r2,  =CFG_MCIO0_VAL
++ 	str	r2,  [r1, #MCIO0_OFFSET]
++ 	ldr	r2,	[r1, #MCIO0_OFFSET]
++ 
++ 	/* MCIO1: Card Interface I/O Space Timing, slot 1		    */
++ 	ldr	r2,  =CFG_MCIO1_VAL
++ 	str	r2,  [r1, #MCIO1_OFFSET]
++ 	ldr	r2,	[r1, #MCIO1_OFFSET]
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 2c: Write FLYCNFG  FIXME: what's that???		    */
++ 	/* ---------------------------------------------------------------- */
++ 	ldr	r2,  =CFG_FLYCNFG_VAL
++ 	str	r2,  [r1, #FLYCNFG_OFFSET]
++ 	str	r2,	[r1, #FLYCNFG_OFFSET]
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 2d: Initialize Timing for Sync Memory (SDCLK0)		    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	/* Before accessing MDREFR we need a valid DRI field, so we set	    */
++ 	/* this to power on defaults + DRI field.			    */
++ 
++ 	ldr	r4,	[r1, #MDREFR_OFFSET]
++ 	ldr	r2,	=0xFFF
++ 	bic	r4,	r4, r2
++ 
++ 	ldr	r3,	=CFG_MDREFR_VAL
++ 	and	r3,	r3,  r2
++ 
++ 	orr	r4,	r4, r3
++ 	str	r4,	[r1, #MDREFR_OFFSET]	/* write back MDREFR	    */
++ 
++ 	orr	r4,  r4, #MDREFR_K0RUN
++ 	orr	r4,  r4, #MDREFR_K0DB4
++ 	orr	r4,  r4, #MDREFR_K0FREE
++ 	orr	r4,  r4, #MDREFR_K0DB2
++ 	orr	r4,  r4, #MDREFR_K1DB2
++ 	bic	r4,  r4, #MDREFR_K1FREE
++ 	bic	r4,  r4, #MDREFR_K2FREE
++ 
++ 	str	r4,	[r1, #MDREFR_OFFSET]	/* write back MDREFR	    */
++ 	ldr	r4,  [r1, #MDREFR_OFFSET]
++ 
++ 	/* Note: preserve the mdrefr value in r4			    */
++ 
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 3: Initialize Synchronous Static Memory (Flash/Peripherals) */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	/* Initialize SXCNFG register. Assert the enable bits		    */
++ 
++ 	/* Write SXMRS to cause an MRS command to all enabled banks of	    */
++ 	/* synchronous static memory. Note that SXLCR need not be written   */
++ 	/* at this time.						    */
++ 
++ 	ldr	r2,  =CFG_SXCNFG_VAL
++ 	str	r2,  [r1, #SXCNFG_OFFSET]
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Step 4: Initialize SDRAM					    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ 	bic	r4, r4, #(MDREFR_K2FREE |MDREFR_K1FREE | MDREFR_K0FREE)
++ 
++ 	orr	r4, r4, #MDREFR_K1RUN
++ 	bic	r4, r4, #MDREFR_K2DB2
++ 	str	r4, [r1, #MDREFR_OFFSET]
++ 	ldr	r4, [r1, #MDREFR_OFFSET]
++ 
++ 	bic	r4, r4, #MDREFR_SLFRSH
++ 	str	r4, [r1, #MDREFR_OFFSET]
++ 	ldr	r4, [r1, #MDREFR_OFFSET]
++ 
++ 	orr	r4, r4, #MDREFR_E1PIN
++ 	str	r4, [r1, #MDREFR_OFFSET]
++ 	ldr	r4, [r1, #MDREFR_OFFSET]
++ 
++ 	nop
++ 	nop
++ 
++ 
++ 	/* Step 4d: write MDCNFG with MDCNFG:DEx deasserted (set to 0), to  */
++ 	/*	    configure but not enable each SDRAM partition pair.	    */
++ 
++ 	ldr	r4,	=CFG_MDCNFG_VAL
++ 	bic	r4,	r4,	#(MDCNFG_DE0|MDCNFG_DE1)
++ 	bic	r4,	r4,	#(MDCNFG_DE2|MDCNFG_DE3)
++ 
++ 	str	r4,	[r1, #MDCNFG_OFFSET]	/* write back MDCNFG	    */
++ 	ldr	r4,	[r1, #MDCNFG_OFFSET]
++ 
++ 
++ 	/* Step 4e: Wait for the clock to the SDRAMs to stabilize,	    */
++ 	/*	    100..200 µsec.					    */
++ 
++ 	ldr r3, =OSCR			/* reset the OS Timer Count to zero */
++ 	mov r2, #0
++ 	str r2, [r3]
++ 	ldr r4, =0x300			/* really 0x2E1 is about 200usec,   */
++ 					/* so 0x300 should be plenty	    */
++ 1:
++ 	    ldr r2, [r3]
++ 	    cmp r4, r2
++ 	    bgt 1b
++ 
++ 
++ 	/* Step 4f: Trigger a number (usually 8) refresh cycles by	    */
++ 	/*	    attempting non-burst read or write accesses to disabled */
++ 	/*	    SDRAM, as commonly specified in the power up sequence   */
++ 	/*	    documented in SDRAM data sheets. The address(es) used   */
++ 	/*	    for this purpose must not be cacheable.		    */
++ 
++ 	ldr	r3,	=CFG_DRAM_BASE
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 	str	r2,	[r3]
++ 
++ 
++ 	/* Step 4g: Write MDCNFG with enable bits asserted		    */
++ 	/*	    (MDCNFG:DEx set to 1).				    */
++ 
++ 	ldr	r3,	[r1, #MDCNFG_OFFSET]
++ 	mov	r4, r3
++ 	orr	r3,	r3,	#MDCNFG_DE0
++ 	str	r3,	[r1, #MDCNFG_OFFSET]
++ 	mov	r0, r3
++ 
++ 	/* Step 4h: Write MDMRS.					    */
++ 
++ 	ldr	r2,  =CFG_MDMRS_VAL
++ 	str	r2,  [r1, #MDMRS_OFFSET]
++ 
++ 	/* enable APD */
++ 	ldr	r3,  [r1, #MDREFR_OFFSET]
++ 	orr	r3,  r3,  #MDREFR_APD
++ 	str	r3,  [r1, #MDREFR_OFFSET]
++ 
++ 	/* We are finished with Intel's memory controller initialisation    */
++ 
++ #setvoltage:
++ 
++ #	mov	r10,	lr
++ #	bl	initPXAvoltage	/* In case the board is rebooting with a    */
++ #	mov	lr,	r10	/* low voltage raise it up to a good one.   */
++ 
++ wakeup:
++ 	/* Are we waking from sleep? */
++ 	ldr	r0,	=RCSR
++ 	ldr	r1,	[r0]
++ 	and	r1,	r1, #(RCSR_GPR | RCSR_SMR | RCSR_WDR | RCSR_HWR)
++ 	str	r1,	[r0]
++ 	teq	r1,	#RCSR_SMR
++ 
++ 	bne	initirqs
++ 
++ 	ldr	r0,	=PSSR
++ 	mov	r1,	#PSSR_PH
++ 	str	r1,	[r0]
++ 
++ 	/* if so, resume at PSPR */
++ 	ldr	r0,	=PSPR
++ 	ldr	r1,	[r0]
++ 	mov	pc,	r1
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Disable (mask) all interrupts at interrupt controller	    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ initirqs:
++ 
++ 	mov	r1,  #0		/* clear int. level register (IRQ, not FIQ) */
++ 	ldr	r2,  =ICLR
++ 	str	r1,  [r2]
++ 
++ 	ldr	r2,  =ICMR	/* mask all interrupts at the controller    */
++ 	str	r1,  [r2]
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* Clock initialisation						    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ initclks:
++ 
++ 	/* Disable the peripheral clocks, and set the core clock frequency  */
++ 
++ 	/* Turn Off on-chip peripheral clocks (except for memory)	    */
++ 	/* for re-configuration.					    */
++ 	ldr	r1,  =CKEN
++ 	ldr	r2,  =CFG_CKEN
++ 	str	r2,  [r1]
++ 
++ 	/* ... and write the core clock config register			    */
++ 	ldr	r2,  =CFG_CCCR
++ 	ldr	r1,  =CCCR
++ 	str	r2,  [r1]
++ 
++ 	/* Turn on turbo mode */
++ 	mrc	p14, 0, r2, c6, c0, 0
++ 	orr	r2, r2, #0xB		/* Turbo, Fast-Bus, Freq change**/
++ 	mcr	p14, 0, r2, c6, c0, 0
++ 
++ 	/* Re-write MDREFR */
++ 	ldr	r1, =MEMC_BASE
++ 	ldr	r2, [r1, #MDREFR_OFFSET]
++ 	str	r2, [r1, #MDREFR_OFFSET]
++ #ifdef RTC
++ 	/* enable the 32Khz oscillator for RTC and PowerManager		    */
++ 	ldr	r1,  =OSCC
++ 	mov	r2,  #OSCC_OON
++ 	str	r2,  [r1]
++ 
++ 	/* NOTE:  spin here until OSCC.OOK get set, meaning the PLL	    */
++ 	/* has settled.							    */
++ 60:
++ 	ldr	r2, [r1]
++ 	ands	r2, r2, #1
++ 	beq	60b
++ #else
++ ##error "RTC not defined"
++ #endif
++ 
++ 	/* Interrupt init: Mask all interrupts				    */
++     ldr r0, =ICMR /* enable no sources */
++ 	mov r1, #0
++     str r1, [r0]
++ 	/* FIXME */
++ 
++ #ifdef NODEBUG
++ 	/*Disable software and data breakpoints */
++ 	mov	r0,#0
++ 	mcr	p15,0,r0,c14,c8,0  /* ibcr0 */
++ 	mcr	p15,0,r0,c14,c9,0  /* ibcr1 */
++ 	mcr	p15,0,r0,c14,c4,0  /* dbcon */
++ 
++ 	/*Enable all debug functionality */
++ 	mov	r0,#0x80000000
++ 	mcr	p14,0,r0,c10,c0,0  /* dcsr */
++ #endif
++ 
++ 	/* ---------------------------------------------------------------- */
++ 	/* End lowlevel_init							    */
++ 	/* ---------------------------------------------------------------- */
++ 
++ endlowlevel_init:
++ 
++ 	mov	pc, lr
+diff -cPr u-boot-1.3.1-orig/board/akita/Makefile u-boot-1.3.1/board/akita/Makefile
+*** u-boot-1.3.1-orig/board/akita/Makefile	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/board/akita/Makefile	2008-11-12 21:57:33.000000000 -0500
+***************
+*** 0 ****
+--- 1,53 ----
++ 
++ #
++ # (C) Copyright 2000-2006
++ # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++ #
++ # See file CREDITS for list of people who contributed to this
++ # project.
++ #
++ # This program is free software; you can redistribute it and/or
++ # modify it under the terms of the GNU General Public License as
++ # published by the Free Software Foundation; either version 2 of
++ # the License, or (at your option) any later version.
++ #
++ # This program is distributed in the hope that it will be useful,
++ # but WITHOUT ANY WARRANTY; without even the implied warranty of
++ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ # GNU General Public License for more details.
++ #
++ # You should have received a copy of the GNU General Public License
++ # along with this program; if not, write to the Free Software
++ # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ # MA 02111-1307 USA
++ #
++ 
++ include $(TOPDIR)/config.mk
++ 
++ LIB	= $(obj)lib$(BOARD).a
++ 
++ #COBJS	:= lubbock.o flash.o
++ COBJS	:= akita.o
++ SOBJS	:= lowlevel_init.o
++ 
++ SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
++ OBJS	:= $(addprefix $(obj),$(COBJS))
++ SOBJS	:= $(addprefix $(obj),$(SOBJS))
++ 
++ $(LIB):	$(obj).depend $(OBJS) $(SOBJS)
++ 	$(AR) $(ARFLAGS) $@ $(OBJS) $(SOBJS)
++ 
++ clean:
++ 	rm -f $(SOBJS) $(OBJS)
++ 
++ distclean:	clean
++ 	rm -f $(LIB) core *.bak .depend
++ 
++ #########################################################################
++ 
++ # defines $(obj).depend target
++ include $(SRCTREE)/rules.mk
++ 
++ sinclude $(obj).depend
++ 
++ #########################################################################
+diff -cPr u-boot-1.3.1-orig/board/akita/u-boot.lds u-boot-1.3.1/board/akita/u-boot.lds
+*** u-boot-1.3.1-orig/board/akita/u-boot.lds	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/board/akita/u-boot.lds	2007-12-06 04:21:19.000000000 -0500
+***************
+*** 0 ****
+--- 1,56 ----
++ /*
++  * (C) Copyright 2000
++  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
++  *
++  * See file CREDITS for list of people who contributed to this
++  * project.
++  *
++  * This program is free software; you can redistribute it and/or
++  * modify it under the terms of the GNU General Public License as
++  * published by the Free Software Foundation; either version 2 of
++  * the License, or (at your option) any later version.
++  *
++  * This program is distributed in the hope that it will be useful,
++  * but WITHOUT ANY WARRANTY; without even the implied warranty of
++  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++  * GNU General Public License for more details.
++  *
++  * You should have received a copy of the GNU General Public License
++  * along with this program; if not, write to the Free Software
++  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++  * MA 02111-1307 USA
++  */
++ 
++ OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
++ OUTPUT_ARCH(arm)
++ ENTRY(_start)
++ SECTIONS
++ {
++ 	. = 0x00000000;
++ 
++ 	. = ALIGN(4);
++ 	.text      :
++ 	{
++ 	  cpu/pxa/start.o	(.text)
++ 	  *(.text)
++ 	}
++ 
++ 	. = ALIGN(4);
++ 	.rodata : { *(.rodata) }
++ 
++ 	. = ALIGN(4);
++ 	.data : { *(.data) }
++ 
++ 	. = ALIGN(4);
++ 	.got : { *(.got) }
++ 
++ 	. = .;
++ 	__u_boot_cmd_start = .;
++ 	.u_boot_cmd : { *(.u_boot_cmd) }
++ 	__u_boot_cmd_end = .;
++ 
++ 	. = ALIGN(4);
++ 	__bss_start = .;
++ 	.bss : { *(.bss) }
++ 	_end = .;
++ }
+diff -cPr u-boot-1.3.1-orig/common/Makefile u-boot-1.3.1/common/Makefile
+*** u-boot-1.3.1-orig/common/Makefile	2007-12-06 04:21:19.000000000 -0500
+--- u-boot-1.3.1/common/Makefile	2008-11-12 22:43:48.000000000 -0500
+***************
+*** 131,136 ****
+--- 131,138 ----
+  COBJS-y += crc16.o
+  COBJS-y += xyzModem.o
+  COBJS-y += cmd_mac.o
++ COBJS-y += cmd_flash.o
++ COBJS-y += cmd_net.o
+  COBJS-$(CONFIG_CMD_MFSL) += cmd_mfsl.o
+  
+  COBJS	:= $(COBJS-y)
+diff -cPr u-boot-1.3.1-orig/include/configs/akita.h u-boot-1.3.1/include/configs/akita.h
+*** u-boot-1.3.1-orig/include/configs/akita.h	1969-12-31 19:00:00.000000000 -0500
+--- u-boot-1.3.1/include/configs/akita.h	2007-12-06 04:21:19.000000000 -0500
+***************
+*** 0 ****
+--- 1,255 ----
++ /*
++  * (C) Copyright 2002
++  * Kyle Harris, Nexus Technologies, Inc. kharris@nexus-tech.net
++  *
++  * (C) Copyright 2002
++  * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
++  * Marius Groeger <mgroeger@sysgo.de>
++  *
++  * Configuation settings for the LUBBOCK board.
++  *
++  * See file CREDITS for list of people who contributed to this
++  * project.
++  *
++  * This program is free software; you can redistribute it and/or
++  * modify it under the terms of the GNU General Public License as
++  * published by the Free Software Foundation; either version 2 of
++  * the License, or (at your option) any later version.
++  *
++  * This program is distributed in the hope that it will be useful,
++  * but WITHOUT ANY WARRANTY; without even the implied warranty of
++  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
++  * GNU General Public License for more details.
++  *
++  * You should have received a copy of the GNU General Public License
++  * along with this program; if not, write to the Free Software
++  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++  * MA 02111-1307 USA
++  */
++ 
++ #ifndef __CONFIG_H
++ #define __CONFIG_H
++ 
++ /*
++  * High Level Configuration Options
++  * (easy to change)
++  */
++ #define CONFIG_PXA250		1	/* This is an PXA250 CPU    */
++ #define CONFIG_LUBBOCK		1	/* on an LUBBOCK Board	    */
++ #define CONFIG_LCD		1
++ #ifdef CONFIG_LCD
++ #define CONFIG_SHARP_LM8V31
++ #endif
++ #define CONFIG_MMC		1
++ #define BOARD_LATE_INIT		1
++ #define CONFIG_DOS_PARTITION
++ 
++ #undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
++ 
++ /*
++  * Size of malloc() pool
++  */
++ #define CFG_MALLOC_LEN	    (CFG_ENV_SIZE + 128*1024)
++ #define CFG_GBL_DATA_SIZE	128	/* size in bytes reserved for initial data */
++ 
++ /*
++  * Hardware drivers
++  */
++ #define CONFIG_DRIVER_LAN91C96
++ #define CONFIG_LAN91C96_BASE 0x0C000000
++ 
++ /*
++  * select serial console configuration
++  */
++ #define CONFIG_FFUART	       1       /* we use FFUART on LUBBOCK */
++ 
++ /* allow to overwrite serial and ethaddr */
++ #define CONFIG_ENV_OVERWRITE
++ 
++ #define CONFIG_BAUDRATE		115200
++ 
++ 
++ /*
++  * BOOTP options
++  */
++ #define CONFIG_BOOTP_BOOTFILESIZE
++ #define CONFIG_BOOTP_BOOTPATH
++ #define CONFIG_BOOTP_GATEWAY
++ #define CONFIG_BOOTP_HOSTNAME
++ 
++ 
++ /*
++  * Command line configuration.
++  */
++ #include <config_cmd_default.h>
++ 
++ #define CONFIG_CMD_MMC
++ #define CONFIG_CMD_FAT
++ 
++ 
++ #define CONFIG_BOOTDELAY	3
++ #define CONFIG_ETHADDR		08:00:3e:26:0a:5b
++ #define CONFIG_NETMASK		255.255.0.0
++ #define CONFIG_IPADDR		192.168.0.21
++ #define CONFIG_SERVERIP		192.168.0.250
++ #define CONFIG_BOOTCOMMAND	"bootm 80000"
++ #define CONFIG_BOOTARGS		"root=/dev/mtdblock2 rootfstype=cramfs console=ttyS0,115200"
++ #define CONFIG_CMDLINE_TAG
++ #define CONFIG_TIMESTAMP
++ 
++ #if defined(CONFIG_CMD_KGDB)
++ #define CONFIG_KGDB_BAUDRATE	230400		/* speed to run kgdb serial port */
++ #define CONFIG_KGDB_SER_INDEX	2		/* which serial port to use */
++ #endif
++ 
++ /*
++  * Miscellaneous configurable options
++  */
++ #define CFG_HUSH_PARSER		1
++ #define CFG_PROMPT_HUSH_PS2	"> "
++ 
++ #define CFG_LONGHELP				/* undef to save memory		*/
++ #ifdef CFG_HUSH_PARSER
++ #define CFG_PROMPT		"$ "		/* Monitor Command Prompt */
++ #else
++ #define CFG_PROMPT		"=> "		/* Monitor Command Prompt */
++ #endif
++ #define CFG_CBSIZE		256		/* Console I/O Buffer Size	*/
++ #define CFG_PBSIZE (CFG_CBSIZE+sizeof(CFG_PROMPT)+16) /* Print Buffer Size */
++ #define CFG_MAXARGS		16		/* max number of command args	*/
++ #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size	*/
++ #define CFG_DEVICE_NULLDEV	1
++ 
++ #define CFG_MEMTEST_START	0xa0400000	/* memtest works on	*/
++ #define CFG_MEMTEST_END		0xa0800000	/* 4 ... 8 MB in DRAM	*/
++ 
++ #undef	CFG_CLKS_IN_HZ		/* everything, incl board info, in Hz */
++ 
++ #define CFG_LOAD_ADDR	(CFG_DRAM_BASE + 0x8000) /* default load address */
++ 
++ #define CFG_HZ			3686400		/* incrementer freq: 3.6864 MHz */
++ #define CFG_CPUSPEED		0x161		/* set core clock to 400/200/100 MHz */
++ 
++ 						/* valid baudrates */
++ #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
++ 
++ #define CFG_MMC_BASE		0xF0000000
++ 
++ /*
++  * Stack sizes
++  *
++  * The stack sizes are set up in start.S using the settings below
++  */
++ #define CONFIG_STACKSIZE	(128*1024)	/* regular stack */
++ #ifdef CONFIG_USE_IRQ
++ #define CONFIG_STACKSIZE_IRQ	(4*1024)	/* IRQ stack */
++ #define CONFIG_STACKSIZE_FIQ	(4*1024)	/* FIQ stack */
++ #endif
++ 
++ /*
++  * Physical Memory Map
++  */
++ #define CONFIG_NR_DRAM_BANKS	4	   /* we have 2 banks of DRAM */
++ #define PHYS_SDRAM_1		0xa0000000 /* SDRAM Bank #1 */
++ #define PHYS_SDRAM_1_SIZE	0x04000000 /* 64 MB */
++ #define PHYS_SDRAM_2		0xa4000000 /* SDRAM Bank #2 */
++ #define PHYS_SDRAM_2_SIZE	0x00000000 /* 0 MB */
++ #define PHYS_SDRAM_3		0xa8000000 /* SDRAM Bank #3 */
++ #define PHYS_SDRAM_3_SIZE	0x00000000 /* 0 MB */
++ #define PHYS_SDRAM_4		0xac000000 /* SDRAM Bank #4 */
++ #define PHYS_SDRAM_4_SIZE	0x00000000 /* 0 MB */
++ 
++ #define PHYS_FLASH_1		0x00000000 /* Flash Bank #1 */
++ #define PHYS_FLASH_2		0x04000000 /* Flash Bank #2 */
++ #define PHYS_FLASH_SIZE		0x02000000 /* 32 MB */
++ #define PHYS_FLASH_BANK_SIZE	0x02000000 /* 32 MB Banks */
++ #define PHYS_FLASH_SECT_SIZE	0x00040000 /* 256 KB sectors (x2) */
++ 
++ #define CFG_DRAM_BASE		0xa0000000
++ #define CFG_DRAM_SIZE		0x04000000
++ 
++ #define CFG_FLASH_BASE		PHYS_FLASH_1
++ 
++ #define FPGA_REGS_BASE_PHYSICAL 0x08000000
++ 
++ /*
++  * GPIO settings
++  */
++ #define CFG_GPSR0_VAL		0x00008000
++ #define CFG_GPSR1_VAL		0x00FC0382
++ #define CFG_GPSR2_VAL		0x0001FFFF
++ #define CFG_GPCR0_VAL		0x00000000
++ #define CFG_GPCR1_VAL		0x00000000
++ #define CFG_GPCR2_VAL		0x00000000
++ #define CFG_GPDR0_VAL		0x0060A800
++ #define CFG_GPDR1_VAL		0x00FF0382
++ #define CFG_GPDR2_VAL		0x0001C000
++ #define CFG_GAFR0_L_VAL		0x98400000
++ #define CFG_GAFR0_U_VAL		0x00002950
++ #define CFG_GAFR1_L_VAL		0x000A9558
++ #define CFG_GAFR1_U_VAL		0x0005AAAA
++ #define CFG_GAFR2_L_VAL		0xA0000000
++ #define CFG_GAFR2_U_VAL		0x00000002
++ 
++ #define CFG_PSSR_VAL		0x20
++ 
++ /*
++  * Memory settings
++  */
++ #define CFG_MSC0_VAL		0x23F223F2
++ #define CFG_MSC1_VAL		0x3FF1A441
++ #define CFG_MSC2_VAL		0x7FF97FF1
++ #define CFG_MDCNFG_VAL		0x00001AC9
++ #define CFG_MDREFR_VAL		0x00018018
++ #define CFG_MDMRS_VAL		0x00000000
++ 
++ /*
++  * PCMCIA and CF Interfaces
++  */
++ #define CFG_MECR_VAL		0x00000000
++ #define CFG_MCMEM0_VAL		0x00010504
++ #define CFG_MCMEM1_VAL		0x00010504
++ #define CFG_MCATT0_VAL		0x00010504
++ #define CFG_MCATT1_VAL		0x00010504
++ #define CFG_MCIO0_VAL		0x00004715
++ #define CFG_MCIO1_VAL		0x00004715
++ 
++ #define _LED			0x08000010
++ #define LED_BLANK		0x08000040
++ 
++ /*
++  * FLASH and environment organization
++  */
++ #define CFG_MAX_FLASH_BANKS	2	/* max number of memory banks		*/
++ #define CFG_MAX_FLASH_SECT	128  /* max number of sectors on one chip    */
++ 
++ /* timeout values are in ticks */
++ #define CFG_FLASH_ERASE_TOUT	(25*CFG_HZ) /* Timeout for Flash Erase */
++ #define CFG_FLASH_WRITE_TOUT	(25*CFG_HZ) /* Timeout for Flash Write */
++ 
++ /* NOTE: many default partitioning schemes assume the kernel starts at the
++  * second sector, not an environment.  You have been warned!
++  */
++ #define	CFG_MONITOR_LEN		PHYS_FLASH_SECT_SIZE
++ #define CFG_ENV_IS_IN_FLASH	1
++ #define CFG_ENV_ADDR		(PHYS_FLASH_1 + PHYS_FLASH_SECT_SIZE)
++ #define CFG_ENV_SECT_SIZE	PHYS_FLASH_SECT_SIZE
++ #define CFG_ENV_SIZE		(PHYS_FLASH_SECT_SIZE / 16)
++ 
++ 
++ /*
++  * FPGA Offsets
++  */
++ #define WHOAMI_OFFSET		0x00
++ #define HEXLED_OFFSET		0x10
++ #define BLANKLED_OFFSET		0x40
++ #define DISCRETELED_OFFSET	0x40
++ #define CNFG_SWITCHES_OFFSET	0x50
++ #define USER_SWITCHES_OFFSET	0x60
++ #define MISC_WR_OFFSET		0x80
++ #define MISC_RD_OFFSET		0x90
++ #define INT_MASK_OFFSET		0xC0
++ #define INT_CLEAR_OFFSET	0xD0
++ #define GP_OFFSET		0x100
++ 
++ #endif	/* __CONFIG_H */
+diff -cPr u-boot-1.3.1-orig/Makefile u-boot-1.3.1/Makefile
+*** u-boot-1.3.1-orig/Makefile	2007-12-06 04:21:19.000000000 -0500
+--- u-boot-1.3.1/Makefile	2008-11-12 21:56:31.000000000 -0500
+***************
+*** 2384,2389 ****
+--- 2384,2392 ----
+  lubbock_config	:	unconfig
+  	@$(MKCONFIG) $(@:_config=) arm pxa lubbock
+  
++ akita_config	:	unconfig
++ 	@$(MKCONFIG) $(@:_config=) arm pxa akita
++ 
+  pleb2_config	:	unconfig
+  	@$(MKCONFIG) $(@:_config=) arm pxa pleb2
+  
