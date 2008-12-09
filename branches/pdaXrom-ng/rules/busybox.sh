@@ -16,6 +16,11 @@ build_busybox() {
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS oldconfig|| error
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS || error
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS CONFIG_PREFIX=$ROOTFS_DIR install || error
+
+    if [ -e $ROOTFS_DIR/sbin/udhcpc ]; then
+	mkdir -p $ROOTFS_DIR/usr/share/udhcpc
+	$INSTALL -m 755 examples/udhcp/simple.script $ROOTFS_DIR/usr/share/udhcpc/default.script
+    fi
     popd
     touch "$STATE_DIR/busybox"
 }

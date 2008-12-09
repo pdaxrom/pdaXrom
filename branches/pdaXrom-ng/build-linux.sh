@@ -21,3 +21,4 @@ MAKEARGS=-j4
 . $RULES_DIR/install_glibc.sh
 . $RULES_DIR/create_root.sh
 
+. $RULES_DIR/create_initramfs.sh

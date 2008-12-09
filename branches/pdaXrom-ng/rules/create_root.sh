@@ -3,6 +3,12 @@ bin
 dev
 etc
 etc/init.d
+etc/rc.d
+etc/network
+etc/network/if-down.d
+etc/network/if-post-down.d
+etc/network/if-pre-up.d
+etc/network/if-up.d
 home
 lib
 mnt
@@ -16,6 +22,10 @@ usr/bin
 usr/lib
 usr/sbin
 var
+var/log
+var/lib
+var/run
+var/tmp
 "
 
 create_root() {
@@ -31,6 +41,8 @@ create_root() {
     for f in $GENERICFS_DIR/etc/*; do
 	test -f $f && $INSTALL -m 644 $f $ROOTFS_DIR/etc/
     done
+
+    $INSTALL -m 644 $GENERICFS_DIR/etc/network/interfaces $ROOTFS_DIR/etc/network/
     
     touch "$STATE_DIR/root_tree"
 }

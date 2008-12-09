@@ -33,7 +33,7 @@ build_udev() {
     mkdir -p $ROOTFS_DIR/etc/udev/scripts
     mkdir -p $ROOTFS_DIR/sbin
     $INSTALL -m 755 udev/udevd udev/udevadm $ROOTFS_DIR/sbin/
-    $INSTALL -m 644 udev.conf $ROOTFS_DIR/etc/udev/
+    $INSTALL -m 644 $GENERICFS_DIR/etc/udev/udev.conf  $ROOTFS_DIR/etc/udev/
     $INSTALL -m 644 $GENERICFS_DIR/etc/udev/links.conf $ROOTFS_DIR/etc/udev/
     $INSTALL -m 644 $GENERICFS_DIR/etc/udev/rules.d/udev.rules $ROOTFS_DIR/etc/udev/rules.d/
     for f in $GENERICFS_DIR/etc/udev/scripts/*; do
