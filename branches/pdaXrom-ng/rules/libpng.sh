@@ -43,6 +43,9 @@ build_libpng() {
     ln -sf libpng12 $TARGET_INC/libpng
     ln -sf libpng12/pngconf.h $TARGET_INC/
     ln -sf libpng12/png.h $TARGET_INC/
+    $INSTALL -D -m 644 libpng12.pc $TARGET_LIB/pkgconfig/libpng12.pc
+    ln -s libpng12.pc $TARGET_LIB/pkgconfig/libpng.pc
+    sed -i -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" $TARGET_LIB/pkgconfig/libpng12.pc
 
     $INSTALL -m 644 .libs/libpng12.so.0.33.0 $ROOTFS_DIR/usr/lib/
     ln -sf libpng12.so.0.33.0 $ROOTFS_DIR/usr/lib/libpng12.so.0
