@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# /etc/init.d/rcS
+#
+# $Id: rcS 7022 2007-02-28 14:17:06Z jbe $
+#
+
+echo -n "mounting filesystems..."
+mount -a 2>/dev/null
+echo "done."
+
+# modprobe ppp_async
+# loadkmap < /etc/boottime.kmap
+
+# set hostname
+test -e /etc/hostname && hostname -F /etc/hostname
+
+echo "running rc.d services..."
+run-parts -a start /etc/rc.d

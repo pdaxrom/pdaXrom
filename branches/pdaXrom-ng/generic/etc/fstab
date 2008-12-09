@@ -1,0 +1,15 @@
+#
+# /etc/fstab
+#
+# $Id: fstab 1681 2004-09-01 18:12:49Z  $
+#
+
+proc    /proc           proc    defaults        0       0
+devpts  /dev/pts        devpts  defaults        0       0
+none    /tmp            ramfs   defaults        0       0
+none	/sys		sysfs	defaults	0	0
+
+none    /var/log        ramfs   defaults        0       0
+none    /var/run        ramfs   defaults        0       0
+none    /var/lock       ramfs   defaults        0       0
+

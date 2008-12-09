@@ -1,0 +1,33 @@
+#
+# host packet template
+#
+# Copyright (C) 2004 by @AUTHOR@
+#          
+# See CREDITS for details about who has contributed to this project.
+#
+# For further information about the pdaXrom project and license conditions
+# see the README file.
+#
+
+HOST_@PACKET@=@packet@-@VERSION@.@SUFFIX@
+HOST_@PACKET@_MIRROR=@URL@
+HOST_@PACKET@_DIR=$HOST_BUILD_DIR/@packet@-@VERSION@
+HOST_@PACKET@_ENV=
+
+build_host_@packet@() {
+    test -e "$STATE_DIR/host_@packet@-@VERSION@" && return
+    banner "Build $HOST_@PACKET@"
+    download $HOST_@PACKET@_MIRROR $HOST_@PACKET@
+    extract_host $HOST_@PACKET@
+    apply_patches $HOST_@PACKET@_DIR $HOST_@PACKET@
+    pushd $TOP_DIR
+    cd $HOST_@PACKET@_DIR
+    eval $HOST_@PACKET@_ENV \
+	./configure --prefix=$HOST_BIN_DIR || error
+    make $MAKEARGS || error
+    make $MAKEARGS install || error
+    popd
+    touch "$STATE_DIR/host_@packet@-@VERSION@"
+}
+
+build_host_@packet@

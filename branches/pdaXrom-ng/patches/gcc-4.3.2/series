@@ -1,0 +1,12 @@
+gcc-branch.diff.bz2 -p0
+gcc-ix86-branch.diff.bz2 -p0
+gcc-info.patch -p1
+gcc-nolocalefiles.patch -p1
+gcc-nodebug.patch -p1
+gcc-ada-link.patch -p1
+gcc-sparc64-ada_fix.patch -p1
+gcc-ppc64-m32-m64-multilib-only.patch -p1
+gcc-libjava-multilib.patch -p0
+gcc-enable-java-awt-qt.patch -p1
+gcc-hash-style-gnu.patch -p1
+gcc-moresparcs.patch -p1
