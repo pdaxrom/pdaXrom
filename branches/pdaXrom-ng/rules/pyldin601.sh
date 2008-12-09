@@ -36,7 +36,7 @@ build_pyldin601() {
     pushd $TOP_DIR
     cd $PYLDIN601_DIR/pyldin601
 
-    make CC=${CROSS}gcc CXX=${CROSS}g++ $MAKEARGS \
+    make CC=${TARGET_ARCH}-gcc CXX=${TARGET_ARCH}-g++ $MAKEARGS \
 	EXTRA_CFLAGS="$CROSS_CFLAGS" OPT_LIBS="$EXTRA_LDFLAGS" \
 	|| error
 
