@@ -177,6 +177,7 @@ else
 fi
 
 STRIP=${CROSS}strip
+DEPMOD=depmod
 INSTALL=install
 
 CROSS_CONF_ENV='CFLAGS="-isystem $TARGET_INC" CXXFLAGS="$CFLAGS" LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"'
