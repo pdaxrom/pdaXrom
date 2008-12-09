@@ -41,6 +41,8 @@ build_libpng() {
     $INSTALL -D -m 644 pngconf.h $TARGET_INC/libpng12/pngconf.h
     $INSTALL -D -m 644 png.h $TARGET_INC/libpng12/png.h
     ln -sf libpng12 $TARGET_INC/libpng
+    ln -sf libpng12/pngconf.h $TARGET_INC/
+    ln -sf libpng12/png.h $TARGET_INC/
 
     $INSTALL -m 644 .libs/libpng12.so.0.33.0 $ROOTFS_DIR/usr/lib/
     ln -sf libpng12.so.0.33.0 $ROOTFS_DIR/usr/lib/libpng12.so.0
