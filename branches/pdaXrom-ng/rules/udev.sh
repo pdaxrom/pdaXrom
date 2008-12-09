@@ -40,6 +40,7 @@ build_udev() {
 	$INSTALL -m 755 $f $ROOTFS_DIR/etc/udev/scripts/
     done
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/udev $ROOTFS_DIR/etc/init.d/
+    install_rc_start udev 00
 
     popd
     touch "$STATE_DIR/udev-135"

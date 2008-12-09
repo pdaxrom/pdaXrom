@@ -31,6 +31,8 @@ GENERICFS_DIR="$TOP_DIR/generic"
 
 HOST_BIN_DIR="$TOP_DIR/host"
 TARGET_BIN_DIR="$TOP_DIR/target"
+TARGET_INC="$TARGET_BIN_DIR/include"
+TARGET_LIB="$TARGET_BIN_DIR/lib"
 
 download() {
     echo "Downloading $2"
@@ -126,6 +128,16 @@ apply_patches()
     popd
 }
 
+install_rc_start()
+{
+    ln -sf ../init.d/${1} $ROOTFS_DIR/etc/rc.d/S${2}_${1}
+}
+
+install_rc_stop()
+{
+    ln -sf ../init.d/${1} $ROOTFS_DIR/etc/rc.d/K${2}_${1}
+}
+
 banner() {
     echo "*********************************************************************************"
     echo "$1"
@@ -138,6 +150,8 @@ mkdir -p "$STATE_DIR" || error mkdir
 mkdir -p "$ROOTFS_DIR" || error mkdir
 mkdir -p "$HOST_BIN_DIR" || error mkdir
 mkdir -p "$TARGET_BIN_DIR" || error mkdir
+mkdir -p "$TARGET_INC" || error mkdir
+mkdir -p "$TARGET_LIB" || error mkdir
 
 case $1 in
     clean)
@@ -164,5 +178,7 @@ fi
 
 STRIP=${CROSS}strip
 INSTALL=install
+
+CROSS_CONF_ENV='CFLAGS="-isystem $TARGET_INC" CXXFLAGS="$CFLAGS" LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"'
 
 export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
