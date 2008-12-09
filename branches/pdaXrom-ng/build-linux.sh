@@ -19,4 +19,5 @@ MAKEARGS=-j4
 . $RULES_DIR/module-init-tools.sh
 . $RULES_DIR/udev.sh
 . $RULES_DIR/install_glibc.sh
+. $RULES_DIR/create_root.sh
 

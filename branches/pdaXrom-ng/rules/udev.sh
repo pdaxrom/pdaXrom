@@ -28,7 +28,19 @@ build_udev() {
 	    --sysconfdir=/etc || error
     make $MAKEARGS || error
 
-    exit 1
+    mkdir -p $ROOTFS_DIR/etc/init.d
+    mkdir -p $ROOTFS_DIR/etc/udev/rules.d
+    mkdir -p $ROOTFS_DIR/etc/udev/scripts
+    mkdir -p $ROOTFS_DIR/sbin
+    $INSTALL -m 755 udev/udevd udev/udevadm $ROOTFS_DIR/sbin/
+    $INSTALL -m 644 udev.conf $ROOTFS_DIR/etc/udev/
+    $INSTALL -m 644 $GENERICFS_DIR/etc/udev/links.conf $ROOTFS_DIR/etc/udev/
+    $INSTALL -m 644 $GENERICFS_DIR/etc/udev/rules.d/udev.rules $ROOTFS_DIR/etc/udev/rules.d/
+    for f in $GENERICFS_DIR/etc/udev/scripts/*; do
+	$INSTALL -m 755 $f $ROOTFS_DIR/etc/udev/scripts/
+    done
+    $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/udev $ROOTFS_DIR/etc/init.d/
+
     popd
     touch "$STATE_DIR/udev-135"
 }

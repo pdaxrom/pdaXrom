@@ -9,6 +9,19 @@ echo -n "mounting filesystems..."
 mount -a 2>/dev/null
 echo "done."
 
+if mount | grep /dev/root | grep cramfs >/dev/null ; then
+    echo "move /etc to ram..."
+    tar c /etc 2>/dev/null | tar x -C /tmp
+    echo "done."
+    mount -o bind /tmp/etc /etc
+    echo "move /var to ram..."
+    tar c /var 2>/dev/null | tar x -C /tmp
+    echo "done."
+    mount -o bind /tmp/var /var
+else
+    mount -o remount,rw /
+fi
+
 # modprobe ppp_async
 # loadkmap < /etc/boottime.kmap
 
