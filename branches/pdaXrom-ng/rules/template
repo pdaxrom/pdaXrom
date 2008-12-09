@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-@PACKET@=@packet@-@VERSION@.@SUFFIX@
+@PACKET@=@name@-@VERSION@.@SUFFIX@
 @PACKET@_MIRROR=@URL@
-@PACKET@_DIR=$BUILD_DIR/@packet@-@VERSION@
+@PACKET@_DIR=$BUILD_DIR/@name@-@VERSION@
 @PACKET@_ENV=
 
 build_@packet@() {

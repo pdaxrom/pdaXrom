@@ -128,14 +128,32 @@ apply_patches()
     popd
 }
 
-install_rc_start()
-{
+install_rc_start() {
     ln -sf ../init.d/${1} $ROOTFS_DIR/etc/rc.d/S${2}_${1}
 }
 
-install_rc_stop()
-{
+install_rc_stop() {
     ln -sf ../init.d/${1} $ROOTFS_DIR/etc/rc.d/K${2}_${1}
+}
+
+install_sysroot_files() {
+    local f=
+    make DESTDIR=$TARGET_BIN_DIR install || error "installation in target sysroot"
+#    for f in `find "$TARGET_BIN_DIR" -name "*.la" -type f`; do
+#	sed -i -e "/^libdir=/s:\(libdir='\)\(/lib\|/usr/lib\):\1${TARGET_LIB}:g" $f
+#    done
+    sed -i -e "/^dependency_libs/s:\( \)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
+	    -e "/^libdir=/s:\(libdir='\)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
+	    `find ${TARGET_BIN_DIR} -name "*.la"`
+
+    sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
+	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
+	    `find ${TARGET_BIN_DIR} -name "*.pc"`
+
+    sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
+	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
+	    `find ${TARGET_BIN_DIR} -name "*-config"`
+
 }
 
 banner() {
@@ -152,6 +170,12 @@ mkdir -p "$HOST_BIN_DIR" || error mkdir
 mkdir -p "$TARGET_BIN_DIR" || error mkdir
 mkdir -p "$TARGET_INC" || error mkdir
 mkdir -p "$TARGET_LIB" || error mkdir
+
+ln -sf . "$TARGET_BIN_DIR/usr"
+#mkdir -p "$TARGET_BIN_DIR/usr" || error mkdir
+#ln -sf ../../bin "$TARGET_BIN_DIR/usr/bin"
+#ln -sf ../../lib "$TARGET_BIN_DIR/usr/lib"
+#ln -sf ../../include "$TARGET_BIN_DIR/usr/include"
 
 case $1 in
     clean)
@@ -183,3 +207,4 @@ INSTALL=install
 CROSS_CONF_ENV='CFLAGS="-isystem $TARGET_INC" CXXFLAGS="$CFLAGS" LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"'
 
 export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
+export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig

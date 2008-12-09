@@ -32,11 +32,14 @@ build_zlib() {
     $INSTALL -m 644 .libs/libz.so.1.2.3 $ROOTFS_DIR/usr/lib/
     ln -sf libz.so.1.2.3 $ROOTFS_DIR/usr/lib/libz.so.1
     ln -sf libz.so.1.2.3 $ROOTFS_DIR/usr/lib/libz.so
+    $STRIP $ROOTFS_DIR/usr/lib/libz.so.1.2.3
+    
     #install headers and library to target sysroot
     $INSTALL -m 644 .libs/libz.so.1.2.3 $TARGET_LIB/
     ln -sf libz.so.1.2.3 $TARGET_LIB/libz.so.1
     ln -sf libz.so.1.2.3 $TARGET_LIB/libz.so
     $INSTALL -m 644 zconf.h zlib.h $TARGET_INC/
+
     popd
     touch "$STATE_DIR/zlib-1.2.3-ptx4"
 }
