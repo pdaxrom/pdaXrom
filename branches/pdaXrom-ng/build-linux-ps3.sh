@@ -11,3 +11,6 @@ KERNEL_CONFIG=ps3_kernel_config
 MAKEARGS=-j4
 
 . ./packages.inc
+
+. $RULES_DIR/create_ps3cd.sh
+

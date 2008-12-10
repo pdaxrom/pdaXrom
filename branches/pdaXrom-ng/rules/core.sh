@@ -34,6 +34,8 @@ TARGET_BIN_DIR="$TOP_DIR/target"
 TARGET_INC="$TARGET_BIN_DIR/include"
 TARGET_LIB="$TARGET_BIN_DIR/lib"
 
+IMAGES_DIR="$TOP_DIR/images"
+
 download() {
     echo "Downloading $2"
     if [ ! -e "$SRC_DIR/$2" ]; then
@@ -170,8 +172,9 @@ mkdir -p "$HOST_BIN_DIR" || error mkdir
 mkdir -p "$TARGET_BIN_DIR" || error mkdir
 mkdir -p "$TARGET_INC" || error mkdir
 mkdir -p "$TARGET_LIB" || error mkdir
+mkdir -p "$IMAGES_DIR" || error mkdir
 
-ln -sf . "$TARGET_BIN_DIR/usr"
+test -e "$TARGET_BIN_DIR/usr" || ln -sf . "$TARGET_BIN_DIR/usr"
 #mkdir -p "$TARGET_BIN_DIR/usr" || error mkdir
 #ln -sf ../../bin "$TARGET_BIN_DIR/usr/bin"
 #ln -sf ../../lib "$TARGET_BIN_DIR/usr/lib"
@@ -185,6 +188,7 @@ case $1 in
 	rm -rf "$ROOTFS_DIR"
 	rm -rf "$HOST_BIN_DIR"
 	rm -rf "$TARGET_BIN_DIR"
+	rm -rf "$IMAGES_DIR"
 	exit 0
 	;;
 esac
