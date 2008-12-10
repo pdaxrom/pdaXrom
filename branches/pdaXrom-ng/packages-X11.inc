@@ -24,3 +24,5 @@
 . $RULES_DIR/libXfont.sh
 . $RULES_DIR/libICE.sh
 . $RULES_DIR/libSM.sh
+. $RULES_DIR/printproto.sh
+. $RULES_DIR/libXt.sh
