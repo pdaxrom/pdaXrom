@@ -30,3 +30,15 @@
 . $RULES_DIR/libXpm.sh
 . $RULES_DIR/libXp.sh
 . $RULES_DIR/libXaw.sh
+. $RULES_DIR/scrnsaverproto.sh
+. $RULES_DIR/resourceproto.sh
+. $RULES_DIR/randrproto.sh
+. $RULES_DIR/libXScrnSaver.sh
+. $RULES_DIR/trapproto.sh
+. $RULES_DIR/libXTrap.sh
+. $RULES_DIR/compositeproto.sh
+. $RULES_DIR/libXcomposite.sh
+. $RULES_DIR/damageproto.sh
+. $RULES_DIR/libXdamage.sh
+. $RULES_DIR/evieext.sh
+. $RULES_DIR/libXevie.sh
