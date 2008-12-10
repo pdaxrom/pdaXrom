@@ -17,10 +17,3 @@
 . $RULES_DIR/dropbear.sh
 . $RULES_DIR/libjpeg.sh
 . $RULES_DIR/libpng.sh
-
-. $RULES_DIR/alsa-lib.sh
-. $RULES_DIR/alsa-utils.sh
-. $RULES_DIR/SDL.sh
-. $RULES_DIR/SDL_image.sh
-
-. $RULES_DIR/pyldin601.sh

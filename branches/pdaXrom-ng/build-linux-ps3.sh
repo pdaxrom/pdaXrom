@@ -10,7 +10,9 @@ KERNEL_CONFIG=ps3_kernel_config
 
 MAKEARGS=-j4
 
-. ./packages.inc
+. ./packages-basic.inc
+. ./packages-mmlibs.inc
+. ./packages-emulators.inc
 
 . $RULES_DIR/ps3-utils.sh
 
