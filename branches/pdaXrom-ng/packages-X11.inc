@@ -1,0 +1,10 @@
+. $RULES_DIR/xproto.sh
+. $RULES_DIR/xextproto.sh
+. $RULES_DIR/xtrans.sh
+. $RULES_DIR/xcb-proto.sh
+. $RULES_DIR/libpthread-stubs.sh
+. $RULES_DIR/libXau.sh
+. $RULES_DIR/libxcb.sh
+. $RULES_DIR/kbproto.sh
+. $RULES_DIR/inputproto.sh
+. $RULES_DIR/libX11.sh
