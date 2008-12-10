@@ -29,3 +29,4 @@
 . $RULES_DIR/libXmu.sh
 . $RULES_DIR/libXpm.sh
 . $RULES_DIR/libXp.sh
+. $RULES_DIR/libXaw.sh
