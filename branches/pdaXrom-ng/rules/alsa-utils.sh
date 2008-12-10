@@ -45,6 +45,10 @@ build_alsa_utils() {
     done
     ln -sf aplay $ROOTFS_DIR/usr/bin/arecord
 
+    for f in 00main default help info test hda; do
+	$INSTALL -D -m 644 alsactl/init/$f $ROOTFS_DIR/usr/share/alsa/init/$f
+    done
+
     popd
     touch "$STATE_DIR/alsa_utils-1.0.18"
 }
