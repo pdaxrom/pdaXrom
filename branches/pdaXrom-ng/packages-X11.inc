@@ -42,3 +42,9 @@
 . $RULES_DIR/libXdamage.sh
 . $RULES_DIR/evieext.sh
 . $RULES_DIR/libXevie.sh
+. $RULES_DIR/libXrandr.sh
+. $RULES_DIR/libXres.sh
+. $RULES_DIR/recordproto.sh
+. $RULES_DIR/libXtst.sh
+. $RULES_DIR/videoproto.sh
+. $RULES_DIR/libXv.sh
