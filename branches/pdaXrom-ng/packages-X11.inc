@@ -7,4 +7,10 @@
 . $RULES_DIR/libxcb.sh
 . $RULES_DIR/kbproto.sh
 . $RULES_DIR/inputproto.sh
+. $RULES_DIR/fixesproto.sh
+. $RULES_DIR/libXdmcp.sh
 . $RULES_DIR/libX11.sh
+. $RULES_DIR/libXfixes.sh
+. $RULES_DIR/renderproto.sh
+. $RULES_DIR/libXrender.sh
+. $RULES_DIR/libXcursor.sh
