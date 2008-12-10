@@ -28,7 +28,8 @@ build_@packet@() {
 	$@PACKET@_ENV \
 	./configure --host=$TARGET_ARCH \
 	    --prefix=/usr \
-	    --sysconfdir=/etc || error
+	    --sysconfdir=/etc \
+	    || error
     )
     make $MAKEARGS || error
 
