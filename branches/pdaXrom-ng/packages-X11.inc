@@ -15,3 +15,5 @@
 . $RULES_DIR/libXrender.sh
 . $RULES_DIR/libXcursor.sh
 . $RULES_DIR/libXft.sh
+. $RULES_DIR/libXext.sh
+. $RULES_DIR/libXi.sh
