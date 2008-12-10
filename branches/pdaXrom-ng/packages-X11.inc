@@ -26,3 +26,4 @@
 . $RULES_DIR/libSM.sh
 . $RULES_DIR/printproto.sh
 . $RULES_DIR/libXt.sh
+. $RULES_DIR/libXmu.sh
