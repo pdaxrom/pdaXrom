@@ -1,0 +1,20 @@
+--- freetype-2.3.7/include/freetype/config/ftoption.h-	2008-12-11 00:38:09.000000000 +0600
++++ freetype-2.3.7/include/freetype/config/ftoption.h	2008-12-11 00:41:34.000000000 +0600
+@@ -92,7 +92,7 @@
+   /* This is done to allow FreeType clients to run unmodified, forcing     */
+   /* them to display normal gray-level anti-aliased glyphs.                */
+   /*                                                                       */
+-/* #define FT_CONFIG_OPTION_SUBPIXEL_RENDERING */
++#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING
+ 
+ 
+   /*************************************************************************/
+@@ -459,7 +459,7 @@
+   /*   Do not #undef this macro here, since the build system might         */
+   /*   define it for certain configurations only.                          */
+   /*                                                                       */
+-/* #define TT_CONFIG_OPTION_BYTECODE_INTERPRETER */
++#define TT_CONFIG_OPTION_BYTECODE_INTERPRETER
+ 
+ 
+   /*************************************************************************/

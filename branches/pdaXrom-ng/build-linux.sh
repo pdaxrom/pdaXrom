@@ -12,6 +12,7 @@ MAKEARGS=-j4
 
 . ./packages-basic.inc
 . ./packages-mmlibs.inc
+. ./packages-libs.inc
 
 . ./packages-X11.inc
 
