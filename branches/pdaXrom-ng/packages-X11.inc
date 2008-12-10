@@ -14,3 +14,4 @@
 . $RULES_DIR/renderproto.sh
 . $RULES_DIR/libXrender.sh
 . $RULES_DIR/libXcursor.sh
+. $RULES_DIR/libXft.sh
