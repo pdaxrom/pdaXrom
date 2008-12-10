@@ -45,7 +45,7 @@ get_kernel_image() {
 get_kernel_image_path() {
     case $1 in
     i386*|i486*|i586*|i686*)
-	echo ${KERNEL_DIR}/arch/x86/boot/compressed/bzImage
+	echo ${KERNEL_DIR}/arch/x86/boot/bzImage
 	;;
     arm*|xscale*)
 	echo ${KERNEL_DIR}/arch/arm/boot/zImage
