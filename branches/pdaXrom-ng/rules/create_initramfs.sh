@@ -7,6 +7,7 @@ create_initramfs() {
     cd $ROOTFS_DIR
     find ./ | $CPIO -H newc -o | gzip -9 > ../rootfs.img
     popd
+    cp -f `get_kernel_image_path $TARGET_ARCH` $TOP_DIR/
 }
 
 create_initramfs

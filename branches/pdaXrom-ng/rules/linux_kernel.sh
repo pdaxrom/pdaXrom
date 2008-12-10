@@ -42,6 +42,23 @@ get_kernel_image() {
     esac
 }
 
+get_kernel_image_path() {
+    case $1 in
+    i386*|i486*|i586*|i686*)
+	echo ${KERNEL_DIR}/arch/x86/boot/compressed/bzImage
+	;;
+    arm*|xscale*)
+	echo ${KERNEL_DIR}/arch/arm/boot/zImage
+	;;
+    powerpc*|ppc*)
+	echo ${KERNEL_DIR}/arch/powerpc/boot/zImage
+	;;
+    *)
+	echo $1
+	;;
+    esac
+}
+
 build_linux_kernel() {
     test -e "$STATE_DIR/linux_kernel" && return
     banner "Build $KERNEL"

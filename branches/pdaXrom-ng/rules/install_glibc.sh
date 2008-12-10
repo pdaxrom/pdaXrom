@@ -27,7 +27,7 @@ install_glibc() {
     local f=
     for lib in $GLIBC_SYS_LIBS $GLIBC_LIBS; do
 	echo "Library: $lib"
-	find $GLIBC_DIR -name $lib\* | while read f; do
+	ls ${GLIBC_DIR}/${lib}[.-]* | while read f; do
 	    echo "Installing ${f/*\//}"
 	    cp -R $f $ROOTFS_DIR/lib || error
 	done
