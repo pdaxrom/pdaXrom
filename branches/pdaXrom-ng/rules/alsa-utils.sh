@@ -28,7 +28,7 @@ build_alsa_utils() {
 	$ALSA_UTILS_ENV \
 	./configure --host=$TARGET_ARCH \
 	    --prefix=/usr \
-	    --sysconfdir=/var/lib/alsa \
+	    --sysconfdir=/etc \
 	    --disable-nls \
 	    || error
     )

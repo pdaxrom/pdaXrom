@@ -3,4 +3,5 @@ users:x:100:
 ftp:x:101:
 www:x:102:
 messagebus:x:104:
+audio:x:105:
 nogroup:x:65534:
