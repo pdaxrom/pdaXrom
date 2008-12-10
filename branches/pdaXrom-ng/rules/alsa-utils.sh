@@ -28,7 +28,7 @@ build_alsa_utils() {
 	$ALSA_UTILS_ENV \
 	./configure --host=$TARGET_ARCH \
 	    --prefix=/usr \
-	    --sysconfdir=/etc \
+	    --sysconfdir=/var/lib/alsa \
 	    --disable-nls \
 	    || error
     )
@@ -48,6 +48,11 @@ build_alsa_utils() {
     for f in 00main default help info test hda; do
 	$INSTALL -D -m 644 alsactl/init/$f $ROOTFS_DIR/usr/share/alsa/init/$f
     done
+
+    mkdir -p $ROOTFS_DIR/var/lib/alsa
+
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/alsa-utils $ROOTFS_DIR/etc/init.d/alsa-utils
+    install_rc_start alsa-utils 90
 
     popd
     touch "$STATE_DIR/alsa_utils-1.0.18"

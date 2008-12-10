@@ -14,5 +14,6 @@ MAKEARGS=-j4
 
 . $RULES_DIR/ps3-utils.sh
 
+. $RULES_DIR/tweak-ps3.sh
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_ps3cd.sh
