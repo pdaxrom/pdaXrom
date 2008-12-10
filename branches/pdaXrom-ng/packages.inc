@@ -24,5 +24,3 @@
 . $RULES_DIR/SDL_image.sh
 
 . $RULES_DIR/pyldin601.sh
-
-. $RULES_DIR/create_initramfs.sh

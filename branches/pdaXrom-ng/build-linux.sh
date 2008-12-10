@@ -11,3 +11,5 @@ KERNEL_CONFIG=i686_kernel_config
 MAKEARGS=-j4
 
 . ./packages.inc
+
+. $RULES_DIR/create_initramfs.sh

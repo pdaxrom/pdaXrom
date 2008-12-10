@@ -12,5 +12,7 @@ MAKEARGS=-j4
 
 . ./packages.inc
 
-. $RULES_DIR/create_ps3cd.sh
+. $RULES_DIR/ps3-utils.sh
 
+. $RULES_DIR/create_initramfs.sh
+. $RULES_DIR/create_ps3cd.sh
