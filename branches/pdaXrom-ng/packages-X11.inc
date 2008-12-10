@@ -22,3 +22,4 @@
 . $RULES_DIR/libfontenc.sh
 . $RULES_DIR/libXfontcache.sh
 . $RULES_DIR/libXfont.sh
+. $RULES_DIR/libICE.sh
