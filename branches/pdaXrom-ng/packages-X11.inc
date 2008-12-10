@@ -17,3 +17,8 @@
 . $RULES_DIR/libXft.sh
 . $RULES_DIR/libXext.sh
 . $RULES_DIR/libXi.sh
+. $RULES_DIR/fontsproto.sh
+. $RULES_DIR/fontcacheproto.sh
+. $RULES_DIR/libfontenc.sh
+. $RULES_DIR/libXfontcache.sh
+. $RULES_DIR/libXfont.sh
