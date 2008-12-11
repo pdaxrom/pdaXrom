@@ -48,3 +48,4 @@
 . $RULES_DIR/libXtst.sh
 . $RULES_DIR/videoproto.sh
 . $RULES_DIR/libXv.sh
+. $RULES_DIR/libXvMC.sh
