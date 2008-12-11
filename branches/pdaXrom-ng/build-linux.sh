@@ -16,6 +16,7 @@ MAKEARGS=-j4
 
 . ./packages-xorg-xlib.inc
 . ./packages-xorg-xserver.inc
+. ./packages-xorg-drivers.inc
 . ./packages-xorg-apps.inc
 . ./packages-xorg-fonts.inc
 
