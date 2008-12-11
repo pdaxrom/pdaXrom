@@ -23,6 +23,8 @@ libdl
 
 install_glibc() {
     test -e "$STATE_DIR/install_glibc" && return
+    mkdir -p $ROOTFS_DIR/lib
+    mkdir -p $ROOTFS_DIR/usr/lib
     local lib=
     local f=
     for lib in $GLIBC_SYS_LIBS $GLIBC_LIBS; do
@@ -30,8 +32,19 @@ install_glibc() {
 	ls ${GLIBC_DIR}/${lib}[.-]* | while read f; do
 	    echo "Installing ${f/*\//}"
 	    cp -R $f $ROOTFS_DIR/lib || error
+	    $STRIP $ROOTFS_DIR/lib/${f/*\//}
 	done
     done
+    
+    for f in libgcc_s.so libstdc++.so ; do
+	local L=`${TARGET_ARCH}-gcc -print-file-name=$f`
+	L=`readlink $L`
+	L=`${TARGET_ARCH}-gcc -print-file-name=${L/*\//}`
+	$INSTALL -m 644 $L $ROOTFS_DIR/usr/lib/
+	ln -sf ${L/*\//} $ROOTFS_DIR/usr/lib/$f
+	$STRIP $ROOTFS_DIR/usr/lib/${L/*\//}
+    done
+        
     touch "$STATE_DIR/install_glibc"
 }
 
