@@ -49,3 +49,9 @@
 . $RULES_DIR/videoproto.sh
 . $RULES_DIR/libXv.sh
 . $RULES_DIR/libXvMC.sh
+. $RULES_DIR/xf86dgaproto.sh
+. $RULES_DIR/libXxf86dga.sh
+. $RULES_DIR/xf86miscproto.sh
+. $RULES_DIR/libXxf86misc.sh
+. $RULES_DIR/xf86vidmodeproto.sh
+. $RULES_DIR/libXxf86vm.sh
