@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXI=libXi-1.1.3.tar.bz2
+LIBXI=libXi-1.2.0.tar.bz2
 LIBXI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXI_DIR=$BUILD_DIR/libXi-1.1.3
+LIBXI_DIR=$BUILD_DIR/libXi-1.2.0
 LIBXI_ENV=
 
 build_libXi() {

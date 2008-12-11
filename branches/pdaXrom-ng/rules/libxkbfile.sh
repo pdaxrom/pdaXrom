@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXKBFILE=libxkbfile-1.0.4.tar.bz2
+LIBXKBFILE=libxkbfile-1.0.5.tar.bz2
 LIBXKBFILE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXKBFILE_DIR=$BUILD_DIR/libxkbfile-1.0.4
+LIBXKBFILE_DIR=$BUILD_DIR/libxkbfile-1.0.5
 LIBXKBFILE_ENV=
 
 build_libxkbfile() {

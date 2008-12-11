@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-RANDRPROTO=randrproto-1.2.1.tar.bz2
+RANDRPROTO=randrproto-1.2.2.tar.bz2
 RANDRPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-RANDRPROTO_DIR=$BUILD_DIR/randrproto-1.2.1
+RANDRPROTO_DIR=$BUILD_DIR/randrproto-1.2.2
 RANDRPROTO_ENV=
 
 build_randrproto() {

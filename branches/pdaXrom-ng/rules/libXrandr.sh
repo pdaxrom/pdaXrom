@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXRANDR=libXrandr-1.2.2.tar.bz2
+LIBXRANDR=libXrandr-1.2.3.tar.bz2
 LIBXRANDR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXRANDR_DIR=$BUILD_DIR/libXrandr-1.2.2
+LIBXRANDR_DIR=$BUILD_DIR/libXrandr-1.2.3
 LIBXRANDR_ENV=
 
 build_libXrandr() {

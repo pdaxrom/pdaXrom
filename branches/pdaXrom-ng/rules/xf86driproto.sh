@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XF86DRIPROTO=xf86driproto-2.0.3.tar.bz2
+XF86DRIPROTO=xf86driproto-2.0.4.tar.bz2
 XF86DRIPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XF86DRIPROTO_DIR=$BUILD_DIR/xf86driproto-2.0.3
+XF86DRIPROTO_DIR=$BUILD_DIR/xf86driproto-2.0.4
 XF86DRIPROTO_ENV=
 
 build_xf86driproto() {

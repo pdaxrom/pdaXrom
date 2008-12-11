@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXFONT=libXfont-1.3.1.tar.bz2
+LIBXFONT=libXfont-1.3.3.tar.bz2
 LIBXFONT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXFONT_DIR=$BUILD_DIR/libXfont-1.3.1
+LIBXFONT_DIR=$BUILD_DIR/libXfont-1.3.3
 LIBXFONT_ENV=
 
 build_libXfont() {
@@ -30,7 +30,7 @@ build_libXfont() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --enable-freetype \
-	    --disable-fc \
+	    --enable-fc \
 	    --enable-fontcache \
 	    --enable-type1 \
 	    --enable-cid \
@@ -38,7 +38,7 @@ build_libXfont() {
 	    --enable-pcfformat \
 	    --enable-bdfformat \
 	    --enable-snfformat \
-	    --disable-builtins \
+	    --enable-builtins \
 	    || error
     )
     make $MAKEARGS || error

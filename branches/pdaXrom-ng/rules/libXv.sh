@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXV=libXv-1.0.3.tar.bz2
+LIBXV=libXv-1.0.4.tar.bz2
 LIBXV_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXV_DIR=$BUILD_DIR/libXv-1.0.3
+LIBXV_DIR=$BUILD_DIR/libXv-1.0.4
 LIBXV_ENV=
 
 build_libXv() {

@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XPROTO=xproto-7.0.10.tar.bz2
+XPROTO=xproto-7.0.14.tar.bz2
 XPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XPROTO_DIR=$BUILD_DIR/xproto-7.0.10
+XPROTO_DIR=$BUILD_DIR/xproto-7.0.14
 XPROTO_ENV=
 
 build_xproto() {

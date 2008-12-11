@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXEXT=libXext-1.0.2.tar.bz2
+LIBXEXT=libXext-1.0.4.tar.bz2
 LIBXEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXEXT_DIR=$BUILD_DIR/libXext-1.0.2
+LIBXEXT_DIR=$BUILD_DIR/libXext-1.0.4
 LIBXEXT_ENV=
 
 build_libXext() {

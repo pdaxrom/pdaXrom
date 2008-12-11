@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-INPUTPROTO=inputproto-1.4.2.1.tar.bz2
+INPUTPROTO=inputproto-1.5.0.tar.bz2
 INPUTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-INPUTPROTO_DIR=$BUILD_DIR/inputproto-1.4.2.1
+INPUTPROTO_DIR=$BUILD_DIR/inputproto-1.5.0
 INPUTPROTO_ENV=
 
 build_inputproto() {

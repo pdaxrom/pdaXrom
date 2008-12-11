@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXT=libXt-1.0.4.tar.bz2
+LIBXT=libXt-1.0.5.tar.bz2
 LIBXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXT_DIR=$BUILD_DIR/libXt-1.0.4
+LIBXT_DIR=$BUILD_DIR/libXt-1.0.5
 LIBXT_ENV=
 
 build_libXt() {

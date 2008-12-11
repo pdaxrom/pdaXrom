@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXFT=libXft-2.1.12.tar.bz2
+LIBXFT=libXft-2.1.13.tar.bz2
 LIBXFT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXFT_DIR=$BUILD_DIR/libXft-2.1.12
+LIBXFT_DIR=$BUILD_DIR/libXft-2.1.13
 LIBXFT_ENV=
 
 build_libXft() {
@@ -34,12 +34,12 @@ build_libXft() {
 
     install_sysroot_files || error
     
-    $INSTALL -D -m 644 src/.libs/libXft.so.2.1.2 $ROOTFS_DIR/usr/lib/libXft.so.2.1.2 || error
-    ln -sf libXft.so.2.1.2 $ROOTFS_DIR/usr/lib/libXft.so.2
-    ln -sf libXft.so.2.1.2 $ROOTFS_DIR/usr/lib/libXft.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXft.so.2.1.2
+    $INSTALL -D -m 644 src/.libs/libXft.so.2.1.13 $ROOTFS_DIR/usr/lib/libXft.so.2.1.13 || error
+    ln -sf libXft.so.2.1.13 $ROOTFS_DIR/usr/lib/libXft.so.2
+    ln -sf libXft.so.2.1.13 $ROOTFS_DIR/usr/lib/libXft.so
+    $STRIP $ROOTFS_DIR/usr/lib/libXft.so.2.1.13
 
-    ln -sf $TARGET_BIN_DIR/bin/xft-config $HOST_BIN_DIR/bin/
+    ln -sf $TARGET_BIN_DIR/bin/xft-config $HOST_BIN_DIR/bin/ || error
 
     popd
     touch "$STATE_DIR/libXft-2.1.12"

@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XTRANS=xtrans-1.0.4.tar.bz2
+XTRANS=xtrans-1.2.2.tar.bz2
 XTRANS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-XTRANS_DIR=$BUILD_DIR/xtrans-1.0.4
+XTRANS_DIR=$BUILD_DIR/xtrans-1.2.2
 XTRANS_ENV=
 
 build_xtrans() {

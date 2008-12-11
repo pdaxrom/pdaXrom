@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXAU=libXau-1.0.3.tar.bz2
+LIBXAU=libXau-1.0.4.tar.bz2
 LIBXAU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXAU_DIR=$BUILD_DIR/libXau-1.0.3
+LIBXAU_DIR=$BUILD_DIR/libXau-1.0.4
 LIBXAU_ENV=
 
 build_libXau() {

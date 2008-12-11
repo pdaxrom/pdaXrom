@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GLPROTO=glproto-1.4.8.tar.bz2
+GLPROTO=glproto-1.4.9.tar.bz2
 GLPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-GLPROTO_DIR=$BUILD_DIR/glproto-1.4.8
+GLPROTO_DIR=$BUILD_DIR/glproto-1.4.9
 GLPROTO_ENV=
 
 build_glproto() {

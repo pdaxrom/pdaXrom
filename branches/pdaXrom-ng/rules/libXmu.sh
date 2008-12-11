@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBXMU=libXmu-1.0.3.tar.bz2
+LIBXMU=libXmu-1.0.4.tar.bz2
 LIBXMU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXMU_DIR=$BUILD_DIR/libXmu-1.0.3
+LIBXMU_DIR=$BUILD_DIR/libXmu-1.0.4
 LIBXMU_ENV=
 
 build_libXmu() {
