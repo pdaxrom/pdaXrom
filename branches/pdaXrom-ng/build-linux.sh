@@ -14,6 +14,6 @@ MAKEARGS=-j4
 . ./packages-mmlibs.inc
 . ./packages-libs.inc
 
-. ./packages-X11.inc
+. ./packages-xorg-xlib.inc
 
 . $RULES_DIR/create_initramfs.sh
