@@ -20,3 +20,4 @@ ps3-wip/ps3-wip-defconfig-updates.patch
 
 linux-2.6.27-apple.patch
 linux-2.6.27-x86-applefix.patch
+parse.y.apple.patch

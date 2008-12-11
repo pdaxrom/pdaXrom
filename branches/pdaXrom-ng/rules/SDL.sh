@@ -35,7 +35,8 @@ build_SDL() {
 	    --enable-pulseaudio=no \
 	    --enable-arts=no \
 	    --enable-nas=no \
-	    --without-x \
+	    --x-includes=$TARGET_INC \
+	    --x-libraries=$TARGET_LIB \
 	    || error
     )
     make $MAKEARGS || error
