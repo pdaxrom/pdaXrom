@@ -55,3 +55,7 @@
 . $RULES_DIR/libXxf86misc.sh
 . $RULES_DIR/xf86vidmodeproto.sh
 . $RULES_DIR/libXxf86vm.sh
+. $RULES_DIR/libxkbfile.sh
+. $RULES_DIR/libxkbui.sh
+. $RULES_DIR/xineramaproto.sh
+. $RULES_DIR/libXinerama.sh
