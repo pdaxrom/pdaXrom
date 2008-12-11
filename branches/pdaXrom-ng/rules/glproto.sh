@@ -10,7 +10,7 @@
 #
 
 GLPROTO=glproto-1.4.8.tar.bz2
-GLPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+GLPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 GLPROTO_DIR=$BUILD_DIR/glproto-1.4.8
 GLPROTO_ENV=
 

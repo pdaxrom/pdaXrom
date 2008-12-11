@@ -10,7 +10,7 @@
 #
 
 XF86BIGFONTPROTO=xf86bigfontproto-1.1.2.tar.bz2
-XF86BIGFONTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XF86BIGFONTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XF86BIGFONTPROTO_DIR=$BUILD_DIR/xf86bigfontproto-1.1.2
 XF86BIGFONTPROTO_ENV=
 

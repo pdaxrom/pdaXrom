@@ -10,7 +10,7 @@
 #
 
 LIBICE=libICE-1.0.4.tar.bz2
-LIBICE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBICE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBICE_DIR=$BUILD_DIR/libICE-1.0.4
 LIBICE_ENV=
 

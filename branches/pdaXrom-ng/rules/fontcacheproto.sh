@@ -10,7 +10,7 @@
 #
 
 FONTCACHEPROTO=fontcacheproto-0.1.2.tar.bz2
-FONTCACHEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+FONTCACHEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 FONTCACHEPROTO_DIR=$BUILD_DIR/fontcacheproto-0.1.2
 FONTCACHEPROTO_ENV=
 

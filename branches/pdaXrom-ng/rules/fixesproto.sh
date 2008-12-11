@@ -10,7 +10,7 @@
 #
 
 FIXESPROTO=fixesproto-4.0.tar.bz2
-FIXESPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+FIXESPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 FIXESPROTO_DIR=$BUILD_DIR/fixesproto-4.0
 FIXESPROTO_ENV=
 

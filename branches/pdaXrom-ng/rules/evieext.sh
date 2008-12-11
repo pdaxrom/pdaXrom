@@ -10,7 +10,7 @@
 #
 
 EVIEEXT=evieext-1.0.2.tar.bz2
-EVIEEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+EVIEEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 EVIEEXT_DIR=$BUILD_DIR/evieext-1.0.2
 EVIEEXT_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 XEXTPROTO=xextproto-7.0.2.tar.bz2
-XEXTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XEXTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XEXTPROTO_DIR=$BUILD_DIR/xextproto-7.0.2
 XEXTPROTO_ENV=
 

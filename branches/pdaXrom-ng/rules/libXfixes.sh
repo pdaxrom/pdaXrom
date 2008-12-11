@@ -10,7 +10,7 @@
 #
 
 LIBXFIXES=libXfixes-4.0.3.tar.bz2
-LIBXFIXES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXFIXES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXFIXES_DIR=$BUILD_DIR/libXfixes-4.0.3
 LIBXFIXES_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 RESOURCEPROTO=resourceproto-1.0.2.tar.bz2
-RESOURCEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+RESOURCEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RESOURCEPROTO_DIR=$BUILD_DIR/resourceproto-1.0.2
 RESOURCEPROTO_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXVMC=libXvMC-1.0.4.tar.bz2
-LIBXVMC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXVMC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXVMC_DIR=$BUILD_DIR/libXvMC-1.0.4
 LIBXVMC_ENV=
 

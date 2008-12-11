@@ -10,7 +10,7 @@
 #
 
 XF86DGAPROTO=xf86dgaproto-2.0.3.tar.bz2
-XF86DGAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XF86DGAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XF86DGAPROTO_DIR=$BUILD_DIR/xf86dgaproto-2.0.3
 XF86DGAPROTO_ENV=
 

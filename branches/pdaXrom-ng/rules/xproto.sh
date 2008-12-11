@@ -10,7 +10,7 @@
 #
 
 XPROTO=xproto-7.0.10.tar.bz2
-XPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XPROTO_DIR=$BUILD_DIR/xproto-7.0.10
 XPROTO_ENV=
 

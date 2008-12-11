@@ -10,7 +10,7 @@
 #
 
 DAMAGEPROTO=damageproto-1.1.0.tar.bz2
-DAMAGEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+DAMAGEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 DAMAGEPROTO_DIR=$BUILD_DIR/damageproto-1.1.0
 DAMAGEPROTO_ENV=
 

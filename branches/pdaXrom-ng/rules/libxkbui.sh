@@ -10,7 +10,7 @@
 #
 
 LIBXKBUI=libxkbui-1.0.2.tar.bz2
-LIBXKBUI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXKBUI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXKBUI_DIR=$BUILD_DIR/libxkbui-1.0.2
 LIBXKBUI_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 TRAPPROTO=trapproto-3.4.3.tar.bz2
-TRAPPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+TRAPPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 TRAPPROTO_DIR=$BUILD_DIR/trapproto-3.4.3
 TRAPPROTO_ENV=
 

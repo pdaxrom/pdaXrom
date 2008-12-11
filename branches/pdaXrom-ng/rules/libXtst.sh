@@ -10,7 +10,7 @@
 #
 
 LIBXTST=libXtst-1.0.3.tar.bz2
-LIBXTST_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXTST_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXTST_DIR=$BUILD_DIR/libXtst-1.0.3
 LIBXTST_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXXF86VM=libXxf86vm-1.0.1.tar.bz2
-LIBXXF86VM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXXF86VM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXXF86VM_DIR=$BUILD_DIR/libXxf86vm-1.0.1
 LIBXXF86VM_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXRES=libXres-1.0.3.tar.bz2
-LIBXRES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXRES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXRES_DIR=$BUILD_DIR/libXres-1.0.3
 LIBXRES_ENV=
 

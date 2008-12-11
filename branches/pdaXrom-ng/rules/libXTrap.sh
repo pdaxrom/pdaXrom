@@ -10,7 +10,7 @@
 #
 
 LIBXTRAP=libXTrap-1.0.0.tar.bz2
-LIBXTRAP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXTRAP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXTRAP_DIR=$BUILD_DIR/libXTrap-1.0.0
 LIBXTRAP_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXP=libXp-1.0.0.tar.bz2
-LIBXP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXP_DIR=$BUILD_DIR/libXp-1.0.0
 LIBXP_ENV=
 

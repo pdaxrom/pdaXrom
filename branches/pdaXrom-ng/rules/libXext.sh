@@ -10,7 +10,7 @@
 #
 
 LIBXEXT=libXext-1.0.2.tar.bz2
-LIBXEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXEXT_DIR=$BUILD_DIR/libXext-1.0.2
 LIBXEXT_ENV=
 

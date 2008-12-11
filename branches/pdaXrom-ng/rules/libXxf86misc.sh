@@ -10,7 +10,7 @@
 #
 
 LIBXXF86MISC=libXxf86misc-1.0.1.tar.bz2
-LIBXXF86MISC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXXF86MISC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXXF86MISC_DIR=$BUILD_DIR/libXxf86misc-1.0.1
 LIBXXF86MISC_ENV=
 

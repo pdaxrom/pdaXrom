@@ -10,7 +10,7 @@
 #
 
 VIDEOPROTO=videoproto-2.2.2.tar.bz2
-VIDEOPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+VIDEOPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 VIDEOPROTO_DIR=$BUILD_DIR/videoproto-2.2.2
 VIDEOPROTO_ENV=
 

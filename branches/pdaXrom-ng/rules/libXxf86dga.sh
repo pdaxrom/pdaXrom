@@ -10,7 +10,7 @@
 #
 
 LIBXXF86DGA=libXxf86dga-1.0.2.tar.bz2
-LIBXXF86DGA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXXF86DGA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXXF86DGA_DIR=$BUILD_DIR/libXxf86dga-1.0.2
 LIBXXF86DGA_ENV=
 

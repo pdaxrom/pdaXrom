@@ -10,7 +10,7 @@
 #
 
 RENDERPROTO=renderproto-0.9.3.tar.bz2
-RENDERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+RENDERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RENDERPROTO_DIR=$BUILD_DIR/renderproto-0.9.3
 RENDERPROTO_ENV=
 

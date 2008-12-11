@@ -10,7 +10,7 @@
 #
 
 COMPOSITEPROTO=compositeproto-0.4.tar.bz2
-COMPOSITEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+COMPOSITEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 COMPOSITEPROTO_DIR=$BUILD_DIR/compositeproto-0.4
 COMPOSITEPROTO_ENV=
 

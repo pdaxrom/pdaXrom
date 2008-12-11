@@ -10,7 +10,7 @@
 #
 
 XINERAMAPROTO=xineramaproto-1.1.2.tar.bz2
-XINERAMAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XINERAMAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XINERAMAPROTO_DIR=$BUILD_DIR/xineramaproto-1.1.2
 XINERAMAPROTO_ENV=
 

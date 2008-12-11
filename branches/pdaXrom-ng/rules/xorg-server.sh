@@ -10,7 +10,7 @@
 #
 
 XORG_SERVER=xorg-server-1.4.tar.bz2
-XORG_SERVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/xserver
+XORG_SERVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/xserver
 XORG_SERVER_DIR=$BUILD_DIR/xorg-server-1.4
 XORG_SERVER_ENV="ac_cv_sys_linker_h=yes \
 	ac_cv_file__usr_share_sgml_X11_defs_ent=no \

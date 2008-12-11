@@ -10,7 +10,7 @@
 #
 
 LIBXCURSOR=libXcursor-1.1.9.tar.bz2
-LIBXCURSOR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXCURSOR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXCURSOR_DIR=$BUILD_DIR/libXcursor-1.1.9
 LIBXCURSOR_ENV=
 

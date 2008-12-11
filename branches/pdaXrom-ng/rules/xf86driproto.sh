@@ -10,7 +10,7 @@
 #
 
 XF86DRIPROTO=xf86driproto-2.0.3.tar.bz2
-XF86DRIPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XF86DRIPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XF86DRIPROTO_DIR=$BUILD_DIR/xf86driproto-2.0.3
 XF86DRIPROTO_ENV=
 

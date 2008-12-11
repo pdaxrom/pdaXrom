@@ -10,7 +10,7 @@
 #
 
 LIBXAU=libXau-1.0.3.tar.bz2
-LIBXAU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXAU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXAU_DIR=$BUILD_DIR/libXau-1.0.3
 LIBXAU_ENV=
 

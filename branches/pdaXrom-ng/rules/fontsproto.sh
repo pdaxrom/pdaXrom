@@ -10,7 +10,7 @@
 #
 
 FONTSPROTO=fontsproto-2.0.2.tar.bz2
-FONTSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+FONTSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 FONTSPROTO_DIR=$BUILD_DIR/fontsproto-2.0.2
 FONTSPROTO_ENV=
 

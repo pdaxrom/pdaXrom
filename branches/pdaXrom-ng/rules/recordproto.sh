@@ -10,7 +10,7 @@
 #
 
 RECORDPROTO=recordproto-1.13.2.tar.bz2
-RECORDPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+RECORDPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RECORDPROTO_DIR=$BUILD_DIR/recordproto-1.13.2
 RECORDPROTO_ENV=
 

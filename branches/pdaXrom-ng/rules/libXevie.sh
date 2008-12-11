@@ -10,7 +10,7 @@
 #
 
 LIBXEVIE=libXevie-1.0.2.tar.bz2
-LIBXEVIE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXEVIE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXEVIE_DIR=$BUILD_DIR/libXevie-1.0.2
 LIBXEVIE_ENV=
 

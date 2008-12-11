@@ -10,7 +10,7 @@
 #
 
 RANDRPROTO=randrproto-1.2.1.tar.bz2
-RANDRPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+RANDRPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RANDRPROTO_DIR=$BUILD_DIR/randrproto-1.2.1
 RANDRPROTO_ENV=
 

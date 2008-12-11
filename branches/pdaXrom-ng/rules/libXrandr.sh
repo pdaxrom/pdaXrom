@@ -10,7 +10,7 @@
 #
 
 LIBXRANDR=libXrandr-1.2.2.tar.bz2
-LIBXRANDR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXRANDR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXRANDR_DIR=$BUILD_DIR/libXrandr-1.2.2
 LIBXRANDR_ENV=
 

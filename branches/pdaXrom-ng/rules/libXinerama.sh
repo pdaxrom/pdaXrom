@@ -10,7 +10,7 @@
 #
 
 LIBXINERAMA=libXinerama-1.0.2.tar.bz2
-LIBXINERAMA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXINERAMA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXINERAMA_DIR=$BUILD_DIR/libXinerama-1.0.2
 LIBXINERAMA_ENV=
 

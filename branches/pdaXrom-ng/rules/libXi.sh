@@ -10,7 +10,7 @@
 #
 
 LIBXI=libXi-1.1.3.tar.bz2
-LIBXI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXI_DIR=$BUILD_DIR/libXi-1.1.3
 LIBXI_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXT=libXt-1.0.4.tar.bz2
-LIBXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXT_DIR=$BUILD_DIR/libXt-1.0.4
 LIBXT_ENV=
 

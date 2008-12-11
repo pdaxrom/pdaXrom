@@ -10,7 +10,7 @@
 #
 
 LIBXRENDER=libXrender-0.9.4.tar.bz2
-LIBXRENDER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXRENDER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXRENDER_DIR=$BUILD_DIR/libXrender-0.9.4
 LIBXRENDER_ENV=
 

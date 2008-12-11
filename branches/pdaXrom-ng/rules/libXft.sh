@@ -10,7 +10,7 @@
 #
 
 LIBXFT=libXft-2.1.12.tar.bz2
-LIBXFT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXFT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXFT_DIR=$BUILD_DIR/libXft-2.1.12
 LIBXFT_ENV=
 

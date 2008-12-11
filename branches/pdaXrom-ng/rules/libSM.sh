@@ -10,7 +10,7 @@
 #
 
 LIBSM=libSM-1.0.3.tar.bz2
-LIBSM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBSM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBSM_DIR=$BUILD_DIR/libSM-1.0.3
 LIBSM_ENV=
 

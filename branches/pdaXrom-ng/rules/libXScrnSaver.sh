@@ -10,7 +10,7 @@
 #
 
 LIBXSCRNSAVER=libXScrnSaver-1.1.2.tar.bz2
-LIBXSCRNSAVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXSCRNSAVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXSCRNSAVER_DIR=$BUILD_DIR/libXScrnSaver-1.1.2
 LIBXSCRNSAVER_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXDAMAGE=libXdamage-1.0.4.tar.bz2
-LIBXDAMAGE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXDAMAGE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXDAMAGE_DIR=$BUILD_DIR/libXdamage-1.0.4
 LIBXDAMAGE_ENV=
 

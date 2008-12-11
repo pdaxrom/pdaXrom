@@ -10,7 +10,7 @@
 #
 
 SCRNSAVERPROTO=scrnsaverproto-1.1.0.tar.bz2
-SCRNSAVERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+SCRNSAVERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 SCRNSAVERPROTO_DIR=$BUILD_DIR/scrnsaverproto-1.1.0
 SCRNSAVERPROTO_ENV=
 

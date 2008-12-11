@@ -10,7 +10,7 @@
 #
 
 LIBXDMCP=libXdmcp-1.0.2.tar.bz2
-LIBXDMCP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXDMCP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXDMCP_DIR=$BUILD_DIR/libXdmcp-1.0.2
 LIBXDMCP_ENV=
 

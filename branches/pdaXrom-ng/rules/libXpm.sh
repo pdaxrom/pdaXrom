@@ -10,7 +10,7 @@
 #
 
 LIBXPM=libXpm-3.5.7.tar.bz2
-LIBXPM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXPM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXPM_DIR=$BUILD_DIR/libXpm-3.5.7
 LIBXPM_ENV=
 

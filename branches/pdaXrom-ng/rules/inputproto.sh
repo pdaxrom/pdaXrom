@@ -10,7 +10,7 @@
 #
 
 INPUTPROTO=inputproto-1.4.2.1.tar.bz2
-INPUTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+INPUTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 INPUTPROTO_DIR=$BUILD_DIR/inputproto-1.4.2.1
 INPUTPROTO_ENV=
 

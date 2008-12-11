@@ -10,7 +10,7 @@
 #
 
 BIGREQSPROTO=bigreqsproto-1.0.2.tar.bz2
-BIGREQSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+BIGREQSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 BIGREQSPROTO_DIR=$BUILD_DIR/bigreqsproto-1.0.2
 BIGREQSPROTO_ENV=
 

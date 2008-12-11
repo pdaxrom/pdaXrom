@@ -10,7 +10,7 @@
 #
 
 XF86VIDMODEPROTO=xf86vidmodeproto-2.2.2.tar.bz2
-XF86VIDMODEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XF86VIDMODEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XF86VIDMODEPROTO_DIR=$BUILD_DIR/xf86vidmodeproto-2.2.2
 XF86VIDMODEPROTO_ENV=
 

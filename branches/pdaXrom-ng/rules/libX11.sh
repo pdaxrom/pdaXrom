@@ -10,7 +10,7 @@
 #
 
 LIBX11=libX11-1.1.3.tar.bz2
-LIBX11_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBX11_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBX11_DIR=$BUILD_DIR/libX11-1.1.3
 LIBX11_ENV=
 

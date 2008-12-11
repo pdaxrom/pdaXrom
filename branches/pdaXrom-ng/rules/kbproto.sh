@@ -10,7 +10,7 @@
 #
 
 KBPROTO=kbproto-1.0.3.tar.bz2
-KBPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+KBPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 KBPROTO_DIR=$BUILD_DIR/kbproto-1.0.3
 KBPROTO_ENV=
 

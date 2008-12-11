@@ -10,7 +10,7 @@
 #
 
 XCMISCPROTO=xcmiscproto-1.1.2.tar.bz2
-XCMISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XCMISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XCMISCPROTO_DIR=$BUILD_DIR/xcmiscproto-1.1.2
 XCMISCPROTO_ENV=
 

@@ -10,7 +10,7 @@
 #
 
 LIBXFONTCACHE=libXfontcache-1.0.4.tar.bz2
-LIBXFONTCACHE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXFONTCACHE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXFONTCACHE_DIR=$BUILD_DIR/libXfontcache-1.0.4
 LIBXFONTCACHE_ENV=
 

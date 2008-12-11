@@ -10,7 +10,7 @@
 #
 
 LIBXCOMPOSITE=libXcomposite-0.4.0.tar.bz2
-LIBXCOMPOSITE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/lib
+LIBXCOMPOSITE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXCOMPOSITE_DIR=$BUILD_DIR/libXcomposite-0.4.0
 LIBXCOMPOSITE_ENV=
 

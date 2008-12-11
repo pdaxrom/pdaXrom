@@ -10,7 +10,7 @@
 #
 
 XF86MISCPROTO=xf86miscproto-0.9.2.tar.bz2
-XF86MISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/X11R7.3/src/proto
+XF86MISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XF86MISCPROTO_DIR=$BUILD_DIR/xf86miscproto-0.9.2
 XF86MISCPROTO_ENV=
 
