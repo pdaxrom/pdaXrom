@@ -59,3 +59,6 @@
 . $RULES_DIR/libxkbui.sh
 . $RULES_DIR/xineramaproto.sh
 . $RULES_DIR/libXinerama.sh
+. $RULES_DIR/bigreqsproto.sh
+. $RULES_DIR/xcmiscproto.sh
+. $RULES_DIR/xf86bigfontproto.sh
