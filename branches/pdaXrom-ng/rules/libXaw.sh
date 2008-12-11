@@ -30,18 +30,26 @@ build_libXaw() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --disable-xaw6 \
-	    --disable-xaw7 \
-	    --enable-xaw8 \
+	    --enable-xaw7 \
+	    --disable-xaw8 \
 	    || error
     )
     make $MAKEARGS || error
 
     install_sysroot_files || error
     
-    $INSTALL -D -m 644 src/.libs/libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so.8.0.0 || error
-    ln -sf libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so.8
-    ln -sf libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXaw8.so.8.0.0
+#    $INSTALL -D -m 644 src/.libs/libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so.8.0.0 || error
+#    ln -sf libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so.8
+#    ln -sf libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so
+#    $STRIP $ROOTFS_DIR/usr/lib/libXaw8.so.8.0.0
+
+    $INSTALL -D -m 644 src/.libs/libXaw7.so.7.0.0 $ROOTFS_DIR/usr/lib/libXaw7.so.7.0.0 || error
+    ln -sf libXaw7.so.7.0.0 $ROOTFS_DIR/usr/lib/libXaw7.so.7
+    ln -sf libXaw7.so.7.0.0 $ROOTFS_DIR/usr/lib/libXaw7.so
+    $STRIP $ROOTFS_DIR/usr/lib/libXaw7.so.7.0.0
+
+    ln -sf libXaw7.so.7 $ROOTFS_DIR/usr/lib/libXaw.so.7
+    ln -sf libXaw7.so   $ROOTFS_DIR/usr/lib/libXaw.so
 
     popd
     touch "$STATE_DIR/libXaw-1.0.4"
