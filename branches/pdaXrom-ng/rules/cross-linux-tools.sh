@@ -24,30 +24,54 @@ build_binutils() {
 
 build_binutils
 
-SYSROOT_BIN_MIRROR=ftp://ftp.pld-linux.org/dists/3.0/PLD/i686/RPMS
+get_rpm_target_arch() {
+    case $1 in
+    powerpc*-*|ppc*-*)
+	echo "ppc"
+	;;
+    i686-*)
+	echo "i686"
+	;;
+    i*86-*)
+	echo "i486"
+	;;
+    x86_64-*|amd64-*)
+	echo "x86_64"
+	;;
+    arm*-*|xscale*-*)
+	echo "arm"
+	;;
+    *)
+	echo "unknown"
+	;;
+    esac
+}
+
+SYSROOT_BIN_MIRROR=ftp://ftp.pld-linux.org/dists/3.0/PLD
 #SYSTROOT_GLIBC_VERSION=2.9-1
 SYSROOT_FILES="
-glibc-2.9-1.i686.rpm
-glibc-devel-2.9-1.i686.rpm
-glibc-devel-utils-2.9-1.i686.rpm
-glibc-headers-2.9-1.i686.rpm
-glibc-pic-2.9-1.i686.rpm
-glibc-static-2.9-1.i686.rpm
-gmp-4.2.3-1.i686.rpm
-gmp-devel-4.2.3-1.i686.rpm
-mpfr-2.3.1-1.i686.rpm
-mpfr-devel-2.3.1-1.i686.rpm
-linux-libc-headers-2.6.27-1.i686.rpm
+glibc-2.9-1
+glibc-devel-2.9-1
+glibc-devel-utils-2.9-1
+glibc-headers-2.9-1
+glibc-pic-2.9-1
+glibc-static-2.9-1
+gmp-4.2.3-1
+gmp-devel-4.2.3-1
+mpfr-2.3.1-1
+mpfr-devel-2.3.1-1
+linux-libc-headers-2.6.27-1
 "
 
 install_sysroot() {
     test -e "$STATE_DIR/sysroot" && return
     mkdir -p $TOOLCHAIN_SYSROOT
+    local rpm_arch=`get_rpm_target_arch $TARGET_ARCH`
     local f=
     for f in $SYSROOT_FILES ; do
-	download $SYSROOT_BIN_MIRROR $f
+	download ${SYSROOT_BIN_MIRROR}/${rpm_arch}/RPMS ${f}.${rpm_arch}.rpm
 	pushd $TOP_DIR
-	cd $TOOLCHAIN_SYSROOT && rpm2cpio $SRC_DIR/$f | lzma -d | $CPIO -idmu || error "unpack sysroot rpm"
+	cd $TOOLCHAIN_SYSROOT && rpm2cpio $SRC_DIR/${f}.${rpm_arch}.rpm | lzma -d | $CPIO -idmu || error "unpack sysroot rpm"
 	popd
     done
 
@@ -80,6 +104,18 @@ build_gcc() {
     download $GCC_MIRROR $GCC
     extract $GCC
     apply_patches $GCC_DIR $GCC
+    local CONF_ARGS=""
+    case $TARGET_ARCH in
+    powerpc*-*|ppc*-*)
+	CONF_ARGS="--enable-secureplt"
+	;;
+    i*86-*|x86_64-*|amd64-*)
+	CONF_ARGS="--disable-cld"
+	;;
+    *)
+	error "Unknown arch"
+	;;
+    esac
     echo "configure"
     pushd $TOP_DIR
     mkdir "$GCC_DIR/build"
@@ -96,7 +132,6 @@ build_gcc() {
 	--disable-multilib \
 	--enable-nls \
 	--disable-werror \
-	--disable-cld \
 	--with-gnu-as \
 	--with-gnu-ld \
 	--with-demangler-in-ld \
@@ -109,6 +144,7 @@ build_gcc() {
 	--enable-libstdcxx-allocator=new \
 	--with-gmp=$HOST_BIN_DIR \
 	--with-mpfr=$HOST_BIN_DIR \
+	$CONF_ARGS \
 	--disable-bootstrap || error "configure"
     make $MAKEARGS MAKEINFO=true || error "make"
     make MAKEINFO=true install || error "make install"
