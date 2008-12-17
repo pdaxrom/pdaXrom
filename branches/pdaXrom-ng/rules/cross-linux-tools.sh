@@ -107,7 +107,9 @@ build_gcc() {
     local CONF_ARGS=""
     case $TARGET_ARCH in
     powerpc*-*|ppc*-*)
-	CONF_ARGS="--enable-secureplt"
+	CONF_ARGS="--enable-secureplt \
+		    --enable-targets=powerpc-linux,powerpc64-linux \
+		    --with-cpu=default32"
 	;;
     i*86-*|x86_64-*|amd64-*)
 	CONF_ARGS="--disable-cld"
