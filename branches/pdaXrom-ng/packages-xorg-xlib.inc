@@ -10,6 +10,7 @@
 . $RULES_DIR/fixesproto.sh
 . $RULES_DIR/libXdmcp.sh
 . $RULES_DIR/libX11.sh
+. $RULES_DIR/libxkbfile.sh
 . $RULES_DIR/libXfixes.sh
 . $RULES_DIR/renderproto.sh
 . $RULES_DIR/libXrender.sh
@@ -55,10 +56,10 @@
 . $RULES_DIR/libXxf86misc.sh
 . $RULES_DIR/xf86vidmodeproto.sh
 . $RULES_DIR/libXxf86vm.sh
-. $RULES_DIR/libxkbfile.sh
 . $RULES_DIR/libxkbui.sh
 . $RULES_DIR/xineramaproto.sh
 . $RULES_DIR/libXinerama.sh
 . $RULES_DIR/bigreqsproto.sh
 . $RULES_DIR/xcmiscproto.sh
 . $RULES_DIR/xf86bigfontproto.sh
+. $RULES_DIR/xorg-xkbdata.sh
