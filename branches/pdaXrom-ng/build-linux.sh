@@ -24,6 +24,8 @@ MAKEARGS=-j4
 
 . ./packages-x-apps.inc
 
+. ./packages-x-lxde.inc
+
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/host_syslinux.sh
 . $RULES_DIR/create_x86cd.sh

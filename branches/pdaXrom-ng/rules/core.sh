@@ -234,6 +234,7 @@ CROSS_ENV_AC=" \
     ac_cv_func_dcgettext=yes \
     gt_cv_func_gettext_libintl=yes \
     ac_cv_sysv_ipc=yes \
+    ac_cv_func_malloc_0_nonnull=yes \
 "
 
 HOST_CC=gcc
