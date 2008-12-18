@@ -63,3 +63,5 @@
 . $RULES_DIR/xcmiscproto.sh
 . $RULES_DIR/xf86bigfontproto.sh
 . $RULES_DIR/xorg-xkbdata.sh
+
+. $RULES_DIR/xorg-startup-notification.sh

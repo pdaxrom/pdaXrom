@@ -200,16 +200,25 @@ if [ $HOST_SYSTEM = "Darwin" ]; then
     which gsed  2>/dev/null >/dev/null || error "Please, install sed utility."
     ln -sf `which $CPIO` $HOST_BIN_DIR/bin/cpio
     ln -sf `which gsed`  $HOST_BIN_DIR/bin/sed
+    INSTALL=ginstall
 else
     CPIO=cpio
+    INSTALL=install
 fi
 
 STRIP=${CROSS}strip
 DEPMOD=depmod
-INSTALL=ginstall
 
-CROSS_CFLAGS="-isystem $TARGET_INC"
-CROSS_CXXFLAGS="$CROSS_CFLAGS"
+if [ "x$CROSS_OPT_CFLAGS" = "x" ]; then
+    CROSS_OPT_CFLAGS="-O2"
+fi
+
+if [ "x$CROSS_OPT_CXXFLAGS" = "x" ]; then
+    CROSS_OPT_CXXFLAGS="-O2"
+fi
+
+CROSS_CFLAGS="$CROSS_OPT_CFLAGS -isystem $TARGET_INC"
+CROSS_CXXFLAGS="$CROSS_OPT_CXXFLAGS -isystem $TARGET_INC"
 CROSS_LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"
 CROSS_CONF_ENV='CFLAGS="$CROSS_CFLAGS" CXXFLAGS="$CROSS_CXXFLAGS" LDFLAGS="$CROSS_LDFLAGS"'
 
