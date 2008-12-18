@@ -1,6 +1,6 @@
 table Config
   FontName: verdana
-  FontSize: 12
+  FontSize: 10
   FontColor: #ffffff
   Locked: false
   Transparency: 0
@@ -17,6 +17,11 @@ table Config
   SnapShadow: true
   SnapShadowTrans: 200
   CaptionOnHover: false
+  Background.Delay: 0
+  Background.Source: None
+  Background.File: /usr/share/idesk/withatwist.png
+  Background.Mode: Scale
+  Background.Color: #C2CCFF
 end
 
 table Actions
