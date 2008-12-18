@@ -95,7 +95,7 @@ install_sysroot() {
 install_sysroot
 
 GCC="gcc-4.3.2.tar.bz2"
-GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3"
+GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3.2"
 GCC_DIR="$BUILD_DIR/gcc-4.3.2"
 
 build_gcc() {
