@@ -40,9 +40,18 @@ install_glibc() {
 	local L=`${TARGET_ARCH}-gcc -print-file-name=$f`
 	L=`readlink $L`
 	L=`${TARGET_ARCH}-gcc -print-file-name=${L/*\//}`
-	$INSTALL -m 644 $L $ROOTFS_DIR/usr/lib/
-	ln -sf ${L/*\//} $ROOTFS_DIR/usr/lib/$f
-	$STRIP $ROOTFS_DIR/usr/lib/${L/*\//}
+	local ff=
+	find `dirname $L` -name "$f*" | while read ff; do
+	    if [ "$L" = "$ff" ]; then
+		$INSTALL -m 644 $ff $ROOTFS_DIR/usr/lib/ || error "install $ff"
+		$STRIP $ROOTFS_DIR/usr/lib/${ff/*\//}
+	    else
+		ln -sf ${L/*\//} $ROOTFS_DIR/usr/lib/${ff/*\//}
+	    fi
+	done
+	#$INSTALL -m 644 $L $ROOTFS_DIR/usr/lib/
+	#ln -sf ${L/*\//} $ROOTFS_DIR/usr/lib/$f
+	#$STRIP $ROOTFS_DIR/usr/lib/${L/*\//}
     done
         
     touch "$STATE_DIR/install_glibc"

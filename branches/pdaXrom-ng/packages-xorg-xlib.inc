@@ -68,3 +68,6 @@
 . $RULES_DIR/xorg-startup-notification.sh
 . $RULES_DIR/cairo.sh
 . $RULES_DIR/pango.sh
+. $RULES_DIR/imlib2.sh
+. $RULES_DIR/atk.sh
+. $RULES_DIR/gtk2.sh
