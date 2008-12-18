@@ -15,8 +15,8 @@ HOST_@PACKET@_DIR=$HOST_BUILD_DIR/@packet@-@VERSION@
 HOST_@PACKET@_ENV=
 
 build_host_@packet@() {
-    test -e "$STATE_DIR/host_@packet@-@VERSION@" && return
-    banner "Build $HOST_@PACKET@"
+    test -e "$STATE_DIR/host_@packet@.installed" && return
+    banner "Build host-@name@"
     download $HOST_@PACKET@_MIRROR $HOST_@PACKET@
     extract_host $HOST_@PACKET@
     apply_patches $HOST_@PACKET@_DIR $HOST_@PACKET@
@@ -28,7 +28,7 @@ build_host_@packet@() {
     make $MAKEARGS || error
     make $MAKEARGS install || error
     popd
-    touch "$STATE_DIR/host_@packet@-@VERSION@"
+    touch "$STATE_DIR/host_@packet@.installed"
 }
 
 build_host_@packet@

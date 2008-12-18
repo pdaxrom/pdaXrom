@@ -221,6 +221,19 @@ CROSS_CFLAGS="$CROSS_OPT_CFLAGS -isystem $TARGET_INC"
 CROSS_CXXFLAGS="$CROSS_OPT_CXXFLAGS -isystem $TARGET_INC"
 CROSS_LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"
 CROSS_CONF_ENV='CFLAGS="$CROSS_CFLAGS" CXXFLAGS="$CROSS_CXXFLAGS" LDFLAGS="$CROSS_LDFLAGS"'
+CROSS_ENV_AC=" \
+    ac_cv_func_getpgrp_void=yes \
+    ac_cv_func_setpgrp_void=yes \
+    ac_cv_func_memcmp_clean=yes \
+    ac_cv_func_setvbuf_reversed=no \
+    ac_cv_func_getrlimit=yes \
+    ac_cv_type_uintptr_t=yes \
+    ac_cv_func_posix_getpwuid_r=yes \
+    ac_cv_func_posix_getgrgid_r=yes \
+    ac_cv_func_dcgettext=yes \
+    gt_cv_func_gettext_libintl=yes \
+    ac_cv_sysv_ipc=yes \
+"
 
 HOST_CC=gcc
 HOST_CXX=g++

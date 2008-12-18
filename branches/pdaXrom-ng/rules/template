@@ -12,11 +12,11 @@
 @PACKET@=@name@-@VERSION@.@SUFFIX@
 @PACKET@_MIRROR=@URL@
 @PACKET@_DIR=$BUILD_DIR/@name@-@VERSION@
-@PACKET@_ENV=
+@PACKET@_ENV="$CROSS_ENV_AC"
 
 build_@packet@() {
-    test -e "$STATE_DIR/@packet@-@VERSION@" && return
-    banner "Build $@PACKET@"
+    test -e "$STATE_DIR/@packet@.installed" && return
+    banner "Build @name@"
     download $@PACKET@_MIRROR $@PACKET@
     extract $@PACKET@
     apply_patches $@PACKET@_DIR $@PACKET@
@@ -30,13 +30,14 @@ build_@packet@() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error
-    )
+    ) || error "configure"
+    
     make $MAKEARGS || error
 
     error "update install"
 
     popd
-    touch "$STATE_DIR/@packet@-@VERSION@"
+    touch "$STATE_DIR/@packet@.installed"
 }
 
 build_@packet@
