@@ -44,6 +44,8 @@ build_fontconfig() {
     ln -sf libfontconfig.so.1.3.0 $ROOTFS_DIR/usr/lib/libfontconfig.so
     $STRIP $ROOTFS_DIR/usr/lib/libfontconfig.so.1.3.0
 
+    $INSTALL -D -m 644 fonts.conf $ROOTFS_DIR/etc/fonts/fonts.conf || error
+
     popd
     touch "$STATE_DIR/fontconfig-2.6.0"
 }
