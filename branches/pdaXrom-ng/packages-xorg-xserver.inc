@@ -8,7 +8,6 @@
 #
 # XServer
 #
-. $RULES_DIR/pixman.sh
 . $RULES_DIR/libpciaccess.sh
 . $RULES_DIR/xorg-server.sh
 
