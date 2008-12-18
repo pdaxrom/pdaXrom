@@ -6,3 +6,6 @@
 
 . $RULES_DIR/gamin.sh
 . $RULES_DIR/pcmanfm.sh
+. $RULES_DIR/host_icon-naming-utils.sh
+. $RULES_DIR/gnome-icon-theme.sh
+
