@@ -42,6 +42,8 @@ build_xorg_xterm() {
     $INSTALL -D -m 755 xterm $ROOTFS_DIR/usr/bin/xterm || error
     $STRIP $ROOTFS_DIR/usr/bin/xterm
 
+    $INSTALL -D -m 644 xterm.desktop $ROOTFS_DIR/usr/share/applications/xterm.desktop || error
+
     popd
     touch "$STATE_DIR/xorg_xterm-237"
 }

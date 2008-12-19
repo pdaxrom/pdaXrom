@@ -239,6 +239,7 @@ CROSS_ENV_AC=" \
 
 HOST_CC=gcc
 HOST_CXX=g++
+HOST_PKG_CONFIG=`which pkg-config`
 
 export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig

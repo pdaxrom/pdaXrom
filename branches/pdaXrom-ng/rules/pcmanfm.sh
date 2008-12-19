@@ -42,6 +42,11 @@ build_pcmanfm() {
     
     make DESTDIR=$ROOTFS_DIR install-data-am || error
 
+    update-mime-database $ROOTFS_DIR/usr/share/mime
+
+    $INSTALL -D -m 644 $GENERICFS_DIR/pcmanfm/main $ROOTFS_DIR/etc/xdg/pcmanfm/main || error
+    $INSTALL -D -m 644 $GENERICFS_DIR/idesk/withatwist.png $ROOTFS_DIR/usr/share/pixmaps/withatwist.png || error
+
     popd
     touch "$STATE_DIR/pcmanfm.installed"
 }

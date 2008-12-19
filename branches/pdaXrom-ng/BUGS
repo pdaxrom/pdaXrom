@@ -3,4 +3,5 @@ libXaw 1.0.4 but new 1.0.5
 xorg-xdm incomplete
 xf86-input-void incomplete
 
-icon-naming-utils need XML::Simple
+icon-naming-utils need host XML::Simple
+host_shared-mime-info need host libxml2

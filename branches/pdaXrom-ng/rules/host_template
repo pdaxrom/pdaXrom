@@ -22,9 +22,10 @@ build_host_@packet@() {
     apply_patches $HOST_@PACKET@_DIR $HOST_@PACKET@
     pushd $TOP_DIR
     cd $HOST_@PACKET@_DIR
+    (
     eval $HOST_@PACKET@_ENV \
-	./configure --prefix=$HOST_BIN_DIR \
-	    || error
+	./configure --prefix=$HOST_BIN_DIR
+    ) || error
     make $MAKEARGS || error
     make $MAKEARGS install || error
     popd

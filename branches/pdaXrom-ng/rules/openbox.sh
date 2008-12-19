@@ -54,6 +54,8 @@ build_openbox() {
     $INSTALL -D -m 644 data/xsession/openbox.desktop $ROOTFS_DIR//usr/share/xsessions/openbox.desktop || error
     $INSTALL -D -m 644 themes/Clearlooks/openbox-3/themerc $ROOTFS_DIR/usr/share/themes/Clearlooks/openbox-3/themerc || error
 
+    $INSTALL -D -m 644 $GENERICFS_DIR/openbox/autostart.sh $ROOTFS_DIR/etc/xdg/openbox/autostart.sh || error
+
     popd
     touch "$STATE_DIR/openbox.installed"
 }
