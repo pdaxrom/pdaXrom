@@ -23,3 +23,5 @@ linux-2.6.27-x86-applefix.patch
 parse.y.apple.patch
 
 squashfs3.4.patch
+
+patch-2.6.27.10.patch
