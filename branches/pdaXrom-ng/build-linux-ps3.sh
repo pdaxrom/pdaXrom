@@ -22,6 +22,10 @@ MAKEARGS=-j4
 
 #. ./packages-emulators.inc
 
+. ./packages-x-apps.inc
+
+. ./packages-x-lxde.inc
+
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/tweak-ps3.sh
 . $RULES_DIR/create_initramfs.sh
