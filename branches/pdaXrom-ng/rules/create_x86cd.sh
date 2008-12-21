@@ -1,5 +1,10 @@
 X86CD_TITLE="pdaXrom-ng x86 CD"
 
+create_x86cd_squashfs() {
+    rm -f $IMAGES_DIR/rootfs.img
+    mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img -le -all-root || error
+}
+
 create_x86cd() {
     local T=`echo /tmp/x86cd.$$`
     mkdir -p $T/boot
@@ -29,4 +34,5 @@ PROMPT 1
     popd
 }
 
+create_x86cd_squashfs
 create_x86cd
