@@ -262,4 +262,4 @@ export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig
 
 echo "target arch $TARGET_ARCH"
-echo "build  arch $HOST_ARCH"
+echo "build  arch $BUILD_ARCH"
