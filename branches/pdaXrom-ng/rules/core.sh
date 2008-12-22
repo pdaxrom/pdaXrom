@@ -18,6 +18,20 @@ error() {
 #MAKEARGS=-j4
 
 HOST_SYSTEM=`uname`
+HOST_ARCH=
+case $HOST_SYSTEM in
+Linux)
+    HOST_ARCH=`uname -m`-unknown-linux
+    ;;
+Darwin)
+    HOST_ARCH=`uname -m`-unknown-darwin
+    ;;
+*)
+    HOST_ARCH=
+    echo "unknown host system!"
+    exit 1
+    ;;
+esac
 
 TOP_DIR="$PWD"
 SRC_DIR="$TOP_DIR/src"
@@ -243,3 +257,6 @@ HOST_PKG_CONFIG=`which pkg-config`
 
 export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig
+
+echo "target arch $TARGET_ARCH"
+echo "host arch   $HOST_ARCH"
