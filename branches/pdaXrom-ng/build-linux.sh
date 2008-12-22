@@ -8,8 +8,6 @@ GLIBC_DIR="${TOOLCHAIN_SYSROOT}/lib"
 
 KERNEL_CONFIG=i686_ubuntu_kernel_config
 
-MAKEARGS=-j4
-
 . ./packages-basic.inc
 . ./packages-mmlibs.inc
 . ./packages-libs.inc

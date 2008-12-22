@@ -13,8 +13,6 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 CROSS=$TARGET_ARCH
 GLIBC_DIR="${TOOLCHAIN_SYSROOT}/lib"
 
-MAKEARGS=-j4
-
 echo "toolchain prefix  $TOOLCHAIN_PREFIX"
 echo "toolchain sysroot $TOOLCHAIN_SYSROOT"
 echo "target arch       $TARGET_ARCH"

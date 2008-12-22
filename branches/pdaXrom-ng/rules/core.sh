@@ -15,7 +15,9 @@ error() {
 #CROSS=ppu-
 #GLIBC_DIR="$TOOLCHAIN_PREFIX/../sysroot/lib"
 
-#MAKEARGS=-j4
+if [ "x$MAKEARGS" = "x" ]; then
+    MAKEARGS=-j4
+fi
 
 HOST_SYSTEM=`uname`
 BUILD_ARCH=
