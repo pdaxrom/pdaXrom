@@ -211,6 +211,7 @@ case $1 in
 esac
 
 if [ $HOST_SYSTEM = "Darwin" ]; then
+    export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/usr/X11R6/bin
     mkdir -p $HOST_BIN_DIR/bin
     CPIO=gnucpio
     which $CPIO 2>/dev/null >/dev/null || error "Please, install gnucpio utility."
