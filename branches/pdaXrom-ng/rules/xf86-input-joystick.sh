@@ -26,7 +26,7 @@ build_xf86_input_joystick() {
     eval \
 	$CROSS_CONF_ENV \
 	$XF86_INPUT_JOYSTICK_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error

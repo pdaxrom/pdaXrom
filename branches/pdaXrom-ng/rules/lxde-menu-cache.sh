@@ -26,7 +26,7 @@ build_lxde_menu_cache() {
     eval \
 	$CROSS_CONF_ENV \
 	$LXDE_MENU_CACHE_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \

@@ -18,16 +18,19 @@ error() {
 #MAKEARGS=-j4
 
 HOST_SYSTEM=`uname`
-HOST_ARCH=
+BUILD_ARCH=
 case $HOST_SYSTEM in
 Linux)
-    HOST_ARCH=`uname -m`-unknown-linux
+    BUILD_ARCH=`uname -m`-unknown-linux
     ;;
 Darwin)
-    HOST_ARCH=`uname -m`-unknown-darwin
+    BUILD_ARCH=`uname -m`-unknown-darwin
+    ;;
+Cygwin)
+    BUILD_ARCH=`uname -m`-unknown-cygwin
     ;;
 *)
-    HOST_ARCH=
+    BUILD_ARCH=
     echo "unknown host system!"
     exit 1
     ;;
@@ -259,4 +262,4 @@ export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig
 
 echo "target arch $TARGET_ARCH"
-echo "host arch   $HOST_ARCH"
+echo "build  arch $HOST_ARCH"

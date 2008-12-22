@@ -23,7 +23,7 @@ build_module_init_tools() {
     pushd $TOP_DIR
     cd $MODULE_INIT_TOOLS_DIR
     eval $MODULE_INIT_TOOLS_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/ \
 	    --sysconfdir=/etc || error
     make $MAKEARGS || error

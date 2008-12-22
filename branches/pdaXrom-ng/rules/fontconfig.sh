@@ -26,7 +26,7 @@ build_fontconfig() {
     eval \
 	$CROSS_CONF_ENV \
 	$FONTCONFIG_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --disable-docs \

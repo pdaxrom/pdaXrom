@@ -26,7 +26,7 @@ build_libXTrap() {
     eval \
 	$CROSS_CONF_ENV \
 	$LIBXTRAP_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error

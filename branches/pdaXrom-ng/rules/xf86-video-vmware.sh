@@ -26,7 +26,7 @@ build_xf86_video_vmware() {
     eval \
 	$CROSS_CONF_ENV \
 	$XF86_VIDEO_VMWARE_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error

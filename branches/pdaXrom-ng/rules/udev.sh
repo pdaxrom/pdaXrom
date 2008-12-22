@@ -23,7 +23,7 @@ build_udev() {
     pushd $TOP_DIR
     cd $UDEV_DIR
     eval $UDEV_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/ \
 	    --sysconfdir=/etc || error
     make $MAKEARGS || error

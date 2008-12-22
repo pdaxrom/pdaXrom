@@ -26,7 +26,7 @@ build_libXxf86dga() {
     eval \
 	$CROSS_CONF_ENV \
 	$LIBXXF86DGA_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --disable-malloc0returnsnull \

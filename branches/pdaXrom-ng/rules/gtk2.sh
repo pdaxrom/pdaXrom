@@ -29,7 +29,7 @@ build_gtk2() {
     eval \
 	$CROSS_CONF_ENV \
 	$GTK2_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \

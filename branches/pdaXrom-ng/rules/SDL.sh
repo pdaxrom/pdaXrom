@@ -26,7 +26,7 @@ build_SDL() {
     eval \
 	$CROSS_CONF_ENV \
 	$SDL_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --enable-oss=no \

@@ -26,7 +26,7 @@ build_xbitmaps() {
     eval \
 	$CROSS_CONF_ENV \
 	$XBITMAPS_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --datadir=/usr/share \

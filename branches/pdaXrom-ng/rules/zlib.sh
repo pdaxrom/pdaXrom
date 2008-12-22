@@ -23,7 +23,7 @@ build_zlib() {
     pushd $TOP_DIR
     cd $ZLIB_DIR
     eval $ZLIB_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc || error
     make $MAKEARGS || error

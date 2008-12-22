@@ -26,7 +26,7 @@ build_SDL_image() {
     eval \
 	$CROSS_CONF_ENV \
 	$SDL_IMAGE_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --enable-jpg \

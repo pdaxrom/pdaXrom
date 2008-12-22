@@ -26,7 +26,7 @@ build_xorg_adobe_75dpi() {
     eval \
 	$CROSS_CONF_ENV \
 	$XORG_ADOBE_75DPI_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --with-top-fontdir=/usr/share/fonts \

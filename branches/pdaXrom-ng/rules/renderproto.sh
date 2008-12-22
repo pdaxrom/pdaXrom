@@ -26,7 +26,7 @@ build_renderproto() {
     eval \
 	$CROSS_CONF_ENV \
 	$RENDERPROTO_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc || error
     )

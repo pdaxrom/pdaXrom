@@ -26,7 +26,7 @@ build_ps3_utils() {
     eval \
 	$CROSS_CONF_ENV \
 	$PS3_UTILS_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc || error
     )

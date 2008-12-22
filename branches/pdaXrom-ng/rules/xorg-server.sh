@@ -30,7 +30,7 @@ build_xorg_server() {
     eval \
 	$CROSS_CONF_ENV \
 	$XORG_SERVER_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --localstatedir=/var \

@@ -26,7 +26,7 @@ build_libxcb() {
     eval \
 	$CROSS_CONF_ENV \
 	$LIBXCB_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --disable-build-docs \
 	    --sysconfdir=/etc || error

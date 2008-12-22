@@ -3,5 +3,7 @@ libXaw 1.0.4 but new 1.0.5
 xorg-xdm incomplete
 xf86-input-void incomplete
 
+host-cdrkit need cmake libcap-dev libbz2-dev
 icon-naming-utils need host XML::Simple
 host_shared-mime-info need host libxml2
+alsa-utils need xmlto

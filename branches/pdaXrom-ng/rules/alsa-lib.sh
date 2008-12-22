@@ -26,7 +26,7 @@ build_alsa_lib() {
     eval \
 	$CROSS_CONF_ENV \
 	$ALSA_LIB_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --disable-python || error

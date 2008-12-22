@@ -26,7 +26,7 @@ build_libXi() {
     eval \
 	$CROSS_CONF_ENV \
 	$LIBXI_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --disable-man-pages \

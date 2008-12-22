@@ -26,7 +26,7 @@ build_libXvMC() {
     eval \
 	$CROSS_CONF_ENV \
 	$LIBXVMC_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --disable-malloc0returnsnull \

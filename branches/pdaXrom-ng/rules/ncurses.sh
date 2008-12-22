@@ -26,7 +26,7 @@ build_ncurses() {
     eval \
 	$CROSS_CONF_ENV \
 	$NCURSES_ENV \
-	./configure --host=$TARGET_ARCH \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --with-normal \
