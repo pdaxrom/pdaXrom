@@ -25,7 +25,7 @@ build_host_ncurses() {
     eval $HOST_NCURSES_ENV \
 	./configure --prefix=$HOST_BIN_DIR \
 	    --with-normal \
-	    --with-shared \
+	    --without-shared \
 	    --disable-nls \
 	    --without-ada \
 	    --enable-const \
