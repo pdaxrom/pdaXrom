@@ -20,6 +20,10 @@ else
     HOST_NCURSES_CONF="--with-shared"
 fi
 
+if [ "${BUILD_ARCH/-*}" = "x86_64" -o "${BUILD_ARCH/-*}" = "amd64" ]; then
+    HOST_NCURSES_ENV="CFLAGS='-O2 -fpic' $HOST_NCURSES_ENV"
+fi
+
 build_host_ncurses() {
     test -e "$STATE_DIR/host_ncurses-5.7" && return
     banner "Build $HOST_NCURSES"

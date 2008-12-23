@@ -14,6 +14,10 @@ HOST_GETTEXT_MIRROR=http://ftp.gnu.org/pub/gnu/gettext
 HOST_GETTEXT_DIR=$HOST_BUILD_DIR/gettext-0.17
 HOST_GETTEXT_ENV=
 
+if [ "${BUILD_ARCH/-*}" = "x86_64" -o "${BUILD_ARCH/-*}" = "amd64" ]; then
+    HOST_GETTEXT_ENV="CFLAGS='-O2 -D_FORTIFY_SOURCE=0' $HOST_GETTEXT_ENV"
+fi
+
 build_host_gettext() {
     test -e "$STATE_DIR/host_gettext.installed" && return
     banner "Build host-gettext"
