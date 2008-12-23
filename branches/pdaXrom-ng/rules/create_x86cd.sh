@@ -17,7 +17,7 @@ APPEND  initrd=/boot/rootfs.img
 LABEL live
   menu label ^Try Ubuntu without any change to your computer
   kernel /boot/bzImage
-  append initrd=/boot/rootfs.img
+  append initrd=/boot/rootfs.img root=/dev/ram0
 DISPLAY isolinux.txt
 TIMEOUT 300
 PROMPT 1

@@ -18,3 +18,8 @@
 . $RULES_DIR/dropbear.sh
 . $RULES_DIR/libjpeg.sh
 . $RULES_DIR/libpng.sh
+
+#
+# we use mcookie from this package
+#
+. $RULES_DIR/util-linux.sh

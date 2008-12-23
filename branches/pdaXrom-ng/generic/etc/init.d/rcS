@@ -5,11 +5,14 @@
 # $Id: rcS 7022 2007-02-28 14:17:06Z jbe $
 #
 
+mount -n -t tmpfs -o mode=0755 udev /dev
+[ -e /dev/console ] || mknod -m 0600 /dev/console c 5 1
+
 echo -n "mounting filesystems..."
 mount -a 2>/dev/null
 echo "done."
 
-if mount | grep /dev/root | grep cramfs >/dev/null ; then
+if mount | grep /dev/root | grep squashfs >/dev/null ; then
     echo "move /etc to ram..."
     tar c /etc 2>/dev/null | tar x -C /tmp
     echo "done."
@@ -18,6 +21,10 @@ if mount | grep /dev/root | grep cramfs >/dev/null ; then
     tar c /var 2>/dev/null | tar x -C /tmp
     echo "done."
     mount -o bind /tmp/var /var
+
+    # put user dir in /tmp
+    mkdir /tmp/home
+    mount -o bind /tmp/home /home
 else
     mount -o remount,rw /
 fi
