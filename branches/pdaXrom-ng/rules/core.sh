@@ -20,16 +20,24 @@ if [ "x$MAKEARGS" = "x" ]; then
 fi
 
 HOST_SYSTEM=`uname`
+HOST_ARCH=`uname -m`
+
+if [ "$HOST_SYSTEM" = "Darwin" -a "$HOST_ARCH" = "i386" ]; then
+    if test echo | cpp -v 2>&1| grep "\-m64" >/dev/null ; then
+	HOST_ARCH="x86_64"
+    fi
+fi
+
 BUILD_ARCH=
 case $HOST_SYSTEM in
 Linux)
-    BUILD_ARCH=`uname -m`-unknown-linux
+    BUILD_ARCH=${HOST_ARCH}-unknown-linux
     ;;
 Darwin)
-    BUILD_ARCH=`uname -m`-unknown-darwin
+    BUILD_ARCH=${HOST_ARCH}-unknown-darwin
     ;;
 Cygwin)
-    BUILD_ARCH=`uname -m`-unknown-cygwin
+    BUILD_ARCH=${HOST_ARCH}-unknown-cygwin
     ;;
 *)
     BUILD_ARCH=

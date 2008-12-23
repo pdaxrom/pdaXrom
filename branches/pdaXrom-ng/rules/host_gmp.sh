@@ -14,7 +14,11 @@ HOST_GMP_MIRROR=ftp://ftp.gnu.org/gnu/gmp
 HOST_GMP_DIR=$BUILD_DIR/gmp-4.2.4
 
 if [ $HOST_SYSTEM = "Darwin" ]; then
-HOST_GMP_ENV="ABI=32"
+    if [ "${BUILD_ARCH/-*}" = "x86_64" -o "${BUILD_ARCH/-*}" = "amd64" ]; then
+	HOST_GMP_ENV="ABI=64"
+    else
+	HOST_GMP_ENV="ABI=32"
+    fi
 fi
 
 build_host_gmp() {
