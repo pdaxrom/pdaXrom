@@ -1,10 +1,5 @@
 PS3CD_TITLE="pdaXrom-ng for Sony PS3"
 
-create_ps3cd_squashfs() {
-    rm -f $IMAGES_DIR/rootfs.img
-    mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img -be -all-root || error
-}
-
 create_ps3cd() {
     local T=`echo /tmp/ps3cd.$$`
     mkdir -p $T/boot
@@ -22,5 +17,4 @@ create_ps3cd() {
     popd
 }
 
-create_ps3cd_squashfs
 create_ps3cd
