@@ -22,5 +22,5 @@ create_ps3cd() {
     popd
 }
 
-#create_ps3cd_squashfs
+create_ps3cd_squashfs
 create_ps3cd
