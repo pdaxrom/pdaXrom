@@ -32,7 +32,7 @@ build_util_linux() {
 	    || error
     ) || error "configure"
     
-    make $MAKEARGS || error
+    make $MAKEARGS CC=${CROSS}gcc || error
 
     $INSTALL -D -m 755 misc-utils/mcookie $ROOTFS_DIR/usr/bin/mcookie || error
     $STRIP $ROOTFS_DIR/usr/bin/mcookie

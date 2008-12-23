@@ -1,6 +1,8 @@
 #!/bin/sh
 #
 
+exec 2>/dev/null >/dev/null
+
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/dropbear
 NAME=dropbear

@@ -13,7 +13,7 @@ create_x86cd() {
     cp -f $IMAGES_DIR/bzImage    $T/boot/
     cp -f $HOST_BIN_DIR/share/syslinux/isolinux.bin $T/isolinux/
     printf "DEFAULT /boot/bzImage
-APPEND  initrd=/boot/rootfs.img
+APPEND  initrd=/boot/rootfs.img root=/dev/ram0
 LABEL live
   menu label ^Try Ubuntu without any change to your computer
   kernel /boot/bzImage
