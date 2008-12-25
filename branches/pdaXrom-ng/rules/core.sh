@@ -268,6 +268,13 @@ CROSS_ENV_AC=" \
 HOST_CC=gcc
 HOST_CXX=g++
 HOST_PKG_CONFIG=`which pkg-config`
+HOST_CPPFLAGS="-I$HOST_BIN_DIR/include"
+HOST_LDFLAGS="-L$HOST_BIN_DIR/lib -Wl,-rpath -Wl,$HOST_BIN_DIR/lib"
+
+if [ $HOST_SYSTEM = "Darwin" ]; then
+    HOST_CPPFLAGS="$HOST_CPPFLAGS -I/opt/local/include"
+    HOST_LDFLAGS="$HOST_LDFLAGS -L/opt/local/lib"
+fi
 
 export PATH=$HOST_BIN_DIR/bin:$HOST_BIN_DIR/sbin:$TOOLCHAIN_PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig

@@ -27,9 +27,17 @@ build_host_glib2() {
 	CFLAGS="-I$HOST_BIN_DIR/include" \
 	LDFLAGS="-L$HOST_BIN_DIR/lib" \
 	./configure --prefix=$HOST_BIN_DIR \
+	    --disable-shared
     ) || error
     make $MAKEARGS || error
-    make $MAKEARGS install || error
+    #make $MAKEARGS install || error
+    
+    for f in glib-genmarshal glib-mkenums gobject-query; do
+	$INSTALL -D -m 755 gobject/$f $HOST_BIN_DIR/bin/$f || error
+    done
+    
+    $INSTALL -D -m 755 glib-gettextize $HOST_BIN_DIR/bin/glib-gettextize || error
+    
     popd
     touch "$STATE_DIR/host_glib2.installed"
 }
