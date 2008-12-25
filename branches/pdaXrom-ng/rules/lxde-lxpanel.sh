@@ -50,6 +50,8 @@ build_lxde_lxpanel() {
 
     make -C data DESTDIR=$ROOTFS_DIR install || error
 
+    $INSTALL -D -m 644 $GENERICFS_DIR/lxpanel/panel $ROOTFS_DIR/usr/share/lxpanel/profile/default/panels/panel || error
+
     popd
     touch "$STATE_DIR/lxde_lxpanel.installed"
 }

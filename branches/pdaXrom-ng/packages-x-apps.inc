@@ -17,3 +17,5 @@
 . $RULES_DIR/libgcrypt.sh
 . $RULES_DIR/gnutls.sh
 . $RULES_DIR/pidgin.sh
+
+. $RULES_DIR/abiword.sh
