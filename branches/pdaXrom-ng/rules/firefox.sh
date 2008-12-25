@@ -19,7 +19,7 @@ build_firefox() {
     banner "Build firefox"
     download $FIREFOX_MIRROR $FIREFOX
     extract $FIREFOX
-#    apply_patches $FIREFOX_DIR $FIREFOX
+    apply_patches $FIREFOX_DIR $FIREFOX
     pushd $TOP_DIR
     cd $FIREFOX_DIR
     (
