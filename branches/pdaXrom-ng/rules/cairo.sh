@@ -32,15 +32,15 @@ build_cairo() {
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
 	    --disable-quartz \
-	    --disable-xcb \
 	    --disable-beos \
 	    --disable-glitz \
 	    --disable-svg \
 	    --disable-atsui \
+	    --enable-xcb \
 	    --enable-ps \
 	    --enable-pdf \
 	    --enable-xlib \
-	    --enable-freetype \
+	    --enable-ft \
 	    --enable-png \
 	    || error
     ) || error "configure"

@@ -13,7 +13,7 @@ PANGO=pango-1.22.4.tar.bz2
 PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22
 PANGO_DIR=$BUILD_DIR/pango-1.22.4
 PANGO_ENV="$CROSS_ENV_AC"
-PANGO_MODULES="basic-fc,basic-win32,basic-x,basic-atsui"
+PANGO_MODULES="basic-x,basic-fc"
 
 build_pango() {
     test -e "$STATE_DIR/pango.installed" && return

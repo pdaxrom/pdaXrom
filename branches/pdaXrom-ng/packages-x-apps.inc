@@ -18,4 +18,9 @@
 . $RULES_DIR/gnutls.sh
 . $RULES_DIR/pidgin.sh
 
-. $RULES_DIR/abiword.sh
+#. $RULES_DIR/libgsf.sh
+#. $RULES_DIR/libfribidi.sh
+#. $RULES_DIR/libwv.sh
+#. $RULES_DIR/popt.sh
+#. $RULES_DIR/libglade.sh
+#. $RULES_DIR/abiword.sh

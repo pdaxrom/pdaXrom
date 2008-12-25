@@ -5,6 +5,7 @@
 . $RULES_DIR/libpthread-stubs.sh
 . $RULES_DIR/libXau.sh
 . $RULES_DIR/libxcb.sh
+. $RULES_DIR/xcb-util.sh
 . $RULES_DIR/kbproto.sh
 . $RULES_DIR/inputproto.sh
 . $RULES_DIR/fixesproto.sh
