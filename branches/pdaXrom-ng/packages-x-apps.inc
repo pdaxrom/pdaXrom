@@ -27,8 +27,6 @@
 . $RULES_DIR/host_icu4c.sh
 . $RULES_DIR/icu4c.sh
 . $RULES_DIR/WebKit.sh
-error "asd"
-
 
 #
 # pidgin and friends
