@@ -12,7 +12,7 @@
 FIREFOX=firefox-3.0.5-source.tar.bz2
 FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/3.0.5/source
 FIREFOX_DIR=$BUILD_DIR/mozilla
-FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1"
+FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv___va_copy=yes"
 
 build_firefox() {
     test -e "$STATE_DIR/firefox.installed" && return

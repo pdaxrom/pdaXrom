@@ -6,18 +6,26 @@
 
 . $RULES_DIR/rdesktop.sh
 
+#
+# firefox and friends
+#
+#. $RULES_DIR/host_findutils.sh
+#. $RULES_DIR/host_libIDL.sh
+#. $RULES_DIR/libIDL.sh
+#. $RULES_DIR/firefox.sh
 
-. $RULES_DIR/host_findutils.sh
-. $RULES_DIR/host_libIDL.sh
-. $RULES_DIR/libIDL.sh
-. $RULES_DIR/firefox.sh
-
+#
+# pidgin and friends
+#
 . $RULES_DIR/libtasn1.sh
 . $RULES_DIR/libgpg-error.sh
 . $RULES_DIR/libgcrypt.sh
 . $RULES_DIR/gnutls.sh
 . $RULES_DIR/pidgin.sh
 
+#
+# Abiword and friends
+#
 #. $RULES_DIR/libgsf.sh
 #. $RULES_DIR/libfribidi.sh
 #. $RULES_DIR/libwv.sh
