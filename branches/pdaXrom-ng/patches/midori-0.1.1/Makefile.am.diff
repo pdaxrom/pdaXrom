@@ -1,0 +1,10 @@
+--- midori-0.1.1/midori/Makefile.am-	2008-12-28 22:49:19.000000000 +0600
++++ midori-0.1.1/midori/Makefile.am	2008-12-28 22:49:36.000000000 +0600
+@@ -39,4 +39,6 @@
+     midori-locationaction.c midori-locationaction.h \
+     gjs.c       gjs.h       \
+     sokoke.c    sokoke.h    \
+-    compat.c    compat.h
++    compat.c    compat.h \
++    midori-viewable.c \
++    midori-extension.c

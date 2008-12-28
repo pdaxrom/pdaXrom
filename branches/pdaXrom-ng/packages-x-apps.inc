@@ -29,6 +29,12 @@
 . $RULES_DIR/WebKit.sh
 
 #
+# midori
+#
+. $RULES_DIR/libunique.sh
+. $RULES_DIR/midori.sh
+
+#
 # pidgin and friends
 #
 . $RULES_DIR/libtasn1.sh
