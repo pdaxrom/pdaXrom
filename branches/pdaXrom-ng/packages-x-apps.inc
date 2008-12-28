@@ -35,6 +35,11 @@
 . $RULES_DIR/midori.sh
 
 #
+# skipstone
+#
+. $RULES_DIR/skipstone.sh
+
+#
 # pidgin and friends
 #
 . $RULES_DIR/libtasn1.sh

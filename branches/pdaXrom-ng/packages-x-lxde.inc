@@ -5,8 +5,10 @@
 . $RULES_DIR/gamin.sh
 . $RULES_DIR/pcmanfm.sh
 
-. $RULES_DIR/lxde-lxnm.sh
-. $RULES_DIR/lxde-lxrandr.sh
+#. $RULES_DIR/lxde-lxnm.sh
+#. $RULES_DIR/lxde-lxrandr.sh
 
-. $RULES_DIR/libvte.sh
-. $RULES_DIR/lxde-lxterminal.sh
+#. $RULES_DIR/libvte.sh
+#. $RULES_DIR/lxde-lxterminal.sh
+
+#. $RULES_DIR/lxde-lxlauncher.sh
