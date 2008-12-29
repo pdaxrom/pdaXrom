@@ -1,5 +1,39 @@
---- midori-0.1.1/midori/Makefile.am-	2008-12-28 22:49:19.000000000 +0600
-+++ midori-0.1.1/midori/Makefile.am	2008-12-28 22:49:36.000000000 +0600
+--- midori-0.1.1/katze/Makefile.am-	2008-12-29 11:36:18.000000000 +0600
++++ midori-0.1.1/katze/Makefile.am	2008-12-29 11:36:41.000000000 +0600
+@@ -2,6 +2,7 @@
+ 
+ INCLUDES = \
+     $(GTK_CFLAGS)    \
++    $(LIBSOUP_CFLAGS) \
+     $(LIBXML_CFLAGS)
+ 
+ noinst_LTLIBRARIES = \
+@@ -9,6 +10,7 @@
+ 
+ libkatze_la_LIBADD = \
+     $(GTK_LIBS)      \
++    $(LIBSOUP_LIBS)  \
+     $(INTLLIBS)      \
+     $(LIBXML_LIBS)
+ 
+--- midori-0.1.1/midori/Makefile.am-	2008-12-29 11:37:34.000000000 +0600
++++ midori-0.1.1/midori/Makefile.am	2008-12-29 11:38:03.000000000 +0600
+@@ -5,6 +5,7 @@
+     $(LIBXML_CFLAGS)        \
+     $(SQLITE3_CFLAGS)       \
+     $(GTK_CFLAGS)           \
++    $(LIBSOUP_CFLAGS)	    \
+     $(WEBKIT_CFLAGS)        \
+     -I../katze
+ 
+@@ -15,6 +16,7 @@
+     $(LIBXML_LIBS)      \
+     $(SQLITE3_LIBS)      \
+     $(GTK_LIBS)          \
++    $(LIBSOUP_LIBS)	 \
+     $(WEBKIT_LIBS)       \
+     $(INTLLIBS)          \
+     ../katze/libkatze.la
 @@ -39,4 +39,6 @@
      midori-locationaction.c midori-locationaction.h \
      gjs.c       gjs.h       \

@@ -9,10 +9,10 @@
 #
 # firefox and friends
 #
-#. $RULES_DIR/host_findutils.sh
-#. $RULES_DIR/host_libIDL.sh
-#. $RULES_DIR/libIDL.sh
-#. $RULES_DIR/firefox.sh
+. $RULES_DIR/host_findutils.sh
+. $RULES_DIR/host_libIDL.sh
+. $RULES_DIR/libIDL.sh
+. $RULES_DIR/firefox.sh
 
 #
 # webkit
@@ -32,12 +32,13 @@
 # midori
 #
 . $RULES_DIR/libunique.sh
+. $RULES_DIR/libsoup.sh
 . $RULES_DIR/midori.sh
 
 #
 # skipstone
 #
-. $RULES_DIR/skipstone.sh
+#. $RULES_DIR/skipstone.sh
 
 #
 # pidgin and friends
