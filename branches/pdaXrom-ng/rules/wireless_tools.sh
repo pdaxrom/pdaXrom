@@ -30,8 +30,14 @@ build_wireless_tools() {
 	$STRIP $ROOTFS_DIR/usr/sbin/$f
     done
 
+    $INSTALL -D -m 644 libiw.so.29 $TARGET_LIB/libiw.so.29 || error
+    ln -sf libiw.so.29 $TARGET_LIB/libiw.so
+
+    $INSTALL -D -m 644 iwlib.h $TARGET_INC/iwlib.h || error
+    $INSTALL -D -m 644 wireless.h $TARGET_INC/wireless.h || error
+
     $INSTALL -D -m 644 libiw.so.29 $ROOTFS_DIR/usr/lib/libiw.so.29
-    ln -s libiw.so.29 $ROOTFS_DIR/usr/lib/libiw.so
+    ln -sf libiw.so.29 $ROOTFS_DIR/usr/lib/libiw.so
     $STRIP $ROOTFS_DIR/usr/lib/libiw.so.29
 
     popd

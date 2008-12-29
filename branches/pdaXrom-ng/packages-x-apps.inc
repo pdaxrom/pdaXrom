@@ -4,7 +4,7 @@
 
 #. $RULES_DIR/idesk.sh
 
-. $RULES_DIR/rdesktop.sh
+#. $RULES_DIR/rdesktop.sh
 
 #
 # firefox and friends
@@ -15,25 +15,30 @@
 . $RULES_DIR/firefox.sh
 
 #
+# skipstone-gecko
+#
+#. $RULES_DIR/skipstone-gecko.sh
+
+#
 # webkit
 #
-. $RULES_DIR/sqlite.sh
-. $RULES_DIR/libtasn1.sh
-. $RULES_DIR/libgpg-error.sh
-. $RULES_DIR/libgcrypt.sh
-. $RULES_DIR/gnutls.sh
-. $RULES_DIR/curl.sh
-. $RULES_DIR/libxslt.sh
-. $RULES_DIR/host_icu4c.sh
-. $RULES_DIR/icu4c.sh
-. $RULES_DIR/WebKit.sh
+#. $RULES_DIR/sqlite.sh
+#. $RULES_DIR/libtasn1.sh
+#. $RULES_DIR/libgpg-error.sh
+#. $RULES_DIR/libgcrypt.sh
+#. $RULES_DIR/gnutls.sh
+#. $RULES_DIR/curl.sh
+#. $RULES_DIR/libxslt.sh
+#. $RULES_DIR/host_icu4c.sh
+#. $RULES_DIR/icu4c.sh
+#. $RULES_DIR/WebKit.sh
 
 #
 # midori
 #
-. $RULES_DIR/libunique.sh
-. $RULES_DIR/libsoup.sh
-. $RULES_DIR/midori.sh
+#. $RULES_DIR/libunique.sh
+#. $RULES_DIR/libsoup.sh
+#. $RULES_DIR/midori.sh
 
 #
 # skipstone
@@ -43,11 +48,11 @@
 #
 # pidgin and friends
 #
-. $RULES_DIR/libtasn1.sh
-. $RULES_DIR/libgpg-error.sh
-. $RULES_DIR/libgcrypt.sh
-. $RULES_DIR/gnutls.sh
-. $RULES_DIR/pidgin.sh
+#. $RULES_DIR/libtasn1.sh
+#. $RULES_DIR/libgpg-error.sh
+#. $RULES_DIR/libgcrypt.sh
+#. $RULES_DIR/gnutls.sh
+#. $RULES_DIR/pidgin.sh
 
 #
 # Abiword and friends

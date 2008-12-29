@@ -12,7 +12,7 @@
 FIREFOX=firefox-3.0.5-source.tar.bz2
 FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/3.0.5/source
 FIREFOX_DIR=$BUILD_DIR/mozilla
-FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv___va_copy=yes"
+FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv_va_copy=yes ac_cv_va_val_copy=no"
 
 build_firefox() {
     test -e "$STATE_DIR/firefox.installed" && return
@@ -31,20 +31,62 @@ build_firefox() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
-	    --enable-application=browser \
-	    --enable-default-toolkit=cairo-gtk2 \
-	    --enable-xft \
-	    --disable-freetype2 \
 	    --enable-system-cairo \
+	    --disable-debug \
+	    --with-user-appdir=.mozilla \
+	    --with-system-jpeg=$TARGET_BIN_DIR \
+	    --with-system-zlib=$TARGET_BIN_DIR \
+	    --disable-crashreporter \
+	    --disable-composer \
+	    --disable-elf-dynstr-gc \
 	    --disable-gtktest \
+	    --disable-install-strip \
+	    --disable-installer \
+	    --disable-ldap \
+	    --disable-mailnews \
+	    --disable-profilesharing \
 	    --disable-tests \
-	    --disable-static \
+	    --disable-mochitest \
+	    --disable-updater \
+	    --disable-xprint \
+	    --enable-application=browser \
+	    --enable-canvas \
+	    --enable-default-toolkit=cairo-gtk2 \
 	    --disable-gnomevfs \
 	    --disable-dbus \
-	    --disable-debug \
-	    --enable-strip \
-	    --disable-crashreporter
-	sed -i "s|CPU_ARCH =|CPU_ARCH = $TARGET_ARCH|" security/coreconf/Linux.mk
+	    --enable-optimize \
+	    --enable-pango \
+	    --enable-postscript \
+    	    --enable-svg \
+	    --enable-mathml \
+	    --enable-xft \
+	    --enable-xinerama \
+	    --enable-extensions=default,-reporter \
+	    --enable-single-profile \
+	    --enable-system-myspell \
+	    --with-distribution-id=org.pdaXrom
+
+#	    --enable-system-sqlite
+
+	local T_ARCH=
+	case $TARGET_ARCH in
+	i386*|i486*|i586*|i686*)
+	    T_ARCH="x86"
+	    ;;
+	arm*|xscale*)
+	    T_ARCH="arm"
+	    ;;
+	powerpc*|ppc*)
+	    T_ARCH="ppc"
+	    ;;
+	x86_64*|amd64*)
+	    T_ARCH="x86_64"
+	    ;;
+	*)
+	    T_ARCH="${TARGET_ARCH/-*/}"
+	    ;;
+	esac
+	sed -i "s|CPU_ARCH =|CPU_ARCH = $T_ARCH|" security/coreconf/Linux.mk
     ) || error "configure"
 
     make $MAKEARGS \

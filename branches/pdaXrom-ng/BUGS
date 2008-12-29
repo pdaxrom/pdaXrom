@@ -8,3 +8,5 @@ host-cdrkit need cmake libcap-dev libbz2-dev
 icon-naming-utils need host XML::Simple libxml-simple-perl
 host_shared-mime-info need host libxml2
 alsa-utils need xmlto
+firefox broken
+skipstone-gecko broken
