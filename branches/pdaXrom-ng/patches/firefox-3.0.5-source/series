@@ -1,10 +1,4 @@
 Linux.mk.diff
 configure.diff
 configure.in.diff
-bz412610_att335369_realpath_overflow.patch
-bz421977_att334578.patch
-bz436133_att322801.patch
-bzXXX_reload_new_plugins.patch
-dont_depend_on_nspr_sources.patch
-installer_use_stdout_for_missing_files.patch
-ubuntu_no_app_updates.patch
+Makefile.in.diff

@@ -65,6 +65,8 @@ build_pidgin() {
     $STRIP fakeroot/usr/lib/pidgin/*.so || error
     $STRIP fakeroot/usr/lib/purple-2/*.so || error
 
+    mv fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
+
     cp -R fakeroot/usr $ROOTFS_DIR/ || error
 
     popd
