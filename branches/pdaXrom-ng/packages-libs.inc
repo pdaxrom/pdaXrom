@@ -1,3 +1,5 @@
+. $RULES_DIR/libjpeg.sh
+. $RULES_DIR/libpng.sh
 . $RULES_DIR/uuid.sh
 . $RULES_DIR/openssl.sh
 . $RULES_DIR/expat.sh

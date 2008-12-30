@@ -13,13 +13,7 @@
 . $RULES_DIR/module-init-tools.sh
 . $RULES_DIR/udev.sh
 . $RULES_DIR/wireless_tools.sh
+. $RULES_DIR/dhcpcd.sh
 . $RULES_DIR/install_glibc.sh
 . $RULES_DIR/zlib.sh
 . $RULES_DIR/dropbear.sh
-. $RULES_DIR/libjpeg.sh
-. $RULES_DIR/libpng.sh
-
-#
-# we use mcookie from this package
-#
-. $RULES_DIR/util-linux.sh
