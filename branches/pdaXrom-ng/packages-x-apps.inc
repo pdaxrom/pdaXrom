@@ -55,6 +55,12 @@
 . $RULES_DIR/pidgin.sh
 
 #
+# xchat
+#
+. $RULES_DIR/libsexy.sh
+. $RULES_DIR/xchat.sh
+
+#
 # Abiword and friends
 #
 #. $RULES_DIR/libgsf.sh
