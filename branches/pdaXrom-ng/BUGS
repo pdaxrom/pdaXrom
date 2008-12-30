@@ -10,5 +10,5 @@ host_shared-mime-info need host libxml2
 alsa-utils need xmlto
 xcb-util need gperf
 
-firefox broken
 skipstone-gecko broken
+audacious broken

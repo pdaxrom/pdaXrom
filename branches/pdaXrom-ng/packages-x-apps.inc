@@ -69,3 +69,11 @@
 #. $RULES_DIR/popt.sh
 #. $RULES_DIR/libglade.sh
 #. $RULES_DIR/abiword.sh
+
+#
+# audacious
+#
+#. $RULES_DIR/libmowgli.sh
+#. $RULES_DIR/mcs.sh
+#. $RULES_DIR/audacious.sh
+
