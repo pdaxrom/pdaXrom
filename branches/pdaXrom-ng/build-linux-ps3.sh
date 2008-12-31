@@ -24,6 +24,8 @@ KERNEL_CONFIG=ps3_kernel_config
 
 . ./packages-x-lxde.inc
 
+. ./packages-devel.inc
+
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/tweak-ps3.sh
 . $RULES_DIR/create_initramfs.sh

@@ -45,6 +45,7 @@ build_audacious() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
+	    --enable-samplerate \
 	    $AUDACIOUS_CONF \
 	    || error
     ) || error "configure"
@@ -52,6 +53,8 @@ build_audacious() {
     make $MAKEARGS AR=${CROSS}ar || error
 
     make $MAKEARGS AR=${CROSS}ar DESTDIR=$AUDACIOUS_DIR/fakeroot install || error
+
+    install_sysroot_files || error
     
     rm -rf fakeroot/usr/include
     rm -rf fakeroot/usr/lib/pkgconfig
