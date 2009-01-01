@@ -8,6 +8,8 @@
 . $RULES_DIR/lxde-lxnm.sh
 . $RULES_DIR/lxde-lxrandr.sh
 
+. $RULES_DIR/lxde-lxsession-lite.sh
+
 . $RULES_DIR/libvte.sh
 . $RULES_DIR/lxde-lxterminal.sh
 
