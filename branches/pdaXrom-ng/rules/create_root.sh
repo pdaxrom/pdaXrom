@@ -39,6 +39,9 @@ create_root() {
     done
     
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/rcS $ROOTFS_DIR/etc/init.d/
+    $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/sysklogd $ROOTFS_DIR/etc/init.d/
+    install_rc_start sysklogd 05
+
     for f in $GENERICFS_DIR/etc/*; do
 	test -f $f && $INSTALL -m 644 $f $ROOTFS_DIR/etc/
     done
