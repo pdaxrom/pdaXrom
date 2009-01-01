@@ -18,6 +18,8 @@ create_squashfs() {
     rm -f $ROOTFS_DIR/linuxrc
     ln -sf /sbin/init $ROOTFS_DIR/init
 
+    echo "c 5 1" > $ROOTFS_DIR/dev/.squashfs_dev_node.console
+
     rm -f $IMAGES_DIR/rootfs.img
     mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root || error
 }
