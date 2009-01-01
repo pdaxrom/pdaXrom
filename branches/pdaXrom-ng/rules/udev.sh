@@ -36,6 +36,14 @@ build_udev() {
     $INSTALL -m 644 $GENERICFS_DIR/etc/udev/udev.conf  $ROOTFS_DIR/etc/udev/
     $INSTALL -m 644 $GENERICFS_DIR/etc/udev/links.conf $ROOTFS_DIR/etc/udev/
     $INSTALL -m 644 $GENERICFS_DIR/etc/udev/rules.d/udev.rules $ROOTFS_DIR/etc/udev/rules.d/
+
+    $INSTALL -D -m 755 extras/volume_id/.libs/vol_id $ROOTFS_DIR/lib/udev/vol_id || error
+    $STRIP $ROOTFS_DIR/lib/udev/vol_id
+
+    $INSTALL -D -m 644 extras/volume_id/lib/.libs/libvolume_id.so.1.0.6 $ROOTFS_DIR/lib/libvolume_id.so.1.0.6 || error
+    ln -sf libvolume_id.so.1.0.6 $ROOTFS_DIR/lib/libvolume_id.so.1
+    $STRIP $ROOTFS_DIR/lib/libvolume_id.so.1.0.6
+
     for f in $GENERICFS_DIR/etc/udev/scripts/*; do
 	$INSTALL -m 755 $f $ROOTFS_DIR/etc/udev/scripts/
     done

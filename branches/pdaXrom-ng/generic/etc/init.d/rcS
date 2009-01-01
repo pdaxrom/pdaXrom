@@ -25,6 +25,9 @@ if mount | grep /dev/root | grep squashfs >/dev/null ; then
     # put user dir in /tmp
     mkdir /tmp/home
     mount -o bind /tmp/home /home
+    # put media dir in /tmp
+    mkdir /tmp/media
+    mount -o bind /tmp/media /media
 else
     mount -o remount,rw /
 fi

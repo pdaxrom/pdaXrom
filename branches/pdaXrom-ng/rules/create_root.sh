@@ -11,6 +11,7 @@ etc/network/if-pre-up.d
 etc/network/if-up.d
 home
 lib
+media
 mnt
 proc
 root
