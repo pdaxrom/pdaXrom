@@ -186,8 +186,10 @@ install_sysroot_files() {
 }
 
 banner() {
+    echo
     echo "*********************************************************************************"
     echo "$1"
+    echo
     if [ "$TERM" = "xterm-color" -o "$TERM" = "xterm" ]; then
 	echo -ne "\033]0;${1}\007"
     fi
@@ -284,3 +286,5 @@ export PKG_CONFIG_PATH=$TARGET_LIB/pkgconfig
 
 echo "target arch $TARGET_ARCH"
 echo "build  arch $BUILD_ARCH"
+
+trap "banner ''" 2
