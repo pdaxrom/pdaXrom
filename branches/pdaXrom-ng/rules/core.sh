@@ -188,6 +188,9 @@ install_sysroot_files() {
 banner() {
     echo "*********************************************************************************"
     echo "$1"
+    if [ "$TERM" = "xterm-color" -o "$TERM" = "xterm" ]; then
+	echo -ne "\033]0;${1}\007"
+    fi
 }
 
 mkdir -p "$SRC_DIR" || error mkdir
