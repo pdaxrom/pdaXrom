@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+
 # Do not run when pcmcia-cs is installed
 #test -x /sbin/cardctl && exit 0
 
