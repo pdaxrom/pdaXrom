@@ -1,16 +1,20 @@
 #!/bin/sh
 #
 
-NAME=alsa-utils
+. /etc/init.d/functions
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+NAME=alsa-utils
 
 case "$1" in
   start)
-	alsactl restore
+	log_begin_msg -n "Restoring ALSA settings"
+	alsactl restore >/dev/null 2>/dev/null
+	log_end_msg $?
 	;;
   stop)
+	log_begin_msg -n "Storing ALSA settings"
 	alsactl store
+	log_end_msg $?
 	;;
   *)
 	N=/etc/init.d/$NAME

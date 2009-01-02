@@ -1,4 +1,10 @@
 #!/bin/sh
 
+. /etc/init.d/functions
+
+log_begin_msg -n "Starting syslogd"
 syslogd -S
+log_end_msg $?
+log_begin_msg -n "Starting klogd"
 klogd
+log_end_msg $?

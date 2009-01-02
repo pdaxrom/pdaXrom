@@ -2,26 +2,8 @@
 #
 # udev start script
 #
-# script to populate dev/ by using udev.
-#
-# Copyright (C) 2004 Greg Kroah-Hartman <greg@kroah.com>
-#
-# Released under the GPL v2 only.
-#
-# This needs to be run at the earliest possible point in the boot
-# process. But it could be a good idea to run the syslogd first, due
-# to udev uses it for logging (if enabled).
-#
-# Based on the udev init.d script
-#
-# Thanks go out to the Gentoo developers for proving
-# that this is possible to do.
-#
-# Yes, it's very verbose, feel free to turn off all of the echo calls,
-# they were there to make me feel better that everything was working
-# properly during development...
-#
-# 2007 updated to udev 103 by Juergen Beisert <j.beisert@pengutronix.de>
+
+. /etc/init.d/functions
 
 . /etc/udev/udev.conf
 
@@ -39,40 +21,44 @@ make_extra_nodes() {
     	    L) ln -s $arg1 /dev/$name ;;
     	    D) mkdir -p /dev/$name ;;
     	    M) mknod /dev/$name $arg1 ;;
-    	    *) echo "links.conf: unparseable line ($type $name $arg1)" ;;
+    	    *) logger "links.conf: unparseable line ($type $name $arg1)" ;;
 	esac
     done
 }
 
+log_begin_msg -n "Starting udev"
+
 # don't use udev if sysfs is not mounted.
 if [ ! -d $sysfs_dir/kernel ]; then
-	echo "error: sysfs not mounted"
+	logger "udev: sysfs not mounted"
+	log_end_msg 1
 	exit 1
 fi
 
 # The reason we don't write to mtab is because we don't ever
 # want /dev to be unavailable (such as by `umount -a').
-echo "mounting... tmpfs at $udev_root"
+logger "mounting... tmpfs at $udev_root"
 mount -n -t tmpfs tmpfs $udev_root -o mode=755
+mknod /dev/null c 1 3
 # Udev handles uevents itself, so we don't need to have
 # the kernel call out to any binary in response to them
 echo > /proc/sys/kernel/hotplug
-echo "creating static nodes"
+logger "creating static nodes"
 make_extra_nodes
 # Start the udev daemon to continually
 # watch for, and act on, uevents
 $udevd --daemon
-echo -n "creating initial udev device nodes..."
+logger "creating initial udev device nodes..."
 # Now traverse sys/ in order to "coldplug"
 # devices that have already been discovered
 $udevt
 # Now wait for udevd to process
 # the uevents we triggered
-$udevs --timeout=10
-echo "done"
+$udevs --timeout=10 > /dev/null
+log_end_msg $?
 # We can only mount /dev/pts after initialising udev
 if [ -d "/dev/pts" ]; then
 	mount /dev/pts
 fi
-echo "udev startup is finished"
+logger "udev startup is finished"
 exit 0
