@@ -18,7 +18,8 @@ build_tweak_ps3() {
 
     $INSTALL -D -m 644 $GENERICFS_DIR/asound.state.PS3 $ROOTFS_DIR/var/lib/alsa/asound.state || error
     $INSTALL -D -m 644 $GENERICFS_DIR/etc/X11/xorg.conf $ROOTFS_DIR/etc/X11/xorg.conf || error
-    ln -sf ../../../usr/bin/openbox-session $ROOTFS_DIR/etc/X11/xinit/xinitrc || error
+
+    #ln -sf ../../../usr/bin/openbox-session $ROOTFS_DIR/etc/X11/xinit/xinitrc || error
 
     touch "$STATE_DIR/tweak_ps3-1.0"
 }
