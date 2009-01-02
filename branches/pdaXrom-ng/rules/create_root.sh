@@ -39,6 +39,7 @@ create_root() {
     done
     
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/rcS $ROOTFS_DIR/etc/init.d/
+    $INSTALL -m 644 $GENERICFS_DIR/etc/init.d/functions $ROOTFS_DIR/etc/init.d/
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/sysklogd $ROOTFS_DIR/etc/init.d/
     install_rc_start sysklogd 05
 
