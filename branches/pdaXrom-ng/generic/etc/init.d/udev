@@ -54,7 +54,7 @@ logger "creating initial udev device nodes..."
 $udevt
 # Now wait for udevd to process
 # the uevents we triggered
-$udevs --timeout=10 > /dev/null
+$udevs --timeout=60 > /dev/null
 log_end_msg $?
 # We can only mount /dev/pts after initialising udev
 if [ -d "/dev/pts" ]; then

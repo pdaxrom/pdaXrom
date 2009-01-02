@@ -12,6 +12,7 @@ etc/network/if-up.d
 home
 lib
 media
+media/cdrom
 mnt
 proc
 root

@@ -117,19 +117,11 @@ Plugin {
 }
 
 Plugin {
-    type = volumealsa
-}
-
-Plugin {
-    type = netstatus
-    Config {
-        iface=eth0
-        configtool=network-admin --configure %i
-    }
-}
-
-Plugin {
     type = netstat
+}
+
+Plugin {
+    type = volumealsa
 }
 
 Plugin {
