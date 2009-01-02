@@ -22,6 +22,8 @@ KERNEL_CONFIG=ps3_kernel_config
 
 . ./packages-x-apps.inc
 
+. ./packages-hal.inc
+
 . ./packages-x-lxde.inc
 
 . ./packages-devel.inc
