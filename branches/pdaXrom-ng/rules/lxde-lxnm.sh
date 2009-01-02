@@ -35,6 +35,7 @@ build_lxde_lxnm() {
     make $MAKEARGS || error
 
     make -C data DESTDIR=$ROOTFS_DIR/ install || error
+    chmod 755 $ROOTFS_DIR/usr/share/lxnm/*.sh
     $INSTALL -D -m 755 src/lxnm $ROOTFS_DIR/usr/sbin/lxnm || error
     $STRIP $ROOTFS_DIR/usr/sbin/lxnm
 

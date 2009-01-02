@@ -129,9 +129,12 @@ Plugin {
 }
 
 Plugin {
+    type = netstat
+}
+
+Plugin {
     type = dclock
     Config {
         BoldFont=1
     }
 }
-
