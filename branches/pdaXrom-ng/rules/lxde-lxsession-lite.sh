@@ -50,8 +50,6 @@ build_lxde_lxsession_lite() {
     $INSTALL -D -m 644 $GENERICFS_DIR/lxsession/config    $ROOTFS_DIR/etc/xdg/lxsession/LXDE/config    || error
     $INSTALL -D -m 755 $GENERICFS_DIR/lxsession/startlxde $ROOTFS_DIR/usr/bin/startlxde || error
     
-    ln -sf ../../../usr/bin/startlxde $ROOTFS_DIR/etc/X11/xinit/xinitrc
-
     popd
     touch "$STATE_DIR/lxde_lxsession_lite.installed"
 }
