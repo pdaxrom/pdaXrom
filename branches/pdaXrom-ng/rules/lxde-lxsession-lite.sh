@@ -31,8 +31,11 @@ build_lxde_lxsession_lite() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
-	    --disable-hal \
+	    --enable-hal \
 	    || error
+
+#	    --disable-hal
+
     ) || error "configure"
     
     make $MAKEARGS || error

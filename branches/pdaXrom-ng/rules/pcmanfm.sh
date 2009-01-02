@@ -31,8 +31,11 @@ build_pcmanfm() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
-	    --disable-hal \
+	    --enable-hal \
 	    --disable-superuser-checks
+
+#	    --disable-hal
+
     ) || error "configure"
     
     make $MAKEARGS || error
