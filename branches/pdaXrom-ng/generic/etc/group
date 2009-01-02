@@ -4,4 +4,5 @@ ftp:x:101:
 www:x:102:
 messagebus:x:104:
 audio:x:105:
+haldaemon:x:106:
 nogroup:x:65534:

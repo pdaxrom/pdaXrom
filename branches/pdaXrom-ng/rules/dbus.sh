@@ -79,6 +79,9 @@ build_dbus() {
     $INSTALL -d $ROOTFS_DIR/var/lib/dbus || error
     $INSTALL -d $ROOTFS_DIR/var/run/dbus || error
 
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/dbus $ROOTFS_DIR/etc/init.d/dbus || error
+    install_rc_start dbus 10
+
     popd
     touch "$STATE_DIR/dbus.installed"
 }

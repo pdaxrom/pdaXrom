@@ -7,6 +7,7 @@
 
 . /etc/udev/udev.conf
 
+udev_root=/dev
 sysfs_dir=/sys
 udevd=/sbin/udevd
 udevt="/sbin/udevadm trigger"
