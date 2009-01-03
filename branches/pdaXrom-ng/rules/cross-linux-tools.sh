@@ -65,6 +65,7 @@ linux-libc-headers-2.6.27-1
 
 #glibc-localedb-all-2.9-1
 #glibc-misc-2.9-1
+#iconv-2.9-1
 
 install_sysroot() {
     test -e "$STATE_DIR/sysroot" && return
