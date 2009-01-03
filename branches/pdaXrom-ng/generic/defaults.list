@@ -52,4 +52,4 @@ text/x-java=leafpad.desktop
 text/mathml=leafpad.desktop
 text/x-python=leafpad.desktop
 text/x-sql=leafpad.desktop
-text/xml=firefox.desktop
+text/xml=mozilla-firefox.desktop
