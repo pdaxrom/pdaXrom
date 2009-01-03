@@ -22,11 +22,25 @@ build_host_squashfs() {
     apply_patches $HOST_SQUASHFS_DIR $HOST_SQUASHFS
     pushd $TOP_DIR
     cd $HOST_SQUASHFS_DIR
-    make -C squashfs-tools || error
+    
+    local OPT_LIBS=
+    #
+    # fix stupid @lazy_ptr problem in OSX linker
+    #
+    if [ $HOST_SYSTEM = "Darwin" ]; then
+	OPT_LIBS=$HOST_LZMA_DIR/CPP/7zip/Compress/LZMA_Alone/7zCrc_r.o
+    fi
+
+    make -C squashfs-tools \
+	Sqlzma=$HOST_LZMA_DIR \
+	LzmaAlone=$HOST_LZMA_DIR/CPP/7zip/Compress/LZMA_Alone \
+	LzmaC=$HOST_LZMA_DIR/C/Compress/Lzma \
+	OPT_LIBS=$OPT_LIBS \
+	|| error
 
     $INSTALL -D -m 755 squashfs-tools/mksquashfs $HOST_BIN_DIR/bin/mksquashfs || error
     $INSTALL -D -m 755 squashfs-tools/unsquashfs $HOST_BIN_DIR/bin/unsquashfs || error
-    
+
     popd
     touch "$STATE_DIR/host_squashfs.installed"
 }

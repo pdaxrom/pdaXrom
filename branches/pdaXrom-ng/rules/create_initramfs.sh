@@ -22,7 +22,8 @@ create_squashfs() {
     echo "c 1 3" > $ROOTFS_DIR/dev/.squashfs_dev_node.null
 
     rm -f $IMAGES_DIR/rootfs.img
-    mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root || error
+    mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -lzmadic 1M || error
+    #mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -nolzma || error
 }
 
 create_initramfs() {
