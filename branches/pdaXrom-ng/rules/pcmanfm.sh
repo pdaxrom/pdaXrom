@@ -50,6 +50,8 @@ build_pcmanfm() {
     $INSTALL -D -m 644 $GENERICFS_DIR/pcmanfm/main $ROOTFS_DIR/etc/xdg/pcmanfm/main || error
     $INSTALL -D -m 644 $GENERICFS_DIR/idesk/withatwist.png $ROOTFS_DIR/usr/share/pixmaps/withatwist.png || error
 
+    $INSTALL -D -m 644 $GENERICFS_DIR/defaults.list $ROOTFS_DIR/usr/share/applications/defaults.list || error
+
     popd
     touch "$STATE_DIR/pcmanfm.installed"
 }

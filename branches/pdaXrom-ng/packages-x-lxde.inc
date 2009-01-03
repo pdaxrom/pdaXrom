@@ -10,6 +10,9 @@
 . $RULES_DIR/lxde-lxterminal.sh
 . $RULES_DIR/leafpad.sh
 . $RULES_DIR/gpicview.sh
+
+. $RULES_DIR/unzip.sh
+. $RULES_DIR/zip.sh
 . $RULES_DIR/xarchiver.sh
 
 #. $RULES_DIR/lxde-lxmusic.sh
