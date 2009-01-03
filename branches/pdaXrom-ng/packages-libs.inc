@@ -1,3 +1,4 @@
+. $RULES_DIR/bzip2.sh
 . $RULES_DIR/libjpeg.sh
 . $RULES_DIR/libpng.sh
 . $RULES_DIR/uuid.sh

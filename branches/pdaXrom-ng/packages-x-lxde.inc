@@ -14,7 +14,7 @@
 . $RULES_DIR/unzip.sh
 . $RULES_DIR/zip.sh
 . $RULES_DIR/unrar.sh
-. $RULES_DIR/xarchiver.sh
+#. $RULES_DIR/xarchiver.sh
 
 #. $RULES_DIR/lxde-lxmusic.sh
 #. $RULES_DIR/lxde-lxlauncher.sh

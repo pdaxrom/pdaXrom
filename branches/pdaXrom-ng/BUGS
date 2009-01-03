@@ -13,3 +13,4 @@ alsa-utils need xmlto
 xcb-util need gperf
 
 skipstone-gecko broken
+xarchiver broken
