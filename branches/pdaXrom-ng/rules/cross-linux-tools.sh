@@ -56,6 +56,8 @@ glibc-devel-utils-2.9-1
 glibc-headers-2.9-1
 glibc-pic-2.9-1
 glibc-static-2.9-1
+glibc-localedb-all-2.9-1
+glibc-misc-2.9-1
 gmp-4.2.3-1
 gmp-devel-4.2.3-1
 mpfr-2.3.1-1
