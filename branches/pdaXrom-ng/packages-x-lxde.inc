@@ -15,5 +15,7 @@
 
 . $RULES_DIR/leafpad.sh
 
+. $RULES_DIR/gpicview.sh
+
 #. $RULES_DIR/lxde-lxmusic.sh
 #. $RULES_DIR/lxde-lxlauncher.sh
