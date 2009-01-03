@@ -30,10 +30,12 @@ build_bzip2() {
 
     $INSTALL -D -m 644 bzlib.h $TARGET_INC/bzlib.h || error
     $INSTALL -D -m 644 libbz2.so.1.0.4 $TARGET_LIB/libbz2.so.1.0.4 || error
+    ln -sf libbz2.so.1.0.4 $TARGET_LIB/libbz2.so.1.0
     ln -sf libbz2.so.1.0.4 $TARGET_LIB/libbz2.so.1
     ln -sf libbz2.so.1.0.4 $TARGET_LIB/libbz2.so
 
     $INSTALL -D -m 644 libbz2.so.1.0.4 $ROOTFS_DIR/usr/lib/libbz2.so.1.0.4 || error
+    ln -sf libbz2.so.1.0.4 $ROOTFS_DIR/usr/lib/libbz2.so.1.0
     ln -sf libbz2.so.1.0.4 $ROOTFS_DIR/usr/lib/libbz2.so.1
     ln -sf libbz2.so.1.0.4 $ROOTFS_DIR/usr/lib/libbz2.so
     $STRIP $ROOTFS_DIR/usr/lib/libbz2.so.1.0.4
