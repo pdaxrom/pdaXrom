@@ -56,7 +56,7 @@ Plugin {
             id=mozilla-firefox.desktop
         }
         Button {
-            id=xterm.desktop
+            id=lxterminal.desktop
         }
     }
 }

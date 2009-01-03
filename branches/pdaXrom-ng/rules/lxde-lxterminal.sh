@@ -38,6 +38,7 @@ build_lxde_lxterminal() {
     
     $INSTALL -D -m 755 src/lxterminal $ROOTFS_DIR/usr/bin/lxterminal || error
     $STRIP $ROOTFS_DIR/usr/bin/lxterminal
+    $INSTALL -D -m 644 $GENERICFS_DIR/lxterminal/lxterminal.conf $ROOTFS_DIR/usr/share/lxterminal/lxterminal.conf || error
 
     popd
     touch "$STATE_DIR/lxde_lxterminal.installed"

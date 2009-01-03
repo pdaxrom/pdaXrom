@@ -44,6 +44,8 @@ build_libvte() {
     ln -sf libvte.so.9.4.3 $ROOTFS_DIR/usr/lib/libvte.so
     $STRIP $ROOTFS_DIR/usr/lib/libvte.so.9.4.3
 
+    $INSTALL -D -m 644 termcaps/xterm.baseline $ROOTFS_DIR/etc/termcap || error
+
     popd
     touch "$STATE_DIR/libvte.installed"
 }

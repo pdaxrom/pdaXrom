@@ -14,5 +14,4 @@
 . $RULES_DIR/lxde-lxterminal.sh
 
 #. $RULES_DIR/lxde-lxmusic.sh
-
 #. $RULES_DIR/lxde-lxlauncher.sh

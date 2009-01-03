@@ -1,5 +1,5 @@
 [General]
-terminal=xterm
+terminal=lxterminal
 
 [Window]
 width=640
