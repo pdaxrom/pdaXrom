@@ -37,13 +37,15 @@ build_xorg_server() {
 	    --datadir=/usr/share \
 	    --enable-shm \
 	    --enable-freetype \
-	    --disable-glx \
-	    --disable-dri \
+	    --enable-glx \
+	    --enable-dri \
 	    --enable-xorg \
 	    --with-fontdir=/usr/share/fonts \
 	    --without-dtrace \
 	    || error
-    )
+#	    --disable-glx
+#	    --disable-dri
+    ) || error
 
     make $MAKEARGS || error
 

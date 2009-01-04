@@ -14,7 +14,6 @@
 . $RULES_DIR/xf86-video-fbdev.sh
 . $RULES_DIR/xf86-video-cirrus.sh
 
-
 #
 # x86 specific drivers
 #

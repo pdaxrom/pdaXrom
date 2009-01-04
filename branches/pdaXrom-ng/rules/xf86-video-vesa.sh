@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XF86_VIDEO_VESA=xf86-video-vesa-2.0.0.tar.bz2
+XF86_VIDEO_VESA=xf86-video-vesa-2.1.0.tar.bz2
 XF86_VIDEO_VESA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_VESA_DIR=$BUILD_DIR/xf86-video-vesa-2.0.0
+XF86_VIDEO_VESA_DIR=$BUILD_DIR/xf86-video-vesa-2.1.0
 XF86_VIDEO_VESA_ENV=
 
 build_xf86_video_vesa() {
