@@ -23,7 +23,6 @@ build_libxml2() {
     pushd $TOP_DIR
     cd $LIBXML2_DIR
     (
-    CROSS_CFLAGS="-O2 $CROSS_CFLAGS"
     echo $CROSS_CONF_ENV
     eval \
 	$CROSS_CONF_ENV \

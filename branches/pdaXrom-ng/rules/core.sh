@@ -195,6 +195,15 @@ banner() {
     fi
 }
 
+install_gcc_wrappers() {
+    mkdir -p $HOST_BIN_DIR/bin
+    for f in c++ cc cpp g++ gcc; do
+	echo "#!/bin/sh" > $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
+	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} -isystem ${TARGET_INC} \${1+\"\$@\"}" >> $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
+	chmod 755 $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
+    done
+}
+
 mkdir -p "$SRC_DIR" || error mkdir
 mkdir -p "$BUILD_DIR" || error mkdir
 mkdir -p "$HOST_BUILD_DIR" || error mkdir
@@ -239,6 +248,8 @@ else
     INSTALL=install
 fi
 
+install_gcc_wrappers
+
 STRIP=${CROSS}strip
 DEPMOD=depmod
 
@@ -254,7 +265,8 @@ CROSS_CFLAGS="$CROSS_OPT_CFLAGS -isystem $TARGET_INC"
 CROSS_CXXFLAGS="$CROSS_OPT_CXXFLAGS -isystem $TARGET_INC"
 CROSS_CPPFLAGS="-isystem $TARGET_INC"
 CROSS_LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"
-CROSS_CONF_ENV='CFLAGS="$CROSS_CFLAGS" CXXFLAGS="$CROSS_CXXFLAGS" LDFLAGS="$CROSS_LDFLAGS" CPPFLAGS="$CROSS_CPPFLAGS"'
+#CROSS_CONF_ENV='CFLAGS="$CROSS_CFLAGS" CXXFLAGS="$CROSS_CXXFLAGS" LDFLAGS="$CROSS_LDFLAGS" CPPFLAGS="$CROSS_CPPFLAGS"'
+CROSS_CONF_ENV='LDFLAGS="$CROSS_LDFLAGS"'
 CROSS_ENV_AC=" \
     ac_cv_func_getpgrp_void=yes \
     ac_cv_func_setpgrp_void=yes \

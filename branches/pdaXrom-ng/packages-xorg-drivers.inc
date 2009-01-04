@@ -20,9 +20,7 @@
 
 if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" ]; then
 
-#
-# VESA driver
-#
+. $RULES_DIR/xf86-video-intel.sh
 . $RULES_DIR/xf86-video-vesa.sh
 
 #

@@ -1,16 +1,2 @@
-Need DRI in XServer:
-
-xf86-video-ati
-xf86-video-cyrix
-xf86-video-glint
-xf86-video-i810
-xf86-video-intel
-xf86-video-mach64
-xf86-video-mga
-xf86-video-newport
-xf86-video-savage
-xf86-video-sis
-xf86-video-tdfx
-xf86-video-via
-xf86-video-xgi
-xf86-video-xgixp
+Network Manager
+lxpanel,pcmanfm startup notification
