@@ -36,7 +36,7 @@ build_libXt() {
     )
     make -C util $MAKEARGS || error
     
-    $HOST_CC util/makestrs.c -o util/makestrs || error "makestrs"
+    $HOST_CC -I$TARGET_INC util/makestrs.c -o util/makestrs || error "makestrs"
 
     make $MAKEARGS || error
 
