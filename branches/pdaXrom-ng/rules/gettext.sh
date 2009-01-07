@@ -46,6 +46,9 @@ build_gettext() {
 	    --disable-native-java \
 	    --disable-csharp \
 	    --with-libncurses-prefix=$TARGET_BIN_DIR \
+	    --with-libglib-2.0-prefix=$TARGET_BIN_DIR \
+	    --with-libxml2-prefix=$TARGET_BIN_DIR \
+	    --without-libcroco-0.6-prefix \
 	    || error
     ) || error "configure"
     
