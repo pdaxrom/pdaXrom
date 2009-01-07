@@ -45,6 +45,7 @@ build_gettext() {
 	    --disable-java \
 	    --disable-native-java \
 	    --disable-csharp \
+	    --with-libncurses-prefix=$TARGET_BIN_DIR \
 	    || error
     ) || error "configure"
     
