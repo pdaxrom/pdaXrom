@@ -36,7 +36,7 @@ build_libX11() {
 
     make -C src/util $MAKEARGS || error
     
-    $HOST_CC src/util/makekeys.c -o src/util/makekeys || error
+    $HOST_CC -I$TARGET_INC src/util/makekeys.c -o src/util/makekeys || error
 
     make $MAKEARGS || error
 
