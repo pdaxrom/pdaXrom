@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XF86_VIDEO_ATI=xf86-video-ati-6.9.0.tar.bz2
+XF86_VIDEO_ATI=xf86-video-ati-6.10.0.tar.bz2
 XF86_VIDEO_ATI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_ATI_DIR=$BUILD_DIR/xf86-video-ati-6.9.0
+XF86_VIDEO_ATI_DIR=$BUILD_DIR/xf86-video-ati-6.10.0
 XF86_VIDEO_ATI_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_ati() {
