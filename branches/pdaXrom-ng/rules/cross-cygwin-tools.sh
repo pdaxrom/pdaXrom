@@ -32,16 +32,36 @@ build_binutils() {
 
 SYSROOT_FILES_MIRROR="http://mirrors.dotsrc.org/cygwin/release"
 SYSROOT_FILES=" \
+bzip2/bzip2-1.0.5-2.tar.bz2 \
+bzip2/libbz2-devel/libbz2-devel-1.0.5-2.tar.bz2 \
+bzip2/libbz2_1/libbz2_1-1.0.5-2.tar.bz2	\
 cygwin/cygwin-1.5.25-15.tar.bz2 \
+jpeg/jpeg-6b-12.tar.bz2 \
+jpeg/libjpeg-devel/libjpeg-devel-6b-12.tar.bz2 \
+jpeg/libjpeg62/libjpeg62-6b-12.tar.bz2 \
+libpng/libpng-1.2.12-1.tar.bz2 \
+libpng/libpng12-devel/libpng12-devel-1.2.12-1.tar.bz2 \
+libpng/libpng12/libpng12-1.2.12-1.tar.bz2 \
+openssl/openssl-0.9.8j-1.tar.bz2 \
+openssl/openssl-devel/openssl-devel-0.9.8j-1.tar.bz2 \
 w32api/w32api-3.13-1.tar.bz2 \
+zlib/zlib-1.2.3-2.tar.bz2 \
 "
 
 build_sysroot() {
     test -e "$STATE_DIR/cygwin-sysroot" && return
+    mkdir -p $SRC_DIR/cygwin
     mkdir -p $TOOLCHAIN_SYSROOT
+    local d=
+    local n=
     for f in $SYSROOT_FILES; do
-	download ${SYSROOT_FILES_MIRROR}/${f/\/*} ${f/*\//}
-	tar jxf ${SRC_DIR}/${f/*\//} -C $TOOLCHAIN_SYSROOT || error
+	d=`dirname $f`
+	n=`basename $f`
+	echo "Download $f"
+	mkdir -p ${SRC_DIR}/cygwin/${d}
+	test -e ${SRC_DIR}/cygwin/${d}/${n} || \
+	    wget ${SYSROOT_FILES_MIRROR}/${f} -O ${SRC_DIR}/cygwin/${d}/${n} || error "Download $f"
+	tar jxf ${SRC_DIR}/cygwin/${d}/${n} -C $TOOLCHAIN_SYSROOT || error
     done
     touch "$STATE_DIR/cygwin-sysroot"
 }
