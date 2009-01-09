@@ -9,6 +9,11 @@ GCC_MIRROR="http://mirrors.dotsrc.org/cygwin/release/gcc/gcc-core"
 GPP_MIRROR="http://mirrors.dotsrc.org/cygwin/release/gcc/gcc-g++"
 GCC_DIR="$HOST_BUILD_DIR/gcc-3.4.4"
 
+MGW_GCC="gcc-mingw-core-20050522-1.tar.bz2"
+MGW_GPP="gcc-mingw-g++-20050522-1.tar.bz2"
+MGW_GCC_MIRROR="http://mirrors.dotsrc.org/cygwin/release/gcc-mingw/gcc-mingw-core"
+MGW_GPP_MIRROR="http://mirrors.dotsrc.org/cygwin/release/gcc-mingw/gcc-mingw-g++"
+
 build_binutils() {
     test -e "$STATE_DIR/host-binutils-cygwin" && return
     banner "Build binutils $BINUTILS"
@@ -46,6 +51,10 @@ openssl/openssl-0.9.8j-1.tar.bz2 \
 openssl/openssl-devel/openssl-devel-0.9.8j-1.tar.bz2 \
 w32api/w32api-3.13-1.tar.bz2 \
 zlib/zlib-1.2.3-2.tar.bz2 \
+mingw-runtime/mingw-runtime-3.15.1-1.tar.bz2 \
+mingw/mingw-bzip2/mingw-bzip2-1.0.5-2.tar.bz2 \
+mingw/mingw-bzip2/mingw-libbz2_1/mingw-libbz2_1-1.0.5-2.tar.bz2	\
+mingw/mingw-zlib/mingw-zlib-1.2.3-2.tar.bz2 \
 "
 
 build_sysroot() {
@@ -72,6 +81,8 @@ build_gcc() {
     download $GCC_MIRROR $GCC
     download $GPP_MIRROR $GPP
     download $GPP_MIRROR $GPP_BIN
+    download $MGW_GCC_MIRROR $MGW_GCC
+    download $MGW_GPP_MIRROR $MGW_GPP
     extract_host $GCC
     extract_host $GPP
     ###
@@ -120,6 +131,26 @@ build_gcc() {
     for f in $tools; do
 	ln -sf ../bin/${TARGET_ARCH}-${f} $TOOLCHAIN_PREFIX/xbin/$f
     done
+
+    #
+    # cygwin mingw32 support
+    #
+    ln -s $TARGET_ARCH $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32 || error
+    
+    tar jxf $SRC_DIR/$MGW_GCC -C cygpp || error
+    tar jxf $SRC_DIR/$MGW_GPP -C cygpp || error
+    tar zxf cygpp/etc/postinstall/gcc-mingw-core-3.4.4-20050522-1.tgz -C cygpp || error
+    tar zxf cygpp/etc/postinstall/gcc-mingw-g++-3.4.4-20050522-1.tgz -C cygpp || error
+    mkdir -p $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/debug
+    cp -R cygpp/lib/gcc/i686-pc-mingw32/3.4.4/include $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/ || error
+    cp -R cygpp/lib/gcc/i686-pc-mingw32/3.4.4/install-tools $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/ || error
+    mv $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/include/c++/i686-pc-mingw32 $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/include/c++/${TARGET_ARCH/-cygwin*}-mingw32 || error
+    cp -R cygpp/lib/gcc/i686-pc-mingw32/3.4.4/debug/*.a $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/debug/ || error
+    cp -R cygpp/lib/gcc/i686-pc-mingw32/3.4.4/*.a $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/ || error 
+    cp -R cygpp/lib/gcc/i686-pc-mingw32/3.4.4/*.o $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/ || error 
+    ln -sf ../../${TARGET_ARCH}/3.4.4/cc1 $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/
+    ln -sf ../../${TARGET_ARCH}/3.4.4/cc1plus $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/
+    ln -sf ../../${TARGET_ARCH}/3.4.4/collect2 $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/
 
     popd
     touch "$STATE_DIR/host-gcc-cygwin"
