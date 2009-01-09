@@ -3,8 +3,11 @@
 TARGET_ARCH="i686-linux"
 
 case $1 in
-    *-linux*)
-	TARGET_ARCH=$1
+*-linux*|*-cygwin*|*-mingw32*)
+    TARGET_ARCH=$1
+    ;;
+*)
+    TARGET_ARCH=""
     ;;
 esac
 
@@ -19,6 +22,19 @@ echo "target arch       $TARGET_ARCH"
 
 . ./rules/core.sh
 
-. $RULES_DIR/host_gmp.sh
-. $RULES_DIR/host_mpfr.sh
-. $RULES_DIR/cross-linux-tools.sh
+case $TARGET_ARCH in
+*linux*)
+    . $RULES_DIR/host_gmp.sh
+    . $RULES_DIR/host_mpfr.sh
+    . $RULES_DIR/cross-linux-tools.sh
+    ;;
+*cygwin*)
+    . $RULES_DIR/cross-cygwin-tools.sh
+    ;;
+*mingw32*)
+    . $RULES_DIR/cross-mingw32-tools.sh
+    ;;
+*)
+    error "unknown target $TARGET_ARCH"
+    ;;
+esac
