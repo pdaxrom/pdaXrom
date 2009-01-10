@@ -135,8 +135,6 @@ build_gcc() {
     #
     # cygwin mingw32 support
     #
-    ln -s $TARGET_ARCH $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32 || error
-    
     tar jxf $SRC_DIR/$MGW_GCC -C cygpp || error
     tar jxf $SRC_DIR/$MGW_GPP -C cygpp || error
     tar zxf cygpp/etc/postinstall/gcc-mingw-core-3.4.4-20050522-1.tgz -C cygpp || error
@@ -151,6 +149,11 @@ build_gcc() {
     ln -sf ../../${TARGET_ARCH}/3.4.4/cc1 $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/
     ln -sf ../../${TARGET_ARCH}/3.4.4/cc1plus $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/
     ln -sf ../../${TARGET_ARCH}/3.4.4/collect2 $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH/-cygwin*}-mingw32/3.4.4/
+
+    mkdir -p $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32
+    ln -sf ../${TARGET_ARCH}/bin $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/ || error
+    ln -sf ../../sysroot/usr/include/mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/include || error
+    ln -sf ../../sysroot/usr/lib/mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/lib || error
 
     popd
     touch "$STATE_DIR/host-gcc-cygwin"
