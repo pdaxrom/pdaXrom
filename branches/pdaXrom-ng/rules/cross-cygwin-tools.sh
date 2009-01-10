@@ -155,6 +155,9 @@ build_gcc() {
     ln -sf ../../sysroot/usr/include/mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/include || error
     ln -sf ../../sysroot/usr/lib/mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/lib || error
 
+    ln -sf $TOOLCHAIN_PREFIX/.. $TOOLCHAIN_PREFIX/../../${TARGET_ARCH/-cygwin*}-mingw32 \
+    || echo -n "Please create symlink with sudo:\nsudo ln -sf $TOOLCHAIN_PREFIX/.. $TOOLCHAIN_PREFIX/../../${TARGET_ARCH/-cygwin*}-mingw32\n"
+
     popd
     touch "$STATE_DIR/host-gcc-cygwin"
 }

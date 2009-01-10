@@ -32,7 +32,8 @@ case $TARGET_ARCH in
     . $RULES_DIR/cross-cygwin-tools.sh
     ;;
 *mingw32*)
-    . $RULES_DIR/cross-mingw32-tools.sh
+    #. $RULES_DIR/cross-mingw32-tools.sh
+    echo "For create mingw32 binaries, please use cygwin compiler with -mno-cygwin option"
     ;;
 *)
     error "unknown target $TARGET_ARCH"
