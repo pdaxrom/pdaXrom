@@ -121,7 +121,7 @@ build_gcc() {
     cp -R cygpp/usr/lib/gcc/i686-pc-cygwin/3.4.4/include/c++ $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH}/3.4.4/include/ || error
     cp -R cygpp/usr/lib/gcc/i686-pc-cygwin/3.4.4/debug/*.a $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH}/3.4.4/debug/ || error
 
-    mv $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH}/3.4.4/include/c++/i686-pc-mingw32/bits/* \
+    mv $TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH}/3.4.4/include/c++/i686-pc-cygwin/bits/* \
 	$TOOLCHAIN_PREFIX/lib/gcc/${TARGET_ARCH}/3.4.4/include/c++/bits/ || error
 
     local tools="ar as c++ cc cpp dlltool dllwrap g++ gcc ld nm objcopy objdump ranlib size strings strip windmc windres"
