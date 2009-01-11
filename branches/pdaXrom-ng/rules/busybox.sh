@@ -1,6 +1,6 @@
-BUSYBOX=busybox-1.13.0.tar.bz2
+BUSYBOX=busybox-1.13.2.tar.bz2
 BUSYBOX_MIRROR=http://busybox.net/downloads
-BUSYBOX_DIR=$BUILD_DIR/busybox-1.13.0
+BUSYBOX_DIR=$BUILD_DIR/busybox-1.13.2
 BUSYBOX_CONFIG=busybox_config
 
 build_busybox() {
