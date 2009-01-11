@@ -7,7 +7,7 @@ CROSS=i686-linux-
 GLIBC_DIR="${TOOLCHAIN_SYSROOT}/lib"
 
 KERNEL_VERSION="2.6.28"
-KERNEL_CONFIG=i686_ubuntu_kernel_config
+KERNEL_CONFIG=i686-kernel-2.6.28
 
 . ./packages-basic.inc
 
