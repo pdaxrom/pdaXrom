@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-OPENSSL=openssl-0.9.8i.tar.gz
+OPENSSL=openssl-0.9.8j.tar.gz
 OPENSSL_MIRROR=http://www.openssl.org/source
-OPENSSL_DIR=$BUILD_DIR/openssl-0.9.8i
+OPENSSL_DIR=$BUILD_DIR/openssl-0.9.8j
 OPENSSL_ENV=
 
 build_openssl_thud() {
