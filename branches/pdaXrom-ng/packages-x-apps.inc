@@ -79,4 +79,5 @@
 . $RULES_DIR/audacious.sh
 . $RULES_DIR/libmad.sh
 . $RULES_DIR/gettext.sh
+. $RULES_DIR/neon.sh
 . $RULES_DIR/audacious-plugins.sh
