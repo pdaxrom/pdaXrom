@@ -8,9 +8,13 @@ create_x86cd() {
     cp -f $IMAGES_DIR/bzImage    $T/boot/
     cp -f $HOST_BIN_DIR/share/syslinux/isolinux.bin $T/isolinux/
     printf "DEFAULT /boot/bzImage
-APPEND  initrd=/boot/rootfs.img root=/dev/ram0
+APPEND  initrd=/boot/rootfs.img root=/dev/ram0 vga=0x314
 LABEL live
-  menu label ^Try Ubuntu without any change to your computer
+  menu label ^Try pdaXrom in vesa mode
+  kernel /boot/bzImage
+  append initrd=/boot/rootfs.img root=/dev/ram0 vga=0x314
+LABEL safe
+  menu label ^Try pdaXrom in text mode
   kernel /boot/bzImage
   append initrd=/boot/rootfs.img root=/dev/ram0
 DISPLAY isolinux.txt
