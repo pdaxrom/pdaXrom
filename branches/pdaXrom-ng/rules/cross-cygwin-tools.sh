@@ -52,9 +52,6 @@ openssl/openssl-devel/openssl-devel-0.9.8j-1.tar.bz2 \
 w32api/w32api-3.13-1.tar.bz2 \
 zlib/zlib-1.2.3-2.tar.bz2 \
 mingw-runtime/mingw-runtime-3.15.1-1.tar.bz2 \
-mingw/mingw-bzip2/mingw-bzip2-1.0.5-2.tar.bz2 \
-mingw/mingw-bzip2/mingw-libbz2_1/mingw-libbz2_1-1.0.5-2.tar.bz2	\
-mingw/mingw-zlib/mingw-zlib-1.2.3-2.tar.bz2 \
 "
 
 build_sysroot() {
@@ -156,8 +153,28 @@ build_gcc() {
 
     mkdir -p $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32
     ln -sf ../${TARGET_ARCH}/bin $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/ || error
-    ln -sf ../../sysroot/usr/include/mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/include || error
-    ln -sf ../../sysroot/usr/lib/mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/lib || error
+
+    mv $TOOLCHAIN_SYSROOT/usr/include/mingw $TOOLCHAIN_SYSROOT/usr/include-mingw || error
+    ln -sf ../include-mingw $TOOLCHAIN_SYSROOT/usr/include/mingw || error
+    mv $TOOLCHAIN_SYSROOT/usr/lib/mingw     $TOOLCHAIN_SYSROOT/usr/lib-mingw || error
+    ln -sf ../lib-mingw $TOOLCHAIN_SYSROOT/usr/lib/mingw || error
+    
+    ln -sf ../../sysroot/usr/include-mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/include || error
+    ln -sf ../../sysroot/usr/lib-mingw $TOOLCHAIN_PREFIX/${TARGET_ARCH/-cygwin*}-mingw32/lib || error
+
+    tools="c++ cc cpp g++ gcc"
+
+    for f in $tools; do
+	echo "#!/bin/sh" > $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH/-cygwin*}-mingw32-${f}
+	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} -mno-cygwin \${1+\"\$@\"}" >> $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH/-cygwin*}-mingw32-${f}
+	chmod 755 $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH/-cygwin*}-mingw32-${f}
+    done
+
+    tools="ar as dlltool dllwrap ld nm objcopy objdump ranlib readelf size strings strip windmc windres"
+
+    for f in $tools; do
+	ln -sf ${TARGET_ARCH}-${f} $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH/-cygwin*}-mingw32-${f}
+    done
 
     ln -sf $TOOLCHAIN_PREFIX/.. $TOOLCHAIN_PREFIX/../../${TARGET_ARCH/-cygwin*}-mingw32 \
     || echo -ne "Please create symlink with sudo:\nsudo ln -sf $TOOLCHAIN_PREFIX/.. $TOOLCHAIN_PREFIX/../../${TARGET_ARCH/-cygwin*}-mingw32\n"
