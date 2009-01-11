@@ -121,6 +121,9 @@ build_firefox() {
     $INSTALL -D -m 644 $GENERICFS_DIR/firefox/mozilla-firefox.desktop $ROOTFS_DIR/usr/share/applications/mozilla-firefox.desktop || error
     $INSTALL -D -m 644 $GENERICFS_DIR/firefox/mozilla-firefox.png $ROOTFS_DIR/usr/share/pixmaps/mozilla-firefox.png || error
 
+    $INSTALL -m 644 $GENERICFS_DIR/firefox/browserconfig.properties $ROOTFS_DIR/usr/lib/firefox/browserconfig.properties || error
+    $INSTALL -m 644 $GENERICFS_DIR/firefox/firefox-branding.js $ROOTFS_DIR/usr/lib/firefox/defaults/pref/firefox-branding.js || error
+
     popd
     touch "$STATE_DIR/firefox.installed"
 }
