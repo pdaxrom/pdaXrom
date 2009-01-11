@@ -1,6 +1,10 @@
-KERNEL=linux-2.6.27.tar.bz2
+if [ "x$KERNEL_VERSION" = "x" ]; then
+    KERNEL_VERSION="2.6.27"
+fi
+
+KERNEL=linux-${KERNEL_VERSION}.tar.bz2
 KERNEL_MIRROR=http://kernel.org/pub/linux/kernel/v2.6
-KERNEL_DIR=$BUILD_DIR/linux-2.6.27
+KERNEL_DIR=$BUILD_DIR/linux-${KERNEL_VERSION}
 
 #KERNEL_CONFIG=ps3_kernel_config
 

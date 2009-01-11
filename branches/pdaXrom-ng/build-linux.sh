@@ -6,6 +6,7 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 CROSS=i686-linux-
 GLIBC_DIR="${TOOLCHAIN_SYSROOT}/lib"
 
+KERNEL_VERSION="2.6.28"
 KERNEL_CONFIG=i686_ubuntu_kernel_config
 
 . ./packages-basic.inc
