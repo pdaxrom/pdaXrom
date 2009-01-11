@@ -53,6 +53,9 @@ build_udev() {
 
     $INSTALL -D -m 644 rules/packages/40-alsa.rules $ROOTFS_DIR/lib/udev/rules.d/40-alsa.rules || error
 
+    $INSTALL -D -m 644 $GENERICFS_DIR/etc/udev/rules.d/85-net.rules $ROOTFS_DIR/etc/udev/rules.d/85-net.rules || error
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/udev/scripts/net.sh $ROOTFS_DIR/etc/udev/scripts/net.sh || error
+
     #mkdir -p $ROOTFS_DIR/etc/init.d
     #mkdir -p $ROOTFS_DIR/etc/udev/rules.d
     #mkdir -p $ROOTFS_DIR/etc/udev/scripts

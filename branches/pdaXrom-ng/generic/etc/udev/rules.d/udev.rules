@@ -247,9 +247,5 @@ ACTION=="add", ENV{MODALIAS}=="?*", RUN+="/sbin/modprobe $env{MODALIAS}"
 SUBSYSTEM=="block", ACTION=="add"    RUN+="/etc/udev/scripts/mount.sh"
 SUBSYSTEM=="block", ACTION=="remove" RUN+="/etc/udev/scripts/mount.sh"
 
-# network devices
-SUBSYSTEM=="net", ACTION=="add",    RUN+="/etc/udev/scripts/net.sh"
-SUBSYSTEM=="net", ACTION=="remove", RUN+="/etc/udev/scripts/net.sh"
-
 # The first rtc device is symlinked to /dev/rtc
 KERNEL=="rtc0", 	SYMLINK="rtc"
