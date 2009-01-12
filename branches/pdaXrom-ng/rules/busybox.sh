@@ -17,6 +17,11 @@ build_busybox() {
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS || error
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS CONFIG_PREFIX=$ROOTFS_DIR install || error
 
+    #
+    # no shutdown in busybox, add simple script for it
+    #
+    test -e $ROOTFS_DIR/sbin/shutdown || $INSTALL -D -m 755 $GENERICFS_DIR/shutdown $ROOTFS_DIR/sbin/shutdown || error
+
 #    if [ -e $ROOTFS_DIR/sbin/udhcpc ]; then
 #	mkdir -p $ROOTFS_DIR/usr/share/udhcpc
 #	$INSTALL -m 755 examples/udhcp/simple.script $ROOTFS_DIR/usr/share/udhcpc/default.script

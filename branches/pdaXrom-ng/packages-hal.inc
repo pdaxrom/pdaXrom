@@ -8,3 +8,5 @@
 . $RULES_DIR/dbus-glib.sh
 . $RULES_DIR/hal.sh
 . $RULES_DIR/hal-info.sh
+
+#. $RULES_DIR/pm-utils.sh
