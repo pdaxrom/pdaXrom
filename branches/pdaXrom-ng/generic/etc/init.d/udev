@@ -48,7 +48,7 @@ logger "creating static nodes"
 make_extra_nodes
 # Start the udev daemon to continually
 # watch for, and act on, uevents
-$udevd --daemon
+$udevd --daemon >/dev/null 2>/dev/null
 logger "creating initial udev device nodes..."
 # Now traverse sys/ in order to "coldplug"
 # devices that have already been discovered
