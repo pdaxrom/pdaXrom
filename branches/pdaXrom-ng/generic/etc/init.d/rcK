@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# /etc/init.d/rcK
+#
+
+. /etc/init.d/functions
+
+log_begin_msg -n "Unmounting filesystems..."
+umount -a -r 2>/dev/null >/dev/null
+log_end_msg 0
+

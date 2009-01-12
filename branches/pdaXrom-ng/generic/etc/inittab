@@ -9,4 +9,4 @@ tty1::respawn:/sbin/getty -L 115200 /dev/tty1 linux
 
 # Stuff to do before rebooting
 ::ctrlaltdel:/sbin/reboot
-::shutdown:/bin/umount -a -r
+::shutdown:/etc/init.d/rcK
