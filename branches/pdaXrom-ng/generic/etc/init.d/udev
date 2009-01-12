@@ -52,10 +52,10 @@ $udevd --daemon >/dev/null 2>/dev/null
 logger "creating initial udev device nodes..."
 # Now traverse sys/ in order to "coldplug"
 # devices that have already been discovered
-$udevt
+$udevt >/dev/null 2>/dev/null
 # Now wait for udevd to process
 # the uevents we triggered
-$udevs --timeout=60 > /dev/null
+$udevs --timeout=60 > /dev/null 2>/dev/null
 log_end_msg $?
 # We can only mount /dev/pts after initialising udev
 if [ -d "/dev/pts" ]; then
