@@ -44,6 +44,9 @@ cygwin/cygwin-1.5.25-15.tar.bz2 \
 jpeg/jpeg-6b-12.tar.bz2 \
 jpeg/libjpeg-devel/libjpeg-devel-6b-12.tar.bz2 \
 jpeg/libjpeg62/libjpeg62-6b-12.tar.bz2 \
+libiconv/libiconv-1.12-1.tar.bz2 \
+libiconv/libcharset1/libcharset1-1.12-1.tar.bz2 \
+libiconv/libiconv2/libiconv2-1.12-1.tar.bz2 \
 libpng/libpng-1.2.12-1.tar.bz2 \
 libpng/libpng12-devel/libpng12-devel-1.2.12-1.tar.bz2 \
 libpng/libpng12/libpng12-1.2.12-1.tar.bz2 \
@@ -52,6 +55,10 @@ openssl/openssl-devel/openssl-devel-0.9.8j-1.tar.bz2 \
 w32api/w32api-3.13-1.tar.bz2 \
 zlib/zlib-1.2.3-2.tar.bz2 \
 mingw-runtime/mingw-runtime-3.15.1-1.tar.bz2 \
+X.Org/xproto/xproto-7.0.14-1.tar.bz2 \
+X.Org/libX11/libX11_6/libX11_6-1.1.5-1.tar.bz2 \
+X.Org/libX11/libX11-xcb1/libX11-xcb1-1.1.5-1.tar.bz2 \
+X.Org/libX11/libX11-devel/libX11-devel-1.1.5-1.tar.bz2 \
 "
 
 build_sysroot() {
@@ -69,6 +76,7 @@ build_sysroot() {
 	    wget ${SYSROOT_FILES_MIRROR}/${f} -O ${SRC_DIR}/cygwin/${d}/${n} || error "Download $f"
 	tar jxf ${SRC_DIR}/cygwin/${d}/${n} -C $TOOLCHAIN_SYSROOT || error
     done
+    rm -f $TOOLCHAIN_SYSROOT/usr/lib/*.la
     touch "$STATE_DIR/cygwin-sysroot"
 }
 
@@ -131,6 +139,12 @@ build_gcc() {
     for f in $tools; do
 	ln -sf ../bin/${TARGET_ARCH}-${f} $TOOLCHAIN_PREFIX/xbin/$f
     done
+
+    ln -sf libpng12           $TOOLCHAIN_SYSROOT/usr/include/libpng    || error
+    ln -sf libpng12/png.h     $TOOLCHAIN_SYSROOT/usr/include/png.h     || error
+    ln -sf libpng12/pngconf.h $TOOLCHAIN_SYSROOT/usr/include/pngconf.h || error
+    ln -sf libpng12.a	      $TOOLCHAIN_SYSROOT/usr/lib/libpng.a      || error
+    ln -sf libpng12.dll.a     $TOOLCHAIN_SYSROOT/usr/lib/libpng.dll.a  || error
 
     #
     # cygwin mingw32 support
