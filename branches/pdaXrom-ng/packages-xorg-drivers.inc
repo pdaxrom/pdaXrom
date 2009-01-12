@@ -12,7 +12,10 @@
 # Video drivers
 #
 . $RULES_DIR/xf86-video-fbdev.sh
-. $RULES_DIR/xf86-video-cirrus.sh
+
+# xorg has problem with this driver in qemu
+#. $RULES_DIR/xf86-video-cirrus.sh
+
 . $RULES_DIR/xf86-video-ati.sh
 . $RULES_DIR/xf86-video-nv.sh
 
