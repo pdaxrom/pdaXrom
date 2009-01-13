@@ -12,7 +12,7 @@
 NEON=neon-0.28.3.tar.gz
 NEON_MIRROR=http://www.webdav.org/neon
 NEON_DIR=$BUILD_DIR/neon-0.28.3
-NEON_ENV="$CROSS_ENV_AC"
+NEON_ENV="$CROSS_ENV_AC ne_cv_os_uname=Linux"
 
 build_neon() {
     test -e "$STATE_DIR/neon.installed" && return
