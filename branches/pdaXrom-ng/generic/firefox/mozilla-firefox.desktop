@@ -8,4 +8,4 @@ Type=Application
 Icon=mozilla-firefox.png
 Categories=Network
 SingleInstance=true
-
+StartupNotify=true

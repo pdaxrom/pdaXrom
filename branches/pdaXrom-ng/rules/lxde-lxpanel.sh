@@ -23,6 +23,7 @@ build_lxde_lxpanel() {
     pushd $TOP_DIR
     cd $LXDE_LXPANEL_DIR
     (
+    ./autogen.sh || error
     eval \
 	$CROSS_CONF_ENV \
 	$LXDE_LXPANEL_ENV \
@@ -51,6 +52,7 @@ build_lxde_lxpanel() {
     make -C data DESTDIR=$ROOTFS_DIR install || error
 
     $INSTALL -D -m 644 $GENERICFS_DIR/lxpanel/panel $ROOTFS_DIR/usr/share/lxpanel/profile/default/panels/panel || error
+    $INSTALL -D -m 644 $GENERICFS_DIR/lxpanel/config $ROOTFS_DIR/usr/share/lxpanel/profile/default/config || error
 
     popd
     touch "$STATE_DIR/lxde_lxpanel.installed"
