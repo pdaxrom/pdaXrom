@@ -7,6 +7,13 @@
 #. $RULES_DIR/rdesktop.sh
 
 #
+# grab X11 screen
+#
+. $RULES_DIR/imlib2.sh
+. $RULES_DIR/giblib.sh
+. $RULES_DIR/scrot.sh
+
+#
 # firefox and friends
 #
 . $RULES_DIR/host_findutils.sh
