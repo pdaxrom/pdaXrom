@@ -238,10 +238,12 @@ if [ $HOST_SYSTEM = "Darwin" ]; then
     export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/usr/X11R6/bin
     mkdir -p $HOST_BIN_DIR/bin
     CPIO=gnucpio
-    which $CPIO 2>/dev/null >/dev/null || error "Please, install gnucpio utility."
-    which gsed  2>/dev/null >/dev/null || error "Please, install sed utility."
+    which $CPIO 2>/dev/null >/dev/null || error "Please, install cpio."
+    which gsed  2>/dev/null >/dev/null || error "Please, install gsed."
+    which glibtoolize 2>/dev/null >/dev/null || error "Please, install libtool."
     ln -sf `which $CPIO` $HOST_BIN_DIR/bin/cpio
     ln -sf `which gsed`  $HOST_BIN_DIR/bin/sed
+    ln -sf `which glibtoolize` $HOST_BIN_DIR/bin/libtoolize
     INSTALL=ginstall
 else
     CPIO=cpio
