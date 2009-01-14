@@ -38,6 +38,7 @@ Darwin)
     ;;
 CYGWIN*)
     BUILD_ARCH=${HOST_ARCH}-unknown-cygwin
+    HOST_SYSTEM="CYGWIN"
     ;;
 *)
     BUILD_ARCH=
@@ -248,6 +249,12 @@ if [ $HOST_SYSTEM = "Darwin" ]; then
 else
     CPIO=cpio
     INSTALL=install
+fi
+
+if [ $HOST_SYSTEM = "CYGWIN" ]; then
+    HOST_EXE_SUFFIX=".exe"
+else
+    HOST_EXE_SUFFIX=
 fi
 
 install_gcc_wrappers

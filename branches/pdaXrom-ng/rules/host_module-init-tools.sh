@@ -11,8 +11,8 @@ build_host_module_init_tools() {
     pushd $TOP_DIR
     cd $HOST_MODULE_INIT_TOOLS_DIR
     ./configure --prefix=$HOST_BIN_DIR --target=$TARGET_ARCH || error
-    make depmod || error
-    cp -R depmod $HOST_BIN_DIR/bin/
+    make depmod${HOST_EXE_SUFFIX} || error
+    $INSTALL -D -m 755 depmod${HOST_EXE_SUFFIX} $HOST_BIN_DIR/bin/depmod${HOST_EXE_SUFFIX} || error
     popd
     touch "$STATE_DIR/host_module_init_tools"
 }
