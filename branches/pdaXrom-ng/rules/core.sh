@@ -36,7 +36,7 @@ Linux)
 Darwin)
     BUILD_ARCH=${HOST_ARCH}-unknown-darwin
     ;;
-Cygwin)
+CYGWIN*)
     BUILD_ARCH=${HOST_ARCH}-unknown-cygwin
     ;;
 *)
