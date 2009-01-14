@@ -30,6 +30,9 @@ build_host_squashfs() {
     if [ $HOST_SYSTEM = "Darwin" ]; then
 	OPT_LIBS=$HOST_LZMA_DIR/CPP/7zip/Compress/LZMA_Alone/7zCrc_r.o
     fi
+    if [ $HOST_SYSTEM = "CYGWIN" ]; then
+	OPT_LIBS=-lz
+    fi
 
     make -C squashfs-tools \
 	Sqlzma=$HOST_LZMA_DIR \
