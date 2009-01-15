@@ -72,7 +72,7 @@ build_linux_kernel() {
     download $KERNEL_MIRROR $KERNEL
     extract $KERNEL
     apply_patches $KERNEL_DIR $KERNEL
-    cp $TOP_DIR/configs/$KERNEL_CONFIG $KERNEL_DIR/.config
+    cp $CONFIG_DIR/kernel/$KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
     pushd $TOP_DIR
     cd $KERNEL_DIR
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`

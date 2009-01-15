@@ -87,7 +87,7 @@ build_firefox() {
 	    ;;
 	esac
 	sed -i "s|CPU_ARCH =|CPU_ARCH = $T_ARCH|" security/coreconf/Linux.mk
-	cp -f $TOP_DIR/configs/firefox3/jsautocfg.h-${T_ARCH} js/src/jsautocfg.h || error
+	cp -f $CONFIG_DIR/firefox3/jsautocfg.h-${T_ARCH} js/src/jsautocfg.h || error
     ) || error "configure"
 
     make $MAKEARGS \
