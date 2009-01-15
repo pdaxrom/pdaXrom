@@ -16,9 +16,13 @@ KERNEL_CONFIG=ps3_kboot
 #. $RULES_DIR/wireless_tools.sh
 . $RULES_DIR/dhcpcd.sh
 . $RULES_DIR/install_libc.sh
-#. $RULES_DIR/zlib.sh
+. $RULES_DIR/zlib.sh
 #. $RULES_DIR/dropbear.sh
 . $RULES_DIR/figlet.sh
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/kexec-tools.sh
+. $RULES_DIR/libjpeg.sh
+. $RULES_DIR/libpng.sh
+. $RULES_DIR/libtwin.sh
+. $RULES_DIR/petitboot.sh
 . $RULES_DIR/create_ps3kboot.sh
