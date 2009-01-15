@@ -14,26 +14,6 @@ KEXEC_TOOLS_MIRROR=http://www.xmission.com/~ebiederm/files/kexec
 KEXEC_TOOLS_DIR=$BUILD_DIR/kexec-tools-1.101
 KEXEC_TOOLS_ENV="$CROSS_ENV_AC CFLAGS='-Wall -O2 -static -fno-strict-aliasing'"
 
-get_kexec_kernel_arch() {
-    case $TARGET_ARCH in
-    i386*|i486*|i586*|i686*)
-	echo i386
-	;;
-    x86_64*|amd64*)
-	echo x86_64
-	;;
-    arm*|xscale*)
-	echo arm
-	;;
-    powerpc*|ppc*)
-	grep -q "^CONFIG_PPC64=y" $KERNEL_DIR/.config && echo powerpc64 || echo powerpc
-	;;
-    *)
-	echo $1
-	;;
-    esac
-}
-
 build_kexec_tools() {
     test -e "$STATE_DIR/kexec_tools.installed" && return
     banner "Build kexec-tools"
@@ -43,6 +23,9 @@ build_kexec_tools() {
     pushd $TOP_DIR
     cd $KEXEC_TOOLS_DIR
     (
+    KEXEC_AUTOCONF=
+    grep -q "^CONFIG_PPC_PS3=y" $KERNEL_DIR/.config && KEXEC_AUTOCONF="ARCH=ppc64"
+    autoconf
     eval \
 	$CROSS_CONF_ENV \
 	$KEXEC_TOOLS_ENV \
@@ -54,17 +37,19 @@ build_kexec_tools() {
 	RANLIB=${CROSS}ranlib \
 	OBJCOPY=${CROSS}objcopy \
 	STRIP=${CROSS}strip \
-	./configure --build=$BUILD_ARCH --host=`get_kexec_kernel_arch` \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/sbin \
 	    --sysconfdir=/etc \
 	    --without-zlib \
 	    --includedir=$KERNEL_DIR/include \
+	    $KEXEC_AUTOCONF \
 	    || error
     ) || error "configure"
     
-    make $MAKEARGS BUILD_CFLAGS='' || error
+    make $MAKEARGS BUILD_CFLAGS='' LDFLAGS='' || error
 
-    error "update install"
+    $INSTALL -D -m 755 objdir-${TARGET_ARCH}/build/sbin/kexec $ROOTFS_DIR/sbin/kexec || error
+    $STRIP $ROOTFS_DIR/sbin/kexec || error
 
     popd
     touch "$STATE_DIR/kexec_tools.installed"
