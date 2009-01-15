@@ -7,3 +7,6 @@ binutils-flex.patch
 binutils-discarded.patch
 binutils-absolute-gnu_debuglink-path.patch
 binutils-libtool-m.patch
+110-arm-eabi-conf.patch
+120-sh-conf.patch
+300-012_check_ldrunpath_length.patch

@@ -56,6 +56,7 @@ PATCH_DIR="$TOP_DIR/patches"
 STATE_DIR="$TOP_DIR/state"
 ROOTFS_DIR="$TOP_DIR/rootfs"
 GENERICFS_DIR="$TOP_DIR/generic"
+CONFIG_DIR="$TOP_DIR/configs"
 
 HOST_BIN_DIR="$TOP_DIR/host"
 TARGET_BIN_DIR="$TOP_DIR/target"

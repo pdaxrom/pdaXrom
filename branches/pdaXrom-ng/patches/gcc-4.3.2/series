@@ -10,3 +10,12 @@ gcc-libjava-multilib.patch -p0
 gcc-enable-java-awt-qt.patch -p1
 gcc-hash-style-gnu.patch -p1
 gcc-moresparcs.patch -p1
+100-uclibc-conf.patch
+104-gnuhurd-uclibc-conf.patch
+301-missing-execinfo_h.patch
+302-c99-snprintf.patch
+305-libmudflap-susv3-legacy.patch
+810-arm-softfloat-libgcc.patch
+993-arm_insn-opinit-RTX_CODE-fixup.patch
+995-short-enums.diff
+998-gcc-4.3.0-fix-header.00.patch

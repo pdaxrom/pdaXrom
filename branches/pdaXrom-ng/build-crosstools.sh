@@ -28,7 +28,14 @@ case $TARGET_ARCH in
 *linux*)
     . $RULES_DIR/host_gmp.sh
     . $RULES_DIR/host_mpfr.sh
-    . $RULES_DIR/cross-linux-tools.sh
+    case $TARGET_ARCH in
+    *uclibc*)
+	. $RULES_DIR/cross-linux-uclibc-tools.sh
+	;;
+    *)
+	. $RULES_DIR/cross-linux-tools.sh
+	;;
+    esac
     ;;
 *cygwin*)
     . $RULES_DIR/cross-cygwin-tools.sh
