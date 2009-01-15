@@ -1,8 +1,14 @@
 #!/bin/bash
 
 #
-# Cygwin cross compiler build script v1.0
-# Template pdaXrom builder v2 http://wiki.pdaXrom.org
+# pdaXrom-NG builder main functions
+#
+# Copyright (C) 2008,2009 by Alexander Chukov <sash@pdaXrom.org>
+#          
+# See CREDITS for details about who has contributed to this project.
+#
+# For further information about the pdaXrom project and license conditions
+# see the README file.
 #
 
 error() {
@@ -10,13 +16,16 @@ error() {
     exit 1
 }
 
-#TOOLCHAIN_PREFIX="/opt/cell/toolchain"
-#TARGET_ARCH="powerpc-linux"
-#CROSS=ppu-
-#GLIBC_DIR="$TOOLCHAIN_PREFIX/../sysroot/lib"
-
 if [ "x$MAKEARGS" = "x" ]; then
     MAKEARGS=-j4
+fi
+
+if [ "x$CROSS" = "x" ]; then
+    CROSS=${TARGET_ARCH}-
+fi
+
+if [ "x$TOOLCHAIN_LIBC_DIR" = "x" ]; then
+    TOOLCHAIN_LIBC_DIR="${TOOLCHAIN_SYSROOT}/lib"
 fi
 
 HOST_SYSTEM=`uname`

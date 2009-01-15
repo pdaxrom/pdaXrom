@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET_ARCH="i686-linux"
+TARGET_ARCH="i686-linux-uclibc"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 

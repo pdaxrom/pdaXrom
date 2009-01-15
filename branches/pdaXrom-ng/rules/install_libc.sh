@@ -1,4 +1,24 @@
-GLIBC_LIBS="
+case $TARGET_ARCH in
+*uclibc*)
+LIBC_LIBS="
+libcrypt
+libnsl
+libpthread
+libresolv
+librt
+libutil
+"
+
+LIBC_SYS_LIBS="
+ld
+libc
+libuClibc
+libm
+libdl
+"
+    ;;
+*)
+LIBC_LIBS="
 libcrypt
 libnsl
 libnss_compat
@@ -14,22 +34,24 @@ libthread_db
 libutil
 "
 
-GLIBC_SYS_LIBS="
+LIBC_SYS_LIBS="
 ld
 libc
 libm
 libdl
 "
+    ;;
+esac
 
-install_glibc() {
-    test -e "$STATE_DIR/install_glibc" && return
+install_libc() {
+    test -e "$STATE_DIR/install_libc" && return
     mkdir -p $ROOTFS_DIR/lib
     mkdir -p $ROOTFS_DIR/usr/lib
     local lib=
     local f=
-    for lib in $GLIBC_SYS_LIBS $GLIBC_LIBS; do
+    for lib in $LIBC_SYS_LIBS $LIBC_LIBS; do
 	echo "Library: $lib"
-	ls ${GLIBC_DIR}/${lib}[.-]* | while read f; do
+	ls ${TOOLCHAIN_LIBC_DIR}/${lib}[.-]* | while read f; do
 	    echo "Installing ${f/*\//}"
 	    cp -R $f $ROOTFS_DIR/lib || error
 	    $STRIP $ROOTFS_DIR/lib/${f/*\//}
@@ -54,7 +76,7 @@ install_glibc() {
 	#$STRIP $ROOTFS_DIR/usr/lib/${L/*\//}
     done
         
-    touch "$STATE_DIR/install_glibc"
+    touch "$STATE_DIR/install_libc"
 }
 
-install_glibc
+install_libc

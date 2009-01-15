@@ -15,7 +15,7 @@
 . $RULES_DIR/udev.sh
 . $RULES_DIR/wireless_tools.sh
 . $RULES_DIR/dhcpcd.sh
-. $RULES_DIR/install_glibc.sh
+. $RULES_DIR/install_libc.sh
 . $RULES_DIR/zlib.sh
 . $RULES_DIR/dropbear.sh
 . $RULES_DIR/figlet.sh
