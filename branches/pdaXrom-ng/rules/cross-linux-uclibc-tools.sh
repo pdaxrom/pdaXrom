@@ -86,7 +86,7 @@ build_gcc_stage1() {
     banner "Build gcc stage1 $GCC"
     download $GCC_MIRROR $GCC
     extract $GCC
-    apply_patches $GCC_DIR $GCC
+    apply_patches $GCC_DIR `getfilename $GCC`-uclibc
     local CONF_ARGS=""
     case $TARGET_ARCH in
     powerpc*-*|ppc*-*)
