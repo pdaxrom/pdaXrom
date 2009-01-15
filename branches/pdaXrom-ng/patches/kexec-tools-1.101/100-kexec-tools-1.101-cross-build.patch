@@ -1,0 +1,12 @@
+diff -uNr kexec-tools-1.101.org/configure kexec-tools-1.101/configure
+--- kexec-tools-1.101.org/configure	2005-02-16 21:37:44.000000000 +0900
++++ kexec-tools-1.101/configure	2006-04-18 11:02:53.000000000 +0900
+@@ -3837,7 +3837,7 @@
+ 
+ 
+ CFLAGS='-Wall -O2 -static -fno-strict-aliasing $(CPPFLAGS)'
+-BUILD_CFLAGS='-O2 -Wall $(CPPFLAGS)'
++BUILD_CFLAGS='-O2 -Wall'
+ 
+ if test "$CC"      = "no"; then { { echo "$as_me:$LINENO: error: cc not found" >&5
+ echo "$as_me: error: cc not found" >&2;}

@@ -20,4 +20,5 @@ KERNEL_CONFIG=ps3_kboot
 #. $RULES_DIR/dropbear.sh
 . $RULES_DIR/figlet.sh
 . $RULES_DIR/ps3-utils.sh
+. $RULES_DIR/kexec-tools.sh
 . $RULES_DIR/create_ps3kboot.sh

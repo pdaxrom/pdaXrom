@@ -1,0 +1,6 @@
+100-kexec-tools-1.101-kdump.patch
+200-kexec-tools-1.101-ps3.patch
+300-kexec-tools-1.101-static.patch
+400-kexec-tools-1.101-bootargs-align.patch
+500-kexec-tools-1.101-align-dtstruct.patch
+kexec-tools-1.101-fix-real-mode-entry-vivek.patch
