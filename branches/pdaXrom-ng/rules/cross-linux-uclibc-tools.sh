@@ -69,6 +69,7 @@ install_sysroot() {
     done
     pushd $TOP_DIR
     f="linux-libc-headers-2.6.27-1"
+    mkdir -p $TOOLCHAIN_SYSROOT
     cd $TOOLCHAIN_SYSROOT && rpm2cpio $SRC_DIR/${f}.${rpm_arch}.rpm | lzma -d | $CPIO -idmu || error "unpack sysroot rpm"
     popd
     touch "$STATE_DIR/sysroot-stage1"
@@ -155,9 +156,9 @@ build_uClibc() {
     cd $UCLIBC_DIR
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
-	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config
+	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
     else
-	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check UCLIBC_CONFIG variable"
+	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
     fi
     
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} oldconfig || error
