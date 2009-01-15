@@ -227,7 +227,7 @@ build_gcc() {
 	ln -sf ../bin/${TARGET_ARCH}-$f $TOOLCHAIN_PREFIX/xbin/$f
     done
 
-    rm -rf $TOOLCHAIN_SYSROOT_STAGE1
+    rm -rf ${TOOLCHAIN_SYSROOT}-stage1
 
     touch "$STATE_DIR/gcc"
 }
