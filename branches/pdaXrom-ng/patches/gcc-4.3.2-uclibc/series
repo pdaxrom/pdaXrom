@@ -7,3 +7,4 @@
 993-arm_insn-opinit-RTX_CODE-fixup.patch
 995-short-enums.diff
 998-gcc-4.3.0-fix-header.00.patch
+gcc-ppc64-m32-m64-multilib-only.patch
