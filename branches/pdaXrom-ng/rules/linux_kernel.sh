@@ -66,6 +66,23 @@ get_kernel_image_path() {
     esac
 }
 
+get_kernel_ramdisk_path() {
+    case $1 in
+    i386*|i486*|i586*|i686*)
+	echo ${KERNEL_DIR}/arch/x86/boot/ramdisk.image.gz
+	;;
+    arm*|xscale*)
+	echo ${KERNEL_DIR}/arch/arm/boot/ramdisk.image.gz
+	;;
+    powerpc*|ppc*)
+	echo ${KERNEL_DIR}/arch/powerpc/boot/ramdisk.image.gz
+	;;
+    *)
+	echo ${1}-ramdisk.image.gz
+	;;
+    esac
+}
+
 build_linux_kernel() {
     test -e "$STATE_DIR/linux_kernel" && return
     banner "Build $KERNEL"
@@ -75,12 +92,20 @@ build_linux_kernel() {
     cp $CONFIG_DIR/kernel/$KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
     pushd $TOP_DIR
     cd $KERNEL_DIR
+    
+    KERNEL_MODULES_ENABLED="yes"
+    grep -q "^# CONFIG_MODULES" .config && KERNEL_MODULES_ENABLED="no"
+    
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
     local KERNEL_IMAGE=`get_kernel_image $TARGET_ARCH`
     make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS oldconfig $MAKEARGS || error
     make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $KERNEL_IMAGE $MAKEARGS || error
-    make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS modules $MAKEARGS || error
-    make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $MAKEARGS INSTALL_MOD_PATH=$ROOTFS_DIR modules_install || error
+
+    if [ "$KERNEL_MODULES_ENABLED" != "no" ]; then
+	make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS modules $MAKEARGS || error
+	make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $MAKEARGS INSTALL_MOD_PATH=$ROOTFS_DIR modules_install || error
+    fi
+
     popd
     touch "$STATE_DIR/linux_kernel"
 }

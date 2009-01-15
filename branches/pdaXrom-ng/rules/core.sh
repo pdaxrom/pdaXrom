@@ -184,16 +184,15 @@ install_sysroot_files() {
 #    done
     sed -i -e "/^dependency_libs/s:\( \)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
 	    -e "/^libdir=/s:\(libdir='\)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
-	    `find ${TARGET_BIN_DIR} -name "*.la"`
+	    `find ${TARGET_BIN_DIR} -name "*.la"` || true
 
     sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
 	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
-	    `find ${TARGET_BIN_DIR} -name "*.pc"`
+	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
 
     sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
 	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
-	    `find ${TARGET_BIN_DIR} -name "*-config"`
-
+	    `find ${TARGET_BIN_DIR} -name "*-config"` || true
 }
 
 banner() {
