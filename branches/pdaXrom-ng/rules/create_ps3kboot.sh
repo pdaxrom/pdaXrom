@@ -1,4 +1,6 @@
 create_ps3kboot() {
+    sed -i "s|--timeout=60|--timeout=15|" $ROOTFS_DIR/etc/init.d/udev
+
     rm -f $ROOTFS_DIR/linuxrc
     ln -sf /sbin/init $ROOTFS_DIR/init
 

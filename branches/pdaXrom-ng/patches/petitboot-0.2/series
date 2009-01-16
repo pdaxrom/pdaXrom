@@ -1,2 +1,4 @@
 yaboot-cfg.c.patch
 petitboot-paths.h.diff
+kboot-parser.c.diff
+devices.c.diff

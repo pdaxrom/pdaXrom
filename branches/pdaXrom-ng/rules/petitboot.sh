@@ -36,6 +36,9 @@ build_petitboot() {
 
     $INSTALL -D -m 644 utils/99-petitboot.rules $ROOTFS_DIR/etc/udev/rules.d/99-petitboot.rules || error
 
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/petitboot $ROOTFS_DIR/etc/init.d/petitboot || error
+    install_rc_start petitboot 50
+
     popd
     touch "$STATE_DIR/petitboot.installed"
 }
