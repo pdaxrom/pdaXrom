@@ -268,7 +268,7 @@ fi
 
 install_gcc_wrappers
 
-STRIP=${CROSS}strip
+STRIP="${CROSS}strip -R .note -R .comment"
 DEPMOD=depmod
 
 if [ "x$CROSS_OPT_CFLAGS" = "x" ]; then
