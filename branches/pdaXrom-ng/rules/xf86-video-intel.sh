@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XF86_VIDEO_INTEL=xf86-video-intel-2.5.99.1.tar.bz2
+XF86_VIDEO_INTEL=xf86-video-intel-2.6.0.tar.bz2
 XF86_VIDEO_INTEL_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_INTEL_DIR=$BUILD_DIR/xf86-video-intel-2.5.99.1
+XF86_VIDEO_INTEL_DIR=$BUILD_DIR/xf86-video-intel-2.6.0
 XF86_VIDEO_INTEL_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_intel() {

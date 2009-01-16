@@ -17,3 +17,6 @@ lzma/squashfs_fs.h.diff
 lzma/squashfs_fs_sb.h.diff
 lzma/uncomp.c.diff
 lzma/do_mounts_rd.c.diff
+
+2008q4-kernel-against-2.6.28.patch
+alsa-hdmi.patch

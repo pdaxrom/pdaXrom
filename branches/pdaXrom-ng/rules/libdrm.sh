@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBDRM=libdrm-2.4.3.tar.bz2
+LIBDRM=libdrm-2.4.4.tar.bz2
 LIBDRM_MIRROR=http://dri.freedesktop.org/libdrm
-LIBDRM_DIR=$BUILD_DIR/libdrm-2.4.3
+LIBDRM_DIR=$BUILD_DIR/libdrm-2.4.4
 LIBDRM_ENV=
 
 build_libdrm() {
