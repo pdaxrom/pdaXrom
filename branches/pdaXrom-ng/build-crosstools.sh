@@ -26,6 +26,7 @@ case $TARGET_ARCH in
     . $RULES_DIR/host_mpfr.sh
     case $TARGET_ARCH in
     *uclibc*)
+	. $RULES_DIR/host_findutils.sh
 	. $RULES_DIR/cross-linux-uclibc-tools.sh
 	;;
     *)
