@@ -1,8 +1,8 @@
-TARGET = danceboard
+TARGET = ps3boot
 
-SYSTEM:=`uname`
+SYSTEM=
 
-ifeq (Linux, $(SYSTEM))
+ifeq (linuxfb, $(SYSTEM))
 UI_OBJ = ui-linuxfb.o
 else
 UI_OBJ = ui-x11.o
@@ -11,7 +11,7 @@ endif
 
 all: $(TARGET)
 
-OBJS = jpegdec.o pngdec.o image.o font.o util.o devices.o main.o parse-kboot.o $(UI_OBJ)
+OBJS = jpegdec.o pngdec.o image.o font.o message.o util.o devices.o main.o parse-kboot.o $(UI_OBJ)
 
 OPT_CFLAGS:=-O2
 CFLAGS = $(OPT_CFLAGS) -Wall -g `freetype-config --cflags`

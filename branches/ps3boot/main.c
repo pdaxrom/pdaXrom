@@ -7,6 +7,7 @@
 #include "image.h"
 #include "font.h"
 #include "devices.h"
+#include "message.h"
 
 db_font *font = NULL;
 
@@ -56,10 +57,14 @@ int main(int argc, char *argv[])
     bootdevice_add("/dev/sdd1");
 
     bootdevices_draw_devices(img_desk, img_wallp);
-    db_image_put_string(img_desk, font, "HELLO", 100, 100, 0xff0000);
+    db_image_put_string(img_desk, font, "PS3 bootshell v0.1 (c) 2009 pdaXrom.org", 200, 100, 0xffffff);
+    db_message_draw(img_desk, font, "PS3 bootshell v0.1 (c) 2009 pdaXrom.org\nHello people!\nWellcome\nasd\n123455", 100, 100, 400, 120, 0xf0f0);
+    
     db_ui_update_screen();
     
-    while(1) {
+    int f_quit = 0;
+    
+    while(!f_quit) {
 	db_ui_event e;
 	db_ui_check_events(&e);
 	if (e.type == DB_EVENT_QUIT)
@@ -72,6 +77,15 @@ int main(int argc, char *argv[])
 			break;
 		    case DB_KEY_RIGHT:
 			bootdevice_select_next();
+			break;
+		    case DB_KEY_UP:
+			bootdevice_config_prev();
+			break;
+		    case DB_KEY_DOWN:
+			bootdevice_config_next();
+			break;
+		    case DB_KEY_ESCAPE:
+			f_quit = 1;
 			break;
 		};
 		bootdevices_draw_devices(img_desk, img_wallp);

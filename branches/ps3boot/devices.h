@@ -34,4 +34,8 @@ void bootdevice_select_prev(void);
 
 void bootdevice_select_next(void);
 
+void bootdevice_config_prev(void);
+
+void bootdevice_config_next(void);
+
 #endif

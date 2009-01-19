@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 #include "devices.h"
+#include "message.h"
 #include "parse-kboot.h"
 
 #define ICON_WIDTH	64
@@ -22,6 +23,7 @@ static boot_device *cur_device = NULL;
 
 static db_image *img_dev_sel = NULL;
 static int selected_device = 0;
+static int selected_config = -1;
 
 static db_image *get_device_icon(char *dev_path)
 {
@@ -142,6 +144,7 @@ void bootdevices_draw_bootconfig(db_image *desk,
 			         int w,
 				 int h)
 {
+    int count = 0;
     int yoff = 0;
     boot_config *conf = dev->conf;
     if (!conf)
@@ -159,15 +162,19 @@ void bootdevices_draw_bootconfig(db_image *desk,
 	    strcat(buf, " ");
 	    strcat(buf, conf->cmdline);
 	}
-	if (!strcmp(dev->def, conf->label)) {
-	    db_font_get_text_box(font, buf, w, h, &t_w, &t_h);
-	    db_image_put_text(desk, font, buf, x, y + yoff, w, h, 0x0);
+	if (((!strcmp(dev->def, conf->label)) && (selected_config < 0)) ||
+	    (count == selected_config)) {
+	    //db_font_get_text_box(font, buf, w, h, &t_w, &t_h);
+	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0xffffff);
 	    yoff += t_h + TEXT_BORDER;
+	    if (selected_config < 0)
+		selected_config = count;
 	} else {
-	    db_font_get_string_box(font, buf, &t_w, &t_h);
-	    db_image_put_string_box(desk, font, buf, x, y + yoff, w, h, 0x0);
+	    //db_font_get_string_box(font, buf, &t_w, &t_h);
+	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0x0);
 	    yoff += t_h + TEXT_BORDER;
 	}
+	count++;
 	conf = conf->next;
     }
 }
@@ -192,25 +199,26 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
 	    db_image_put_image(desk, img_dev_sel, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
 	    if (dev->message) {
 		int tw, th;
-		db_font_get_text_box(font, dev->message, 480, 100, &tw, &th);
-	        db_image_put_text(desk,
+		db_font_get_text_box(font, dev->message, 480, 200, &tw, &th);
+	        db_message_draw(desk,
 				  font,
 				  dev->message,
 				  desk->width / 2 - 240,
 				  y_pos - 16 - th,
 				  480,
-				  100,
+				  200,
 				  0x0);
 	    }
 	    bootdevices_draw_bootconfig(desk, 
 					wallp, 
 					dev,
-					desk->width / 2 - 240,
+					128, /*desk->width / 2 - 240,*/
 					y_pos + y_step + 30,
-					480,
-					16);
+					desk->width - 256, /*480,*/
+					40);
 	}
 	db_image_put_image(desk, dev->icon, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
+#if 0
 	db_font_get_string_box(font, dev->device, &t_w, &t_h);
 	db_image_put_string(desk,
 			    font, 
@@ -218,6 +226,7 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
 			    x_pos + x_step / 2 - t_w / 2, 
 			    y_pos + y_step + t_h, 
 			    0x0);
+#endif
 	x_pos += x_step;
 	dev = dev->next;
 	count++;
@@ -230,6 +239,7 @@ void bootdevice_select_prev(void)
     selected_device--;
     if (selected_device < 0)
 	selected_device = 0;
+    selected_config = -1;
 }
 
 void bootdevice_select_next(void)
@@ -238,4 +248,40 @@ void bootdevice_select_next(void)
     selected_device++;
     if (selected_device > count)
 	selected_device = count;
+    selected_config = -1;
+}
+
+int bootdevice_config_count(int n)
+{
+    int c = 0;
+    boot_device *dev = devices;
+    while (dev) {
+	if (n == c) {
+	    int ret = 0;
+	    boot_config *conf = dev->conf;
+	    while (conf) {
+		ret++;
+		conf = conf->next;
+	    }
+	    return ret;
+	}
+	c++;
+	dev = dev->next;
+    }
+    return 0;
+}
+
+void bootdevice_config_prev(void)
+{
+    selected_config--;
+    if (selected_config < 0)
+	selected_config = 0;
+}
+
+void bootdevice_config_next(void)
+{
+    int count = bootdevice_config_count(selected_device);
+    selected_config++;
+    if (selected_config > count)
+	selected_config = count;
 }

@@ -29,6 +29,14 @@ db_font *db_font_open(char *file, int xsize, int ysize)
     return NULL;
 }
 
+int db_font_max_height(db_font *font)
+{
+    if (!font)
+	return 0;
+	
+    return font->face->size->metrics.max_advance >> 6;
+}
+
 void db_font_close(db_font *font)
 {
     FT_Done_Face(font->face);
@@ -37,21 +45,13 @@ void db_font_close(db_font *font)
     free(font);
 }
 
-static inline uint32_t pixel_brightness(uint32_t pixel, uint8_t level)
-{
-    uint32_t ret = 0;
-    int i = 0;
-    if (level == 0)
-	return 0;
-    if (level == 255)
-	return pixel;
-    for (i = 0; i < 3; i++) {
-	ret <<= 8;
-	ret |= ((((pixel >> 16) & 0xff) * level) >> 8);
-	pixel <<=8;
-    }
-    return ret;
-}
+/* Blend the RGB values of two Pixels based on a source alpha value */
+#define ALPHA_BLEND(sR, sG, sB, A, dR, dG, dB)	\
+do {						\
+	dR = (((sR-dR)*(A))>>8)+dR;		\
+	dG = (((sG-dG)*(A))>>8)+dG;		\
+	dB = (((sB-dB)*(A))>>8)+dB;		\
+} while(0)
 
 static void draw_bitmap(db_image *dst, FT_Bitmap *bitmap, int x, int y, uint32_t color)
 {
@@ -71,7 +71,8 @@ static void draw_bitmap(db_image *dst, FT_Bitmap *bitmap, int x, int y, uint32_t
     for (j = 0; j < h; j++) {
 	for (i = 0; i < w; i++) {
 	    if (src[i]) {
-		int dr, dg, db, da;
+		unsigned int dr, dg, db, da;
+		unsigned int sr, sg, sb;
 		unsigned char *dp = (unsigned char *) &image[i];
 
 		dr = *dp++;
@@ -79,16 +80,18 @@ static void draw_bitmap(db_image *dst, FT_Bitmap *bitmap, int x, int y, uint32_t
 		db = *dp++;
 		da = *dp++;
 		
-		uint32_t p = pixel_brightness((dr << 16) | (dg << 8) | db, 255 - src[i]);
-
+		sr = (color >> 16) & 0xff;
+		sg = (color >> 8 ) & 0xff;
+		sb = (color      ) & 0xff;
+		
+		ALPHA_BLEND(sr, sg, sb, src[i], dr, dg, db);
+		
 		dp = (unsigned char *) &image[i];
 		
-		*dp++ = (p >> 16) | (color >> 16);
-		*dp++ = (p >> 8 ) | (color >> 8 );
-		*dp++ = (p      ) | (color      );
+		*dp++ = dr;
+		*dp++ = dg;
+		*dp++ = db;
 		*dp++ = da;
-
-//		image[i] = pixel_brightness(image[i], 255 - src[i]) | color;
 	    }
 	}
 	image += dst->width;
@@ -142,8 +145,8 @@ void db_font_get_string_box(db_font *font, char *text, int *width, int *height)
 	    continue;
 
 	*width += slot->advance.x >> 6;
-	*height = (slot->bitmap_top > *height)?slot->bitmap_top:*height;
     }
+    *height = db_font_max_height(font);
 }
 
 void db_image_put_string_box(db_image *dst, db_font *font, char *text, int x, int y, int w, int h, uint32_t color)
@@ -158,6 +161,8 @@ void db_image_put_string_box(db_image *dst, db_font *font, char *text, int x, in
 	return;
     if (!text)
 	return;
+
+    y += db_font_max_height(font);
 
     FT_GlyphSlot slot = font->face->glyph;
 
@@ -179,7 +184,9 @@ void db_image_put_text(db_image *dst, db_font *font, char *text, int x, int y, i
     int 	n;
     FT_Error	error;
     int		x_orig = x;
-    int		th = 0;
+    int		y_orig = y;
+
+    int		font_height = db_font_max_height(font);
 
     if (!dst)
 	return;
@@ -188,14 +195,17 @@ void db_image_put_text(db_image *dst, db_font *font, char *text, int x, int y, i
     if (!text)
 	return;
 
+    y += db_font_max_height(font);
+
     FT_GlyphSlot slot = font->face->glyph;
 
     for (n = 0; n < strlen(text); n++) {
 	if ((text[n] == '\n') ||
 	    (x > x_orig + w)) {
 	    x = x_orig;
-	    y += th + TEXT_BORDER;
-	    th = 0;
+	    y += font_height + TEXT_BORDER;
+	    if (y - y_orig > h)
+		break;
 	    continue;
 	}
 	error = FT_Load_Char(font->face, text[n], FT_LOAD_RENDER);
@@ -205,16 +215,16 @@ void db_image_put_text(db_image *dst, db_font *font, char *text, int x, int y, i
 	draw_bitmap(dst, &slot->bitmap, x, y - slot->bitmap_top, color);
 
 	x += slot->advance.x >> 6;
-	th = (slot->bitmap_top > th)?slot->bitmap_top:th;
     }
 }
 
 void db_font_get_text_box(db_font *font, char *text, int w, int h, int *real_w, int *real_h)
 {
     int		x = 0;
-    int		y = 0;
     int 	n;
     FT_Error	error;
+
+    int		font_height = db_font_max_height(font);
 
     *real_w = 0;
     *real_h = 0;
@@ -229,10 +239,11 @@ void db_font_get_text_box(db_font *font, char *text, int w, int h, int *real_w, 
     for (n = 0; n < strlen(text); n++) {
 	if ((text[n] == '\n') ||
 	    (x >  w)) {
-	    *real_w += w;
+	    *real_w = (x > *real_w)?x:*real_w;
 	    x = 0;
-	    *real_h += y + TEXT_BORDER;
-	    y = 0;
+	    *real_h += font_height + TEXT_BORDER;
+	    if (*real_h > h)
+		break;
 	    continue;
 	}
 	error = FT_Load_Char(font->face, text[n], FT_LOAD_RENDER);
@@ -240,7 +251,7 @@ void db_font_get_text_box(db_font *font, char *text, int w, int h, int *real_w, 
 	    continue;
 
 	x += slot->advance.x >> 6;
-	y = (slot->bitmap_top > y)?slot->bitmap_top:y;
     }
-    *real_h += y + TEXT_BORDER;
+    *real_w = (x > *real_w)?x:*real_w;
+    *real_h += font_height + TEXT_BORDER;
 }

@@ -180,6 +180,7 @@ int db_ui_check_events(db_ui_event *event)
 	    case XK_Right:	event->key.key = DB_KEY_RIGHT; break;
 	    case XK_Up:		event->key.key = DB_KEY_UP; break;
 	    case XK_Down:	event->key.key = DB_KEY_DOWN; break;
+	    case XK_Escape:	event->key.key = DB_KEY_ESCAPE; break;
 	    default:
 		event->key.key = 0;
 	    }

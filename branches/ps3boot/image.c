@@ -62,22 +62,13 @@ void db_image_free(db_image *img)
     free(img);
 }
 
-static inline uint32_t pixel_brightness(uint32_t pixel, int level)
-{
-    uint32_t ret = 0;
-    int i = 0;
-    if (level == 0)
-	return 0;
-    if (level == 255)
-	return pixel;
-    for (i = 0; i < 3; i++) {
-	ret <<= 8;
-	ret |= ((((pixel >> 16) & 0xff) * level) >> 8);
-	pixel <<=8;
-    }
-    return ret;
-}
-
+/* Blend the RGB values of two Pixels based on a source alpha value */
+#define ALPHA_BLEND(sR, sG, sB, A, dR, dG, dB)	\
+do {						\
+	dR = (((sR-dR)*(A))>>8)+dR;		\
+	dG = (((sG-dG)*(A))>>8)+dG;		\
+	dB = (((sB-dB)*(A))>>8)+dB;		\
+} while(0)
 
 void db_image_put_image(db_image *dst, db_image *src, int x, int y)
 {
@@ -98,10 +89,11 @@ void db_image_put_image(db_image *dst, db_image *src, int x, int y)
     for (l = 0; l < h; l++) {
 	for (o = 0; o < w; o++) {
 	    if (src->has_alpha) {
-		int sr, sg, sb, sa;
-		int dr, dg, db, da;
+		unsigned int sr, sg, sb, sa;
+		unsigned int dr, dg, db, da;
 		unsigned char *sp = (unsigned char *) &src_buf[o];
 		unsigned char *dp = (unsigned char *) &dst_buf[o];
+
 		sr = *sp++;
 		sg = *sp++;
 		sb = *sp++;
@@ -112,15 +104,14 @@ void db_image_put_image(db_image *dst, db_image *src, int x, int y)
 		db = *dp++;
 		da = *dp++;
 		
-		uint32_t p = pixel_brightness((dr << 16) | (dg << 8) | db, 255 - sa);
-
+		ALPHA_BLEND(sr, sg, sb, sa, dr, dg, db);
+		
 		dp = (unsigned char *) &dst_buf[o];
 		
-		*dp++ = (p >> 16) | sr;
-		*dp++ = (p >> 8 ) | sg;
-		*dp++ = (p      ) | sb;
+		*dp++ = dr;
+		*dp++ = dg;
+		*dp++ = db;
 		*dp++ = da;
-//		    dst_buf[o] = pixel_brightness(dst_buf[o], 255 - (src_buf[o] >> 24)) | src_buf[o];
 	    } else
 		dst_buf[o] = src_buf[o];
 	}
