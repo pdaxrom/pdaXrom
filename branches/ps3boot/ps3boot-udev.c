@@ -67,6 +67,8 @@ static const char *get_icon(void)
     char buf[128];
     int fd, buf_len;
 
+    syslog(LOG_INFO, "type=%s, bus=%s, path=%s\n", type, bus, sysfs_path);
+
     sprintf(full_path, "/sys/%s/../device/model", sysfs_path);
     fd = open(full_path, O_RDONLY);
     if (fd >= 0) {
@@ -86,8 +88,11 @@ static const char *get_icon(void)
     if (type && streq(type, "cd"))
     	return "cdrom.png";
 
+    if (strstr(sysfs_path, "block/sr"))
+	return "cdrom.png";
+
     if (!bus)
-	return "tux.png";
+	return "hdd.png";
 
     if (streq(bus, "usb"))
 	return "usbpen.png";

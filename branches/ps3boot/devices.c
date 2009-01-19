@@ -86,6 +86,7 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
     if (strcmp(dev_path, "gameos")) {
 	if (kboot_conf_read(dev_path, dev)) {
 	    free(dev);
+	    fprintf(stderr, "kconf parse error\n");
 	    return NULL;
 	}
     }
@@ -113,9 +114,9 @@ void bootdevice_add(char *dev_path, char *icon)
 {
     char buf[1024];
 
-    sprintf(buf, MOUNT_DIR "%s", dev_path);
-    fprintf(stderr, ">>> mkdir %s\n", buf);
-    int rc = mkdir(buf, 755);
+    sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", dev_path);
+    fprintf(stderr, ">>> %s\n", buf);
+    int rc = system(buf);
     if (rc)
 	fprintf(stderr, "mkdir problem\n");
     
@@ -135,7 +136,9 @@ void bootdevice_add(char *dev_path, char *icon)
 	    cur_device->next = dev;
 	    cur_device = dev;
 	}
-    }
+	fprintf(stderr, "device created for %s and added\n", dev_path);
+    } else
+	fprintf(stderr, "no device created for %s\n", dev_path);
 
     sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev_path);
     fprintf(stderr, ">>> %s\n", buf);
@@ -151,12 +154,20 @@ void bootdevice_remove(char *dev_path)
 {
     boot_device *dev = devices;
     boot_device *prev = NULL;
+
+    fprintf(stderr, "remove device %s\n", dev_path);
+
     while (dev) {
 	if (!strcmp(dev->device, dev_path)) {
 	    if (prev) {
 		prev->next = dev->next;
-	    } else
+		if (!prev->next)
+		    cur_device = prev;
+	    } else {
 		devices = dev->next;
+		if (!devices->next)
+		    cur_device = devices;
+	    }
 	    bootdevice_free(dev);
 	    break;
 	}
@@ -232,6 +243,7 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
     int y_pos = desk->height * 2 / 3 - y_step / 2;
     
     while (dev) {
+	fprintf(stderr, ":::: %s :::::\n", dev->device);
 	if (count == selected_device) {
 	    db_image_put_image(desk, img_dev_sel, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
 	    if (dev->message) {
@@ -254,15 +266,6 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
 					40);
 	}
 	db_image_put_image(desk, dev->icon, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
-#if 0
-	db_font_get_string_box(font, dev->device, &t_w, &t_h);
-	db_image_put_string(desk,
-			    font, 
-			    dev->device, 
-			    x_pos + x_step / 2 - t_w / 2, 
-			    y_pos + y_step + t_h, 
-			    0x0);
-#endif
 	x_pos += x_step;
 	dev = dev->next;
 	count++;
@@ -335,9 +338,15 @@ void bootdevice_boot(void)
 	    }
 	    char buf[1024];
     
-	    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev->device, dev->device);
+	    sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", dev->device);
 	    fprintf(stderr, ">>> %s\n", buf);
 	    int rc = system(buf);
+	    if (rc)
+		fprintf(stderr, "mkdir problem\n");
+
+	    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev->device, dev->device);
+	    fprintf(stderr, ">>> %s\n", buf);
+	    rc = system(buf);
 	    if (rc)
 		return;
 	    boot_config *conf = dev->conf;

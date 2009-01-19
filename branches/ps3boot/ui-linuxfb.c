@@ -18,7 +18,7 @@
 #include "ui-linuxfb.h"
 
 static char *defaultfbdevice = "/dev/fb0";
-static int fb_fd;
+static int fb_fd = -1;
 static char *fbdevice = NULL;
 static struct fb_fix_screeninfo fix;
 static struct fb_var_screeninfo var;
@@ -31,7 +31,7 @@ static db_image *screen_image = NULL;
 
 static char 	*defaultconsoledevice = "/dev/tty";
 static char	*consoledevice = NULL;
-static int 	con_fd, last_vt = -1;
+static int 	con_fd = -1, last_vt = -1;
 static int 	cnt_cur = 0, cnt_all = 0;
 static unsigned char	buf[256];
 
@@ -57,12 +57,14 @@ static int framebuffer_on(void)
     if (ioctl(fb_fd, FBIOGET_FSCREENINFO, &fix) < 0) {
 	perror("ioctl FBIOGET_FSCREENINFO");
 	close(fb_fd);
+	fb_fd = -1;
 	return 1;
     }
 
     if (ioctl(fb_fd, FBIOGET_VSCREENINFO, &var) < 0) {
 	perror("ioctl FBIOGET_VSCREENINFO");
 	close(fb_fd);
+	fb_fd = -1;
 	return 1;
     }
 
@@ -70,6 +72,7 @@ static int framebuffer_on(void)
     if (display_buffer == (unsigned char *)-1) {
 	perror("mmap framebuffer");
 	close(fb_fd);
+	fb_fd = -1;
 	return 1;
     }
 
@@ -87,9 +90,13 @@ static int framebuffer_on(void)
 
 static int framebuffer_off(void)
 {
+    if (fb_fd < 0)
+	return 0;
+	
     munmap(display_buffer, fix.line_length * var.yres);
 
     close(fb_fd);
+    fb_fd = -1;
     return 0;
 }
 
@@ -376,6 +383,9 @@ static int keyboard_on(void)
 
 static int keyboard_off(void)
 {
+    if (con_fd < 0)
+	return 0;
+
     if(strcmp(consoledevice,"none")!=0) {	
 	ioctl(con_fd, KDSKBMODE, LinuxKbdTrans);
 	tcsetattr(con_fd, TCSANOW, &LinuxTermios);
@@ -387,6 +397,7 @@ static int keyboard_off(void)
     	    if (ioctl(con_fd, VT_ACTIVATE, last_vt))
         	perror("VT_ACTIVATE");
 	close(con_fd);
+	con_fd = -1;
     }
 
     return 0;

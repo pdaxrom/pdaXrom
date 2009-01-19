@@ -10,6 +10,7 @@
 #define KEXEC_BIN	"/sbin/kexec"
 #define MOUNT_BIN	"/bin/mount"
 #define UMOUNT_BIN	"/bin/umount"
+#define MKDIR_BIN	"/bin/mkdir"
 
 typedef struct boot_config {
     char *label;
