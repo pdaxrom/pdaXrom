@@ -37,14 +37,6 @@ db_image *db_image_load(char *file)
     if (strcasestr(file, ".jpg"))
 	img->buf = load_jpeg_file(file, &img->width, &img->height, &img->has_alpha);
 
-#if 0
-    if (!img->buf) {
-	char dirn[512];
-	sprintf(dirn, "%s/pixmaps/apple-red.png", DATADIR);
-	img->buf = load_png_file(dirn, &img->width, &img->height, &img->has_alpha);
-    }
-#endif
-
     if (!img->buf) {
 	free(img);
 	fprintf(stderr, "error load image file %s\n", file);

@@ -11,6 +11,10 @@
 #include "message.h"
 #include "parse-kboot.h"
 
+#define MOUNT_DIR	"/media"
+
+#define GAMEOS_BIN	"/usr/sbin/ps3-boot-game-os"
+
 #define ICON_WIDTH	64
 #define ICON_HEIGHT	64
 #define ICON_BORDER	5
@@ -28,12 +32,12 @@ static int selected_config = -1;
 static db_image *get_device_icon(char *dev_path)
 {
     if (!strncmp(dev_path, "/dev/sd", 7))
-	return db_image_load(DATADIR "artwork/hdd.png");
+	return db_image_load(DATADIR "/artwork/hdd.png");
     if (!strncmp(dev_path, "/dev/sr", 7))
-	return db_image_load(DATADIR "artwork/cdrom.png");
+	return db_image_load(DATADIR "/artwork/cdrom.png");
     if (!strcmp(dev_path, "gameos"))
-	return db_image_load(DATADIR "artwork/gameos.png");
-    return db_image_load(DATADIR "artwork/hdd.png");
+	return db_image_load(DATADIR "/artwork/gameos.png");
+    return db_image_load(DATADIR "/artwork/hdd.png");
 }
 
 static void boot_configs_free(boot_config *conf)
@@ -186,7 +190,7 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
     db_image_put_image(desk, wallp, 0, 0);
     
     if (!img_dev_sel)
-	img_dev_sel = db_image_load(DATADIR "artwork/devsel.png");
+	img_dev_sel = db_image_load(DATADIR "/artwork/devsel.png");
     
     int x_step = ICON_WIDTH + ICON_BORDER * 2;
     int y_step = ICON_HEIGHT + ICON_BORDER * 2;
@@ -280,8 +284,57 @@ void bootdevice_config_prev(void)
 
 void bootdevice_config_next(void)
 {
-    int count = bootdevice_config_count(selected_device);
+    int count = bootdevice_config_count(selected_device) - 1;
     selected_config++;
     if (selected_config > count)
 	selected_config = count;
+}
+
+void bootdevice_boot(void)
+{
+    int c = 0;
+    boot_device *dev = devices;
+    while (dev) {
+	if (selected_device == c) {
+	    if (!strcmp(dev->device, "gameos")) {
+		char *cmd = GAMEOS_BIN;
+		fprintf(stderr, "Execute: %s\n", cmd);
+		exit(0);
+	    }
+	    boot_config *conf = dev->conf;
+	    c = 0;
+	    while (conf) {
+		if (c == selected_config) {
+		    char buf[1024];
+		    snprintf(buf, 1024, "/sbin/kexec -f ");
+		    if (conf->initrd) {
+			strcat(buf, "--initrd=");
+			strcat(buf, MOUNT_DIR);
+			strcat(buf, "/");
+			strcat(buf, conf->initrd);
+			strcat(buf, " ");
+		    }
+		    if (conf->cmdline) {
+			strcat(buf, "--append=\"");
+			strcat(buf, conf->cmdline);
+			strcat(buf, "\" ");
+		    }
+		    if (conf->kernel) {
+			strcat(buf, MOUNT_DIR);
+			strcat(buf, "/");
+			strcat(buf, conf->kernel);
+			fprintf(stderr, "Execute: %s\n", buf);
+			exit(0);
+			return;
+		    } else
+			return;
+		}
+		c++;
+		conf = conf->next;
+	    }
+	    return;
+	}
+	c++;
+	dev = dev->next;
+    }
 }

@@ -122,6 +122,7 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 			    }
 			}
 		    }
+		    cmdline_buf[strlen(cmdline_buf) - 1] = 0;
 		    cmdline = strdup(cmdline_buf);
 		    fprintf(stderr, "%s, %s, %s, %s\n", label, kernel, initrd, cmdline);
 		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);

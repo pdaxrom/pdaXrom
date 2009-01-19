@@ -38,4 +38,6 @@ void bootdevice_config_prev(void);
 
 void bootdevice_config_next(void);
 
+void bootdevice_boot(void);
+
 #endif

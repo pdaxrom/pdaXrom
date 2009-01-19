@@ -14,7 +14,7 @@ db_font *font = NULL;
 db_image *load_wallpaper(db_image *desk)
 {
     int x, y, xoff, yoff, w, h;
-    db_image *wallp = db_image_load("./artwork/background.jpg");
+    db_image *wallp = db_image_load(DATADIR "/artwork/background.jpg");
     db_image *ret = db_image_create(desk->width, desk->height, 0);
     if (desk->width >= wallp->width) {
 	x = (desk->width - wallp->width) / 2;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 {
     db_ui_create();
     
-    font = db_font_open("fonts/Vera.ttf", 12, 0);
+    font = db_font_open(DATADIR "/fonts/Vera.ttf", 12, 0);
     if (!font) {
 	fprintf(stderr, "Can't open font!\n");
     }
@@ -86,6 +86,9 @@ int main(int argc, char *argv[])
 			break;
 		    case DB_KEY_ESCAPE:
 			f_quit = 1;
+			break;
+		    case DB_KEY_RETURN:
+			bootdevice_boot();
 			break;
 		};
 		bootdevices_draw_devices(img_desk, img_wallp);
