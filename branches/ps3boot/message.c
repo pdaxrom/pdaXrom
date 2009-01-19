@@ -55,6 +55,9 @@ int db_message_draw(db_image *img, db_font *font, char *msg, int x, int y, int w
     fprintf(stderr, "ew = %d\neh = %d\n", e_w, e_h);
     fprintf(stderr, "iw = %d\nih = %d\n", i_w, i_h);
 
+    if (attr == DB_WINDOW_COORD_UP_RIGHT)
+	x -= i_w;
+
     if (attr == DB_WINDOW_COORD_TOP_CENTER)
 	x -= (i_w / 2);
 

@@ -157,6 +157,8 @@ void bootdevices_draw_bootconfig(db_image *desk,
     while (conf) {
 	int t_w, t_h;
 	char buf[1024];
+	snprintf(buf, 1024, "%s", conf->label);
+#if 0
 	snprintf(buf, 1024, "%s: %s ", conf->label, conf->kernel);
 	if (conf->initrd) {
 	    strcat(buf, "initrd=");
@@ -166,17 +168,16 @@ void bootdevices_draw_bootconfig(db_image *desk,
 	    strcat(buf, " ");
 	    strcat(buf, conf->cmdline);
 	}
+#endif
 	if (((!strcmp(dev->def, conf->label)) && (selected_config < 0)) ||
 	    (count == selected_config)) {
-	    //db_font_get_text_box(font, buf, w, h, &t_w, &t_h);
 	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
 	    yoff += t_h + TEXT_BORDER;
 	    if (selected_config < 0)
 		selected_config = count;
 	} else {
-	    //db_font_get_string_box(font, buf, &t_w, &t_h);
-	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0x0, DB_WINDOW_COORD_TOP_CENTER);
-	    yoff += t_h + TEXT_BORDER;
+//	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0x0, DB_WINDOW_COORD_TOP_CENTER);
+//	    yoff += t_h + TEXT_BORDER;
 	}
 	count++;
 	conf = conf->next;
@@ -195,7 +196,7 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
     int x_step = ICON_WIDTH + ICON_BORDER * 2;
     int y_step = ICON_HEIGHT + ICON_BORDER * 2;
     int x_pos = desk->width / 2 - bootdevices_count() * x_step / 2;
-    int y_pos = desk->height / 2 - y_step / 2;
+    int y_pos = desk->height * 2 / 3 - y_step / 2;
     
     while (dev) {
 	int t_w, t_h;
@@ -203,7 +204,6 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
 	    db_image_put_image(desk, img_dev_sel, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
 	    if (dev->message) {
 		int tw, th;
-		//db_font_get_text_box(font, dev->message, 480, 200, &tw, &th);
 	        db_message_draw(desk,
 				  font,
 				  dev->message,
@@ -217,8 +217,8 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
 	    bootdevices_draw_bootconfig(desk, 
 					wallp, 
 					dev,
-					desk->width / 2,
-					y_pos + y_step + 30,
+					x_pos + x_step / 2,/* desk->width / 2, */
+					y_pos + y_step,
 					desk->width - 256, /*480,*/
 					40);
 	}
