@@ -57,8 +57,7 @@ int main(int argc, char *argv[])
     bootdevice_add("/dev/sdd1");
 
     bootdevices_draw_devices(img_desk, img_wallp);
-    db_image_put_string(img_desk, font, "PS3 bootshell v0.1 (c) 2009 pdaXrom.org", 200, 100, 0xffffff);
-    db_message_draw(img_desk, font, "PS3 bootshell v0.1 (c) 2009 pdaXrom.org\nHello people!\nWellcome\nasd\n123455", 100, 100, 400, 120, 0xf0f0);
+    db_message_draw(img_desk, font, "PS3 bootshell v0.1\nhttp://wiki.pdaXrom.org\n", 100, 100, 400, 120, 0xffffff, 0);
     
     db_ui_update_screen();
     

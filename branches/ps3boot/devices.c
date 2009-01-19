@@ -169,13 +169,13 @@ void bootdevices_draw_bootconfig(db_image *desk,
 	if (((!strcmp(dev->def, conf->label)) && (selected_config < 0)) ||
 	    (count == selected_config)) {
 	    //db_font_get_text_box(font, buf, w, h, &t_w, &t_h);
-	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0xffffff);
+	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
 	    yoff += t_h + TEXT_BORDER;
 	    if (selected_config < 0)
 		selected_config = count;
 	} else {
 	    //db_font_get_string_box(font, buf, &t_w, &t_h);
-	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0x0);
+	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0x0, DB_WINDOW_COORD_TOP_CENTER);
 	    yoff += t_h + TEXT_BORDER;
 	}
 	count++;
@@ -203,20 +203,21 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
 	    db_image_put_image(desk, img_dev_sel, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
 	    if (dev->message) {
 		int tw, th;
-		db_font_get_text_box(font, dev->message, 480, 200, &tw, &th);
+		//db_font_get_text_box(font, dev->message, 480, 200, &tw, &th);
 	        db_message_draw(desk,
 				  font,
 				  dev->message,
-				  desk->width / 2 - 240,
-				  y_pos - 16 - th,
-				  480,
-				  200,
-				  0x0);
+				  desk->width / 2,
+				  y_pos,
+				  desk->width - 64,
+				  y_pos - 64,
+				  0x0,
+				  DB_WINDOW_COORD_BOTTOM_CENTER);
 	    }
 	    bootdevices_draw_bootconfig(desk, 
 					wallp, 
 					dev,
-					128, /*desk->width / 2 - 240,*/
+					desk->width / 2,
 					y_pos + y_step + 30,
 					desk->width - 256, /*480,*/
 					40);
