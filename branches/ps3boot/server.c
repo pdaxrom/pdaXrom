@@ -14,6 +14,8 @@ int ps3boot_serv_on(void)
 {
     struct sockaddr_un server;
     
+    unlink(SOCKET_NAME);
+
     sock = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sock < 0) {
 	perror("opening stream socket");
@@ -29,6 +31,10 @@ int ps3boot_serv_on(void)
     
     fprintf(stderr, "Socket has name %s\n", server.sun_path);
     listen(sock, 5);
+
+    int rc = system("/sbin/udevadm trigger");
+    if (rc)
+	fprintf(stderr, "udevadm trigget problem\n");
     
     return sock;
 }
@@ -57,7 +63,6 @@ int ps3boot_serv_check_msg(void)
 	perror("select()");
     else if (retval) {
 	fprintf(stderr, "data available\n");
-	int rval = -1;
 	int msgsock = accept(sock, NULL, NULL);
 	if (msgsock == -1)
 	    perror("accept");
@@ -74,18 +79,25 @@ int ps3boot_serv_check_msg(void)
 		char *dev = strchr(buf, ',');
 		if (dev) {
 		    *dev++ = 0;
-		    fprintf(stderr, "action: %s\ndevice: %s\n", buf, dev);
 		    if (!strcmp(buf, "add")) {
-			bootdevice_add(dev);
+			char *icon = strchr(dev, ',');
+			if (icon) {
+			    *icon++ = 0;
+			    if (!strlen(icon))
+				icon = NULL;
+			}
+			fprintf(stderr, "action: %s\ndevice: %s\nicon: %s\n", buf, dev, icon);
+			bootdevice_add(dev, icon);
 			ret = 1;
 		    }
 		    if (!strcmp(buf, "remove")) {
+			fprintf(stderr, "action: %s\ndevice: %s\n", buf, dev);
 			bootdevice_remove(dev);
 			ret = 1;
 		    }
 		}
 	    }
-	} while (rval > 0);
+	} while (0);
 	close(msgsock);
     }
     

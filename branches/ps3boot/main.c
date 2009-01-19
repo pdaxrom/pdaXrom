@@ -44,7 +44,6 @@ db_image *load_wallpaper(db_image *desk)
 int main(int argc, char *argv[])
 {
     db_ui_create();
-    ps3boot_serv_on();
     
     font = db_font_open(DATADIR "/fonts/Vera.ttf", 12, 0);
     if (!font) {
@@ -54,11 +53,14 @@ int main(int argc, char *argv[])
     db_image *img_desk = db_ui_get_screen();
     db_image *img_wallp = load_wallpaper(img_desk);
     
-    bootdevice_add("gameos");
-    bootdevice_add("/dev/sr0");
+    bootdevice_init();
+    ps3boot_serv_on();
+
+//    bootdevice_add("gameos");
+//    bootdevice_add("/dev/sr0");
 //    bootdevice_add("/dev/sda1");
 //    bootdevice_add("/dev/sda2");
-    bootdevice_add("/dev/sdd1");
+//    bootdevice_add("/dev/sdd1");
 
     bootdevices_draw_devices(img_desk, img_wallp);
     db_message_draw(img_desk, font, "PS3 bootshell v0.1\nhttp://wiki.pdaXrom.org", img_desk->width - 50, 50, 400, 120, 0xffffff, DB_WINDOW_COORD_UP_RIGHT);

@@ -19,7 +19,13 @@ unsigned char *load_png_file (char *file, int *width, int *height, int *has_alph
     if ((fd = fopen( file, "rb" )) == NULL)
 	return NULL;
 
-    fread( header, 1, 8, fd );
+    int rc = fread( header, 1, 8, fd );
+
+    if (rc != 8) {
+	fclose(fd);
+        return NULL;
+    }
+    
     if ( ! png_check_sig( header, 8 ) ) {
 	fclose(fd);
         return NULL;

@@ -4,6 +4,13 @@
 #include "image.h"
 #include "font.h"
 
+#define MOUNT_DIR	"/media"
+
+#define GAMEOS_BIN	"/usr/sbin/ps3-boot-game-os"
+#define KEXEC_BIN	"/sbin/kexec"
+#define MOUNT_BIN	"/bin/mount"
+#define UMOUNT_BIN	"/bin/umount"
+
 typedef struct boot_config {
     char *label;
     char *kernel;
@@ -22,7 +29,9 @@ typedef struct boot_device {
     struct boot_device *next;
 } boot_device;
 
-void bootdevice_add(char *dev_path);
+void bootdevice_init(void);
+
+void bootdevice_add(char *dev_path, char *icon);
 
 void bootdevice_remove(char *dev_path);
 

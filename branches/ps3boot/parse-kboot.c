@@ -54,7 +54,7 @@ static char *get_str_val(char *ptr)
 int kboot_conf_read(char *dev_path, boot_device *dev)
 {
     char buf[1024];
-    snprintf(buf, 1024, "./test%s/etc/kboot.conf", dev_path);
+    snprintf(buf, 1024, MOUNT_DIR "%s/etc/kboot.conf", dev_path);
     
     fprintf(stderr, "read %s\n", buf);
     
@@ -71,7 +71,7 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 		char *name = get_str_val(ptr);
 		if (!name)
 		    continue;
-		snprintf(buf, 1024, "./test%s%s", dev_path, name);
+		snprintf(buf, 1024, MOUNT_DIR "%s%s", dev_path, name);
 		if (!lstat(buf, &s)) {
 		    FILE *fm = fopen(buf, "rb");
 		    if (fm) {

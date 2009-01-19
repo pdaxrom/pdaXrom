@@ -11,10 +11,6 @@
 #include "message.h"
 #include "parse-kboot.h"
 
-#define MOUNT_DIR	"/media"
-
-#define GAMEOS_BIN	"/usr/sbin/ps3-boot-game-os"
-
 #define ICON_WIDTH	64
 #define ICON_HEIGHT	64
 #define ICON_BORDER	5
@@ -82,31 +78,73 @@ static void bootdevice_free(boot_device *dev)
     free(dev);    
 }
 
-static boot_device *bootdevice_create(char *dev_path)
+static boot_device *bootdevice_create(char *dev_path, char *icon)
 {
     boot_device *dev = (boot_device *) malloc(sizeof(boot_device));    
     memset(dev, 0, sizeof(boot_device));
+
+    if (strcmp(dev_path, "gameos")) {
+	if (kboot_conf_read(dev_path, dev)) {
+	    free(dev);
+	    return NULL;
+	}
+    }
     
-    kboot_conf_read(dev_path, dev);
-    
-    dev->icon = get_device_icon(dev_path);
+    char buf[1024];
+    snprintf(buf, 1024, DATADIR "/artwork/%s", icon);
+    dev->icon = db_image_load(buf);    
+    if (!dev->icon)
+	dev->icon = get_device_icon(dev_path);
     dev->device = strdup(dev_path);
     dev->next = NULL;
     
     return dev;
 }
 
-void bootdevice_add(char *dev_path)
+void bootdevice_init(void)
 {
-    boot_device *dev = bootdevice_create(dev_path);
-    
     if (devices == NULL) {
-	devices = dev;
+	devices = bootdevice_create("gameos", "gameos.png");
 	cur_device = devices;
-    } else {
-	cur_device->next = dev;
-	cur_device = dev;
     }
+}
+
+void bootdevice_add(char *dev_path, char *icon)
+{
+    char buf[1024];
+
+    sprintf(buf, MOUNT_DIR "%s", dev_path);
+    fprintf(stderr, ">>> mkdir %s\n", buf);
+    int rc = mkdir(buf, 755);
+    if (rc)
+	fprintf(stderr, "mkdir problem\n");
+    
+    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev_path, dev_path);
+    fprintf(stderr, ">>> %s\n", buf);
+    rc = system(buf);
+    if (rc)
+	return;
+
+    boot_device *dev = bootdevice_create(dev_path, icon);
+    
+    if (dev) {
+	if (devices == NULL) {
+	    devices = dev;
+	    cur_device = devices;
+	} else {
+	    cur_device->next = dev;
+	    cur_device = dev;
+	}
+    }
+
+    sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev_path);
+    fprintf(stderr, ">>> %s\n", buf);
+    rc = system(buf);
+    sprintf(buf, MOUNT_DIR "%s", dev_path);
+    fprintf(stderr, ">>> rmdir %s\n", buf);
+    rc = rmdir(buf);
+    if (rc)
+	fprintf(stderr, "mkdir problem\n");
 }
 
 void bootdevice_remove(char *dev_path)
@@ -163,12 +201,11 @@ void bootdevices_draw_bootconfig(db_image *desk,
 	return;
 
     while (conf) {
-	int t_w, t_h;
 	char buf[1024];
 	snprintf(buf, 1024, "%s", conf->label);
 	if (((!strcmp(dev->def, conf->label)) && (selected_config < 0)) ||
 	    (count == selected_config)) {
-	    t_h = db_message_draw(desk, font, buf, x, y, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
+	    db_message_draw(desk, font, buf, x, y, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
 	    current_config_x_pos = x;
 	    current_config_y_pos = y;
 	    current_config_ptr = conf;
@@ -195,11 +232,9 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
     int y_pos = desk->height * 2 / 3 - y_step / 2;
     
     while (dev) {
-	int t_w, t_h;
 	if (count == selected_device) {
 	    db_image_put_image(desk, img_dev_sel, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
 	    if (dev->message) {
-		int tw, th;
 	        db_message_draw(desk,
 				  font,
 				  dev->message,
@@ -298,15 +333,23 @@ void bootdevice_boot(void)
 		fprintf(stderr, "Execute: %s\n", cmd);
 		exit(0);
 	    }
+	    char buf[1024];
+    
+	    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev->device, dev->device);
+	    fprintf(stderr, ">>> %s\n", buf);
+	    int rc = system(buf);
+	    if (rc)
+		return;
 	    boot_config *conf = dev->conf;
 	    c = 0;
 	    while (conf) {
 		if (c == selected_config) {
 		    char buf[1024];
-		    snprintf(buf, 1024, "/sbin/kexec -f ");
+		    snprintf(buf, 1024, KEXEC_BIN " -f ");
 		    if (conf->initrd) {
 			strcat(buf, "--initrd=");
 			strcat(buf, MOUNT_DIR);
+			strcat(buf, dev->device);
 			strcat(buf, "/");
 			strcat(buf, conf->initrd);
 			strcat(buf, " ");
@@ -318,6 +361,7 @@ void bootdevice_boot(void)
 		    }
 		    if (conf->kernel) {
 			strcat(buf, MOUNT_DIR);
+			strcat(buf, dev->device);
 			strcat(buf, "/");
 			strcat(buf, conf->kernel);
 			fprintf(stderr, "Execute: %s\n", buf);

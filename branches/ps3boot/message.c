@@ -35,26 +35,12 @@ int db_message_draw(db_image *img, db_font *font, char *msg, int x, int y, int w
     
     db_font_get_text_box(font, msg, w - MESSAGE_BORDER * 2, h - MESSAGE_BORDER * 2 - 13, &real_w, &real_h);
     
-    fprintf(stderr, "w=%d (%d)\nh=%d (%d)\n", w, real_w, h, real_h);
-    
-//    int e_w = (real_w + MESSAGE_BORDER * 2) / (MESSAGE_E_W * 2);
-//    int e_h = (real_h + MESSAGE_BORDER * 2) / (MESSAGE_E_H * 2);
-
     int e_w = (real_w / MESSAGE_E_W) + 2;
     int e_h = (real_h / MESSAGE_E_H) + 2;
     
-//    if (e_w < 1)
-//	e_w = 1;
-//    if (e_h < 1)
-//	e_h = 1;
-    
-//    int i_w = e_w * MESSAGE_E_W * 2;
     int i_w = e_w * MESSAGE_E_W;
     int i_h = e_h * MESSAGE_E_H;
     
-    fprintf(stderr, "ew = %d\neh = %d\n", e_w, e_h);
-    fprintf(stderr, "iw = %d\nih = %d\n", i_w, i_h);
-
     if (attr == DB_WINDOW_COORD_UP_RIGHT)
 	x -= i_w;
 
