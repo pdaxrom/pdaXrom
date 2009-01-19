@@ -86,7 +86,6 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
     if (strcmp(dev_path, "gameos")) {
 	if (kboot_conf_read(dev_path, dev)) {
 	    free(dev);
-	    fprintf(stderr, "kconf parse error\n");
 	    return NULL;
 	}
     }
@@ -115,13 +114,11 @@ void bootdevice_add(char *dev_path, char *icon)
     char buf[1024];
 
     sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", dev_path);
-    fprintf(stderr, ">>> %s\n", buf);
     int rc = system(buf);
     if (rc)
 	fprintf(stderr, "mkdir problem\n");
     
     sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev_path, dev_path);
-    fprintf(stderr, ">>> %s\n", buf);
     rc = system(buf);
     if (rc)
 	return;
@@ -136,15 +133,11 @@ void bootdevice_add(char *dev_path, char *icon)
 	    cur_device->next = dev;
 	    cur_device = dev;
 	}
-	fprintf(stderr, "device created for %s and added\n", dev_path);
-    } else
-	fprintf(stderr, "no device created for %s\n", dev_path);
+    }
 
     sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev_path);
-    fprintf(stderr, ">>> %s\n", buf);
     rc = system(buf);
     sprintf(buf, MOUNT_DIR "%s", dev_path);
-    fprintf(stderr, ">>> rmdir %s\n", buf);
     rc = rmdir(buf);
     if (rc)
 	fprintf(stderr, "mkdir problem\n");
@@ -154,8 +147,6 @@ void bootdevice_remove(char *dev_path)
 {
     boot_device *dev = devices;
     boot_device *prev = NULL;
-
-    fprintf(stderr, "remove device %s\n", dev_path);
 
     while (dev) {
 	if (!strcmp(dev->device, dev_path)) {
@@ -243,7 +234,6 @@ db_image *bootdevices_draw_devices(db_image *desk, db_image *wallp)
     int y_pos = desk->height * 2 / 3 - y_step / 2;
     
     while (dev) {
-	fprintf(stderr, ":::: %s :::::\n", dev->device);
 	if (count == selected_device) {
 	    db_image_put_image(desk, img_dev_sel, x_pos + ICON_BORDER, y_pos + ICON_BORDER);
 	    if (dev->message) {
@@ -339,13 +329,11 @@ void bootdevice_boot(void)
 	    char buf[1024];
     
 	    sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", dev->device);
-	    fprintf(stderr, ">>> %s\n", buf);
 	    int rc = system(buf);
 	    if (rc)
 		fprintf(stderr, "mkdir problem\n");
 
 	    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev->device, dev->device);
-	    fprintf(stderr, ">>> %s\n", buf);
 	    rc = system(buf);
 	    if (rc)
 		return;

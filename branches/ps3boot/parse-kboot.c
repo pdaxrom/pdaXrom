@@ -56,8 +56,6 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
     char buf[1024];
     snprintf(buf, 1024, MOUNT_DIR "%s/etc/kboot.conf", dev_path);
     
-    fprintf(stderr, "read %s\n", buf);
-    
     FILE *f = fopen(buf, "rb");
     if (f) {
 	while (fgets(buf, 1024, f)) {
@@ -78,7 +76,6 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 			dev->message = (char *) malloc(s.st_size + 1);
 			int l = fread(dev->message, 1, s.st_size, fm);
 			dev->message[l] = 0;
-			fprintf(stderr, "[%s]\n", dev->message);
 			fclose(fm);
 		    }
 		}
@@ -124,7 +121,6 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 		    }
 		    cmdline_buf[strlen(cmdline_buf) - 1] = 0;
 		    cmdline = strdup(cmdline_buf);
-		    fprintf(stderr, "%s, %s, %s, %s\n", label, kernel, initrd, cmdline);
 		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
 		}
 	    }

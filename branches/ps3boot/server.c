@@ -62,7 +62,6 @@ int ps3boot_serv_check_msg(void)
     if (retval == -1)
 	perror("select()");
     else if (retval) {
-	fprintf(stderr, "data available\n");
 	int msgsock = accept(sock, NULL, NULL);
 	if (msgsock == -1)
 	    perror("accept");
@@ -75,7 +74,6 @@ int ps3boot_serv_check_msg(void)
 	    else if (rval == 0)
 		fprintf(stderr, "ending connection\n");
 	    else {
-		fprintf(stderr, "read from socket: %s\n", buf);
 		char *dev = strchr(buf, ',');
 		if (dev) {
 		    *dev++ = 0;
@@ -86,12 +84,10 @@ int ps3boot_serv_check_msg(void)
 			    if (!strlen(icon))
 				icon = NULL;
 			}
-			fprintf(stderr, "action: %s\ndevice: %s\nicon: %s\n", buf, dev, icon);
 			bootdevice_add(dev, icon);
 			ret = 1;
 		    }
 		    if (!strcmp(buf, "remove")) {
-			fprintf(stderr, "action: %s\ndevice: %s\n", buf, dev);
 			bootdevice_remove(dev);
 			ret = 1;
 		    }
