@@ -29,6 +29,14 @@ static db_image *img_dev_sel = NULL;
 static int selected_device = 0;
 static int selected_config = -1;
 
+//
+// for external export
+//
+static int current_config_x_pos = 0;
+static int current_config_y_pos = 0;
+static boot_config *current_config_ptr = NULL;
+//
+
 static db_image *get_device_icon(char *dev_path)
 {
     if (!strncmp(dev_path, "/dev/sd", 7))
@@ -149,7 +157,7 @@ void bootdevices_draw_bootconfig(db_image *desk,
 				 int h)
 {
     int count = 0;
-    int yoff = 0;
+    current_config_ptr = NULL;
     boot_config *conf = dev->conf;
     if (!conf)
 	return;
@@ -158,26 +166,14 @@ void bootdevices_draw_bootconfig(db_image *desk,
 	int t_w, t_h;
 	char buf[1024];
 	snprintf(buf, 1024, "%s", conf->label);
-#if 0
-	snprintf(buf, 1024, "%s: %s ", conf->label, conf->kernel);
-	if (conf->initrd) {
-	    strcat(buf, "initrd=");
-	    strcat(buf, conf->initrd);
-	}
-	if (conf->cmdline) {
-	    strcat(buf, " ");
-	    strcat(buf, conf->cmdline);
-	}
-#endif
 	if (((!strcmp(dev->def, conf->label)) && (selected_config < 0)) ||
 	    (count == selected_config)) {
-	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
-	    yoff += t_h + TEXT_BORDER;
+	    t_h = db_message_draw(desk, font, buf, x, y, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
+	    current_config_x_pos = x;
+	    current_config_y_pos = y;
+	    current_config_ptr = conf;
 	    if (selected_config < 0)
 		selected_config = count;
-	} else {
-//	    t_h = db_message_draw(desk, font, buf, x, y + yoff, w, h, 0x0, DB_WINDOW_COORD_TOP_CENTER);
-//	    yoff += t_h + TEXT_BORDER;
 	}
 	count++;
 	conf = conf->next;
@@ -338,4 +334,11 @@ void bootdevice_boot(void)
 	c++;
 	dev = dev->next;
     }
+}
+
+boot_config *bootdevice_get_current_config(int *x, int *y)
+{
+    *x = current_config_x_pos;
+    *y = current_config_y_pos;
+    return current_config_ptr;
 }

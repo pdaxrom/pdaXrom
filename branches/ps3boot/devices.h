@@ -40,4 +40,6 @@ void bootdevice_config_next(void);
 
 void bootdevice_boot(void);
 
+boot_config *bootdevice_get_current_config(int *x, int *y);
+
 #endif

@@ -14,4 +14,6 @@ enum {
 
 int db_message_draw(db_image *img, db_font *font, char *msg, int x, int y, int w, int h, u_int32_t color, unsigned int attr);
 
+int db_message_edit(db_image *img, db_font *font, int key, char *msg, int size, int x, int y, int w, int h, u_int32_t color, unsigned int attr);
+
 #endif

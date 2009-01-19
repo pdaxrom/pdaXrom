@@ -71,6 +71,12 @@ int db_message_draw(db_image *img, db_font *font, char *msg, int x, int y, int w
 	y -= (i_h / 2);
     }
 
+    if (x + i_w >= img->width)
+	x -= (x + i_w - img->width);
+
+    if (x < 0)
+	x = 0;
+
     db_image_put_image(img, img_ul, x, y);
     db_image_put_image(img, img_ur, x + i_w - img_ur->width, y);
     db_image_put_image(img, img_dl, x, y + i_h - img_dl->height);
@@ -90,7 +96,28 @@ int db_message_draw(db_image *img, db_font *font, char *msg, int x, int y, int w
     if (e_h == 1)
 	y -= MESSAGE_BORDER / 2;
 
-    db_image_put_text(img, font, msg, x + MESSAGE_BORDER, y + MESSAGE_BORDER, real_w, real_h - MESSAGE_BORDER, color);
+    db_image_put_text(img, font, msg, x + MESSAGE_BORDER, y + MESSAGE_BORDER, real_w, real_h, color);
     
     return i_h;
+}
+
+int db_message_edit(db_image *img, db_font *font, int key, char *msg, int size, int x, int y, int w, int h, u_int32_t color, unsigned int attr)
+{
+    switch (key) {
+	case DB_KEY_RETURN:
+	    return 0;
+	case DB_KEY_LEFT:
+	case DB_KEY_BACKSPACE:
+	    if (strlen(msg) > 0)
+		msg[strlen(msg) - 1] = 0;
+	    break;
+	default:
+	    if (strlen(msg) < size - 1) {
+		msg[strlen(msg)] = key;
+		msg[strlen(msg) + 1] = 0;
+	    }
+    }
+    db_message_draw(img, font, msg, x, y, w, h, color, attr);
+    
+    return 1;
 }

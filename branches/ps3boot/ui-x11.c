@@ -184,7 +184,10 @@ int db_ui_check_events(db_ui_event *event)
 	    case XK_Return:	event->key.key = DB_KEY_RETURN; break;
 	    case XK_space:	event->key.key = DB_KEY_SPACE; break;
 	    default:
-		event->key.key = 0;
+		if ((keysum >= 0x20) && (keysum < 0x80))
+		    event->key.key = keysum;
+		else
+		    event->key.key = 0;
 	    }
 	}
     }

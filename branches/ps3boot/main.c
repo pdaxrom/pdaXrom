@@ -54,14 +54,22 @@ int main(int argc, char *argv[])
     
     bootdevice_add("gameos");
     bootdevice_add("/dev/sr0");
+    bootdevice_add("/dev/sda1");
+    bootdevice_add("/dev/sda2");
     bootdevice_add("/dev/sdd1");
 
     bootdevices_draw_devices(img_desk, img_wallp);
-    db_message_draw(img_desk, font, "PS3 bootshell v0.1\nhttp://wiki.pdaXrom.org\n", img_desk->width - 50, 50, 400, 120, 0xffffff, DB_WINDOW_COORD_UP_RIGHT);
+    db_message_draw(img_desk, font, "PS3 bootshell v0.1\nhttp://wiki.pdaXrom.org", img_desk->width - 50, 50, 400, 120, 0xffffff, DB_WINDOW_COORD_UP_RIGHT);
     
     db_ui_update_screen();
     
     int f_quit = 0;
+    int f_edit = 0;
+    int tmp_x = 0;
+    int tmp_y = 0;
+    boot_config *tmp_bconf = NULL;
+    char tmp_edit[1024];
+    memset(tmp_edit, 0, 1024);
     
     while(!f_quit) {
 	db_ui_event e;
@@ -70,6 +78,18 @@ int main(int argc, char *argv[])
 	    break;
 	switch (e.type) {
 	    case DB_EVENT_KEYPRESS: {
+		if (f_edit) {
+		    f_edit = db_message_edit(img_desk, font, e.key.key, tmp_edit, 256, tmp_x, tmp_y, 300, 100, 0x0, DB_WINDOW_COORD_TOP_CENTER);
+		    db_ui_update_screen();
+		    if (!f_edit) {
+			free(tmp_bconf->cmdline);
+			tmp_bconf->cmdline = strdup(tmp_edit);
+			fprintf(stderr, ">>>%s\n", tmp_bconf->cmdline);
+			bootdevices_draw_devices(img_desk, img_wallp);
+			db_ui_update_screen();
+		    }
+		    continue;
+		}
 		switch (e.key.key) {
 		    case DB_KEY_LEFT:
 			bootdevice_select_prev();
@@ -89,6 +109,18 @@ int main(int argc, char *argv[])
 		    case DB_KEY_RETURN:
 			bootdevice_boot();
 			break;
+		    case DB_KEY_SPACE:
+			tmp_bconf = bootdevice_get_current_config(&tmp_x, &tmp_y);
+			if (!tmp_bconf)
+			    break;
+			if (!tmp_bconf->cmdline)
+			    break;
+			strcpy(tmp_edit, tmp_bconf->cmdline);
+			db_message_edit(img_desk, font, 0, tmp_edit, 256, tmp_x, tmp_y, 300, 100, 0x0, DB_WINDOW_COORD_TOP_CENTER);
+			db_ui_update_screen();
+			fprintf(stderr, "edit mode\n");
+			f_edit = 1;
+			continue;
 		};
 		bootdevices_draw_devices(img_desk, img_wallp);
 		db_ui_update_screen();
