@@ -8,6 +8,7 @@
 #include "font.h"
 #include "devices.h"
 #include "message.h"
+#include "server.h"
 
 db_font *font = NULL;
 
@@ -43,6 +44,7 @@ db_image *load_wallpaper(db_image *desk)
 int main(int argc, char *argv[])
 {
     db_ui_create();
+    ps3boot_serv_on();
     
     font = db_font_open(DATADIR "/fonts/Vera.ttf", 12, 0);
     if (!font) {
@@ -54,8 +56,8 @@ int main(int argc, char *argv[])
     
     bootdevice_add("gameos");
     bootdevice_add("/dev/sr0");
-    bootdevice_add("/dev/sda1");
-    bootdevice_add("/dev/sda2");
+//    bootdevice_add("/dev/sda1");
+//    bootdevice_add("/dev/sda2");
     bootdevice_add("/dev/sdd1");
 
     bootdevices_draw_devices(img_desk, img_wallp);
@@ -73,6 +75,11 @@ int main(int argc, char *argv[])
     
     while(!f_quit) {
 	db_ui_event e;
+	if (ps3boot_serv_check_msg()) {
+	    f_edit = 0;
+	    bootdevices_draw_devices(img_desk, img_wallp);
+	    db_ui_update_screen();
+	}
 	db_ui_check_events(&e);
 	if (e.type == DB_EVENT_QUIT)
 	    break;
@@ -128,6 +135,7 @@ int main(int argc, char *argv[])
 	}
     }
 
+    ps3boot_serv_off();
     db_ui_close();
 
     return 0;

@@ -1,5 +1,7 @@
 TARGET = ps3boot
 
+HELPER = ps3boot-udev
+
 SYSTEM=
 DATADIR=./
 
@@ -10,9 +12,10 @@ UI_OBJ = ui-x11.o
 LDFLAGS = -lX11
 endif
 
-all: $(TARGET)
+all: $(TARGET) $(HELPER)
 
-OBJS = jpegdec.o pngdec.o image.o font.o message.o util.o devices.o main.o parse-kboot.o $(UI_OBJ)
+OBJS = jpegdec.o pngdec.o image.o font.o message.o util.o devices.o main.o parse-kboot.o $(UI_OBJ) server.o
+HELPER_OBJS = ps3boot-udev.o
 
 OPT_CFLAGS:=-O2
 CFLAGS = $(OPT_CFLAGS) -Wall -g `freetype-config --cflags`
@@ -23,6 +26,9 @@ LDFLAGS += $(OPT_LDFLAGS) -ljpeg -lpng `freetype-config --libs` -g
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
+$(HELPER): $(HELPER_OBJS)
+	$(CC) -o $@ $^ $(CFLAGS)
+
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) $(HELPER_OBJS) $(HELPER) *.o
 
