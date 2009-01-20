@@ -183,6 +183,9 @@ void db_image_put_text(db_image *dst, db_font *font, char *text, int x, int y, i
 {
     int 	n;
     FT_Error	error;
+    FT_Bool 	use_kerning; 
+    FT_UInt 	previous; 
+    FT_UInt 	glyph_index;
     int		x_orig = x;
     int		y_orig = y;
 
@@ -197,6 +200,8 @@ void db_image_put_text(db_image *dst, db_font *font, char *text, int x, int y, i
 
     y += db_font_max_height(font);
 
+    use_kerning = FT_HAS_KERNING( font->face );
+    previous = 0;
     FT_GlyphSlot slot = font->face->glyph;
 
     for (n = 0; n < strlen(text); n++) {
@@ -208,13 +213,24 @@ void db_image_put_text(db_image *dst, db_font *font, char *text, int x, int y, i
 		break;
 	    continue;
 	}
-	error = FT_Load_Char(font->face, text[n], FT_LOAD_RENDER);
+
+	glyph_index = FT_Get_Char_Index(font->face, text[n]);
+	
+	if (use_kerning && previous && glyph_index) {
+	    FT_Vector delta;
+	    FT_Get_Kerning(font->face, previous, glyph_index, ft_kerning_default, &delta);
+	    x += delta.x >> 6;
+	} 
+
+	error = FT_Load_Glyph(font->face, glyph_index, FT_LOAD_RENDER);
 	if (error)
 	    continue;
 
-	draw_bitmap(dst, &slot->bitmap, x, y - slot->bitmap_top, color);
+	draw_bitmap(dst, &slot->bitmap, x + slot->bitmap_left, y - slot->bitmap_top, color);
 
 	x += slot->advance.x >> 6;
+
+	previous = glyph_index;
     }
 }
 
@@ -223,6 +239,9 @@ void db_font_get_text_box(db_font *font, char *text, int w, int h, int *real_w, 
     int		x = 0;
     int 	n;
     FT_Error	error;
+    FT_Bool 	use_kerning; 
+    FT_UInt 	previous; 
+    FT_UInt 	glyph_index;
 
     int		font_height = db_font_max_height(font);
 
@@ -234,6 +253,8 @@ void db_font_get_text_box(db_font *font, char *text, int w, int h, int *real_w, 
     if (!text)
 	return;
 
+    use_kerning = FT_HAS_KERNING( font->face );
+    previous = 0;
     FT_GlyphSlot slot = font->face->glyph;
 
     for (n = 0; n < strlen(text); n++) {
@@ -246,7 +267,16 @@ void db_font_get_text_box(db_font *font, char *text, int w, int h, int *real_w, 
 		break;
 	    continue;
 	}
-	error = FT_Load_Char(font->face, text[n], FT_LOAD_RENDER);
+
+	glyph_index = FT_Get_Char_Index(font->face, text[n]);
+	
+	if (use_kerning && previous && glyph_index) {
+	    FT_Vector delta;
+	    FT_Get_Kerning(font->face, previous, glyph_index, ft_kerning_default, &delta);
+	    x += delta.x >> 6;
+	} 
+
+	error = FT_Load_Glyph(font->face, glyph_index, FT_LOAD_RENDER);
 	if (error)
 	    continue;
 
