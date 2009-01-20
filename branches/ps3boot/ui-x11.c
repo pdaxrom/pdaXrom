@@ -8,7 +8,7 @@
 
 #include "ui.h"
 
-static Display *dpy;
+static Display *dpy = NULL;
 static Window rootwin;
 static Window win;
 static Colormap cmap;
@@ -196,6 +196,23 @@ int db_ui_check_events(db_ui_event *event)
 
 void db_ui_close(void)
 {
+    if (!dpy)
+	return;
     db_image_free(screen_image);
+    screen_image = NULL;
     XCloseDisplay(dpy);
+    dpy = NULL;
+}
+
+void db_ui_create_display(void)
+{
+    if (screen_image)
+	db_image_free(screen_image);
+    screen_image = db_image_create(display_width, display_height, 0);
+}
+
+void db_ui_close_display(void)
+{
+    db_image_free(screen_image);
+    screen_image = NULL;
 }
