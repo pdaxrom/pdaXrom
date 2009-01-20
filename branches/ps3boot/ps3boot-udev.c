@@ -250,6 +250,11 @@ static int poll_removable_device(const char *sysfs_path,
 
 int main(int argc, char *argv[])
 {
+    struct stat s;
+    
+    if (stat(SOCKET_NAME, &s))
+	return EXIT_SUCCESS;
+    
     openlog("ps3boot-udev", LOG_PID | LOG_CONS, LOG_DAEMON);
     syslog(LOG_INFO, "Starting daemon");
 

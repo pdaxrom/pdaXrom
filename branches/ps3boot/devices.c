@@ -120,23 +120,22 @@ void bootdevice_add(char *dev_path, char *icon)
     
     sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev_path, dev_path);
     rc = system(buf);
-    if (rc)
-	return;
-
-    boot_device *dev = bootdevice_create(dev_path, icon);
+    if (!rc) {
+	boot_device *dev = bootdevice_create(dev_path, icon);
     
-    if (dev) {
-	if (devices == NULL) {
-	    devices = dev;
-	    cur_device = devices;
-	} else {
-	    cur_device->next = dev;
-	    cur_device = dev;
+	if (dev) {
+	    if (devices == NULL) {
+		devices = dev;
+		cur_device = devices;
+	    } else {
+		cur_device->next = dev;
+		cur_device = dev;
+	    }
 	}
-    }
 
-    sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev_path);
-    rc = system(buf);
+	sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev_path);
+	rc = system(buf);
+    }
     sprintf(buf, MOUNT_DIR "%s", dev_path);
     rc = rmdir(buf);
     if (rc)
@@ -324,7 +323,9 @@ void bootdevice_boot(void)
 	    if (!strcmp(dev->device, "gameos")) {
 		char *cmd = GAMEOS_BIN;
 		fprintf(stderr, "Execute: %s\n", cmd);
-		exit(0);
+		if (system(cmd))
+		    fprintf(stderr, "problem execute %s\n", cmd);
+		return;
 	    }
 	    char buf[1024];
     
@@ -362,7 +363,12 @@ void bootdevice_boot(void)
 			strcat(buf, "/");
 			strcat(buf, conf->kernel);
 			fprintf(stderr, "Execute: %s\n", buf);
-			exit(0);
+			if (system(buf))
+			    fprintf(stderr, "error execute %s\n", buf);
+			sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev->device);
+			rc = system(buf);
+			sprintf(buf, MOUNT_DIR "%s", dev->device);
+			rc = rmdir(buf);
 			return;
 		    } else
 			return;
