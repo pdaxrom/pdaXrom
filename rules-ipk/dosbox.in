@@ -1,8 +1,0 @@
-config DOSBOX
-	bool
-	prompt "DOSBox"
-
-config DOSBOX_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on DOSBOX

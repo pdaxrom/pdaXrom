@@ -1,8 +1,0 @@
-config MOUSECLICK
-	bool
-	prompt "mouseclick"
-
-config MOUSECLICK_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on MOUSECLICK

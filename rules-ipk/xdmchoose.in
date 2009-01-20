@@ -1,9 +1,0 @@
-config XDMCHOOSE
-	bool
-	prompt "xdmchoose"
-	depends on XFREE430
-
-config XDMCHOOSE_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XDMCHOOSE

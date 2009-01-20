@@ -1,8 +1,0 @@
-config UMAKE
-	bool
-	prompt "make"
-
-config UMAKE_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on UMAKE

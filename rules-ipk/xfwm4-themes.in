@@ -1,8 +1,0 @@
-config XFWM4-THEMES
-	bool
-	prompt "xfwm4-themes"
-
-config XFWM4-THEMES_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on XFWM4-THEMES

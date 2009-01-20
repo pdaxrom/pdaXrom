@@ -1,8 +1,0 @@
-config SENDMAIL
-	bool
-	prompt "sendmail"
-
-config SENDMAIL_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on SENDMAIL

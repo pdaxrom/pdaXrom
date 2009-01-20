@@ -1,8 +1,0 @@
-config GETOPT
-	bool
-	prompt "getopt"
-
-config GETOPT_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on GETOPT

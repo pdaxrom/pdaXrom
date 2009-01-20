@@ -1,8 +1,0 @@
-config UDEV
-	bool
-	prompt "udev"
-
-config UDEV_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on UDEV

@@ -1,8 +1,0 @@
-config KDE-PIM
-	bool
-	prompt "kde pim"
-
-config KDE-PIM_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on KDE-PIM

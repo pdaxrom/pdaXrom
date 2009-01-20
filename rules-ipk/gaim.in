@@ -1,8 +1,0 @@
-config GAIM
-	bool
-	prompt "gaim"
-
-config GAIM_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on GAIM

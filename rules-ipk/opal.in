@@ -1,8 +1,0 @@
-config OPAL
-	bool
-	prompt "opal"
-
-config OPAL_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on OPAL
