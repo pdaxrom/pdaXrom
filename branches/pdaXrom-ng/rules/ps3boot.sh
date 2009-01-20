@@ -36,6 +36,8 @@ build_ps3boot() {
     done
 
     $INSTALL -D -m 644 utils/99-ps3boot.rules $ROOTFS_DIR/etc/udev/rules.d/99-ps3boot.rules || error
+    $INSTALL -D -m 755 utils/ps3boot $ROOTFS_DIR/etc/init.d/ps3boot || error
+    install_rc_start ps3boot 50
 
     popd
     touch "$STATE_DIR/ps3boot.installed"
