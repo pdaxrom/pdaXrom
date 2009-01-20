@@ -74,10 +74,17 @@ TARGET_LIB="$TARGET_BIN_DIR/lib"
 
 IMAGES_DIR="$TOP_DIR/images"
 
+DOWNLOAD_MIRROR="http://wiki.pdaXrom.org/downloads/src"
+
+download2() {
+    echo "Downloading $1 from mirror $DOWNLOAD_MIRROR"
+    wget -c "$DOWNLOAD_MIRROR/$1" -O "$SRC_DIR/$1" || error "Problem download $1"
+}
+
 download() {
     echo "Downloading $2"
     if [ ! -e "$SRC_DIR/$2" ]; then
-        wget "$1/$2" -O "$SRC_DIR/$2" || error "Problem with download $2"
+        wget "$1/$2" -O "$SRC_DIR/$2" || download2 $2
     fi
 }
 
