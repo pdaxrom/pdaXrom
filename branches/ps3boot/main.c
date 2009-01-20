@@ -9,6 +9,7 @@
 #include "devices.h"
 #include "message.h"
 #include "server.h"
+#include "settings.h"
 
 db_font *font = NULL;
 
@@ -17,6 +18,7 @@ static db_image *img_wallp = NULL;
 
 void db_ui_create_display(void);
 void db_ui_close_display(void);
+int db_ui_readkey(void);
 
 db_image *load_wallpaper(db_image *desk)
 {
@@ -58,6 +60,8 @@ static void set_screen_mode(int mode)
     if (rc)
 	fprintf(stderr, "error - set video mode (%s)\n", buf);
     
+    db_database_set(DB_KEY_VIDEO_MODE, mode);
+    
     db_ui_create_display();
 
     img_desk = db_ui_get_screen();
@@ -71,6 +75,7 @@ static void set_screen_mode(int mode)
 int main(int argc, char *argv[])
 {
     db_ui_create();
+    db_database_init();
 
     atexit(db_ui_close);
     
@@ -79,8 +84,19 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Can't open font!\n");
     }
 
-    img_desk = db_ui_get_screen();
-    img_wallp = load_wallpaper(img_desk);
+    u_int32_t video_mode = 0;
+    
+    if (!db_database_get(DB_KEY_VIDEO_MODE, &video_mode)) {
+	if ((video_mode != 0) &&
+	    (db_ui_readkey() != DB_KEY_LSHIFT)) {
+	    set_screen_mode(video_mode);
+	}
+    }
+
+    if (!img_desk) {
+	img_desk = db_ui_get_screen();
+	img_wallp = load_wallpaper(img_desk);
+    }
     
     bootdevice_init();
     ps3boot_serv_on();
@@ -230,6 +246,7 @@ int main(int argc, char *argv[])
     }
 
     ps3boot_serv_off();
+    db_database_close();
     db_ui_close();
 
     return 0;

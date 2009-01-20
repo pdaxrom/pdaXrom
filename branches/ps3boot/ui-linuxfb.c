@@ -625,3 +625,13 @@ void db_ui_close_display(void)
     screen_image = NULL;
     framebuffer_off();
 }
+
+int db_ui_readkey(void)
+{
+    unsigned int s, k;
+    if (keyboard_read(&s, &k)) {
+	return k;
+    }
+    
+    return 0;
+}
