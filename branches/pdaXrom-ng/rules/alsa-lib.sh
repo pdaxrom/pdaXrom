@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-ALSA_LIB=alsa-lib-1.0.18.tar.bz2
+ALSA_LIB=alsa-lib-1.0.19.tar.bz2
 ALSA_LIB_MIRROR=ftp://ftp.alsa-project.org/pub/lib
-ALSA_LIB_DIR=$BUILD_DIR/alsa-lib-1.0.18
+ALSA_LIB_DIR=$BUILD_DIR/alsa-lib-1.0.19
 ALSA_LIB_ENV=
 
 build_alsa_lib() {

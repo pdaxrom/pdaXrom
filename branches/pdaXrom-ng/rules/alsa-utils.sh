@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-ALSA_UTILS=alsa-utils-1.0.18.tar.bz2
+ALSA_UTILS=alsa-utils-1.0.19.tar.bz2
 ALSA_UTILS_MIRROR=ftp://ftp.alsa-project.org/pub/utils
-ALSA_UTILS_DIR=$BUILD_DIR/alsa-utils-1.0.18
+ALSA_UTILS_DIR=$BUILD_DIR/alsa-utils-1.0.19
 ALSA_UTILS_ENV=
 
 build_alsa_utils() {
