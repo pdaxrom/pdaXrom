@@ -105,15 +105,21 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 			p1++;
 		    if (*p1) {
 			sscanf(p1, "%s", buf);
-			kernel = strdup(buf);
+			if (strchr(buf, ':'))
+			    kernel = strdup(strchr(buf, ':') + 1);
+			else
+			    kernel = strdup(buf);
 			*cmdline_buf = 0;
 			while ((p1 = strchr(p1, ' '))) {
 			    for (; isspace(*p1) && *p1; p1++);
 			    sscanf(p1, "%s", buf);
 			    if ((!strncmp(buf, "initrd=", 7)) &&
-				(!initrd))
-				initrd = strdup(buf + 7);
-			    else {
+				(!initrd)) {
+				if (strchr(buf + 7, ':'))
+				    initrd = strdup(strchr(buf + 7, ':') + 1);
+				else
+				    initrd = strdup(buf + 7);
+			    } else {
 				strcat(cmdline_buf, buf);
 				strcat(cmdline_buf, " ");
 			    }
