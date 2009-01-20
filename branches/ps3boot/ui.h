@@ -292,6 +292,6 @@ int db_ui_update_screen(void);
 
 int db_ui_check_events(db_ui_event *event);
 
-int db_ui_close(void);
+void db_ui_close(void);
 
 #endif

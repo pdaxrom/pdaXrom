@@ -44,6 +44,8 @@ db_image *load_wallpaper(db_image *desk)
 int main(int argc, char *argv[])
 {
     db_ui_create();
+
+    atexit(db_ui_close);
     
     font = db_font_open(DATADIR "/fonts/Vera.ttf", 12, 0);
     if (!font) {

@@ -194,9 +194,8 @@ int db_ui_check_events(db_ui_event *event)
     return event->type;
 }
 
-int db_ui_close(void)
+void db_ui_close(void)
 {
     db_image_free(screen_image);
     XCloseDisplay(dpy);
-    return 0;
 }
