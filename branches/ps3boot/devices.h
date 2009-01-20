@@ -7,6 +7,7 @@
 #define MOUNT_DIR	"/media"
 
 #define GAMEOS_BIN	"/usr/sbin/ps3-boot-game-os"
+#define VIDMOD_BIN	"/usr/bin/ps3-video-mode"
 #define KEXEC_BIN	"/sbin/kexec"
 #define MOUNT_BIN	"/bin/mount"
 #define UMOUNT_BIN	"/bin/umount"

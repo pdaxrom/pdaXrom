@@ -92,6 +92,19 @@ int db_message_edit(db_image *img, db_font *font, int key, char *msg, int size, 
     switch (key) {
 	case DB_KEY_RETURN:
 	    return 0;
+	case DB_KEY_RSHIFT:
+	case DB_KEY_LSHIFT:
+	case DB_KEY_RCTRL:
+	case DB_KEY_LCTRL:
+	case DB_KEY_RALT:
+	case DB_KEY_LALT:
+	case DB_KEY_RMETA:
+	case DB_KEY_LMETA:
+	case DB_KEY_LSUPER:
+	case DB_KEY_RSUPER:
+	case DB_KEY_MODE:
+	case DB_KEY_COMPOSE:
+	    return 1;
 	case DB_KEY_LEFT:
 	case DB_KEY_BACKSPACE:
 	    if (strlen(msg) > 0)

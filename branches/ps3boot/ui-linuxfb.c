@@ -17,6 +17,8 @@
 #include "ui.h"
 #include "ui-linuxfb.h"
 
+#include "ui-keys.h"
+
 static char *defaultfbdevice = "/dev/fb0";
 static int fb_fd = -1;
 static char *fbdevice = NULL;
@@ -439,7 +441,6 @@ static int update_screen_from_image(db_image *desk)
 		dst[x] = r | g | b;
 	    }
 	    src += desk->width;
-	    //dst = (u_int32_t *) ((char *) dst + display_pitch);
 	    dst += (display_pitch / 4);
 	}
     } else if (display_depth >= 15) {
@@ -491,13 +492,28 @@ int db_ui_update_screen(void)
 
 int db_ui_check_events(db_ui_event *event)
 {
+    static int shift = 0;
     unsigned int scan, key;
     event->type = DB_EVENT_NONE;
 
     if (keyboard_read(&scan, &key)) {
 	event->type = (scan & 0x80)?DB_EVENT_KEYRELEASE:DB_EVENT_KEYPRESS;
 	event->key.keycode = scan;
-	event->key.key = key;
+	if (event->type == DB_EVENT_KEYPRESS) {
+	    switch (key) {
+	    case DB_KEY_RSHIFT: shift |= DB_KEY_RSHIFT_BIT; break;
+	    case DB_KEY_LSHIFT: shift |= DB_KEY_LSHIFT_BIT; break;
+	    }
+	} else {
+	    switch (key) {
+	    case DB_KEY_RSHIFT: shift &= ~DB_KEY_RSHIFT_BIT; break;
+	    case DB_KEY_LSHIFT: shift &= ~DB_KEY_LSHIFT_BIT; break;
+	    }
+	}
+	if (shift)
+	    event->key.key = key_shifted_key(key);
+	else
+	    event->key.key = key;
     }
 
     return event->type;
@@ -508,5 +524,20 @@ void db_ui_close(void)
     db_image_free(screen_image);
 
     keyboard_off();
+    framebuffer_off();
+}
+
+void db_ui_create_display(void)
+{
+    framebuffer_on();
+    if (screen_image)
+	db_image_free(screen_image);
+    screen_image = db_image_create(display_width, display_height, 0);
+}
+
+void db_ui_close_display(void)
+{
+    db_image_free(screen_image);
+    screen_image = NULL;
     framebuffer_off();
 }

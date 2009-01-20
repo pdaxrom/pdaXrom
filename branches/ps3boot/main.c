@@ -12,6 +12,12 @@
 
 db_font *font = NULL;
 
+static db_image *img_desk = NULL;
+static db_image *img_wallp = NULL;
+
+void db_ui_create_display(void);
+void db_ui_close_display(void);
+
 db_image *load_wallpaper(db_image *desk)
 {
     int x, y, xoff, yoff, w, h;
@@ -41,6 +47,27 @@ db_image *load_wallpaper(db_image *desk)
     return ret;
 }
 
+static void set_screen_mode(int mode)
+{
+    char buf[128];
+    db_ui_close_display();
+    
+    snprintf(buf, 128, VIDMOD_BIN " -m %d", mode);
+    
+    int rc = system(buf);
+    if (rc)
+	fprintf(stderr, "error - set video mode (%s)\n", buf);
+    
+    db_ui_create_display();
+
+    img_desk = db_ui_get_screen();
+
+    if (img_wallp)
+	db_image_free(img_wallp);
+
+    img_wallp = load_wallpaper(img_desk);
+}
+
 int main(int argc, char *argv[])
 {
     db_ui_create();
@@ -52,8 +79,8 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Can't open font!\n");
     }
 
-    db_image *img_desk = db_ui_get_screen();
-    db_image *img_wallp = load_wallpaper(img_desk);
+    img_desk = db_ui_get_screen();
+    img_wallp = load_wallpaper(img_desk);
     
     bootdevice_init();
     ps3boot_serv_on();
@@ -102,6 +129,36 @@ int main(int argc, char *argv[])
 		    continue;
 		}
 		switch (e.key.key) {
+		    case DB_KEY_0:
+			set_screen_mode(0);
+			break;
+		    case DB_KEY_1:
+			set_screen_mode(3);
+			break;
+		    case DB_KEY_2:
+			set_screen_mode(4);
+			break;
+		    case DB_KEY_3:
+			set_screen_mode(5);
+			break;
+		    case DB_KEY_4:
+			set_screen_mode(131);
+			break;
+		    case DB_KEY_5:
+			set_screen_mode(132);
+			break;
+		    case DB_KEY_6:
+			set_screen_mode(133);
+			break;
+		    case DB_KEY_7:
+			set_screen_mode(11);
+			break;
+		    case DB_KEY_8:
+			set_screen_mode(12);
+			break;
+		    case DB_KEY_9:
+			set_screen_mode(13);
+			break;
 		    case DB_KEY_LEFT:
 			bootdevice_select_prev();
 			break;

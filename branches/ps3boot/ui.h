@@ -12,6 +12,11 @@ enum {
 
 #define DB_KBD_NO_KEY	-1
 
+enum {
+    DB_KEY_RSHIFT_BIT = 1,
+    DB_KEY_LSHIFT_BIT = 2
+};
+
 typedef enum {
 	/* The keyboard syms have been cleverly chosen to map to ASCII */
 	DB_KEY_UNKNOWN		= 0,
