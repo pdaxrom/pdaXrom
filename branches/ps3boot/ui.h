@@ -7,6 +7,8 @@ enum {
     DB_EVENT_NONE = 0,
     DB_EVENT_KEYPRESS,
     DB_EVENT_KEYRELEASE,
+    DB_EVENT_JS_BUTTONPRESS,
+    DB_EVENT_JS_BUTTONRELEASE,
     DB_EVENT_QUIT
 };
 
@@ -274,6 +276,26 @@ typedef enum {
 	DB_KEY_LAST
 } DBKey;
 
+enum {
+	DB_JS_BUTTON_UP		= 4,
+	DB_JS_BUTTON_RIGHT	= 5,
+	DB_JS_BUTTON_DOWN	= 6,
+	DB_JS_BUTTON_LEFT	= 7,
+	DB_JS_BUTTON_SELECT	= 0,
+	DB_JS_BUTTON_START	= 3,
+	DB_JS_BUTTON_PS		= 16,
+	DB_JS_BUTTON_TRIANGLE	= 12,
+	DB_JS_BUTTON_CIRCLE	= 13,
+	DB_JS_BUTTON_CROSS	= 14,
+	DB_JS_BUTTON_SQUARE	= 15,
+	DB_JS_BUTTON_L1		= 10,
+	DB_JS_BUTTON_L2		= 8,
+	DB_JS_BUTTON_L3		= 1,
+	DB_JS_BUTTON_R1		= 11,
+	DB_JS_BUTTON_R2		= 9,
+	DB_JS_BUTTON_R3		= 2
+};
+
 typedef struct {
     int type;
     int keycode;
@@ -281,11 +303,17 @@ typedef struct {
 } db_ui_key_event;
 
 typedef struct {
+    int type;
+    int button;
+} db_ui_js_event;
+
+typedef struct {
 } db_ui_mouse_event;
 
 typedef union _db_ui_event {
     int type;
     db_ui_key_event key;
+    db_ui_js_event js;
     db_ui_mouse_event mouse;
 } db_ui_event;
 

@@ -8,11 +8,14 @@
 #include <linux/kd.h>
 #include <linux/fb.h>
 #include <linux/keyboard.h>
+#include <linux/joystick.h>
 #include <termios.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <errno.h>
 
 #include "ui.h"
 #include "ui-linuxfb.h"
@@ -44,6 +47,8 @@ static struct termios	LinuxTermios;
 static ushort vga_keymap[NUM_VGAKEYMAPS][NR_KEYS];
 static DBKey keymap[128];
 static ushort keymap_temp[128]; /* only used at startup */
+
+static int js_fd = -1;
 
 static int framebuffer_on(void)
 {
@@ -423,6 +428,72 @@ static int keyboard_read(unsigned int *scancode, unsigned int *keycode)
     return 0;
 }
 
+static int joystick_on(void)
+{
+    char *joystickdevice;
+    
+    if ((joystickdevice = getenv( "DANCEBOARD_JOYSTICKDEVICE" )) == NULL)
+	joystickdevice = "/dev/input/js0";
+
+    js_fd = open(joystickdevice, O_RDONLY | O_NONBLOCK);
+
+    if (js_fd < 0) {
+	perror("open");
+	return 1;
+    }
+
+    return 0;
+}
+
+static int joystick_off(void)
+{
+    if (js_fd < 0)
+	return 0;
+
+    close(js_fd);
+    
+    js_fd = -1;
+    
+    return 0;
+}
+
+static int joystick_read(int *type, int *control, int *value)
+{
+    if (js_fd < 0)
+	return 0;
+
+    fd_set rfds;
+    struct timeval tv;
+    int retval;
+    
+    FD_ZERO(&rfds);
+    FD_SET(js_fd, &rfds);
+    
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    retval = select(js_fd + 1, &rfds, NULL, NULL, &tv);
+    if (retval == -1)
+	perror("select()");
+    else if (retval) {
+	struct js_event js_event;
+	int rc;
+
+	rc = read(js_fd, &js_event, sizeof(js_event));
+	if (rc < 0 && errno == EAGAIN)
+	    return 0;
+
+	if (rc != sizeof(js_event))
+	    return 0;
+
+	*type = js_event.type;
+	*control = js_event.number;
+	*value = js_event.value;
+
+	return 1;
+    }
+    return 0;
+}
+
 static int update_screen_from_image(db_image *desk)
 {
     int width = (desk->width < display_width)?desk->width:display_width;
@@ -470,9 +541,9 @@ int db_ui_create(void)
 {
     if (framebuffer_on())
 	return 1;
-    if (keyboard_on())
-	return 1;
-
+    keyboard_on();
+    joystick_on();
+    
     screen_image = db_image_create(display_width, display_height, 0);
 
     return 0;
@@ -516,6 +587,18 @@ int db_ui_check_events(db_ui_event *event)
 	    event->key.key = key;
     }
 
+    int js_type, js_control, js_value;
+    if (joystick_read(&js_type, &js_control, &js_value)) {
+	if (js_type == JS_EVENT_BUTTON) {
+	    if (js_value)
+		event->type = DB_EVENT_JS_BUTTONPRESS;
+	    else
+		event->type = DB_EVENT_JS_BUTTONRELEASE;
+	
+	    event->js.button = js_control;
+	}
+    }
+
     return event->type;
 }
 
@@ -523,6 +606,7 @@ void db_ui_close(void)
 {
     db_image_free(screen_image);
 
+    joystick_off();
     keyboard_off();
     framebuffer_off();
 }

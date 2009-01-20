@@ -115,6 +115,39 @@ int main(int argc, char *argv[])
 	if (e.type == DB_EVENT_QUIT)
 	    break;
 	switch (e.type) {
+	    case DB_EVENT_JS_BUTTONPRESS: {
+		switch (e.js.button) {
+		    case DB_JS_BUTTON_L1:
+			set_screen_mode(0);
+			break;
+		    case DB_JS_BUTTON_R1:
+			set_screen_mode(3);
+			break;
+		    case DB_JS_BUTTON_L2:
+			set_screen_mode(4);
+			break;
+		    case DB_JS_BUTTON_R2:
+			set_screen_mode(5);
+			break;
+		    case DB_JS_BUTTON_LEFT:
+			bootdevice_select_prev();
+			break;
+		    case DB_JS_BUTTON_RIGHT:
+			bootdevice_select_next();
+			break;
+		    case DB_JS_BUTTON_UP:
+			bootdevice_config_prev();
+			break;
+		    case DB_JS_BUTTON_DOWN:
+			bootdevice_config_next();
+			break;
+		    case DB_JS_BUTTON_CROSS:
+			bootdevice_boot();
+			break;
+		}
+		bootdevices_draw_devices(img_desk, img_wallp);
+		db_ui_update_screen();
+	    } break;
 	    case DB_EVENT_KEYPRESS: {
 		if (f_edit) {
 		    f_edit = db_message_edit(img_desk, font, e.key.key, tmp_edit, 256, tmp_x, tmp_y, 300, 100, 0x0, DB_WINDOW_COORD_TOP_CENTER);
