@@ -2,8 +2,10 @@ TARGET = ps3boot
 
 HELPER = ps3boot-udev
 
-SYSTEM=
-DATADIR=./
+SYSTEM=linuxfb
+
+PREFIX=/usr
+DATADIR=/usr/share/ps3boot
 
 ifeq (linuxfb, $(SYSTEM))
 UI_OBJ = ui-linuxfb.o
@@ -31,4 +33,12 @@ $(HELPER): $(HELPER_OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET) $(HELPER_OBJS) $(HELPER) *.o
+
+install:
+	install -D -m 755 ps3boot $(DESTDIR)$(PREFIX)/sbin/ps3boot
+	install -D -m 755 ps3boot-udev $(DESTDIR)$(PREFIX)/sbin/ps3boot-udev
+	install -D -m 644 utils/99-ps3boot.rules $(DESTDIR)/etc/udev/rules.d/99-ps3boot.rules
+	for f in artwork/*.* fonts/Vera.ttf; do \
+	    install -D -m 644 $$f $(DESTDIR)$(DATADIR)/$$f; \
+	done
 
