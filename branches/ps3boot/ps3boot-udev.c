@@ -1,3 +1,7 @@
+/*
+ * udev helper based on petitboot (http://ozlabs.org/~jk/projects/petitboot/) udev helper
+ */
+
 #define _GNU_SOURCE
 
 #include <stdio.h>

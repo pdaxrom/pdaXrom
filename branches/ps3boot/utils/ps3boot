@@ -2,13 +2,12 @@
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-while /bin/true;
-do
-    killall ps3boot-udev
+killall ps3boot-udev 2>/dev/null >/dev/null
 
-    /usr/sbin/ps3boot
+/usr/sbin/ps3boot
 
-    mount | grep '/media/dev' | awk '{ print $3 }' | while read f; do
-	umount $f && rm -rf $f
-    done
-done &
+killall ps3boot-udev 2>/dev/null >/dev/null
+
+mount | grep '/media/dev' | awk '{ print $3 }' | while read f; do
+    umount $f && rm -rf $f
+done
