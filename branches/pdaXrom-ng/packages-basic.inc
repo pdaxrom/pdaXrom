@@ -1,6 +1,7 @@
 . ./rules/core.sh
 
 . $RULES_DIR/host_pkgconfig.sh
+. $RULES_DIR/host_findutils.sh
 . $RULES_DIR/host_genext2fs.sh
 . $RULES_DIR/host_cdrkit.sh
 . $RULES_DIR/host_module-init-tools.sh
