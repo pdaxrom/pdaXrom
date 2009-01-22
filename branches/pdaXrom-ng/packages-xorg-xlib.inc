@@ -1,3 +1,6 @@
+#
+# Xorg libs
+#
 . $RULES_DIR/xproto.sh
 . $RULES_DIR/xextproto.sh
 . $RULES_DIR/xtrans.sh
@@ -66,6 +69,9 @@
 . $RULES_DIR/xorg-xkbdata.sh
 . $RULES_DIR/pixman.sh
 
+#
+# Gtk2
+#
 . $RULES_DIR/xorg-startup-notification.sh
 . $RULES_DIR/cairo.sh
 . $RULES_DIR/pango.sh
@@ -73,6 +79,14 @@
 . $RULES_DIR/atk.sh
 . $RULES_DIR/gtk2.sh
 
+#
+# Qt4
+#
+. $RULES_DIR/qt-x11-opensource-src.sh
+
+#
+# icons set
+#
 . $RULES_DIR/host_intltool.sh
 . $RULES_DIR/host_icon-naming-utils.sh
 . $RULES_DIR/gnome-icon-theme.sh
