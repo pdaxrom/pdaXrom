@@ -80,11 +80,6 @@
 . $RULES_DIR/gtk2.sh
 
 #
-# Qt4
-#
-. $RULES_DIR/qt-x11-opensource-src.sh
-
-#
 # icons set
 #
 . $RULES_DIR/host_intltool.sh
