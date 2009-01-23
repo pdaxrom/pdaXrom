@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.27.10
-# Fri Jan 16 13:25:31 2009
+# Thu Jan 22 11:22:01 2009
 #
 CONFIG_PPC64=y
 
@@ -11,7 +11,7 @@ CONFIG_PPC64=y
 # CONFIG_POWER4_ONLY is not set
 CONFIG_POWER3=y
 CONFIG_POWER4=y
-# CONFIG_TUNE_CELL is not set
+CONFIG_TUNE_CELL=y
 CONFIG_PPC_FPU=y
 CONFIG_ALTIVEC=y
 # CONFIG_VSX is not set
@@ -175,8 +175,8 @@ CONFIG_PPC_CELL=y
 #
 # Cell Broadband Engine options
 #
-# CONFIG_SPU_FS is not set
-# CONFIG_SPU_BASE is not set
+CONFIG_SPU_FS=y
+CONFIG_SPU_BASE=y
 # CONFIG_PQ2ADS is not set
 # CONFIG_IPIC is not set
 # CONFIG_MPIC is not set
@@ -636,6 +636,7 @@ CONFIG_FRAMEBUFFER_CONSOLE=y
 CONFIG_FONT_8x8=y
 CONFIG_FONT_8x16=y
 CONFIG_LOGO=y
+CONFIG_FB_LOGO_EXTRA=y
 # CONFIG_LOGO_LINUX_MONO is not set
 # CONFIG_LOGO_LINUX_VGA16 is not set
 CONFIG_LOGO_LINUX_CLUT224=y
