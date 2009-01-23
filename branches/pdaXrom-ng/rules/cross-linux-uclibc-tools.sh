@@ -73,7 +73,7 @@ UCLIBC_DIR=$BUILD_DIR/uClibc-0.9.30
 UCLIBC_ENV="$CROSS_ENV_AC"
 
 install_uclibc_headers() {
-    test -e "$STATE_DIR/uClibc.installed" && return
+    test -e "$STATE_DIR/uClibc-headers.installed" && return
     banner "Install uClibc headers"
     download $UCLIBC_MIRROR $UCLIBC
     extract $UCLIBC
@@ -91,6 +91,7 @@ install_uclibc_headers() {
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include PREFIX=$TOOLCHAIN_SYSROOT DEVEL_PREFIX=/usr/ RUNTIME_PREFIX=/ install_headers || error
 
     popd
+    touch "$STATE_DIR/uClibc-headers.installed"
 }
 
 GCC="gcc-4.3.2.tar.bz2"
@@ -112,6 +113,9 @@ build_gcc_stage1() {
 	;;
     i*86-*|x86_64-*|amd64-*)
 	CONF_ARGS="--disable-cld"
+	;;
+    arm*)
+	CONF_ARGS=""
 	;;
     *)
 	error "Unknown arch"
@@ -193,6 +197,9 @@ build_gcc() {
 	;;
     i*86-*|x86_64-*|amd64-*)
 	CONF_ARGS="--disable-cld"
+	;;
+    arm*)
+	CONF_ARGS=""
 	;;
     *)
 	error "Unknown arch"
