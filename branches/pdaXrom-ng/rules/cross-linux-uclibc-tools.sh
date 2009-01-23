@@ -61,6 +61,13 @@ install_linux_headers() {
 
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
     make SUBARCH=$SUBARCH CROSS_COMPILE=${CROSS} defconfig $MAKEARGS || error
+    case $TARGET_ARCH in
+    arm*-*eabi*)
+	echo "CONFIG_AEABI=y" >> .config
+	echo "CONFIG_OABI_COMPAT=y" >> .config
+	make SUBARCH=$SUBARCH CROSS_COMPILE=${CROSS} oldconfig $MAKEARGS || error
+	;;
+    esac
     make SUBARCH=$SUBARCH CROSS_COMPILE=${CROSS} headers_install INSTALL_HDR_PATH=$TOOLCHAIN_SYSROOT/usr $MAKEARGS || error
 
     popd
@@ -83,6 +90,14 @@ install_uclibc_headers() {
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
 	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	case $TARGET_ARCH in
+	arm*-*eabi*)
+	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
+		sed -i -e "s:CONFIG_ARM_OABI:# CONFIG_ARM_OABI:g" .config
+		echo "CONFIG_ARM_EABI=y" >> .config
+	    fi
+	    ;;
+	esac
     else
 	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
     fi
@@ -171,6 +186,14 @@ build_uClibc() {
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
 	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	case $TARGET_ARCH in
+	arm*-*eabi*)
+	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
+		sed -i -e "s:CONFIG_ARM_OABI:# CONFIG_ARM_OABI:g" .config
+		echo "CONFIG_ARM_EABI=y" >> .config
+	    fi
+	    ;;
+	esac
     else
 	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
     fi
