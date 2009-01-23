@@ -93,8 +93,8 @@ install_uclibc_headers() {
 	case $TARGET_ARCH in
 	arm*-*eabi*)
 	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
-		sed -i -e "s:CONFIG_ARM_OABI:# CONFIG_ARM_OABI:g" .config
-		echo "CONFIG_ARM_EABI=y" >> .config
+		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
+		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
 	    fi
 	    ;;
 	esac
@@ -189,8 +189,8 @@ build_uClibc() {
 	case $TARGET_ARCH in
 	arm*-*eabi*)
 	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
-		sed -i -e "s:CONFIG_ARM_OABI:# CONFIG_ARM_OABI:g" .config
-		echo "CONFIG_ARM_EABI=y" >> .config
+		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
+		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
 	    fi
 	    ;;
 	esac
