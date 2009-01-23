@@ -60,8 +60,8 @@ install_linux_headers() {
     cd $KERNEL_DIR
 
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
-    make SUBARCH=$SUBARCH defconfig $MAKEARGS || error
-    make SUBARCH=$SUBARCH headers_install INSTALL_HDR_PATH=$TOOLCHAIN_SYSROOT/usr $MAKEARGS || error
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${CROSS} defconfig $MAKEARGS || error
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${CROSS} headers_install INSTALL_HDR_PATH=$TOOLCHAIN_SYSROOT/usr $MAKEARGS || error
 
     popd
     touch "$STATE_DIR/linux_kernel_headers"
