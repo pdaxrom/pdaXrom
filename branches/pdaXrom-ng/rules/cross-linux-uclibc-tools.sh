@@ -22,60 +22,76 @@ build_binutils() {
     touch "$STATE_DIR/binutils"
 }
 
-build_binutils
-
-get_rpm_target_arch() {
+get_kernel_subarch() {
     case $1 in
-    powerpc*-*|ppc*-*)
-	echo "ppc"
+    i386*|i486*|i586*|i686*)
+	echo i386
 	;;
-    i686-*)
-	echo "i686"
+    x86_64*|amd64*)
+	echo i386
 	;;
-    i*86-*)
-	echo "i486"
+    arm*|xscale*)
+	echo arm
 	;;
-    x86_64-*|amd64-*)
-	echo "x86_64"
-	;;
-    arm*-*|xscale*-*)
-	echo "arm"
+    powerpc*|ppc*)
+	echo powerpc
 	;;
     *)
-	echo "unknown"
+	echo $1
 	;;
     esac
 }
 
-SYSROOT_BIN_MIRROR=ftp://ftp.pld-linux.org/dists/3.0/PLD
-SYSROOT_FILES="
-glibc-devel-2.9-1
-glibc-headers-2.9-1
-linux-libc-headers-2.6.27-1
-"
+if [ "x$KERNEL_VERSION" = "x" ]; then
+KERNEL_VERSION="2.6.27"
+fi
 
-TOOLCHAIN_SYSROOT_STAGE1=${TOOLCHAIN_SYSROOT}-stage1
+KERNEL=linux-${KERNEL_VERSION}.tar.bz2
+KERNEL_MIRROR=http://kernel.org/pub/linux/kernel/v2.6
+KERNEL_DIR=$BUILD_DIR/linux-${KERNEL_VERSION}
 
-install_sysroot() {
-    test -e "$STATE_DIR/sysroot-stage1" && return
-    mkdir -p $TOOLCHAIN_SYSROOT_STAGE1
-    local rpm_arch=`get_rpm_target_arch $TARGET_ARCH`
-    local f=
-    for f in $SYSROOT_FILES ; do
-	download ${SYSROOT_BIN_MIRROR}/${rpm_arch}/RPMS ${f}.${rpm_arch}.rpm
-	pushd $TOP_DIR
-	cd $TOOLCHAIN_SYSROOT_STAGE1 && rpm2cpio $SRC_DIR/${f}.${rpm_arch}.rpm | lzma -d | $CPIO -idmu || error "unpack sysroot rpm"
-	popd
-    done
+install_linux_headers() {
+    test -e "$STATE_DIR/linux_kernel_headers" && return
+    banner "Build $KERNEL"
+    download $KERNEL_MIRROR $KERNEL
+    extract $KERNEL
+    apply_patches $KERNEL_DIR $KERNEL
     pushd $TOP_DIR
-    f="linux-libc-headers-2.6.27-1"
-    mkdir -p $TOOLCHAIN_SYSROOT
-    cd $TOOLCHAIN_SYSROOT && rpm2cpio $SRC_DIR/${f}.${rpm_arch}.rpm | lzma -d | $CPIO -idmu || error "unpack sysroot rpm"
+    cd $KERNEL_DIR
+
+    local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
+    make SUBARCH=$SUBARCH defconfig $MAKEARGS || error
+    make SUBARCH=$SUBARCH headers_install INSTALL_HDR_PATH=$TOOLCHAIN_SYSROOT/usr $MAKEARGS || error
+
     popd
-    touch "$STATE_DIR/sysroot-stage1"
+    touch "$STATE_DIR/linux_kernel_headers"
 }
 
-install_sysroot
+UCLIBC=uClibc-0.9.30.tar.bz2
+UCLIBC_MIRROR=http://www.uclibc.org/downloads
+UCLIBC_DIR=$BUILD_DIR/uClibc-0.9.30
+UCLIBC_ENV="$CROSS_ENV_AC"
+
+install_uclibc_headers() {
+    test -e "$STATE_DIR/uClibc.installed" && return
+    banner "Install uClibc headers"
+    download $UCLIBC_MIRROR $UCLIBC
+    extract $UCLIBC
+    apply_patches $UCLIBC_DIR $UCLIBC
+    pushd $TOP_DIR
+    cd $UCLIBC_DIR
+
+    if [ "x$UCLIBC_CONFIG" = "x" ]; then
+	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+    else
+	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
+    fi
+    
+    make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include oldconfig || error
+    make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include PREFIX=$TOOLCHAIN_SYSROOT DEVEL_PREFIX=/usr/ RUNTIME_PREFIX=/ install_headers || error
+
+    popd
+}
 
 GCC="gcc-4.3.2.tar.bz2"
 GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3.2"
@@ -106,7 +122,8 @@ build_gcc_stage1() {
     mkdir "$GCC_DIR/build"
     cd $GCC_DIR/build
     ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX \
-	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT_STAGE1 \
+	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT \
+	--libexecdir=$TOOLCHAIN_PREFIX/lib \
 	--enable-threads=posix \
 	--enable-languages=c \
 	--enable-c99 \
@@ -139,21 +156,14 @@ build_gcc_stage1() {
     touch "$STATE_DIR/gcc-stage1"
 }
 
-build_gcc_stage1
-
-UCLIBC=uClibc-0.9.30.tar.bz2
-UCLIBC_MIRROR=http://www.uclibc.org/downloads
-UCLIBC_DIR=$BUILD_DIR/uClibc-0.9.30
-UCLIBC_ENV="$CROSS_ENV_AC"
-
 build_uClibc() {
     test -e "$STATE_DIR/uClibc.installed" && return
     banner "Build uClibc"
-    download $UCLIBC_MIRROR $UCLIBC
-    extract $UCLIBC
-    apply_patches $UCLIBC_DIR $UCLIBC
+
     pushd $TOP_DIR
     cd $UCLIBC_DIR
+
+    make distclean
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
 	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
@@ -162,14 +172,14 @@ build_uClibc() {
     fi
     
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} oldconfig || error
+    make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} PREFIX=$TOOLCHAIN_SYSROOT DEVEL_PREFIX=/usr/ RUNTIME_PREFIX=/ install_headers || error
+
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} || error
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} PREFIX=$TOOLCHAIN_SYSROOT DEVEL_PREFIX=/usr/ RUNTIME_PREFIX=/ install || error
 
     popd
     touch "$STATE_DIR/uClibc.installed"
 }
-
-build_uClibc
 
 build_gcc() {
     test -e "$STATE_DIR/gcc" && return
@@ -194,6 +204,7 @@ build_gcc() {
     cd $GCC_DIR/build2
     ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX \
 	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT \
+	--libexecdir=$TOOLCHAIN_PREFIX/lib \
 	--enable-threads=posix \
 	--enable-languages=c,c++ \
 	--enable-c99 \
@@ -228,9 +239,17 @@ build_gcc() {
 	ln -sf ../bin/${TARGET_ARCH}-$f $TOOLCHAIN_PREFIX/xbin/$f
     done
 
-    rm -rf ${TOOLCHAIN_SYSROOT}-stage1
-
     touch "$STATE_DIR/gcc"
 }
+
+install_linux_headers
+
+install_uclibc_headers
+
+build_binutils
+
+build_gcc_stage1
+
+build_uClibc
 
 build_gcc
