@@ -2,10 +2,10 @@ create_squashfs() {
     local MKS="-le"
     
     case $TARGET_ARCH in
-    i*86-*|amd64-*|x86_64-*|arm*-*|xscale*-*|iwmmx*-*)
+    i*86-*|amd64-*|x86_64-*|arm*el-*|xscale*-*|iwmmx*-*|mips*el-*)
 	MKS="-le"
 	;;
-    powerpc*-*|ppc*-*|mips*-*)
+    powerpc*-*|ppc*-*|arm*be-*|mips*-*)
 	MKS="-be"
 	;;
     *)
