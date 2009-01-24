@@ -3,6 +3,7 @@
 #
 . $RULES_DIR/libdrm.sh
 . $RULES_DIR/glproto.sh
+. $RULES_DIR/dri2proto.sh
 . $RULES_DIR/MesaLib.sh
 
 . $RULES_DIR/xf86driproto.sh

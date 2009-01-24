@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-MESALIB=MesaLib-7.2.tar.bz2
+MESALIB=MesaLib-7.3.tar.bz2
 MESALIB_MIRROR=http://downloads.sourceforge.net/mesa3d
-MESALIB_DIR=$BUILD_DIR/Mesa-7.2
+MESALIB_DIR=$BUILD_DIR/Mesa-7.3
 MESALIB_ENV="$CROSS_ENV_AC MKLIB_OPTIONS='-arch Linux'"
 
 build_MesaLib_thud() {
@@ -61,10 +61,10 @@ build_MesaLib() {
     ln -sf libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so
     $STRIP $ROOTFS_DIR/usr/lib/libGL.so.1.2
     
-    $INSTALL -D -m 644 lib/libGLU.so.1.3.070200 $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070200 || error
-    ln -sf libGLU.so.1.3.070200 $ROOTFS_DIR/usr/lib/libGLU.so.1
-    ln -sf libGLU.so.1.3.070200 $ROOTFS_DIR/usr/lib/libGLU.so
-    $STRIP $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070200
+    $INSTALL -D -m 644 lib/libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070300 || error
+    ln -sf libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so.1
+    ln -sf libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so
+    $STRIP $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070300
     
     $INSTALL -D -m 644 lib/libGLw.so.1.0.0 $ROOTFS_DIR/usr/lib/libGLw.so.1.0.0 || error
     ln -sf libGLw.so.1.0.0 $ROOTFS_DIR/usr/lib/libGLw.so.1
