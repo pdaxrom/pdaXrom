@@ -92,6 +92,19 @@ download() {
     fi
 }
 
+download_svn() {
+    if [ ! -d $SRC_DIR/$2/.svn ]; then
+	echo "Download sources"
+	svn co $1 $SRC_DIR/$2
+    else
+	echo "Update sources"
+	pushd $TOP_DIR
+	cd $SRC_DIR/$2
+	svn update || error
+	popd
+    fi
+}
+
 extract() {
     local src_d=${1/.*}
     test -e "$STATE_DIR/$src_d.extracted" && return
@@ -219,6 +232,7 @@ banner() {
 install_gcc_wrappers() {
     mkdir -p $HOST_BIN_DIR/bin
     for f in c++ cc cpp g++ gcc; do
+	which ${TARGET_ARCH}-${f} || continue
 	echo "#!/bin/sh" > $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
 	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} -isystem ${TARGET_INC} \${1+\"\$@\"}" >> $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
 	chmod 755 $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}

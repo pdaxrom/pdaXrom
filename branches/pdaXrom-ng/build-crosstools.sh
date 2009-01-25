@@ -30,7 +30,8 @@ case $TARGET_ARCH in
 	. $RULES_DIR/cross-linux-uclibc-tools.sh
 	;;
     *)
-	. $RULES_DIR/cross-linux-tools.sh
+#	. $RULES_DIR/cross-linux-tools.sh
+	. $RULES_DIR/cross-linux-eglibc-tools.sh
 	;;
     esac
     ;;
