@@ -74,76 +74,6 @@ install_linux_headers() {
     touch "$STATE_DIR/linux_kernel_headers"
 }
 
-GCC="gcc-4.3.2.tar.bz2"
-GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3.2"
-GCC_DIR="$BUILD_DIR/gcc-4.3.2"
-
-build_gcc_stage1() {
-    test -e "$STATE_DIR/gcc_stage1" && return
-    banner "Build gcc $GCC stage 1"
-    download $GCC_MIRROR $GCC
-    extract $GCC
-    apply_patches $GCC_DIR $GCC
-    local CONF_ARGS=""
-    case $TARGET_ARCH in
-    powerpc*-*|ppc*-*)
-	CONF_ARGS="--enable-secureplt \
-		    --enable-targets=powerpc-linux,powerpc64-linux \
-		    --with-cpu=default32 \
-		    --with-long-double-128"
-	;;
-    i*86-*|x86_64-*|amd64-*)
-	CONF_ARGS="--disable-cld \
-		    --with-long-double-128"
-	;;
-    arm*)
-	CONF_ARGS=""
-	;;
-    *)
-	error "Unknown arch"
-	;;
-    esac
-    echo "configure"
-    pushd $TOP_DIR
-    mkdir "$GCC_DIR/build_stage1"
-    cd $GCC_DIR/build_stage1
-    ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX \
-	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT \
-	--libexecdir=$TOOLCHAIN_PREFIX/lib \
-	--enable-linux-futex \
-	--disable-threads \
-	--disable-shared \
-	--enable-languages=c \
-	--enable-c99 \
-	--enable-long-long \
-	--enable-cmath \
-	--disable-libgomp \
-	--disable-libssp \
-	--disable-libmudflap \
-	--disable-multilib \
-	--disable-nls \
-	--disable-werror \
-	--with-gnu-as \
-	--with-gnu-ld \
-	--with-system-zlib \
-	--disable-libstdcxx-pch \
-	--enable-__cxa_atexit \
-	--with-gmp=$HOST_BIN_DIR \
-	--with-mpfr=$HOST_BIN_DIR \
-	$CONF_ARGS \
-	--disable-bootstrap || error "configure"
-    make $MAKEARGS MAKEINFO=true || error "make"
-    make MAKEINFO=true install || error "make install"
-    popd
-
-    # hack for libgcc_eh.a
-    ln -sv libgcc.a `${TARGET_ARCH}-gcc -print-search-dirs | head -n 1 | awk '{ print $2 }'`libgcc_eh.a
-
-    ln -sf ${TARGET_ARCH}-gcc $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-cc
-
-    touch "$STATE_DIR/gcc_stage1"
-}
-
 GLIBC=eglibc-2.8
 GLIBC_MIRROR=svn://svn.eglibc.org/branches/eglibc-2_8
 GLIBC_DIR="$BUILD_DIR/$GLIBC"
@@ -222,6 +152,81 @@ build_glibc_stage2() {
     touch "$STATE_DIR/glibc_installed2"
 }
 
+GCC="gcc-4.3.2.tar.bz2"
+GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3.2"
+GCC_DIR="$BUILD_DIR/gcc-4.3.2"
+
+build_gcc_stage1() {
+    test -e "$STATE_DIR/gcc_stage1" && return
+    banner "Build gcc $GCC stage 1"
+    download $GCC_MIRROR $GCC
+    extract $GCC
+    apply_patches $GCC_DIR $GCC
+    local CONF_ARGS=""
+    local CONF_CPU=""
+    case $TARGET_ARCH in
+    powerpc*-*|ppc*-*)
+	CONF_ARGS="--enable-secureplt \
+		    --enable-targets=powerpc-linux,powerpc64-linux \
+		    --with-cpu=default32 \
+		    --with-long-double-128"
+	;;
+    i*86-*)
+	if [ "x$DEFAULT_CPU" = "x" ]; then
+	    DEFAULT_CPU=${TARGET_ARCH/-*/}
+	fi
+	CONF_ARGS="--disable-cld \
+		    --with-arch=${DEFAULT_CPU} \
+		    --with-long-double-128"
+	;;
+    arm*)
+	CONF_ARGS=""
+	;;
+    *)
+	error "Unknown arch"
+	;;
+    esac
+    echo "configure"
+    pushd $TOP_DIR
+    mkdir "$GCC_DIR/build_stage1"
+    cd $GCC_DIR/build_stage1
+    ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX \
+	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT \
+	--libexecdir=$TOOLCHAIN_PREFIX/lib \
+	--enable-linux-futex \
+	--disable-threads \
+	--disable-shared \
+	--enable-languages=c \
+	--enable-c99 \
+	--enable-long-long \
+	--enable-cmath \
+	--disable-libgomp \
+	--disable-libssp \
+	--disable-libmudflap \
+	--disable-multilib \
+	--disable-nls \
+	--disable-werror \
+	--with-gnu-as \
+	--with-gnu-ld \
+	--with-system-zlib \
+	--disable-libstdcxx-pch \
+	--enable-__cxa_atexit \
+	--with-gmp=$HOST_BIN_DIR \
+	--with-mpfr=$HOST_BIN_DIR \
+	$CONF_ARGS \
+	--disable-bootstrap || error "configure"
+    make $MAKEARGS MAKEINFO=true || error "make"
+    make MAKEINFO=true install || error "make install"
+    popd
+
+    # hack for libgcc_eh.a
+    ln -sv libgcc.a `${TARGET_ARCH}-gcc -print-search-dirs | head -n 1 | awk '{ print $2 }'`libgcc_eh.a
+
+    ln -sf ${TARGET_ARCH}-gcc $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-cc
+
+    touch "$STATE_DIR/gcc_stage1"
+}
+
 build_gcc() {
     test -e "$STATE_DIR/gcc" && return
     banner "Build gcc $GCC"
@@ -234,9 +239,12 @@ build_gcc() {
 		    --enable-libgomp \
 		    --with-long-double-128"
 	;;
-    i*86-*|x86_64-*|amd64-*)
+    i*86-*)
+	if [ "x$DEFAULT_CPU" = "x" ]; then
+	    DEFAULT_CPU=${TARGET_ARCH/-*/}
+	fi
 	CONF_ARGS="--disable-cld \
-		    --enable-libgomp \
+		    --with-arch=${DEFAULT_CPU} \
 		    --with-long-double-128"
 	;;
     arm*)
