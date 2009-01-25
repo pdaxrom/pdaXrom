@@ -231,14 +231,16 @@ build_gcc() {
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
 		    --with-cpu=default32 \
+		    --enable-libgomp \
 		    --with-long-double-128"
 	;;
     i*86-*|x86_64-*|amd64-*)
 	CONF_ARGS="--disable-cld \
+		    --enable-libgomp \
 		    --with-long-double-128"
 	;;
     arm*)
-	CONF_ARGS=""
+	CONF_ARGS="--disable-libgomp"
 	;;
     *)
 	error "Unknown arch"
@@ -258,7 +260,6 @@ build_gcc() {
 	--enable-c99 \
 	--enable-long-long \
 	--enable-cmath \
-	--disable-libgomp \
 	--disable-libssp \
 	--disable-libmudflap \
 	--disable-multilib \

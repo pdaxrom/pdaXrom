@@ -232,7 +232,7 @@ banner() {
 install_gcc_wrappers() {
     mkdir -p $HOST_BIN_DIR/bin
     for f in c++ cc cpp g++ gcc; do
-	which ${TARGET_ARCH}-${f} || continue
+	test -e $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} || continue
 	echo "#!/bin/sh" > $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
 	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} -isystem ${TARGET_INC} \${1+\"\$@\"}" >> $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
 	chmod 755 $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
