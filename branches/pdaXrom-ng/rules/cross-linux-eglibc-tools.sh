@@ -79,6 +79,9 @@ GLIBC_MIRROR=svn://svn.eglibc.org/branches/eglibc-2_8
 GLIBC_DIR="$BUILD_DIR/$GLIBC"
 install_glibc_headers() {
     test -e "$STATE_DIR/glibc_headers" && return
+
+    banner "Build initial glibc headers ($GLIBC)"
+
     if test ! -e "$STATE_DIR/glibc.src-installed" ; then
 	download_svn $GLIBC_MIRROR $GLIBC
 	cp -R $SRC_DIR/$GLIBC/libc $GLIBC_DIR || error
@@ -110,6 +113,9 @@ install_glibc_headers() {
 
 build_glibc_stage1() {
     test -e "$STATE_DIR/glibc_installed1" && return
+
+    banner "Build glibc stage 1 ($GLIBC)"
+
     pushd $TOP_DIR
 
     mkdir -p $GLIBC_DIR/build1
@@ -132,6 +138,9 @@ build_glibc_stage1() {
 
 build_glibc_stage2() {
     test -e "$STATE_DIR/glibc_installed2" && return
+
+    banner "Build final glibc ($GLIBC)"
+
     pushd $TOP_DIR
 
     mkdir -p $GLIBC_DIR/build2
