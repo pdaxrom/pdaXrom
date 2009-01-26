@@ -16,19 +16,22 @@ OPENSSL_ENV=
 
 build_openssl_thud() {
     case $1 in
-    arm*|xscale*)
-	echo "linux-arm"
+    arm*l-*)
+	echo "linux-armel"
 	;;
-    ppc*|powerpc*)
+    arm*b-*)
+	echo "linux-armeb"
+	;;
+    ppc*-*|powerpc*-*)
 	echo "linux-ppc"
 	;;
-    i586*)
+    i586*-*)
 	echo "linux-i386-i586"
 	;;
-    i386*|i486*)
+    i386*-*|i486*-*)
 	echo "linux-i386"
 	;;
-    i686*)
+    i686*-*)
 	echo "linux-i386-i686/cmov"
 	;;
     *)
@@ -49,9 +52,13 @@ build_openssl() {
     eval \
 	$CROSS_CONF_ENV \
 	$OPENSSL_ENV \
-	./Configure `build_openssl_thud $TARGET_ARCH` \
-	    --openssldir=/etc/ssl \
-	    shared \
+	./Configure threads \
+		    shared \
+		    zlib \
+		    --prefix=/usr \
+		    --openssldir=/etc/ssl \
+		    -L$TARGET_LIB \
+		    `build_openssl_thud $TARGET_ARCH` \
 	    || error
     )
     
