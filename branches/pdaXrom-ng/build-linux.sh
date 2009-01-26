@@ -7,25 +7,25 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 KERNEL_VERSION="2.6.28"
 KERNEL_CONFIG=i686-kernel-2.6.28
 
-. ./packages-basic.inc
-. ./packages-mmlibs.inc
-. ./packages-libs.inc
+. ./sets/packages-basic.inc
+. ./sets/packages-mmlibs.inc
+. ./sets/packages-libs.inc
 
-. ./packages-xorg-xlib.inc
-. ./packages-xorg-xserver.inc
-. ./packages-xorg-drivers.inc
-. ./packages-xorg-apps.inc
-. ./packages-xorg-fonts.inc
+. ./sets/packages-xorg-xlib.inc
+. ./sets/packages-xorg-xserver.inc
+. ./sets/packages-xorg-drivers.inc
+. ./sets/packages-xorg-apps.inc
+. ./sets/packages-xorg-fonts.inc
 
-#. ./packages-emulators.inc
+#. ./sets/packages-emulators.inc
 
-. ./packages-x-apps.inc
+. ./sets/packages-x-apps.inc
 
-. ./packages-hal.inc
+. ./sets/packages-hal.inc
 
-. ./packages-x-lxde.inc
+. ./sets/packages-x-lxde.inc
 
-. ./packages-devel.inc
+. ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-i686.sh
 . $RULES_DIR/create_initramfs.sh

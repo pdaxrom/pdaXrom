@@ -6,7 +6,7 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 KERNEL_CONFIG=ps3_kernel_config
 
-. ./packages-basic.inc
+. ./sets/packages-basic.inc
 
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/tweak-ps3.sh
