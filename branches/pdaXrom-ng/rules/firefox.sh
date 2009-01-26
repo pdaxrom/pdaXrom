@@ -99,6 +99,7 @@ build_firefox() {
 	HOST_LIBIDL_LIBS="$HOST_LDFLAGS `host-libIDL-config-2 --libs`" \
 	HOST_AR="ar" \
 	OS_RELEASE="2.6" \
+	WARNINGS_AS_ERRORS="" \
     || error
 
     make $MAKEARGS \
@@ -111,6 +112,7 @@ build_firefox() {
 	HOST_AR="ar" \
 	OS_RELEASE="2.6" \
 	DESTDIR="$FIREFOX_DIR/fakeroot" \
+	WARNINGS_AS_ERRORS="" \
 	install \
     || error
 

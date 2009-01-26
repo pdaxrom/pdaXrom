@@ -13,11 +13,19 @@
 #
 . $RULES_DIR/xf86-video-fbdev.sh
 
+#
+# Only for x86 and powerpc
+#
+if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" -o \
+     "`get_kernel_subarch $TARGET_ARCH`" = "powerpc" ]; then
+
 # xorg has problem with this driver in qemu
 #. $RULES_DIR/xf86-video-cirrus.sh
 
 . $RULES_DIR/xf86-video-ati.sh
 . $RULES_DIR/xf86-video-nv.sh
+
+fi
 
 #
 # x86 specific drivers

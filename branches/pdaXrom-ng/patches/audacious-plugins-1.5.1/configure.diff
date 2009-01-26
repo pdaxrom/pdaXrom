@@ -1,5 +1,5 @@
 --- s/configure.orig	2008-05-24 05:44:25.000000000 +0700
-+++ s/configure	2008-12-31 11:33:51.000000000 +0600
++++ s/configure	2009-01-26 20:32:52.000000000 +0600
 @@ -2342,14 +2342,6 @@
  
  
@@ -15,6 +15,15 @@
  PACKAGE=audacious-plugins
  
  VERSION=1.5.1
+@@ -7767,7 +7759,7 @@
+ 		PICFLAGS="-fPIC -DPIC"
+ 		PICLDFLAGS="-fPIC -DPIC -shared"
+ 		LIBLDFLAGS="-fPIC -DPIC -shared"
+-		AUDLDFLAGS="-L \${libdir} -Wl,-export-dynamic -Wl,-rpath,${libdir}"
++		AUDLDFLAGS="-Wl,-export-dynamic -Wl,-rpath,${libdir}"
+ 		SHARED_SUFFIX=".so"
+ 		;;
+ esac
 @@ -8500,13 +8492,8 @@
  echo $ECHO_N "checking SSE2... $ECHO_C" >&6; }
    ac_save_CFLAGS="$CFLAGS"

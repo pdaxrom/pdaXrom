@@ -2,3 +2,4 @@ Linux.mk.diff
 configure.diff
 configure.in.diff
 Makefile.in.diff
+eabi-fix.patch

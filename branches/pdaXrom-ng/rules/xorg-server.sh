@@ -27,6 +27,15 @@ build_xorg_server() {
     pushd $TOP_DIR
     cd $XORG_SERVER_DIR
     (
+    case $TARGET_ARCH in
+    arm*)
+	XORG_SERVER_GLXDRI_CONF="--disable-dri --disable-glx"
+	;;
+    *)
+	XORG_SERVER_GLXDRI_CONF="--enable-dri --enable-glx"
+	;;
+    esac
+
     eval \
 	$CROSS_CONF_ENV \
 	$XORG_SERVER_ENV \
@@ -37,8 +46,7 @@ build_xorg_server() {
 	    --datadir=/usr/share \
 	    --enable-shm \
 	    --enable-freetype \
-	    --enable-glx \
-	    --enable-dri \
+	    $XORG_SERVER_GLXDRI_CONF \
 	    --enable-xorg \
 	    --with-fontdir=/usr/share/fonts \
 	    --without-dtrace \

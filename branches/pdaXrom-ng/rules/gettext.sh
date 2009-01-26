@@ -51,6 +51,10 @@ build_gettext() {
 	    --without-libcroco-0.6-prefix \
 	    || error
     ) || error "configure"
+
+    find . -name libtool | while read f; do
+	sed -i -e 's:add_dir="-L$libdir"::g' $f
+    done
     
     make $MAKEARGS || error
 

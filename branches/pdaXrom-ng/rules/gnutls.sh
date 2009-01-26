@@ -33,7 +33,9 @@ build_gnutls() {
 	    --disable-guile \
 	    --disable-nls
     ) || error "configure"
-    
+
+    sed -i -e 's:add_dir="-L$libdir"::g' libtool
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
