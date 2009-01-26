@@ -23,6 +23,8 @@ build_gamin() {
     pushd $TOP_DIR
     cd $GAMIN_DIR
     (
+    autoreconf -i
+    sed -i -e 's:add_dir="-L$libdir"::g' ltmain.sh
     eval \
 	$CROSS_CONF_ENV \
 	$GAMIN_ENV \
@@ -36,7 +38,7 @@ build_gamin() {
 	    --disable-docs \
 	    --libexecdir=/usr/lib/gamin
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
