@@ -40,7 +40,7 @@ build_firefox() {
 	    --disable-composer \
 	    --disable-elf-dynstr-gc \
 	    --disable-gtktest \
-	    --disable-install-strip \
+	    --enable-install-strip \
 	    --disable-installer \
 	    --disable-ldap \
 	    --disable-mailnews \

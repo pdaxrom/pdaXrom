@@ -56,10 +56,19 @@ build_MesaLib() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 lib/libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so.1.5.070300 || error
-    ln -sf libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so.1
-    ln -sf libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so
-    $STRIP $ROOTFS_DIR/usr/lib/libGL.so.1.5.070300
+    if [ -e lib/libGL.so.1.2 ]; then
+	# dri enabled glx
+        $INSTALL -D -m 644 lib/libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so.1.2 || error
+        ln -sf libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so.1
+        ln -sf libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so
+	$STRIP $ROOTFS_DIR/usr/lib/libGL.so.1.2
+    else
+	#standalone x11 gl
+	$INSTALL -D -m 644 lib/libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so.1.5.070300 || error
+	ln -sf libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so.1
+	ln -sf libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so
+	$STRIP $ROOTFS_DIR/usr/lib/libGL.so.1.5.070300
+    fi
     
     $INSTALL -D -m 644 lib/libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070300 || error
     ln -sf libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so.1
