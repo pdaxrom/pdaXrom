@@ -23,6 +23,7 @@ build_alsa_lib() {
     pushd $TOP_DIR
     cd $ALSA_LIB_DIR
     (
+    #autoreconf -i
     eval \
 	$CROSS_CONF_ENV \
 	$ALSA_LIB_ENV \
