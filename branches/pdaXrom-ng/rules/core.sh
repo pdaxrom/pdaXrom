@@ -164,6 +164,10 @@ getfilename() {
 apply_patches()
 {
     local src_d=`getfilename $2`
+    
+    # hack! remove hardcoded libdir
+    test -e $1/ltmain.sh && sed -i -e 's:add_dir="-L$libdir"::g' $1/ltmain.sh
+    
     test -e "$PATCH_DIR/$src_d/series" || return
     echo "Patching $2"
     local f=
