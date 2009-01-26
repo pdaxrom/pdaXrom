@@ -8,6 +8,12 @@ build_binutils() {
     download $BINUTILS_MIRROR $BINUTILS
     extract $BINUTILS
     apply_patches $BINUTILS_DIR $BINUTILS
+    local CONF_ARGS=
+    case $TARGET_ARCH in
+    powerpc*|ppc*)
+	CONF_ARGS="--enable-targets=spu"
+	;;
+    esac
     echo "configure"
     pushd $TOP_DIR
     mkdir "$BINUTILS_DIR/build"
@@ -15,7 +21,7 @@ build_binutils() {
     ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX \
 	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT \
 	--enable-werror=no --enable-64-bit-bfd --disable-debug \
-	--disable-shared || error "configure"
+	--disable-shared $CONF_ARGS || error "configure"
     make $MAKEARGS MAKEINFO=true || error "make"
     make $MAKEARGS MAKEINFO=true install || error "make install"
     popd
@@ -177,19 +183,16 @@ build_gcc_bootstrap() {
     powerpc*-*|ppc*-*)
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
-		    --with-cpu=default32 \
+		    --with-cpu=${DEFAULT_CPU-default32} \
 		    --with-long-double-128"
 	;;
     i*86-*)
-	if [ "x$DEFAULT_CPU" = "x" ]; then
-	    DEFAULT_CPU=${TARGET_ARCH/-*/}
-	fi
 	CONF_ARGS="--disable-cld \
-		    --with-arch=${DEFAULT_CPU} \
+		    --with-arch=${DEFAULT_CPU-${TARGET_ARCH/-*/}} \
 		    --with-long-double-128"
 	;;
     arm*)
-	CONF_ARGS=""
+	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te}"
 	;;
     *)
 	error "Unknown arch"
@@ -246,19 +249,16 @@ build_gcc_stage1() {
     powerpc*-*|ppc*-*)
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
-		    --with-cpu=default32 \
+		    --with-cpu=${DEFAULT_CPU-default32} \
 		    --with-long-double-128"
 	;;
     i*86-*)
-	if [ "x$DEFAULT_CPU" = "x" ]; then
-	    DEFAULT_CPU=${TARGET_ARCH/-*/}
-	fi
 	CONF_ARGS="--disable-cld \
-		    --with-arch=${DEFAULT_CPU} \
+		    --with-arch=${DEFAULT_CPU-${TARGET_ARCH/-*/}} \
 		    --with-long-double-128"
 	;;
     arm*)
-	CONF_ARGS=""
+	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te}"
 	;;
     *)
 	error "Unknown arch"
@@ -313,20 +313,18 @@ build_gcc() {
     powerpc*-*|ppc*-*)
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
-		    --with-cpu=default32 \
+		    --with-cpu=${DEFAULT_CPU-default32} \
 		    --enable-libgomp \
 		    --with-long-double-128"
 	;;
     i*86-*)
-	if [ "x$DEFAULT_CPU" = "x" ]; then
-	    DEFAULT_CPU=${TARGET_ARCH/-*/}
-	fi
 	CONF_ARGS="--disable-cld \
-		    --with-arch=${DEFAULT_CPU} \
+		    --with-arch=${DEFAULT_CPU-${TARGET_ARCH/-*/}} \
 		    --with-long-double-128"
 	;;
     arm*)
-	CONF_ARGS="--disable-libgomp"
+	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te} \
+		    --disable-libgomp"
 	;;
     *)
 	error "Unknown arch"
