@@ -8,3 +8,10 @@
 995-short-enums.diff
 998-gcc-4.3.0-fix-header.00.patch
 gcc-ppc64-m32-m64-multilib-only.patch
+cell/common-sysroot.diff -p1
+cell/int128.diff -p1
+cell/pr35631.diff -p1
+cell/vector-keyword.diff -p1
+cell/rfc00130.diff -p1
+cell/altivecqual.diff -p1
+cell/pr42795-divdf3.diff -p1
