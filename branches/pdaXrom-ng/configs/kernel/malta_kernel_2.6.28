@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.28
-# Tue Jan 27 20:44:12 2009
+# Tue Jan 27 21:07:48 2009
 #
 CONFIG_MIPS=y
 
@@ -219,7 +219,8 @@ CONFIG_UTS_NS=y
 CONFIG_IPC_NS=y
 # CONFIG_USER_NS is not set
 CONFIG_PID_NS=y
-# CONFIG_BLK_DEV_INITRD is not set
+CONFIG_BLK_DEV_INITRD=y
+CONFIG_INITRAMFS_SOURCE=""
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
 CONFIG_SYSCTL=y
 CONFIG_EMBEDDED=y
@@ -283,6 +284,7 @@ CONFIG_DEFAULT_AS=y
 # CONFIG_DEFAULT_NOOP is not set
 CONFIG_DEFAULT_IOSCHED="anticipatory"
 CONFIG_CLASSIC_RCU=y
+# CONFIG_PROBE_INITRD_HEADER is not set
 # CONFIG_FREEZER is not set
 
 #
