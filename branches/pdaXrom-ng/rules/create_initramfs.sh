@@ -5,7 +5,7 @@ create_squashfs() {
     i*86-*|amd64-*|x86_64-*|arm*el-*|xscale*-*|iwmmx*-*|mips*el-*)
 	MKS="-le"
 	;;
-    powerpc*-*|ppc*-*|arm*be-*|mips*-*)
+    powerpc*-*|ppc*-*|arm*eb-*|mips*-*)
 	MKS="-be"
 	;;
     *)

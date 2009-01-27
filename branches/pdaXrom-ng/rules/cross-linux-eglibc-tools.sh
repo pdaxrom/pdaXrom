@@ -191,6 +191,11 @@ build_gcc_bootstrap() {
 		    --with-arch=${DEFAULT_CPU-${TARGET_ARCH/-*/}} \
 		    --with-long-double-128"
 	;;
+    x86_64-*|amd64-*)
+	CONF_ARGS="--disable-cld \
+		    --with-arch=${DEFAULT_CPU-core2} \
+		    --with-long-double-128"
+	;;
     arm*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te}"
 	;;
@@ -257,6 +262,11 @@ build_gcc_stage1() {
 		    --with-arch=${DEFAULT_CPU-${TARGET_ARCH/-*/}} \
 		    --with-long-double-128"
 	;;
+    x86_64-*|amd64-*)
+	CONF_ARGS="--disable-cld \
+		    --with-arch=${DEFAULT_CPU-core2} \
+		    --with-long-double-128"
+	;;
     arm*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te}"
 	;;
@@ -320,6 +330,13 @@ build_gcc() {
     i*86-*)
 	CONF_ARGS="--disable-cld \
 		    --with-arch=${DEFAULT_CPU-${TARGET_ARCH/-*/}} \
+		    --enable-libgomp \
+		    --with-long-double-128"
+	;;
+    x86_64-*|amd64-*)
+	CONF_ARGS="--disable-cld \
+		    --with-arch=${DEFAULT_CPU-core2} \
+		    --enable-libgomp \
 		    --with-long-double-128"
 	;;
     arm*)
