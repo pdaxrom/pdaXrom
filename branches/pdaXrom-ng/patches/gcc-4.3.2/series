@@ -10,3 +10,8 @@ gcc-libjava-multilib.patch -p0
 gcc-enable-java-awt-qt.patch -p1
 gcc-hash-style-gnu.patch -p1
 gcc-moresparcs.patch -p1
+cell/common-sysroot.diff -p1
+cell/int128.diff -p1
+cell/pr35631.diff -p1
+cell/vector-keyword.diff -p1
+cell/pr42795-divdf3.diff -p1

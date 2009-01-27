@@ -391,3 +391,9 @@ build_glibc_stage1
 build_gcc
 
 build_glibc_stage2
+
+case $TARGET_ARCH in
+powerpc*|ppc*)
+    . $RULES_DIR/cross-spu.sh
+    ;;
+esac
