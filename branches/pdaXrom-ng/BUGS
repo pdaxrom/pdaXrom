@@ -1,5 +1,5 @@
-libSM 1.0.3 but need 1.1.0
-libXaw 1.0.4 but new 1.0.5
+libSM 1.0.3 but need 1.1.0?
+libXaw 1.0.4 but new 1.0.5?
 
 xorg-xdm incomplete
 
@@ -14,11 +14,7 @@ xf86-video-xgixp broken
 lxlauncher incomplete
 lxmusic incomplete
 
-host-cdrkit need cmake libcap-dev libbz2-dev
-icon-naming-utils need host XML::Simple libxml-simple-perl
-host_shared-mime-info need host libxml2
-alsa-utils need xmlto
-xcb-util need gperf
-
 skipstone-gecko broken
 xarchiver broken
+
+cell uclibc - no tls support, libspe2 has unresolved symbols
