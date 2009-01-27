@@ -47,7 +47,7 @@ get_kernel_image() {
 	echo zImage
 	;;
     mips*)
-	echo zImage
+	echo vmlinux
 	;;
     *)
 	echo $1
@@ -67,7 +67,7 @@ get_kernel_image_path() {
 	echo ${KERNEL_DIR}/arch/powerpc/boot/zImage
 	;;
     mips*)
-	echo ${KERNEL_DIR}/arch/mips/boot/zImage
+	echo ${KERNEL_DIR}/vmlinux
 	;;
     *)
 	echo $1
