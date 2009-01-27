@@ -42,6 +42,9 @@ get_kernel_subarch() {
     powerpc*|ppc*)
 	echo powerpc
 	;;
+    mips*)
+	echo mips
+	;;
     *)
 	echo $1
 	;;
@@ -179,6 +182,12 @@ build_gcc_stage1() {
     arm*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te}"
 	;;
+    mips*)
+	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \
+		    --with-float=hard \
+		    --enable-mips-nonpic \
+		    --enable-extra-sgxxlite-multilibs"
+	;;
     *)
 	error "Unknown arch"
 	;;
@@ -249,6 +258,12 @@ build_gcc() {
     arm*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te} \
 		    --disable-libgomp"
+	;;
+    mips*)
+	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \
+		    --with-float=hard \
+		    --enable-mips-nonpic \
+		    --enable-extra-sgxxlite-multilibs"
 	;;
     *)
 	error "Unknown arch"

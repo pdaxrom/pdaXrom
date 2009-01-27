@@ -22,6 +22,12 @@ build_openssl_thud() {
     arm*b-*)
 	echo "linux-armeb"
 	;;
+    mips*l-*)
+	echo "linux-mipsel"
+	;;
+    mips*-*)
+	echo "linux-mipseb"
+	;;
     ppc*-*|powerpc*-*)
 	echo "linux-ppc"
 	;;

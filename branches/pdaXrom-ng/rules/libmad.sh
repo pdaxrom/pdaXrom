@@ -38,7 +38,7 @@ build_libmad() {
 	LIBMAD_CONF="--enable-fpm=ppc"
 	;;
     *)
-	error "unknown arch"
+	LIBMAD_CONF=""
 	;;
     esac
     

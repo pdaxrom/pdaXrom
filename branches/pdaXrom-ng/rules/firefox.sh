@@ -69,25 +69,42 @@ build_firefox() {
 #	    --enable-system-sqlite
 
 	local T_ARCH=
+	local T_CONF=
 	case $TARGET_ARCH in
 	i386*|i486*|i586*|i686*)
 	    T_ARCH="x86"
+	    T_CONF="x86"
 	    ;;
-	arm*|xscale*)
+	arm*l-*)
 	    T_ARCH="arm"
+	    T_CONF="armel"
+	    ;;
+	arm*b-*)
+	    T_ARCH="arm"
+	    T_CONF="armeb"
+	    ;;
+	mips*l-*)
+	    T_ARCH="mips"
+	    T_CONF="mipsel"
+	    ;;
+	mips*-*)
+	    T_ARCH="mips"
+	    T_CONF="mipseb"
 	    ;;
 	powerpc*|ppc*)
 	    T_ARCH="ppc"
+	    T_CONF="ppc"
 	    ;;
 	x86_64*|amd64*)
 	    T_ARCH="x86_64"
+	    T_CONF="x86_64"
 	    ;;
 	*)
 	    T_ARCH="${TARGET_ARCH/-*/}"
 	    ;;
 	esac
 	sed -i "s|CPU_ARCH =|CPU_ARCH = $T_ARCH|" security/coreconf/Linux.mk
-	cp -f $CONFIG_DIR/firefox3/jsautocfg.h-${T_ARCH} js/src/jsautocfg.h || error
+	cp -f $CONFIG_DIR/firefox3/jsautocfg.h-${T_CONF} js/src/jsautocfg.h || error
     ) || error "configure"
 
     make $MAKEARGS \

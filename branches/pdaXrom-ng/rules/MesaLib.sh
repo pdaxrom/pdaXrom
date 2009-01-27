@@ -19,6 +19,9 @@ build_MesaLib_thud() {
     arm*|xscale*)
 	echo "linux-arm"
 	;;
+    mips*)
+	echo "linux-mips"
+	;;
     ppc*|powerpc*)
 	echo "linux-ppc"
 	;;

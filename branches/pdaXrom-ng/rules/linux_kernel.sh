@@ -26,6 +26,9 @@ get_kernel_subarch() {
     powerpc*|ppc*)
 	echo powerpc
 	;;
+    mips*)
+	echo mips
+	;;
     *)
 	echo $1
 	;;
@@ -41,6 +44,9 @@ get_kernel_image() {
 	echo zImage
 	;;
     powerpc*|ppc*)
+	echo zImage
+	;;
+    mips*)
 	echo zImage
 	;;
     *)
@@ -60,6 +66,9 @@ get_kernel_image_path() {
     powerpc*|ppc*)
 	echo ${KERNEL_DIR}/arch/powerpc/boot/zImage
 	;;
+    mips*)
+	echo ${KERNEL_DIR}/arch/mips/boot/zImage
+	;;
     *)
 	echo $1
 	;;
@@ -76,6 +85,9 @@ get_kernel_ramdisk_path() {
 	;;
     powerpc*|ppc*)
 	echo ${KERNEL_DIR}/arch/powerpc/boot/ramdisk.image.gz
+	;;
+    mips*)
+	echo ${KERNEL_DIR}/arch/mips/boot/ramdisk.image.gz
 	;;
     *)
 	echo ${1}-ramdisk.image.gz
