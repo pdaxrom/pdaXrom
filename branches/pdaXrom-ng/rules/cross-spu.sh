@@ -149,7 +149,10 @@ build_libspe2() {
 	ln -sf ${TARGET_ARCH}-$f $TOOLCHAIN_PREFIX/bin/ppu32-$f || error
     done
 
-    test -e $TOOLCHAIN_SYSROOT/usr/include/gnu/stubs-64.h || ln -sf stubs-32.h $TOOLCHAIN_SYSROOT/usr/include/gnu/stubs-64.h
+    if [ -d $TOOLCHAIN_SYSROOT/usr/include/gnu ]; then
+	test -e $TOOLCHAIN_SYSROOT/usr/include/gnu/stubs-64.h || ln -sf stubs-32.h $TOOLCHAIN_SYSROOT/usr/include/gnu/stubs-64.h
+	test -e $TOOLCHAIN_SYSROOT/usr/include/gnu/stubs-32.h || ln -sf stubs-64.h $TOOLCHAIN_SYSROOT/usr/include/gnu/stubs-32.h
+    fi
 
     popd
     touch "$STATE_DIR/libspe2"
