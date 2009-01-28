@@ -105,6 +105,19 @@ download_svn() {
     fi
 }
 
+download_git() {
+    if [ ! -d $SRC_DIR/$2/.git ]; then
+	echo "Download sources"
+	git-clone $1 $SRC_DIR/$2
+    else
+	echo "Update sources"
+	pushd $TOP_DIR
+	cd $SRC_DIR/$2
+	git-pull || error
+	popd
+    fi
+}
+
 extract() {
     local src_d=${1/.*}
     test -e "$STATE_DIR/$src_d.extracted" && return
@@ -117,7 +130,11 @@ extract() {
 	tar -jxf "$SRC_DIR/$1" -C "$BUILD_DIR" || error "Extract $1"
 	;;
     *)
-	error "Unknown archive $1"
+	if [ -e $SRC_DIR/$1 ]; then
+	    cp -R $SRC_DIR/$1 $BUILD_DIR/ || error "Copy sources $1"
+	else
+	    error "Unknown archive $1"
+	fi
 	;;
     esac
     touch "$STATE_DIR/$src_d.extracted" && return
@@ -135,7 +152,11 @@ extract_host() {
 	tar -jxf "$SRC_DIR/$1" -C "$HOST_BUILD_DIR" || error "Extract $1"
 	;;
     *)
-	error "Unknown archive $1"
+	if [ -e $SRC_DIR/$1 ]; then
+	    cp -R $SRC_DIR/$1 $HOST_BUILD_DIR/ || error "Copy sources $1"
+	else
+	    error "Unknown archive $1"
+	fi
 	;;
     esac
     touch "$STATE_DIR/host-${src_d}.extracted" && return
@@ -161,12 +182,9 @@ getfilename() {
     esac
 }
 
-apply_patches()
+apply_patches1()
 {
-    local src_d=`getfilename $2`
-    
-    # hack! remove hardcoded libdir
-    test -e $1/ltmain.sh && sed -i -e 's:add_dir="-L$libdir"::g' $1/ltmain.sh
+    local src_d=$2
     
     test -e "$PATCH_DIR/$src_d/series" || return
     echo "Patching $2"
@@ -180,7 +198,8 @@ apply_patches()
 	if [ "$f" = "$o" ]; then
 	    o="-p1"
 	fi
-	echo "$PATCH_DIR/$src_d/$f | patch $o"
+	test -e $PATCH_DIR/$src_d/$f -a ! -d $PATCH_DIR/$src_d/$f || continue
+	echo "*** $PATCH_DIR/$src_d/$f  patch $o"
 	case $f in
 	*.gz)
 	    zcat "$PATCH_DIR/$src_d/$f" | patch $o || error "patching $2"
@@ -194,6 +213,20 @@ apply_patches()
 	esac
     done
     popd
+}
+
+apply_patches() {
+    # hack! remove hardcoded libdir
+    test -e $1/ltmain.sh && sed -i -e 's:add_dir="-L$libdir"::g' $1/ltmain.sh
+
+    local src_d=`getfilename $2`
+
+    apply_patches1 $1 $src_d
+    
+    if [ ! "x$TARGET_VENDOR_PATCH" = "x" ]; then
+	src_d="${src_d}-${TARGET_VENDOR_PATCH}"
+	apply_patches1 $1 $src_d
+    fi
 }
 
 install_rc_start() {

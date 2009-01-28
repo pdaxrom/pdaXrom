@@ -7,6 +7,8 @@
 . $RULES_DIR/host_module-init-tools.sh
 . $RULES_DIR/host_lzma.sh
 . $RULES_DIR/host_squashfs.sh
+. $RULES_DIR/host_u-boot-mkimage.sh
+
 . $RULES_DIR/create_root.sh
 . $RULES_DIR/linux_kernel.sh
 . $RULES_DIR/busybox.sh

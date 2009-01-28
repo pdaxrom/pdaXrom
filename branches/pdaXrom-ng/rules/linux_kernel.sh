@@ -38,16 +38,16 @@ get_kernel_subarch() {
 get_kernel_image() {
     case $1 in
     i386*|i486*|i586*|i686*)
-	echo bzImage
+	echo ${TARGET_KERNEL_IMAGE-bzImage}
 	;;
     arm*|xscale*)
-	echo zImage
+	echo ${TARGET_KERNEL_IMAGE-zImage}
 	;;
     powerpc*|ppc*)
-	echo zImage
+	echo ${TARGET_KERNEL_IMAGE-zImage}
 	;;
     mips*)
-	echo vmlinux
+	echo ${TARGET_KERNEL_IMAGE-vmlinux}
 	;;
     *)
 	echo $1
@@ -58,16 +58,16 @@ get_kernel_image() {
 get_kernel_image_path() {
     case $1 in
     i386*|i486*|i586*|i686*)
-	echo ${KERNEL_DIR}/arch/x86/boot/bzImage
+	echo ${KERNEL_DIR}/arch/x86/boot/${TARGET_KERNEL_IMAGE-bzImage}
 	;;
     arm*|xscale*)
-	echo ${KERNEL_DIR}/arch/arm/boot/zImage
+	echo ${KERNEL_DIR}/arch/arm/boot/${TARGET_KERNEL_IMAGE-zImage}
 	;;
     powerpc*|ppc*)
-	echo ${KERNEL_DIR}/arch/powerpc/boot/zImage
+	echo ${KERNEL_DIR}/arch/powerpc/boot/${TARGET_KERNEL_IMAGE-zImage}
 	;;
     mips*)
-	echo ${KERNEL_DIR}/vmlinux
+	echo ${KERNEL_DIR}/${TARGET_KERNEL_IMAGE-vmlinux}
 	;;
     *)
 	echo $1
