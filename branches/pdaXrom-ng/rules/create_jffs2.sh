@@ -16,7 +16,13 @@ create_jffs2() {
 	;;
     esac
 
-    mkfs.jffs2 $TARGET_JFFS2_ARGS --devtable=$GENERICFS_DIR/jffs2/devtable.jffs2 --eraseblock=${TARGET_JFFS2_ERASEBLOCK-16384} $MKS -d $ROOTFS_DIR -o $IMAGES_DIR/rootfs.jffs2
+    mkfs.jffs2 $TARGET_JFFS2_ARGS \
+	    --devtable=$GENERICFS_DIR/jffs2/devtable.jffs2 \
+	    --eraseblock=${TARGET_JFFS2_ERASEBLOCK-16384} \
+	    --pagesize=${TARGET_JFFS2_ERASEBLOCK-16384} \
+	    $MKS -f -q \
+	    -d $ROOTFS_DIR \
+	    -o $IMAGES_DIR/rootfs.jffs2
 }
 
 copy_kernel_image() {
