@@ -49,6 +49,13 @@ create_root() {
 	test -f $f && $INSTALL -m 644 $f $ROOTFS_DIR/etc/
     done
 
+    case $TARGET_ARCH in
+    powerpc64-*|ppc64-*|x86_64-*|amd64-*)
+	ln -sf lib $ROOTFS_DIR/lib64
+	ln -sf lib $ROOTFS_DIR/usr/lib64
+	;;
+    esac
+
     $INSTALL -m 644 $GENERICFS_DIR/etc/network/interfaces $ROOTFS_DIR/etc/network/
     
     touch "$STATE_DIR/root_tree"
