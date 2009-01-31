@@ -115,7 +115,14 @@ install_glibc_headers() {
 	--enable-kernel=2.6.14 || error
 
     make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install-bootstrap-headers=yes install-headers || error
-    
+
+    case $TARGET_ARCH in
+    powerpc64-*|ppc64-*)
+	ln -sf lib64 $TOOLCHAIN_SYSROOT/lib
+	ln -sf lib64 $TOOLCHAIN_SYSROOT/usr/lib
+	;;
+    esac
+
     popd
     touch "$STATE_DIR/glibc_headers"
 }
@@ -183,10 +190,16 @@ build_gcc_bootstrap() {
     local CONF_ARGS=""
     local CONF_CPU=""
     case $TARGET_ARCH in
-    powerpc*-*|ppc*-*)
+    powerpc-*|ppc-*)
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
 		    --with-cpu=${DEFAULT_CPU-default32} \
+		    --with-long-double-128"
+	;;
+    powerpc64-*|ppc64-*)
+	CONF_ARGS="--enable-secureplt \
+		    --enable-targets=powerpc-linux,powerpc64-linux \
+		    --with-cpu=${DEFAULT_CPU-default64} \
 		    --with-long-double-128"
 	;;
     i*86-*)
@@ -260,10 +273,16 @@ build_gcc_stage1() {
     local CONF_ARGS=""
     local CONF_CPU=""
     case $TARGET_ARCH in
-    powerpc*-*|ppc*-*)
+    powerpc-*|ppc-*)
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
 		    --with-cpu=${DEFAULT_CPU-default32} \
+		    --with-long-double-128"
+	;;
+    powerpc64-*|ppc64-*)
+	CONF_ARGS="--enable-secureplt \
+		    --enable-targets=powerpc-linux,powerpc64-linux \
+		    --with-cpu=${DEFAULT_CPU-default64} \
 		    --with-long-double-128"
 	;;
     i*86-*)
@@ -335,11 +354,17 @@ build_gcc() {
     banner "Build gcc $GCC"
     local CONF_ARGS=""
     case $TARGET_ARCH in
-    powerpc*-*|ppc*-*)
+    powerpc-*|ppc-*)
 	CONF_ARGS="--enable-secureplt \
 		    --enable-targets=powerpc-linux,powerpc64-linux \
 		    --with-cpu=${DEFAULT_CPU-default32} \
 		    --enable-libgomp \
+		    --with-long-double-128"
+	;;
+    powerpc64-*|ppc64-*)
+	CONF_ARGS="--enable-secureplt \
+		    --enable-targets=powerpc-linux,powerpc64-linux \
+		    --with-cpu=${DEFAULT_CPU-default64} \
 		    --with-long-double-128"
 	;;
     i*86-*)

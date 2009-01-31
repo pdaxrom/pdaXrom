@@ -141,12 +141,26 @@ build_libspe2() {
     pushd $TOP_DIR
     cd $LIBSPE2_DIR
 
-    make ARCH=ppc CROSS_COMPILE=1 CROSS=${CROSS} || error
+    local SPE2_CPU=ppc
+    case $TARGET_ARCH in
+    powerpc64-*|ppc64-*)
+	SPE2_CPU=ppc64
+	;;
+    esac
 
-    make ARCH=ppc CROSS_COMPILE=1 CROSS=${CROSS} SYSROOT=$TOOLCHAIN_SYSROOT install || error
+    make ARCH=$SPE2_CPU CROSS_COMPILE=1 CROSS=${CROSS} || error
+
+    make ARCH=$SPE2_CPU CROSS_COMPILE=1 CROSS=${CROSS} SYSROOT=$TOOLCHAIN_SYSROOT install || error
 
     for f in as cpp embedspu g++ gcc ld; do
-	ln -sf ${TARGET_ARCH}-$f $TOOLCHAIN_PREFIX/bin/ppu32-$f || error
+	case $TARGET_ARCH in
+	powerpc-*|ppc-*)
+	    ln -sf ${TARGET_ARCH}-$f $TOOLCHAIN_PREFIX/bin/ppu32-$f || error
+	    ;;
+	*)
+	    ln -sf ${TARGET_ARCH}-$f $TOOLCHAIN_PREFIX/bin/ppu-$f || error
+	    ;;
+	esac
     done
 
     if [ -d $TOOLCHAIN_SYSROOT/usr/include/gnu ]; then
