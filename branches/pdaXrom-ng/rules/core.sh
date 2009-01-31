@@ -85,6 +85,9 @@ download2() {
     fi
 }
 
+#
+# download <url> <file>
+#
 download() {
     echo "Downloading $2"
     if [ ! -e "$SRC_DIR/$2" ]; then
@@ -92,6 +95,9 @@ download() {
     fi
 }
 
+#
+# download_svn <url> <source name>
+#
 download_svn() {
     if [ ! -d $SRC_DIR/$2/.svn ]; then
 	echo "Download sources"
@@ -105,15 +111,24 @@ download_svn() {
     fi
 }
 
+#
+# download_git <git> <source name> [<revision>]
+#
 download_git() {
     if [ ! -d $SRC_DIR/$2/.git ]; then
 	echo "Download sources"
-	git-clone $1 $SRC_DIR/$2
-    else
+	git-clone $1 $SRC_DIR/$2 || error "Download sources"
+	if [ ! "x$3" = "x" ]; then
+	    pushd $TOP_DIR
+	    cd $SRC_DIR/$2
+	    git-checkout $3 || error "Checkout revision"
+	    popd
+	fi
+    elif [ "x$3" = "x" ]; then
 	echo "Update sources"
 	pushd $TOP_DIR
 	cd $SRC_DIR/$2
-	git-pull || error
+	git-pull || echo "update problem"
 	popd
     fi
 }
