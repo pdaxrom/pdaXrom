@@ -10,13 +10,27 @@ KERNEL_CONFIG=itelec610_kernel_2.6.28
 TARGET_VENDOR_PATCH=davinci
 TARGET_KERNEL_IMAGE=uImage
 
-TARGET_JFFS2_ERASEBLOCK=16384
+#TARGET_JFFS2_ERASEBLOCK=16384
 #TARGET_JFFS2_PAGESIZE=4096
-TARGET_JFFS2_ARGS="-p -n"
+#TARGET_JFFS2_ARGS="-p -n"
 
 . ./sets/packages-basic.inc
+. ./sets/packages-mmlibs.inc
+. ./sets/packages-libs.inc
 
-. ./sets/packages-devel.inc
+. ./sets/packages-xorg-xlib.inc
+. ./sets/packages-xorg-xserver.inc
+. ./sets/packages-xorg-drivers.inc
+. ./sets/packages-xorg-apps.inc
+. ./sets/packages-xorg-fonts.inc
+
+#. ./sets/packages-emulators.inc
+
+. ./sets/packages-x-apps.inc
+. ./sets/packages-hal.inc
+. ./sets/packages-x-lxde.inc
+
+#. ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-stb610.sh
 . $RULES_DIR/create_initramfs.sh

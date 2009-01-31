@@ -24,6 +24,7 @@ create_squashfs() {
     rm -f $IMAGES_DIR/rootfs.img
     mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -lzmadic 1M || error
     #mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -nolzma || error
+    chmod 644 $ROOTFS_DIR $IMAGES_DIR/rootfs.img
 }
 
 create_initramfs() {
