@@ -68,6 +68,7 @@ build_hal() {
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/hal $ROOTFS_DIR/etc/init.d/hal || error
     install_rc_start hal 10
+    install_rc_stop  hal 70
 
     popd
     touch "$STATE_DIR/hal.installed"

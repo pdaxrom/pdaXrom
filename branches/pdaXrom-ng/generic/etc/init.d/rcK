@@ -5,6 +5,10 @@
 
 . /etc/init.d/functions
 
+for i in /etc/rc.d/K*; do 
+    $i stop
+done
+
 log_begin_msg -n "Unmounting filesystems..."
 umount -a -r 2>/dev/null >/dev/null
 log_end_msg 0

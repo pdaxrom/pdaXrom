@@ -15,7 +15,9 @@ TARGET_JFFS2_PAGESIZE=4096
 TARGET_JFFS2_ARGS="-p -n"
 
 . ./sets/packages-basic.inc
-. ./sets/packages-host-mtd-utils.inc
+
+. ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-stb610.sh
+. ./sets/packages-host-mtd-utils.inc
 . $RULES_DIR/create_jffs2.sh

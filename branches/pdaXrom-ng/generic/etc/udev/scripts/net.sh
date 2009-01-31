@@ -17,10 +17,10 @@ echo "$INTERFACE" | grep -q wifi && exit 0
 #if grep -q "iface \+$INTERFACE" /etc/network/interfaces; then
   case $ACTION in
     add)
-    	ifup $INTERFACE
+    	start-stop-daemon -S -b -x ifup -- $INTERFACE
     	;;
     remove)
-    	ifdown $INTERFACE
+    	start-stop-daemon -S -b -x ifdown -- $INTERFACE
     	;;
   esac
   

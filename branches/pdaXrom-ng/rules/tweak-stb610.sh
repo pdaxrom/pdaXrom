@@ -20,6 +20,7 @@ build_tweak_stb610() {
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
     install_rc_start xstart 99
+    install_rc_stop  xstart 01
 
     touch "$STATE_DIR/tweak_stb610-1.0"
 }

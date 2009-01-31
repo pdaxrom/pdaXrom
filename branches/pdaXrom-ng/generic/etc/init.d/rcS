@@ -39,4 +39,6 @@ echo "0 0 0 0" >/proc/sys/kernel/printk
 # set hostname
 test -e /etc/hostname && hostname -F /etc/hostname
 
-run-parts -a start /etc/rc.d
+for i in /etc/rc.d/S*; do 
+    $i start
+done

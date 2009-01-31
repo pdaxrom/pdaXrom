@@ -38,6 +38,7 @@ build_dropbear() {
     $INSTALL -m 755 dropbear $ROOTFS_DIR/usr/sbin/
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/dropbear $ROOTFS_DIR/etc/init.d/
     install_rc_start dropbear 50
+    install_rc_stop  dropbear 50
     mkdir -p $ROOTFS_DIR/etc/dropbear
 
     popd

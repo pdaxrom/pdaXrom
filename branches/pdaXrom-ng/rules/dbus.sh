@@ -81,6 +81,7 @@ build_dbus() {
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/dbus $ROOTFS_DIR/etc/init.d/dbus || error
     install_rc_start dbus 10
+    install_rc_stop  dbus 71
 
     popd
     touch "$STATE_DIR/dbus.installed"

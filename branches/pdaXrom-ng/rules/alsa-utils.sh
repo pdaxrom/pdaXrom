@@ -53,6 +53,7 @@ build_alsa_utils() {
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/alsa-utils $ROOTFS_DIR/etc/init.d/alsa-utils
     install_rc_start alsa-utils 90
+    install_rc_stop  alsa-utils 10
 
     popd
     touch "$STATE_DIR/alsa_utils-1.0.18"

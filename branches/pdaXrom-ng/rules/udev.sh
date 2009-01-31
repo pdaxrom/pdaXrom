@@ -36,6 +36,7 @@ build_udev() {
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/udev $ROOTFS_DIR/etc/init.d/udev || error
     install_rc_start udev 00
+    install_rc_stop  udev 97
 
     $INSTALL -D -m 644 $GENERICFS_DIR/etc/udev/udev.conf  $ROOTFS_DIR/etc/udev/udev.conf || error
     $INSTALL -D -m 644 $GENERICFS_DIR/etc/udev/links.conf $ROOTFS_DIR/etc/udev/links.conf || error

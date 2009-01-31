@@ -18,6 +18,7 @@ build_tweak_i686cd() {
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
     install_rc_start xstart 99
+    install_rc_stop  xstart 01
 
     touch "$STATE_DIR/tweak_i686cd-1.0"
 }

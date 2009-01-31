@@ -4,7 +4,9 @@
 . /etc/init.d/functions
 
 NAME=xstart
-DAEMON=startx
+DAEMON=/usr/bin/startx
+
+test -e $DAEMON || exit 0
 
 case "$1" in
   start)
