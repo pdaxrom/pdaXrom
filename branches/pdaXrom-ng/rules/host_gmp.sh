@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-HOST_GMP=gmp-4.2.4.tar.bz2
+HOST_GMP_VERSION=4.2.4
+HOST_GMP=gmp-${HOST_GMP_VERSION}.tar.bz2
 HOST_GMP_MIRROR=ftp://ftp.gnu.org/gnu/gmp
-HOST_GMP_DIR=$BUILD_DIR/gmp-4.2.4
+HOST_GMP_DIR=$BUILD_DIR/gmp-${HOST_GMP_VERSION}
 
 if [ $HOST_SYSTEM = "Darwin" ]; then
     if [ "${BUILD_ARCH/-*}" = "x86_64" -o "${BUILD_ARCH/-*}" = "amd64" ]; then
@@ -22,7 +23,7 @@ if [ $HOST_SYSTEM = "Darwin" ]; then
 fi
 
 build_host_gmp() {
-    test -e "$STATE_DIR/host_gmp-4.2.4" && return
+    test -e "$STATE_DIR/host_gmp-${HOST_GMP_VERSION}" && return
     banner "Build $HOST_GMP"
     download $HOST_GMP_MIRROR $HOST_GMP
     extract $HOST_GMP
@@ -34,7 +35,7 @@ build_host_gmp() {
     make $MAKEARGS || error
     make install || error
     popd
-    touch "$STATE_DIR/host_gmp-4.2.4"
+    touch "$STATE_DIR/host_gmp-${HOST_GMP_VERSION}"
 }
 
 build_host_gmp

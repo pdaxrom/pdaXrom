@@ -9,13 +9,16 @@
 # see the README file.
 #
 
-HOST_MPFR=mpfr-2.3.2.tar.bz2
+# previous version: 2.3.2
+
+HOST_MPFR_VERSION=2.4.0
+HOST_MPFR=mpfr-${HOST_MPFR_VERSION}.tar.bz2
 HOST_MPFR_MIRROR=http://www.mpfr.org/mpfr-current
-HOST_MPFR_DIR=$BUILD_DIR/mpfr-2.3.2
+HOST_MPFR_DIR=$BUILD_DIR/mpfr-${HOST_MPFR_VERSION}
 HOST_MPFR_ENV=
 
 build_host_mpfr() {
-    test -e "$STATE_DIR/host_mpfr-2.3.2" && return
+    test -e "$STATE_DIR/host_mpfr-${HOST_MPFR_VERSION}" && return
     banner "Build $HOST_MPFR"
     download $HOST_MPFR_MIRROR $HOST_MPFR
     extract $HOST_MPFR
@@ -28,7 +31,7 @@ build_host_mpfr() {
     make $MAKEARGS || error
     make install || error
     popd
-    touch "$STATE_DIR/host_mpfr-2.3.2"
+    touch "$STATE_DIR/host_mpfr-${HOST_MPFR_VERSION}"
 }
 
 build_host_mpfr
