@@ -47,6 +47,13 @@ install_libc() {
     test -e "$STATE_DIR/install_libc" && return
     mkdir -p $ROOTFS_DIR/lib
     mkdir -p $ROOTFS_DIR/usr/lib
+
+    case $TARGET_ARCH in
+    powerpc64-*|ppc64-*)
+	LIBC_SYS_LIBS="ld64 $LIBC_SYS_LIBS"
+	;;    
+    esac
+
     local lib=
     local f=
     for lib in $LIBC_SYS_LIBS $LIBC_LIBS; do
