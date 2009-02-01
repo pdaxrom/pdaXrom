@@ -28,8 +28,11 @@ build_openssl_thud() {
     mips*-*)
 	echo "linux-mipseb"
 	;;
-    ppc*-*|powerpc*-*)
+    ppc-*|powerpc-*)
 	echo "linux-ppc"
+	;;
+    ppc64-*|powerpc64-*)
+	echo "linux-ppc64"
 	;;
     i586*-*)
 	echo "linux-i386-i586"
@@ -68,11 +71,12 @@ build_openssl() {
 	    || error
     )
     
-    make INSTALLTOP=$TARGET_BIN_DIR openssl.pc CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR='${TARGET_ARCH}-ar r' || error
+    make INSTALLTOP=$TARGET_BIN_DIR openssl.pc CC=${TARGET_ARCH}-gcc \
+	RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
 
-    make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR='${TARGET_ARCH}-ar r' || error
+    make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
 
-    make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR='${TARGET_ARCH}-ar r' \
+    make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc \
 	install INSTALL_PREFIX=$TARGET_BIN_DIR INSTALLTOP='/usr' \
 	|| error
 

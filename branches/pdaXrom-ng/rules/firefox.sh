@@ -91,9 +91,13 @@ build_firefox() {
 	    T_ARCH="mips"
 	    T_CONF="mipseb"
 	    ;;
-	powerpc*|ppc*)
+	powerpc-*|ppc-*)
 	    T_ARCH="ppc"
 	    T_CONF="ppc"
+	    ;;
+	powerpc64-*|ppc64-*)
+	    T_ARCH="ppc"
+	    T_CONF="ppc64"
 	    ;;
 	x86_64*|amd64*)
 	    T_ARCH="x86_64"
@@ -105,6 +109,12 @@ build_firefox() {
 	esac
 	sed -i "s|CPU_ARCH =|CPU_ARCH = $T_ARCH|" security/coreconf/Linux.mk
 	cp -f $CONFIG_DIR/firefox3/jsautocfg.h-${T_CONF} js/src/jsautocfg.h || error
+
+	case $TARGET_ARCH in
+	powerpc64-*|ppc64-*)
+	    sed -i "s|MOZ_OPTIMIZE_FLAGS = -Os|MOZ_OPTIMIZE_FLAGS = -mminimal-toc -Os|" config/autoconf.mk
+	    ;;
+	esac
     ) || error "configure"
 
     make $MAKEARGS \

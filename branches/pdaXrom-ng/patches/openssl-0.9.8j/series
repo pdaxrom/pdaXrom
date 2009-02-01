@@ -1,2 +1,3 @@
 Configure.diff
 conf-linux-mipsel.patch
+Makefile.shared.diff
