@@ -1,0 +1,35 @@
+Adds defconfig values for the PS3 drivers.
+
+Signed-off-by: Geoff Levand <geoffrey.levand@am.sony.com>
+---
+ arch/powerpc/configs/ps3_defconfig |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/arch/powerpc/configs/ps3_defconfig
++++ b/arch/powerpc/configs/ps3_defconfig
+@@ -1,7 +1,7 @@
+ #
+ # Automatically generated make config: don't edit
+ # Linux kernel version: 2.6.27-rc3
+-# Wed Aug 20 08:16:53 2008
++# Mon Aug 18 09:38:39 2008
+ #
+ CONFIG_PPC64=y
+ 
+@@ -118,7 +118,7 @@ CONFIG_OPROFILE=m
+ CONFIG_HAVE_OPROFILE=y
+ # CONFIG_KPROBES is not set
+ CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=y
+-CONFIG_HAVE_IOREMAP_PROT=y
++# CONFIG_HAVE_IOREMAP_PROT is not set
+ CONFIG_HAVE_KPROBES=y
+ CONFIG_HAVE_KRETPROBES=y
+ CONFIG_HAVE_ARCH_TRACEHOOK=y
+@@ -290,7 +290,6 @@ CONFIG_PPC_PCI_CHOICE=y
+ # CONFIG_ARCH_SUPPORTS_MSI is not set
+ # CONFIG_PCCARD is not set
+ # CONFIG_HAS_RAPIDIO is not set
+-# CONFIG_RELOCATABLE is not set
+ CONFIG_PAGE_OFFSET=0xc000000000000000
+ CONFIG_KERNEL_START=0xc000000000000000
+ CONFIG_PHYSICAL_START=0x00000000

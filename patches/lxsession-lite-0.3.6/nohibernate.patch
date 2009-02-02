@@ -1,0 +1,11 @@
+--- lxsession-lite-0.3.6/lxsession-logout/main.c-	2009-01-12 20:51:28.000000000 +0600
++++ lxsession-lite-0.3.6/lxsession-logout/main.c	2009-01-12 20:51:47.000000000 +0600
+@@ -297,7 +297,7 @@
+     use_hal = xfsm_shutdown_helper_hal_check ();
+     if( use_hal )   /* check if hal is available */
+     {
+-        available_actions = LOGOUT_ACTION_SHUTDOWN | LOGOUT_ACTION_REBOOT | LOGOUT_ACTION_SUSPEND | LOGOUT_ACTION_HIBERNATE;
++        available_actions = LOGOUT_ACTION_SHUTDOWN | LOGOUT_ACTION_REBOOT | LOGOUT_ACTION_SUSPEND;
+     }
+     else /* check if gdm is available */
+     {

@@ -1,8 +1,0 @@
-config PILOT-LINK
-	bool
-	prompt "pilot-link"
-
-config PILOT-LINK_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on PILOT-LINK

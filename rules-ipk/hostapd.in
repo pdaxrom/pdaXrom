@@ -1,8 +1,0 @@
-config HOSTAPD
-	bool
-	prompt "hostapd"
-
-config HOSTAPD_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on HOSTAPD

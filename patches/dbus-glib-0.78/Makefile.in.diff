@@ -1,0 +1,28 @@
+--- dbus-glib-0.78/dbus/Makefile.in-	2009-01-02 23:59:35.000000000 +0600
++++ dbus-glib-0.78/dbus/Makefile.in	2009-01-02 23:59:49.000000000 +0600
+@@ -313,7 +313,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = . examples
++SUBDIRS = . 
+ INCLUDES = \
+ 	-I$(top_srcdir)						\
+ 	-I$(top_builddir)					\
+--- dbus-glib-0.78/tools/Makefile.in-	2009-01-03 00:09:37.000000000 +0600
++++ dbus-glib-0.78/tools/Makefile.in	2009-01-03 00:15:32.000000000 +0600
+@@ -481,12 +481,12 @@
+ 
+ 
+ dbus-glib-bindings.h: dbus-bus-introspect.xml $(top_builddir)/dbus/dbus-binding-tool$(EXEEXT)
+-	$(top_builddir)/dbus/dbus-binding-tool --mode=glib-client --prefix=dbus_bus --output=dbus-glib-bindings.h dbus-bus-introspect.xml
++	dbus-binding-tool --mode=glib-client --prefix=dbus_bus --output=dbus-glib-bindings.h dbus-bus-introspect.xml
+ 
+ @USE_INTROSPECT_XML_TRUE@dbus-bus-introspect.xml: $(INTROSPECT_XML_PATH)
+ @USE_INTROSPECT_XML_TRUE@	cp $(INTROSPECT_XML_PATH) dbus-bus-introspect.xml
+ @USE_INTROSPECT_XML_FALSE@dbus-bus-introspect.xml:
+-@USE_INTROSPECT_XML_FALSE@	DBUS_TOP_BUILDDIR=$(top_builddir) @DBUS_DAEMONDIR@dbus-daemon --introspect > dbus-bus-introspect.xml.tmp && mv dbus-bus-introspect.xml.tmp dbus-bus-introspect.xml
++@USE_INTROSPECT_XML_FALSE@	DBUS_TOP_BUILDDIR=$(top_builddir) dbus-daemon --introspect > dbus-bus-introspect.xml.tmp && mv dbus-bus-introspect.xml.tmp dbus-bus-introspect.xml
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:

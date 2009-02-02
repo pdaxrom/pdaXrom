@@ -1,8 +1,0 @@
-config FLUXBOX
-	bool
-	prompt "fluxbox"
-
-config FLUXBOX_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on FLUXBOX

@@ -1,8 +1,0 @@
-config LIBXFCE4MCS
-	bool
-	prompt "libxfce4mcs"
-
-config LIBXFCE4MCS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBXFCE4MCS

@@ -1,1 +1,0 @@
-cat /etc/modules /etc/modules.d/* 2>/dev/null | sed 's/^[^#]/modprobe &/' 2>&- | /bin/sh

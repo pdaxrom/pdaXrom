@@ -1,0 +1,15 @@
+#!/bin/sh
+
+test -f /usr/bin/X || exit 0
+
+. /etc/init.d/functions
+
+if [ ! -e /etc/X11/xorg.conf ]; then
+
+    log_begin_msg -n "Configuring Xorg"
+    HOME=/tmp /usr/bin/X -configure >/dev/null 2>/dev/null && cp -f /tmp/xorg.conf.new /etc/X11/xorg.conf && \
+    printf "Section \"ServerFlags\"
+	Option		\"AllowEmptyInput\" \"False\"
+EndSection\n" >> /etc/X11/xorg.conf
+    log_end_msg $?
+fi

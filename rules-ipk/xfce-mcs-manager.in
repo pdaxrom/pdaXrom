@@ -1,8 +1,0 @@
-config XFCE-MCS-MANAGER
-	bool
-	prompt "xfce-mcs-manager"
-
-config XFCE-MCS-MANAGER_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on XFCE-MCS-MANAGER

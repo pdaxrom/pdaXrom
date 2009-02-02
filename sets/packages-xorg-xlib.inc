@@ -1,0 +1,89 @@
+#
+# Xorg libs
+#
+. $RULES_DIR/xproto.sh
+. $RULES_DIR/xextproto.sh
+. $RULES_DIR/xtrans.sh
+. $RULES_DIR/xcb-proto.sh
+. $RULES_DIR/libpthread-stubs.sh
+. $RULES_DIR/libXau.sh
+. $RULES_DIR/libxcb.sh
+. $RULES_DIR/xcb-util.sh
+. $RULES_DIR/kbproto.sh
+. $RULES_DIR/inputproto.sh
+. $RULES_DIR/fixesproto.sh
+. $RULES_DIR/libXdmcp.sh
+. $RULES_DIR/libX11.sh
+. $RULES_DIR/libxkbfile.sh
+. $RULES_DIR/libXfixes.sh
+. $RULES_DIR/renderproto.sh
+. $RULES_DIR/libXrender.sh
+. $RULES_DIR/libXcursor.sh
+. $RULES_DIR/libXft.sh
+. $RULES_DIR/libXext.sh
+. $RULES_DIR/libXi.sh
+. $RULES_DIR/fontsproto.sh
+. $RULES_DIR/fontcacheproto.sh
+. $RULES_DIR/libfontenc.sh
+. $RULES_DIR/libXfontcache.sh
+. $RULES_DIR/libXfont.sh
+. $RULES_DIR/libICE.sh
+. $RULES_DIR/libSM.sh
+. $RULES_DIR/printproto.sh
+. $RULES_DIR/libXt.sh
+. $RULES_DIR/libXmu.sh
+. $RULES_DIR/libXpm.sh
+. $RULES_DIR/libXp.sh
+. $RULES_DIR/libXaw.sh
+. $RULES_DIR/scrnsaverproto.sh
+. $RULES_DIR/resourceproto.sh
+. $RULES_DIR/randrproto.sh
+. $RULES_DIR/libXScrnSaver.sh
+. $RULES_DIR/trapproto.sh
+. $RULES_DIR/libXTrap.sh
+. $RULES_DIR/compositeproto.sh
+. $RULES_DIR/libXcomposite.sh
+. $RULES_DIR/damageproto.sh
+. $RULES_DIR/libXdamage.sh
+. $RULES_DIR/evieext.sh
+. $RULES_DIR/libXevie.sh
+. $RULES_DIR/libXrandr.sh
+. $RULES_DIR/libXres.sh
+. $RULES_DIR/recordproto.sh
+. $RULES_DIR/libXtst.sh
+. $RULES_DIR/videoproto.sh
+. $RULES_DIR/libXv.sh
+. $RULES_DIR/libXvMC.sh
+. $RULES_DIR/xf86dgaproto.sh
+. $RULES_DIR/libXxf86dga.sh
+. $RULES_DIR/xf86miscproto.sh
+. $RULES_DIR/libXxf86misc.sh
+. $RULES_DIR/xf86vidmodeproto.sh
+. $RULES_DIR/libXxf86vm.sh
+. $RULES_DIR/libxkbui.sh
+. $RULES_DIR/xineramaproto.sh
+. $RULES_DIR/libXinerama.sh
+. $RULES_DIR/bigreqsproto.sh
+. $RULES_DIR/xcmiscproto.sh
+. $RULES_DIR/xf86bigfontproto.sh
+. $RULES_DIR/xorg-xkbdata.sh
+. $RULES_DIR/pixman.sh
+
+#
+# Gtk2
+#
+. $RULES_DIR/xorg-startup-notification.sh
+. $RULES_DIR/cairo.sh
+. $RULES_DIR/pango.sh
+. $RULES_DIR/imlib2.sh
+. $RULES_DIR/atk.sh
+. $RULES_DIR/gtk2.sh
+
+#
+# icons set
+#
+. $RULES_DIR/host_intltool.sh
+. $RULES_DIR/host_icon-naming-utils.sh
+. $RULES_DIR/gnome-icon-theme.sh
+. $RULES_DIR/host_shared-mime-info.sh
+. $RULES_DIR/shared-mime-info.sh
