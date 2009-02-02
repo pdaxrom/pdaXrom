@@ -1,0 +1,3 @@
+# network devices
+SUBSYSTEM=="net", ACTION=="add",    RUN+="/etc/udev/scripts/net.sh"
+SUBSYSTEM=="net", ACTION=="remove", RUN+="/etc/udev/scripts/net.sh"

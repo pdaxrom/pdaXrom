@@ -1,0 +1,46 @@
+--- s/configure-	2009-01-04 15:23:57.000000000 +0600
++++ s/configure	2009-01-04 15:25:14.000000000 +0600
+@@ -21163,10 +21163,6 @@
+ if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+ if test -r "${sdkdir}/dri.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -21188,10 +21184,6 @@
+ if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+ if test -r "${sdkdir}/sarea.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -21213,10 +21205,6 @@
+ if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+ if test -r "${sdkdir}/dristruct.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -21563,10 +21551,6 @@
+ if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+ if test -r "${sdkdir}/xf86Module.h"; then
+   eval "$as_ac_File=yes"
+ else

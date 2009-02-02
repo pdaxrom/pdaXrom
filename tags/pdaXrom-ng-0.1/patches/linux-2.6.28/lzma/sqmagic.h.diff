@@ -1,0 +1,41 @@
+diff -ruN linux-2.6.25/fs/squashfs/sqmagic.h linux-2.6.25-helium1/fs/squashfs/sqmagic.h
+--- linux-2.6.25/fs/squashfs/sqmagic.h	1970-01-01 00:00:00.000000000 +0000
++++ linux-2.6.25-helium1/fs/squashfs/sqmagic.h	2008-06-02 19:37:19.000000000 +0000
+@@ -0,0 +1,17 @@
++/*
++ * Copyright (C) 2006 Junjiro Okajima
++ * Copyright (C) 2006 Tomas Matejicek, slax.org
++ *
++ * LICENSE must follow the one in squashfs.
++ */
++
++/* $Id: sqmagic.h,v 1.2 2006-11-27 03:54:58 jro Exp $ */
++
++#ifndef __sqmagic_h__
++#define __sqmagic_h__
++
++/* see SQUASHFS_MAGIC in squashfs_fs.h */
++#define SQUASHFS_MAGIC_LZMA		0x71736873
++#define SQUASHFS_MAGIC_LZMA_SWAP	0x73687371
++
++#endif
+--- /dev/null	2009-01-03 23:10:34.000000000 +0600
++++ linux-2.6.27/include/linux/sqmagic.h	2009-01-03 22:45:10.000000000 +0600
+@@ -0,0 +1,17 @@
++/*
++ * Copyright (C) 2006 Junjiro Okajima
++ * Copyright (C) 2006 Tomas Matejicek, slax.org
++ *
++ * LICENSE must follow the one in squashfs.
++ */
++
++/* $Id: sqmagic.h,v 1.2 2006-11-27 03:54:58 jro Exp $ */
++
++#ifndef __sqmagic_h__
++#define __sqmagic_h__
++
++/* see SQUASHFS_MAGIC in squashfs_fs.h */
++#define SQUASHFS_MAGIC_LZMA		0x71736873
++#define SQUASHFS_MAGIC_LZMA_SWAP	0x73687371
++
++#endif

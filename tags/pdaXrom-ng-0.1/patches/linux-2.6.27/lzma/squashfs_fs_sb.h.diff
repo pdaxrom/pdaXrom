@@ -1,0 +1,17 @@
+diff -NPur linux-2.6.27.4.orig/include/linux/squashfs_fs_sb.h linux-2.6.27.4/include/linux/squashfs_fs_sb.h
+--- linux-2.6.27.4.orig/include/linux/squashfs_fs_sb.h	2008-10-29 18:03:31.000000000 -0500
++++ linux-2.6.27.4/include/linux/squashfs_fs_sb.h	2008-10-29 18:04:01.000000000 -0500
+@@ -63,11 +63,11 @@
+ 	long long		*fragment_index;
+ 	unsigned int		*fragment_index_2;
+ 	char			*read_page;
+-	struct mutex		read_data_mutex;
++	/* struct mutex		read_data_mutex; */
+ 	struct mutex		read_page_mutex;
+ 	struct mutex		meta_index_mutex;
+ 	struct meta_index	*meta_index;
+-	z_stream		stream;
++	/* z_stream		stream; */
+ 	long long		*inode_lookup_table;
+ 	int			(*read_inode)(struct inode *i,  squashfs_inode_t \
+ 				inode);

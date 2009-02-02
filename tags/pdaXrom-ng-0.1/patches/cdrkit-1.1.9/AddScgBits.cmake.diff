@@ -1,0 +1,20 @@
+--- cdrkit-1.1.9/include/AddScgBits.cmake-	2008-12-10 12:56:21.000000000 +0600
++++ cdrkit-1.1.9/include/AddScgBits.cmake	2008-12-10 13:17:50.000000000 +0600
+@@ -58,7 +58,16 @@
+    CHECK_C_SOURCE_COMPILES("${TESTSRC}" LIBC_SCHED)
+ 
+ IF(NOT LIBC_SCHED)
+-   LIST(APPEND EXTRA_LIBS -lrt)
++   FIND_LIBRARY(HAVE_LIBIOKIT "IOKit")
++   IF(HAVE_LIBIOKIT)
++      LIST(APPEND EXTRA_LIBS "-lIOKit -framework CoreFoundation")
++   ENDIF(HAVE_LIBIOKIT)
++   #MESSAGE("Using libIOKit for realtime functions")
++
++   FIND_LIBRARY(HAVE_LIBRT "rt")
++   IF(HAVE_LIBRT)
++      LIST(APPEND EXTRA_LIBS -lrt)
++   ENDIF(HAVE_LIBRT)
+    #MESSAGE("Using librt for realtime functions")
+ ENDIF(NOT LIBC_SCHED)
+ 

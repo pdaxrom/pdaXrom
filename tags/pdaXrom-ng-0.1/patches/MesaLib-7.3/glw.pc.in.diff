@@ -1,0 +1,12 @@
+--- Mesa-7.2/src/glw/glw.pc.in-	2009-01-04 14:18:09.000000000 +0600
++++ Mesa-7.2/src/glw/glw.pc.in	2009-01-04 14:18:16.000000000 +0600
+@@ -1,7 +1,7 @@
+ prefix=@INSTALL_DIR@
+ exec_prefix=${prefix}
+-libdir=@INSTALL_LIB_DIR@
+-includedir=@INSTALL_INC_DIR@
++libdir=${exec_prefix}/lib
++includedir=${exec_prefix}/include
+ 
+ Name: glw
+ Description: Mesa OpenGL widget library

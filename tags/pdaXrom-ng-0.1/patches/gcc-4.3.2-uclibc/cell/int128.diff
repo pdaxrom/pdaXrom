@@ -1,0 +1,345 @@
+diff -urNp gcc-4.3.2/gcc-orig/fortran/gfortran.h gcc-4.3.2/gcc/fortran/gfortran.h
+--- gcc-4.3.2/gcc-orig/fortran/gfortran.h	2008-01-30 07:56:10.000000000 +0100
++++ gcc-4.3.2/gcc/fortran/gfortran.h	2008-06-07 14:01:18.000000000 +0200
+@@ -547,7 +547,7 @@ init_local_integer;
+ /* Used for keeping things in balanced binary trees.  */
+ #define BBT_HEADER(self) int priority; struct self *left, *right
+ 
+-#define NAMED_INTCST(a,b,c) a,
++#define NAMED_INTCST(a,b,c,d) a,
+ typedef enum
+ {
+   ISOFORTRANENV_INVALID = -1,
+@@ -557,7 +557,7 @@ typedef enum
+ iso_fortran_env_symbol;
+ #undef NAMED_INTCST
+ 
+-#define NAMED_INTCST(a,b,c) a,
++#define NAMED_INTCST(a,b,c,d) a,
+ #define NAMED_REALCST(a,b,c) a,
+ #define NAMED_CMPXCST(a,b,c) a,
+ #define NAMED_LOGCST(a,b,c) a,
+diff -urNp gcc-4.3.2/gcc-orig/fortran/intrinsic.texi gcc-4.3.2/gcc/fortran/intrinsic.texi
+--- gcc-4.3.2/gcc-orig/fortran/intrinsic.texi	2008-02-15 23:56:37.000000000 +0100
++++ gcc-4.3.2/gcc/fortran/intrinsic.texi	2008-06-07 14:01:18.000000000 +0200
+@@ -10932,7 +10932,7 @@ Indentifies the preconnected unit indent
+ @section @code{ISO_C_BINDING}
+ @table @asis
+ @item @emph{Standard}:
+-Fortran 2003
++Fortran 2003, GNU extensions
+ @end table
+ 
+ The following intrinsic procedures are provided by the module; their
+@@ -10954,8 +10954,13 @@ parameters (marked by an asterix (@code{
+ The @code{C_INT_FAST...} parameters have therefore the value @math{-2}
+ and cannot be used as KIND type parameter of the @code{INTEGER} type.
+ 
+-@multitable @columnfractions .15 .35 .35
+-@item Fortran Type  @tab Named constant         @tab C type
++In addition to the integer named constants required by the Fortran 2003
++standard, GNU Fortran provides as an extension named constants for the
++128-bit integer types supported by the C compiler: @code{C_INT128_T, 
++C_INT_LEAST128_T, C_INT_FAST128_T}.
++
++@multitable @columnfractions .15 .35 .35 .35
++@item Fortran Type  @tab Named constant         @tab C type                                @tab Extension
+ @item @code{INTEGER}@tab @code{C_INT}           @tab @code{int}
+ @item @code{INTEGER}@tab @code{C_SHORT}         @tab @code{short int}
+ @item @code{INTEGER}@tab @code{C_LONG}          @tab @code{long int}
+@@ -10966,14 +10971,17 @@ and cannot be used as KIND type paramete
+ @item @code{INTEGER}@tab @code{C_INT16_T}       @tab @code{int16_t}
+ @item @code{INTEGER}@tab @code{C_INT32_T}       @tab @code{int32_t}
+ @item @code{INTEGER}@tab @code{C_INT64_T}       @tab @code{int64_t}
++@item @code{INTEGER}@tab @code{C_INT128_T}      @tab @code{int128_t}                      @tab Ext.
+ @item @code{INTEGER}@tab @code{C_INT_LEAST8_T}  @tab @code{int_least8_t}
+ @item @code{INTEGER}@tab @code{C_INT_LEAST16_T} @tab @code{int_least16_t}
+ @item @code{INTEGER}@tab @code{C_INT_LEAST32_T} @tab @code{int_least32_t}
+ @item @code{INTEGER}@tab @code{C_INT_LEAST64_T} @tab @code{int_least64_t}
++@item @code{INTEGER}@tab @code{C_INT_LEAST128_T} @tab @code{int_least128_t}                @tab Ext.
+ @item @code{INTEGER}@tab @code{C_INT_FAST8_T}*  @tab @code{int_fast8_t}
+ @item @code{INTEGER}@tab @code{C_INT_FAST16_T}* @tab @code{int_fast16_t}
+ @item @code{INTEGER}@tab @code{C_INT_FAST32_T}* @tab @code{int_fast32_t}
+ @item @code{INTEGER}@tab @code{C_INT_FAST64_T}* @tab @code{int_fast64_t}
++@item @code{INTEGER}@tab @code{C_INT_FAST128_T}* @tab @code{int_fast128_t}                 @tab Ext.
+ @item @code{INTEGER}@tab @code{C_INTMAX_T}      @tab @code{intmax_t}
+ @item @code{INTEGER}@tab @code{C_INTPTR_T}      @tab @code{intptr_t}
+ @item @code{REAL}   @tab @code{C_FLOAT}         @tab @code{float}
+diff -urNp gcc-4.3.2/gcc-orig/fortran/iso-c-binding.def gcc-4.3.2/gcc/fortran/iso-c-binding.def
+--- gcc-4.3.2/gcc-orig/fortran/iso-c-binding.def	2007-08-01 18:29:36.000000000 +0200
++++ gcc-4.3.2/gcc/fortran/iso-c-binding.def	2008-06-07 14:01:18.000000000 +0200
+@@ -20,7 +20,7 @@ along with GCC; see the file COPYING3.  
+    Fortran 2003 ISO_C_BINDING intrinsic module.  */
+ 
+ #ifndef NAMED_INTCST
+-# define NAMED_INTCST(a,b,c) 
++# define NAMED_INTCST(a,b,c,d) 
+ #endif
+ 
+ #ifndef NAMED_REALCST
+@@ -42,44 +42,57 @@ along with GCC; see the file COPYING3.  
+ /* The arguments to NAMED_*CST are:
+      -- an internal name
+      -- the symbol name in the module, as seen by Fortran code
+-     -- the value it has, for use in trans-types.c  */
++     -- the value it has, for use in trans-types.c  
++     -- the standard that supports this type  */
+ 
+-NAMED_INTCST (ISOCBINDING_INT, "c_int", gfc_c_int_kind)
++NAMED_INTCST (ISOCBINDING_INT, "c_int", gfc_c_int_kind, GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_SHORT, "c_short", \
+-              get_int_kind_from_node (short_integer_type_node))
++              get_int_kind_from_node (short_integer_type_node), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_LONG, "c_long", \
+-              get_int_kind_from_node (long_integer_type_node))
++              get_int_kind_from_node (long_integer_type_node), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_LONG_LONG, "c_long_long", \
+-              get_int_kind_from_node (long_long_integer_type_node))
++              get_int_kind_from_node (long_long_integer_type_node), GFC_STD_F2003)
+ 
+ NAMED_INTCST (ISOCBINDING_INTMAX_T, "c_intmax_t", \
+-              get_int_kind_from_node (intmax_type_node))
++              get_int_kind_from_node (intmax_type_node), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_INTPTR_T, "c_intptr_t", \
+-              get_int_kind_from_node (ptr_type_node))
++              get_int_kind_from_node (ptr_type_node), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_SIZE_T, "c_size_t", \
+-              gfc_index_integer_kind)
++              gfc_index_integer_kind, GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_SIGNED_CHAR, "c_signed_char", \
+-              get_int_kind_from_node (signed_char_type_node))
++              get_int_kind_from_node (signed_char_type_node), GFC_STD_F2003)
+ 
+-NAMED_INTCST (ISOCBINDING_INT8_T, "c_int8_t", get_int_kind_from_width (8))
+-NAMED_INTCST (ISOCBINDING_INT16_T, "c_int16_t", get_int_kind_from_width (16))
+-NAMED_INTCST (ISOCBINDING_INT32_T, "c_int32_t", get_int_kind_from_width (32))
+-NAMED_INTCST (ISOCBINDING_INT64_T, "c_int64_t", get_int_kind_from_width (64))
++NAMED_INTCST (ISOCBINDING_INT8_T, "c_int8_t", get_int_kind_from_width (8), \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOCBINDING_INT16_T, "c_int16_t", get_int_kind_from_width (16), \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOCBINDING_INT32_T, "c_int32_t", get_int_kind_from_width (32), \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOCBINDING_INT64_T, "c_int64_t", get_int_kind_from_width (64), \
++              GFC_STD_F2003)
++/* GNU Extension.  */
++NAMED_INTCST (ISOCBINDING_INT128_T, "c_int128_t", get_int_kind_from_width (128), \
++              GFC_STD_GNU)
+ 
+ NAMED_INTCST (ISOCBINDING_INT_LEAST8_T, "c_int_least8_t", \
+-              get_int_kind_from_minimal_width (8))
++              get_int_kind_from_minimal_width (8), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_INT_LEAST16_T, "c_int_least16_t", \
+-              get_int_kind_from_minimal_width (16))
++              get_int_kind_from_minimal_width (16), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_INT_LEAST32_T, "c_int_least32_t", \
+-              get_int_kind_from_minimal_width (32))
++              get_int_kind_from_minimal_width (32), GFC_STD_F2003)
+ NAMED_INTCST (ISOCBINDING_INT_LEAST64_T, "c_int_least64_t", \
+-              get_int_kind_from_minimal_width (64))
++              get_int_kind_from_minimal_width (64), GFC_STD_F2003)
++/* GNU Extension.  */
++NAMED_INTCST (ISOCBINDING_INT_LEAST128_T, "c_int_least128_t", \
++              get_int_kind_from_minimal_width (128), GFC_STD_GNU)
+ 
+ /* TODO: Implement c_int_fast*_t. Depends on PR 448.  */ 
+-NAMED_INTCST (ISOCBINDING_INT_FAST8_T, "c_int_fast8_t", -2)
+-NAMED_INTCST (ISOCBINDING_INT_FAST16_T, "c_int_fast16_t", -2)
+-NAMED_INTCST (ISOCBINDING_INT_FAST32_T, "c_int_fast32_t", -2)
+-NAMED_INTCST (ISOCBINDING_INT_FAST64_T, "c_int_fast64_t", -2)
++NAMED_INTCST (ISOCBINDING_INT_FAST8_T, "c_int_fast8_t", -2, GFC_STD_F2003)
++NAMED_INTCST (ISOCBINDING_INT_FAST16_T, "c_int_fast16_t", -2, GFC_STD_F2003)
++NAMED_INTCST (ISOCBINDING_INT_FAST32_T, "c_int_fast32_t", -2, GFC_STD_F2003)
++NAMED_INTCST (ISOCBINDING_INT_FAST64_T, "c_int_fast64_t", -2, GFC_STD_F2003)
++/* GNU Extension.  */
++NAMED_INTCST (ISOCBINDING_INT_FAST128_T, "c_int_fast128_t", -2, GFC_STD_GNU)
+ 
+ NAMED_REALCST (ISOCBINDING_FLOAT, "c_float", \
+                get_real_kind_from_node (float_type_node))
+diff -urNp gcc-4.3.2/gcc-orig/fortran/iso-fortran-env.def gcc-4.3.2/gcc/fortran/iso-fortran-env.def
+--- gcc-4.3.2/gcc-orig/fortran/iso-fortran-env.def	2007-09-03 18:44:15.000000000 +0200
++++ gcc-4.3.2/gcc/fortran/iso-fortran-env.def	2008-06-07 14:01:18.000000000 +0200
+@@ -22,15 +22,22 @@ along with GCC; see the file COPYING3.  
+ /* The arguments to NAMED_INTCST are:
+      -- an internal name
+      -- the symbol name in the module, as seen by Fortran code
+-     -- the value it has  */
++     -- the value it has
++     -- the standard that supports this type  */ 
+ 
+ NAMED_INTCST (ISOFORTRANENV_CHARACTER_STORAGE_SIZE, "character_storage_size", \
+-              gfc_character_storage_size)
+-NAMED_INTCST (ISOFORTRANENV_ERROR_UNIT, "error_unit", GFC_STDERR_UNIT_NUMBER)
+-NAMED_INTCST (ISOFORTRANENV_FILE_STORAGE_SIZE, "file_storage_size", 8)
+-NAMED_INTCST (ISOFORTRANENV_INPUT_UNIT, "input_unit", GFC_STDIN_UNIT_NUMBER)
+-NAMED_INTCST (ISOFORTRANENV_IOSTAT_END, "iostat_end", LIBERROR_END)
+-NAMED_INTCST (ISOFORTRANENV_IOSTAT_EOR, "iostat_eor", LIBERROR_EOR)
++              gfc_character_storage_size, GFC_STD_F2003)
++NAMED_INTCST (ISOFORTRANENV_ERROR_UNIT, "error_unit", GFC_STDERR_UNIT_NUMBER, \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOFORTRANENV_FILE_STORAGE_SIZE, "file_storage_size", 8, \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOFORTRANENV_INPUT_UNIT, "input_unit", GFC_STDIN_UNIT_NUMBER, \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOFORTRANENV_IOSTAT_END, "iostat_end", LIBERROR_END, \
++              GFC_STD_F2003)
++NAMED_INTCST (ISOFORTRANENV_IOSTAT_EOR, "iostat_eor", LIBERROR_EOR, \
++              GFC_STD_F2003)
+ NAMED_INTCST (ISOFORTRANENV_NUMERIC_STORAGE_SIZE, "numeric_storage_size", \
+-              gfc_numeric_storage_size)
+-NAMED_INTCST (ISOFORTRANENV_OUTPUT_UNIT, "output_unit", GFC_STDOUT_UNIT_NUMBER)
++              gfc_numeric_storage_size, GFC_STD_F2003)
++NAMED_INTCST (ISOFORTRANENV_OUTPUT_UNIT, "output_unit", GFC_STDOUT_UNIT_NUMBER, \
++              GFC_STD_F2003)
+diff -urNp gcc-4.3.2/gcc-orig/fortran/module.c gcc-4.3.2/gcc/fortran/module.c
+--- gcc-4.3.2/gcc-orig/fortran/module.c	2008-05-13 22:26:47.000000000 +0200
++++ gcc-4.3.2/gcc/fortran/module.c	2008-06-07 14:01:18.000000000 +0200
+@@ -91,6 +91,7 @@ typedef struct
+   int id;
+   const char *name;
+   int value;
++  int standard;
+ }
+ intmod_sym;
+ 
+@@ -4643,13 +4644,13 @@ use_iso_fortran_env_module (void)
+   int i;
+ 
+   intmod_sym symbol[] = {
+-#define NAMED_INTCST(a,b,c) { a, b, 0 },
++#define NAMED_INTCST(a,b,c,d) { a, b, 0, d },
+ #include "iso-fortran-env.def"
+ #undef NAMED_INTCST
+-    { ISOFORTRANENV_INVALID, NULL, -1234 } };
++    { ISOFORTRANENV_INVALID, NULL, -1234, 0 } };
+ 
+   i = 0;
+-#define NAMED_INTCST(a,b,c) symbol[i++].value = c;
++#define NAMED_INTCST(a,b,c,d) symbol[i++].value = c;
+ #include "iso-fortran-env.def"
+ #undef NAMED_INTCST
+ 
+diff -urNp gcc-4.3.2/gcc-orig/fortran/symbol.c gcc-4.3.2/gcc/fortran/symbol.c
+--- gcc-4.3.2/gcc-orig/fortran/symbol.c	2008-01-30 07:56:10.000000000 +0100
++++ gcc-4.3.2/gcc/fortran/symbol.c	2008-06-07 14:01:18.000000000 +0200
+@@ -3740,6 +3740,20 @@ build_formal_args (gfc_symbol *new_proc_
+   gfc_current_ns = parent_ns;
+ }
+ 
++static int
++std_for_isocbinding_symbol (int id)
++{
++  switch (id)
++    {
++#define NAMED_INTCST(a,b,c,d) \
++      case a:\
++        return d;
++#include "iso-c-binding.def"
++#undef NAMED_INTCST
++       default:
++         return GFC_STD_F2003;
++    }
++}
+ 
+ /* Generate the given set of C interoperable kind objects, or all
+    interoperable kinds.  This function will only be given kind objects
+@@ -3765,6 +3779,8 @@ generate_isocbinding_symbol (const char 
+   char comp_name[(GFC_MAX_SYMBOL_LEN * 2) + 1];
+   int index;
+ 
++  if (gfc_notification_std (std_for_isocbinding_symbol (s)) == FAILURE)
++    return;
+   tmp_symtree = gfc_find_symtree (gfc_current_ns->sym_root, name);
+ 
+   /* Already exists in this scope so don't re-add it.
+@@ -3788,7 +3804,7 @@ generate_isocbinding_symbol (const char 
+   switch (s)
+     {
+ 
+-#define NAMED_INTCST(a,b,c) case a :
++#define NAMED_INTCST(a,b,c,d) case a : 
+ #define NAMED_REALCST(a,b,c) case a :
+ #define NAMED_CMPXCST(a,b,c) case a :
+ #define NAMED_LOGCST(a,b,c) case a :
+diff -urNp gcc-4.3.2/gcc-orig/fortran/trans-types.c gcc-4.3.2/gcc/fortran/trans-types.c
+--- gcc-4.3.2/gcc-orig/fortran/trans-types.c	2008-01-08 22:21:29.000000000 +0100
++++ gcc-4.3.2/gcc/fortran/trans-types.c	2008-06-07 14:01:18.000000000 +0200
+@@ -219,7 +219,7 @@ void init_c_interop_kinds (void)
+       c_interop_kinds_table[i].f90_type = BT_UNKNOWN;
+     }
+ 
+-#define NAMED_INTCST(a,b,c) \
++#define NAMED_INTCST(a,b,c,d) \
+   strncpy (c_interop_kinds_table[a].name, b, strlen(b) + 1); \
+   c_interop_kinds_table[a].f90_type = BT_INTEGER; \
+   c_interop_kinds_table[a].value = c;
+diff -urNp gcc-4.3.2/gcc-orig/testsuite/gfortran.dg/c_kind_int128_test1.f03 gcc-4.3.2/gcc/testsuite/gfortran.dg/c_kind_int128_test1.f03
+--- gcc-4.3.2/gcc-orig/testsuite/gfortran.dg/c_kind_int128_test1.f03	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.3.2/gcc/testsuite/gfortran.dg/c_kind_int128_test1.f03	2008-06-07 14:01:18.000000000 +0200
+@@ -0,0 +1,24 @@
++! { dg-do compile }
++! { dg-options "-std=f2003" }
++! { dg-require-effective-target fortran_integer_16 }
++!
++! Note: int_fast*_t currently not supported.
++
++subroutine c_kind_int128_1
++  use, intrinsic :: iso_c_binding
++  implicit none
++
++  integer(c_int128_t) :: a   ! { dg-error "has no IMPLICIT type" }
++  integer(c_int_least128_t) :: b   ! { dg-error "has no IMPLICIT type" }
++! integer(c_int_fast128_t) :: c   
++   
++end subroutine c_kind_int128_1
++
++subroutine c_kind_int128_2
++  use, intrinsic :: iso_c_binding
++
++  integer(c_int128_t) :: a   ! { dg-error "has not been declared or is a variable" }
++  integer(c_int_least128_t) :: b   ! { dg-error "has not been declared or is a variable" }
++! integer(c_int_fast128_t) :: c   
++   
++end subroutine c_kind_int128_2
+diff -urNp gcc-4.3.2/gcc-orig/testsuite/gfortran.dg/c_kind_int128_test2.f03 gcc-4.3.2/gcc/testsuite/gfortran.dg/c_kind_int128_test2.f03
+--- gcc-4.3.2/gcc-orig/testsuite/gfortran.dg/c_kind_int128_test2.f03	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.3.2/gcc/testsuite/gfortran.dg/c_kind_int128_test2.f03	2008-06-07 14:01:18.000000000 +0200
+@@ -0,0 +1,16 @@
++! { dg-do run }
++! { dg-options "-std=gnu" }
++! { dg-require-effective-target fortran_integer_16 }
++!
++! Note: int_fast*_t currently not supported.
++
++program c_kind_int128
++  use, intrinsic :: iso_c_binding
++  integer(c_int128_t) :: a  
++  integer(c_int_least128_t) :: b  
++! integer(c_int_fast128_t) :: c
++    
++  if (sizeof (a) /= 16) call abort 
++  if (sizeof (b) /= 16) call abort 
++!  if (sizeof (c) /= 16) call abort 
++end program c_kind_int128
+diff -urNp gcc-4.3.2/gcc-orig/testsuite/lib/target-supports.exp gcc-4.3.2/gcc/testsuite/lib/target-supports.exp
+--- gcc-4.3.2/gcc-orig/testsuite/lib/target-supports.exp	2008-03-21 10:18:37.000000000 +0100
++++ gcc-4.3.2/gcc/testsuite/lib/target-supports.exp	2008-06-07 14:01:18.000000000 +0200
+@@ -728,6 +728,18 @@ proc check_effective_target_fortran_larg
+     }]
+ }
+ 
++# Return 1 if the target supports Fortran integer(16), 0 otherwise.
++#
++# When the target name changes, replace the cached result.
++
++proc check_effective_target_fortran_integer_16 { } {
++    return [check_no_compiler_messages fortran_integer_16 executable {
++        ! Fortran
++        integer(16) :: i
++        end
++    }]
++}
++
+ # Return 1 if we can statically link libgfortran, 0 otherwise.
+ #
+ # When the target name changes, replace the cached result.
