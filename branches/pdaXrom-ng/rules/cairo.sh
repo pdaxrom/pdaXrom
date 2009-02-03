@@ -34,9 +34,9 @@ build_cairo() {
 	    --disable-quartz \
 	    --disable-beos \
 	    --disable-glitz \
-	    --disable-svg \
 	    --disable-atsui \
 	    --enable-xcb \
+	    --enable-svg \
 	    --enable-ps \
 	    --enable-pdf \
 	    --enable-xlib \
