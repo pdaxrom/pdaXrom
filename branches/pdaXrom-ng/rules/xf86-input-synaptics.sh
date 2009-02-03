@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_INPUT_SYNAPTICS=xf86-input-synaptics-0.15.2.tar.bz2
+XF86_INPUT_SYNAPTICS_VERSION=1.0.0
+XF86_INPUT_SYNAPTICS=xf86-input-synaptics-${XF86_INPUT_SYNAPTICS_VERSION}.tar.bz2
 XF86_INPUT_SYNAPTICS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_INPUT_SYNAPTICS_DIR=$BUILD_DIR/xf86-input-synaptics-0.15.2
+XF86_INPUT_SYNAPTICS_DIR=$BUILD_DIR/xf86-input-synaptics-${XF86_INPUT_SYNAPTICS_VERSION}
 XF86_INPUT_SYNAPTICS_ENV=
 
 build_xf86_input_synaptics() {
-    test -e "$STATE_DIR/xf86_input_synaptics-0.15.2" && return
+    test -e "$STATE_DIR/xf86_input_synaptics-${XF86_INPUT_SYNAPTICS_VERSION}" && return
     banner "Build $XF86_INPUT_SYNAPTICS"
     download $XF86_INPUT_SYNAPTICS_MIRROR $XF86_INPUT_SYNAPTICS
     extract $XF86_INPUT_SYNAPTICS
@@ -42,7 +43,7 @@ build_xf86_input_synaptics() {
     done
 
     popd
-    touch "$STATE_DIR/xf86_input_synaptics-0.15.2"
+    touch "$STATE_DIR/xf86_input_synaptics-${XF86_INPUT_SYNAPTICS_VERSION}"
 }
 
 build_xf86_input_synaptics
