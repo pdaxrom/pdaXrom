@@ -79,6 +79,11 @@
 . $RULES_DIR/atk.sh
 . $RULES_DIR/gtk2.sh
 
+# SVG support
+. $RULES_DIR/libgsf.sh
+. $RULES_DIR/libcroco.sh
+. $RULES_DIR/librsvg.sh
+
 #
 # icons set
 #
