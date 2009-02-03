@@ -25,6 +25,8 @@ KERNEL_CONFIG=versatile-kernel-2.6.28
 
 . ./sets/packages-x-lxde.inc
 
+. ./sets/packages-x-office.inc
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/create_initramfs.sh

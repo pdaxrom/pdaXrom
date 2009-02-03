@@ -30,6 +30,8 @@ TARGET_KERNEL_IMAGE=uImage
 . ./sets/packages-hal.inc
 . ./sets/packages-x-lxde.inc
 
+. ./sets/packages-x-office.inc
+
 #. ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-stb610.sh
