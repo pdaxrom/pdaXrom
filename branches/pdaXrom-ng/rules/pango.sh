@@ -30,9 +30,8 @@ build_pango() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --enable-explicit-deps=yes \
-	    --without-dynamic-modules \
 	    --with-included-modules="$PANGO_MODULES" \
+	    --enable-explicit-deps=yes \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
 	    || error
@@ -41,13 +40,26 @@ build_pango() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
+
     for f in pango pangocairo pangoft2 pangox pangoxft; do
 	$INSTALL -D -m 644 pango/.libs/lib${f}-1.0.so.0.2203.1 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2203.1 || error
 	ln -sf lib${f}-1.0.so.0.2203.1 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0
 	ln -sf lib${f}-1.0.so.0.2203.1 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so
 	$STRIP $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2203.1
     done
+
+    $INSTALL -D -m 755 pango/.libs/pango-querymodules $ROOTFS_DIR/usr/bin/pango-querymodules || error
+    $STRIP $ROOTFS_DIR/usr/bin/pango-querymodules
+
+    mkdir -p $ROOTFS_DIR/usr/lib/pango/1.6.0/modules || error "mkdir"
+    find modules/ -name "*.so" | while read f; do
+	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/lib/pango/1.6.0/modules/${f/*\/} || error "install $f"
+	$STRIP $ROOTFS_DIR/usr/lib/pango/1.6.0/modules/${f/*\/} || error "strip ${f/*\/}"
+    done
+
+    $INSTALL -D -m 644 pango/pangox.aliases $ROOTFS_DIR/etc/pango/pangox.aliases || error
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/pango $ROOTFS_DIR/etc/init.d/pango || error
+    install_rc_start pango 90
 
     popd
     touch "$STATE_DIR/pango.installed"
