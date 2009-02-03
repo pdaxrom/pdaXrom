@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. /etc/init.d/functions
+
+if [ -f /usr/bin/gdk-pixbuf-query-loaders ]; then
+    if [ ! -e /etc/gtk-2.0/gdk-pixbuf.loaders ]; then
+	log_begin_msg -n "Update gdk pixbuf loaders"
+	/usr/bin/gdk-pixbuf-query-loaders > /etc/gtk-2.0/gdk-pixbuf.loaders
+	log_end_msg $?
+    fi
+fi
+
+if [ -f /usr/bin/gtk-query-immodules-2.0 ]; then
+    if [ ! -e /etc/gtk-2.0/gtk.immodules ]; then
+	log_begin_msg -n "Update gtk input modules"
+	/usr/bin/gtk-query-immodules-2.0 > /etc/gtk-2.0/gtk.immodules
+	log_end_msg $?
+    fi
+fi
