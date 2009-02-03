@@ -31,6 +31,39 @@ build_libart_lgpl() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error
+
+	local T_CONF=
+	case $TARGET_ARCH in
+	i386*|i486*|i586*|i686*)
+	    T_CONF="x86"
+	    ;;
+	arm*l-*)
+	    T_CONF="armel"
+	    ;;
+	arm*b-*)
+	    T_CONF="armeb"
+	    ;;
+	mips*l-*)
+	    T_CONF="mipsel"
+	    ;;
+	mips*-*)
+	    T_CONF="mipseb"
+	    ;;
+	powerpc-*|ppc-*)
+	    T_CONF="ppc"
+	    ;;
+	powerpc64-*|ppc64-*)
+	    T_CONF="ppc64"
+	    ;;
+	x86_64*|amd64*)
+	    T_CONF="x86_64"
+	    ;;
+	*)
+	    T_CONF="${TARGET_ARCH/-*/}"
+	    ;;
+	esac
+	sed -i "s|./gen_art_config > art_config.h|# nothing|" Makefile
+	cp -f $CONFIG_DIR/libart_lgpl/art_config.h-${T_CONF} art_config.h || error
     ) || error "configure"
     
     make $MAKEARGS || error

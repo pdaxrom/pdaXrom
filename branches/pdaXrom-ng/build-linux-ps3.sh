@@ -24,6 +24,8 @@ KERNEL_CONFIG=ps3_kernel_config
 
 . ./sets/packages-x-lxde.inc
 
+. ./sets/packages-x-office.inc
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/ps3-utils.sh
