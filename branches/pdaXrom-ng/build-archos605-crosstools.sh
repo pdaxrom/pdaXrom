@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export CONF_ARCHOS=1
+export DEFAULT_FPU=softvfp
 
 export UCLIBC_CONFIG=archos605-config
 export KERNEL_VERSION=2.6.28
