@@ -12,7 +12,7 @@ TARGET_KERNEL_IMAGE=zImage
 
 KERNEL_OLDCONFIG_ENABLED=no
 
-./cpio/archos605.sh
+./generic/cpio-archos605/archos605.sh
 
 . ./sets/packages-basic.inc
 # . ./sets/packages-mmlibs.inc
