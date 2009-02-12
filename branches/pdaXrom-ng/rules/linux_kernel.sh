@@ -110,7 +110,11 @@ build_linux_kernel() {
     
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
     local KERNEL_IMAGE=`get_kernel_image $TARGET_ARCH`
-    make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS oldconfig $MAKEARGS || error
+
+    if [ "$KERNEL_OLDCONFIG_ENABLED" != "no" ]; then
+       make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS oldconfig $MAKEARGS || error 
+    fi
+
     make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $KERNEL_IMAGE $MAKEARGS || error
 
     if [ "$KERNEL_MODULES_ENABLED" != "no" ]; then

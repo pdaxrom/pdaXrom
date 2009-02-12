@@ -181,6 +181,10 @@ build_gcc_stage1() {
 	;;
     arm*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te}"
+
+        if [ "x$CONF_ARCHOS" = "x1" ]; then
+                CONF_ARGS="$CONF_ARGS --with-float=soft --with-fpu=vfp"
+        fi
 	;;
     mips*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \
@@ -258,6 +262,10 @@ build_gcc() {
     arm*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-armv5te} \
 		    --disable-libgomp"
+
+        if [ "x$CONF_ARCHOS" = "x1" ]; then
+                CONF_ARGS="$CONF_ARGS --with-float=soft --with-fpu=vfp"
+        fi
 	;;
     mips*)
 	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \

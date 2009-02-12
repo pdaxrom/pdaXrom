@@ -1,0 +1,106 @@
+dir /sbin 755 0 0
+slink /sbin/mkfs.ext3 /sbin/mke2fs 777 0 0
+file /sbin/mkdosfs /data/devel/pdaXrom-ng/cpio/archos605/sbin/mkdosfs 755 0 0
+file /sbin/rmmod /data/devel/pdaXrom-ng/cpio/archos605/sbin/rmmod 755 0 0
+slink /sbin/reboot /bin/busybox 777 0 0
+slink /sbin/chroot /bin/busybox 777 0 0
+file /sbin/insmod /data/devel/pdaXrom-ng/cpio/archos605/sbin/insmod 755 0 0
+file /sbin/mke2fs /data/devel/pdaXrom-ng/cpio/archos605/sbin/mke2fs 755 0 0
+file /sbin/sfdisk /data/devel/pdaXrom-ng/cpio/archos605/sbin/sfdisk 755 0 0
+dir /lib 755 0 0
+slink /lib/librt.so.0 librt-0.9.30.so 777 0 0
+file /lib/libcrypt-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libcrypt-0.9.30.so 644 0 0
+slink /lib/libudev.so libudev.so.0.0.6 777 0 0
+slink /lib/ld-uClibc.so.0 ld-uClibc-0.9.30.so 777 0 0
+slink /lib/libcrypt.so.0 libcrypt-0.9.30.so 777 0 0
+file /lib/libpthread-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libpthread-0.9.30.so 644 0 0
+slink /lib/libudev.so.0 libudev.so.0.0.6 777 0 0
+file /lib/libresolv-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libresolv-0.9.30.so 644 0 0
+slink /lib/libm.so.0 libm-0.9.30.so 777 0 0
+file /lib/libm-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libm-0.9.30.so 644 0 0
+file /lib/libuClibc-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libuClibc-0.9.30.so 644 0 0
+slink /lib/libresolv.so.0 libresolv-0.9.30.so 777 0 0
+file /lib/librt-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/librt-0.9.30.so 644 0 0
+slink /lib/libutil.so.0 libutil-0.9.30.so 777 0 0
+file /lib/libnsl-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libnsl-0.9.30.so 644 0 0
+slink /lib/libc.so.0 libuClibc-0.9.30.so 777 0 0
+slink /lib/libpthread.so.0 libpthread-0.9.30.so 777 0 0
+file /lib/ld-uClibc-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/ld-uClibc-0.9.30.so 755 0 0
+file /lib/libudev.so.0.0.6 /data/devel/pdaXrom-ng/cpio/archos605/lib/libudev.so.0.0.6 755 0 0
+dir /lib/modules 755 0 0
+file /lib/modules/flashrw.ko /data/devel/pdaXrom-ng/cpio/archos605/lib/modules/flashrw.ko 755 0 0
+file /lib/modules/usbhid.ko /data/devel/pdaXrom-ng/cpio/archos605/lib/modules/usbhid.ko 755 0 0
+file /lib/modules/davinci-cpuid.ko /data/devel/pdaXrom-ng/cpio/archos605/lib/modules/davinci-cpuid.ko 755 0 0
+file /lib/modules/keystore.ko /data/devel/pdaXrom-ng/cpio/archos605/lib/modules/keystore.ko 755 0 0
+file /lib/modules/usbkbd.ko /data/devel/pdaXrom-ng/cpio/archos605/lib/modules/usbkbd.ko 755 0 0
+file /lib/libdl-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libdl-0.9.30.so 644 0 0
+slink /lib/libnsl.so.0 libnsl-0.9.30.so 777 0 0
+slink /lib/libdl.so.0 libdl-0.9.30.so 777 0 0
+file /lib/libutil-0.9.30.so /data/devel/pdaXrom-ng/cpio/archos605/lib/libutil-0.9.30.so 644 0 0
+dir /tmp 755 0 0
+dir /dev 755 0 0
+dir /sys 755 0 0
+file /init /data/devel/pdaXrom-ng/cpio/archos605/init 755 0 0
+dir /new-root 755 0 0
+dir /etc 755 0 0
+dir /etc/scripts 755 0 0
+file /etc/scripts/hdd_lock_update.sh /data/devel/pdaXrom-ng/cpio/archos605/etc/scripts/hdd_lock_update.sh 755 0 0
+file /etc/scripts/set_hdd.sh /data/devel/pdaXrom-ng/cpio/archos605/etc/scripts/set_hdd.sh 755 0 0
+file /etc/scripts/hdd_lock_recovery.sh /data/devel/pdaXrom-ng/cpio/archos605/etc/scripts/hdd_lock_recovery.sh 755 0 0
+file /etc/scripts/recovery.sh /data/devel/pdaXrom-ng/cpio/archos605/etc/scripts/recovery.sh 755 0 0
+dir /bin 755 0 0
+slink /bin/false /bin/busybox 777 0 0
+file /bin/hdd_lock /data/devel/pdaXrom-ng/cpio/archos605/bin/hdd_lock 755 0 0
+slink /bin/cat /bin/busybox 777 0 0
+file /bin/sys_info /data/devel/pdaXrom-ng/cpio/archos605/bin/sys_info 755 0 0
+file /bin/busybox /data/devel/pdaXrom-ng/cpio/archos605/bin/busybox 755 0 0
+file /bin/print_root_partition_info /data/devel/pdaXrom-ng/cpio/archos605/bin/print_root_partition_info 755 0 0
+slink /bin/sh /bin/busybox 777 0 0
+slink /bin/echo /bin/busybox 777 0 0
+file /bin/create_partitiontable /data/devel/pdaXrom-ng/cpio/archos605/bin/create_partitiontable 755 0 0
+file /bin/auid /data/devel/pdaXrom-ng/cpio/archos605/bin/auid 755 0 0
+slink /bin/umount /bin/busybox 777 0 0
+file /bin/run-init /data/devel/pdaXrom-ng/cpio/archos605/bin/run-init 755 0 0
+slink /bin/grep /bin/busybox 777 0 0
+slink /bin/sync /bin/busybox 777 0 0
+slink /bin/mkdir /bin/busybox 777 0 0
+slink /bin/dd /bin/busybox 777 0 0
+slink /bin/fgrep /bin/busybox 777 0 0
+file /bin/aosparser /data/devel/pdaXrom-ng/cpio/archos605/bin/aosparser 755 0 0
+file /bin/aui /data/devel/pdaXrom-ng/cpio/archos605/bin/aui 755 0 0
+file /bin/create_sysid /data/devel/pdaXrom-ng/cpio/archos605/bin/create_sysid 755 0 0
+slink /bin/mount /bin/busybox 777 0 0
+slink /bin/egrep /bin/busybox 777 0 0
+slink /bin/ash /bin/busybox 777 0 0
+slink /bin/sleep /bin/busybox 777 0 0
+file /bin/cramfschecker /data/devel/pdaXrom-ng/cpio/archos605/bin/cramfschecker 755 0 0
+file /bin/getflashparam /data/devel/pdaXrom-ng/cpio/archos605/bin/getflashparam 755 0 0
+slink /bin/ln /bin/busybox 777 0 0
+slink /bin/cp /bin/busybox 777 0 0
+dir /mnt 755 0 0
+dir /mnt/data 755 0 0
+dir /mnt/ram 755 0 0
+dir /mnt/system 755 0 0
+dir /usr 755 0 0
+dir /usr/bin 755 0 0
+slink /usr/bin/[ /bin/busybox 777 0 0
+slink /usr/bin/test /bin/busybox 777 0 0
+dir /proc 755 0 0
+file /init.orig /data/devel/pdaXrom-ng/cpio/archos605/init.orig 755 0 0
+nod   /dev/console     0666 0 0 c 5  1
+nod   /dev/fb0         0666 0 0 c 29 0
+slink /dev/fb      fb0 0666 0 0
+nod   /dev/flashrw     0666 0 0 c 10 243
+nod   /dev/gfx         0666 0 0 c 10 242
+nod   /dev/hda         0666 0 0 b 3  0
+nod   /dev/hda1        0666 0 0 b 3  1
+nod   /dev/hda2        0666 0 0 b 3  2
+nod   /dev/hda3        0666 0 0 b 3  3
+nod   /dev/loop0       0666 0 0 b 7  0
+nod   /dev/msp         0660 0 0 c 10 240
+nod   /dev/null        0666 0 0 c 1  3
+nod   /dev/ram0        0666 0 0 b 1  0
+nod   /dev/tty         0666 0 0 c 5  0
+nod   /dev/tty0        0666 0 0 c 4  0
+nod   /dev/ttyS0       0666 0 0 c 4  64
+nod   /dev/zero        0666 0 0 c 1  5
