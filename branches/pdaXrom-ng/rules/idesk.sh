@@ -43,7 +43,7 @@ build_idesk() {
     $INSTALL -D -m 644 examples/folder_home.xpm $ROOTFS_DIR/usr/share/idesk/folder_home.xpm || error
     $INSTALL -D -m 644 $GENERICFS_DIR/idesk/default.lnk $ROOTFS_DIR/usr/share/idesk/default.lnk || error
     $INSTALL -D -m 644 $GENERICFS_DIR/idesk/dot.ideskrc $ROOTFS_DIR/usr/share/idesk/dot.ideskrc || error
-    $INSTALL -D -m 644 $GENERICFS_DIR/idesk/withatwist.png $ROOTFS_DIR/usr/share/idesk/withatwist.png || error
+    $INSTALL -D -m 644 $GENERICFS_DIR/wallpapers/withatwist.png $ROOTFS_DIR/usr/share/idesk/withatwist.png || error
 
     popd
     touch "$STATE_DIR/idesk.installed"

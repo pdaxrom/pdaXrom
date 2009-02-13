@@ -13,3 +13,10 @@
 . $RULES_DIR/libart_lgpl.sh
 . $RULES_DIR/goffice.sh
 . $RULES_DIR/gnumeric.sh
+
+#
+# epdfview
+#
+
+. $RULES_DIR/poppler.sh
+. $RULES_DIR/epdfview.sh

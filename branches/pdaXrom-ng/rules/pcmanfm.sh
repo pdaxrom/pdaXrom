@@ -33,9 +33,6 @@ build_pcmanfm() {
 	    --x-libraries=$TARGET_LIB \
 	    --enable-hal \
 	    --disable-superuser-checks
-
-#	    --disable-hal
-
     ) || error "configure"
     
     make $MAKEARGS || error
@@ -48,7 +45,8 @@ build_pcmanfm() {
     update-mime-database $ROOTFS_DIR/usr/share/mime
 
     $INSTALL -D -m 644 $GENERICFS_DIR/pcmanfm/main $ROOTFS_DIR/etc/xdg/pcmanfm/main || error
-    $INSTALL -D -m 644 $GENERICFS_DIR/idesk/withatwist.png $ROOTFS_DIR/usr/share/pixmaps/withatwist.png || error
+    $INSTALL -D -m 644 $GENERICFS_DIR/wallpapers/ng-13.02.2009/3.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/3.jpg || error
+    ln -sf 3.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/default.jpg
 
     $INSTALL -D -m 644 $GENERICFS_DIR/defaults.list $ROOTFS_DIR/usr/share/applications/defaults.list || error
 

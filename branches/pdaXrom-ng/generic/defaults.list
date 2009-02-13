@@ -1,5 +1,33 @@
 
 [Default Applications]
+application/csv=gnumeric.desktop
+application/excel=gnumeric.desktop
+application/msexcel=gnumeric.desktop
+application/msword=abiword.desktop
+application/pdf=epdfview.desktop
+application/postscript=epdfview.desktop
+application/csv=gnumeric.desktop
+application/excel=gnumeric.desktop
+application/msexcel=gnumeric.desktop
+application/msword=abiword.desktop
+application/wordperfect=abiword.desktop
+application/x-123=gnumeric.desktop
+application/x-abiword=abiword.desktop
+application/x-applix-spreadsheet=gnumeric.desktop
+application/x-dos_ms_excel=gnumeric.desktop
+application/x-excel=gnumeric.desktop
+application/x-gnumeric=gnumeric.desktop
+application/xls=gnumeric.desktop
+application/x-mps=gnumeric.desktop
+application/x-ms-excel=gnumeric.desktop
+application/x-msexcel=gnumeric.desktop
+application/x-oleo=gnumeric.desktop
+application/x-planperfect=gnumeric.desktop
+application/x-quattropro=gnumeric.desktop
+application/x-sc=gnumeric.desktop
+application/x-sylk=gnumeric.desktop
+application/x-xls=gnumeric.desktop
+
 audio/mpeg=audacious.desktop
 audio/mpegurl=audacious.desktop
 audio/vnd.rn-realaudio=audacious.desktop
@@ -43,6 +71,12 @@ image/x-psd=gimp-2.2.desktop
 image/x-xbitmap=gpicview.desktop
 image/x-xpixmap=gpicview.desktop
 
+text/abiword=abiword.desktop
+text/richtext=abiword.desktop
+text/rtf=abiword.desktop
+text/spreadsheet=gnumeric.desktop
+text/tab-separated-values=gnumeric.desktop
+text/x-comma-separated-values=gnumeric.desktop
 text/html=mozilla-firefox.desktop
 text/plain=leafpad.desktop
 text/x-chdr=leafpad.desktop
@@ -53,3 +87,4 @@ text/mathml=leafpad.desktop
 text/x-python=leafpad.desktop
 text/x-sql=leafpad.desktop
 text/xml=mozilla-firefox.desktop
+zz-application/zz-winassoc-xls=gnumeric.desktop
