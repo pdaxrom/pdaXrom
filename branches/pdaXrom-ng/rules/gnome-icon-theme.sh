@@ -41,7 +41,7 @@ build_gnome_icon_theme() {
     ln -sf gnome $ROOTFS_DIR/usr/share/icons/default
 
     mkdir -p $ROOTFS_DIR/etc/gtk-2.0
-    echo "gtk-icon-theme-name=\"gnome\"" > $ROOTFS_DIR/etc/gtk-2.0/gtkrc
+    echo "gtk-icon-theme-name=\"gnome\"" >> $ROOTFS_DIR/etc/gtk-2.0/gtkrc
 
     popd
     touch "$STATE_DIR/gnome_icon_theme.installed"
