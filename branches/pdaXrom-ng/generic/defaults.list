@@ -27,6 +27,10 @@ application/x-quattropro=gnumeric.desktop
 application/x-sc=gnumeric.desktop
 application/x-sylk=gnumeric.desktop
 application/x-xls=gnumeric.desktop
+application/vnd.ms-excel=gnumeric.desktop
+application/vnd.ms-word=abiword.desktop
+application/vnd.oasis.opendocument.spreadsheet=gnumeric.desktop
+application/vnd.oasis.opendocument.spreadsheet-template=gnumeric.desktop
 
 audio/mpeg=audacious.desktop
 audio/mpegurl=audacious.desktop
