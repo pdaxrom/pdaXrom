@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-OPENSSL=openssl-0.9.8j.tar.gz
+OPENSSL_VERSION=0.9.8j
+OPENSSL=openssl-${OPENSSL_VERSION}.tar.gz
 OPENSSL_MIRROR=http://www.openssl.org/source
-OPENSSL_DIR=$BUILD_DIR/openssl-0.9.8j
+OPENSSL_DIR=$BUILD_DIR/openssl-${OPENSSL_VERSION}
 OPENSSL_ENV=
 
 build_openssl_thud() {
@@ -50,7 +51,7 @@ build_openssl_thud() {
 }
 
 build_openssl() {
-    test -e "$STATE_DIR/openssl-0.9.8i" && return
+    test -e "$STATE_DIR/openssl-${OPENSSL_VERSION}" && return
     banner "Build $OPENSSL"
     download $OPENSSL_MIRROR $OPENSSL
     extract $OPENSSL
@@ -91,7 +92,7 @@ build_openssl() {
     $STRIP $ROOTFS_DIR/usr/lib/libssl.so.0.9.8
 
     popd
-    touch "$STATE_DIR/openssl-0.9.8i"
+    touch "$STATE_DIR/openssl-${OPENSSL_VERSION}"
 }
 
 build_openssl

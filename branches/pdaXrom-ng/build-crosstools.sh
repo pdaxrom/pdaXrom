@@ -40,6 +40,7 @@ case $TARGET_ARCH in
     . $RULES_DIR/mingw32-zlib.sh
     . $RULES_DIR/mingw32-libjpeg.sh
     . $RULES_DIR/mingw32-libpng.sh
+    . $RULES_DIR/mingw32-openssl.sh
     . $RULES_DIR/mingw32-SDL.sh
     . $RULES_DIR/mingw32-qemu.sh
     ;;
