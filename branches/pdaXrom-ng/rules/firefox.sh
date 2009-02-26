@@ -9,14 +9,15 @@
 # see the README file.
 #
 
-FIREFOX=firefox-3.0.5-source.tar.bz2
-FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/3.0.5/source
+FIREFOX_VERSION=3.0.6
+FIREFOX=firefox-${FIREFOX_VERSION}-source.tar.bz2
+FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${FIREFOX_VERSION}/source
 FIREFOX_DIR=$BUILD_DIR/mozilla
 FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv_va_copy=yes ac_cv_va_val_copy=no"
 
 build_firefox() {
-    test -e "$STATE_DIR/firefox.installed" && return
-    banner "Build firefox"
+    test -e "$STATE_DIR/firefox-${FIREFOX_VERSION}.installed" && return
+    banner "Build firefox ${FIREFOX_VERSION}"
     download $FIREFOX_MIRROR $FIREFOX
     extract $FIREFOX
     apply_patches $FIREFOX_DIR $FIREFOX
@@ -143,9 +144,9 @@ build_firefox() {
 	install \
     || error
 
-    cp -R fakeroot/usr/lib/firefox-3.0.5 $ROOTFS_DIR/usr/lib/ || error "copy binaries to rootfs"
-    ln -sf firefox-3.0.5 $ROOTFS_DIR/usr/lib/firefox || error
-    ln -sf ../lib/firefox-3.0.5/firefox $ROOTFS_DIR/usr/bin/ || error
+    cp -R fakeroot/usr/lib/firefox-${FIREFOX_VERSION} $ROOTFS_DIR/usr/lib/ || error "copy binaries to rootfs"
+    ln -sf firefox-${FIREFOX_VERSION} $ROOTFS_DIR/usr/lib/firefox || error
+    ln -sf ../lib/firefox-${FIREFOX_VERSION}/firefox $ROOTFS_DIR/usr/bin/ || error
 
     $INSTALL -D -m 644 $GENERICFS_DIR/firefox/mozilla-firefox.desktop $ROOTFS_DIR/usr/share/applications/mozilla-firefox.desktop || error
     $INSTALL -D -m 644 $GENERICFS_DIR/firefox/mozilla-firefox.png $ROOTFS_DIR/usr/share/pixmaps/mozilla-firefox.png || error
@@ -154,7 +155,7 @@ build_firefox() {
     $INSTALL -m 644 $GENERICFS_DIR/firefox/firefox-branding.js $ROOTFS_DIR/usr/lib/firefox/defaults/pref/firefox-branding.js || error
 
     popd
-    touch "$STATE_DIR/firefox.installed"
+    touch "$STATE_DIR/firefox-${FIREFOX_VERSION}.installed"
 }
 
 build_firefox
