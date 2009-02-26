@@ -30,6 +30,7 @@ build_bluez() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --localstatedir=/var \
 	    --enable-usb \
 	    --enable-netlink \
 	    --enable-tools \
@@ -58,6 +59,7 @@ build_bluez() {
 
     cp -R fakeroot/etc $ROOTFS_DIR/ || error "install etc"
     cp -R fakeroot/usr $ROOTFS_DIR/ || error "install usr"
+    cp -R fakeroot/var $ROOTFS_DIR/ || error "install var"
 
     $INSTALL -D -m 644 scripts/bluetooth.default $ROOTFS_DIR/etc/default/bluetooth || error
     $INSTALL -D -m 644 scripts/bluetooth.rules $ROOTFS_DIR/lib/udev/rules.d/50-bluetooth.rules || error
