@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_VOODOO=xf86-video-voodoo-1.2.0.tar.bz2
+XF86_VIDEO_VOODOO_VERSION=1.2.1
+XF86_VIDEO_VOODOO=xf86-video-voodoo-${XF86_VIDEO_VOODOO_VERSION}.tar.bz2
 XF86_VIDEO_VOODOO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_VOODOO_DIR=$BUILD_DIR/xf86-video-voodoo-1.2.0
+XF86_VIDEO_VOODOO_DIR=$BUILD_DIR/xf86-video-voodoo-${XF86_VIDEO_VOODOO_VERSION}
 XF86_VIDEO_VOODOO_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_voodoo() {
-    test -e "$STATE_DIR/xf86_video_voodoo.installed" && return
+    test -e "$STATE_DIR/xf86_video_voodoo-${XF86_VIDEO_VOODOO_VERSION}.installed" && return
     banner "Build xf86-video-voodoo"
     download $XF86_VIDEO_VOODOO_MIRROR $XF86_VIDEO_VOODOO
     extract $XF86_VIDEO_VOODOO
@@ -38,7 +39,7 @@ build_xf86_video_voodoo() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/voodoo_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_voodoo.installed"
+    touch "$STATE_DIR/xf86_video_voodoo-${XF86_VIDEO_VOODOO_VERSION}.installed"
 }
 
 build_xf86_video_voodoo

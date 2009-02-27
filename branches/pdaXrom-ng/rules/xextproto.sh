@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XEXTPROTO=xextproto-7.0.3.tar.bz2
+XEXTPROTO_VERSION=7.0.5
+XEXTPROTO=xextproto-${XEXTPROTO_VERSION}.tar.bz2
 XEXTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XEXTPROTO_DIR=$BUILD_DIR/xextproto-7.0.3
+XEXTPROTO_DIR=$BUILD_DIR/xextproto-${XEXTPROTO_VERSION}
 XEXTPROTO_ENV=
 
 build_xextproto() {
-    test -e "$STATE_DIR/xextproto-7.0.2" && return
+    test -e "$STATE_DIR/xextproto-${XEXTPROTO_VERSION}" && return
     banner "Build $XEXTPROTO"
     download $XEXTPROTO_MIRROR $XEXTPROTO
     extract $XEXTPROTO
@@ -35,7 +36,7 @@ build_xextproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xextproto-7.0.2"
+    touch "$STATE_DIR/xextproto-${XEXTPROTO_VERSION}"
 }
 
 build_xextproto

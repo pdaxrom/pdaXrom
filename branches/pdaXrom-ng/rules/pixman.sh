@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-PIXMAN=pixman-0.13.2.tar.bz2
+PIXMAN_VERSION=0.14.0
+PIXMAN=pixman-${PIXMAN_VERSION}.tar.bz2
 PIXMAN_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-PIXMAN_DIR=$BUILD_DIR/pixman-0.13.2
+PIXMAN_DIR=$BUILD_DIR/pixman-${PIXMAN_VERSION}
 PIXMAN_ENV=
 
 build_pixman() {
-    test -e "$STATE_DIR/pixman-0.13.2" && return
+    test -e "$STATE_DIR/pixman-${PIXMAN_VERSION}" && return
     banner "Build $PIXMAN"
     download $PIXMAN_MIRROR $PIXMAN
     extract $PIXMAN
@@ -35,13 +36,13 @@ build_pixman() {
 
     install_sysroot_files || error
     
-    $INSTALL -D -m 644 pixman/.libs/libpixman-1.so.0.13.2 $ROOTFS_DIR/usr/lib/libpixman-1.so.0.13.2 || error
-    ln -sf libpixman-1.so.0.13.2 $ROOTFS_DIR/usr/lib/libpixman-1.so.0
-    ln -sf libpixman-1.so.0.13.2 $ROOTFS_DIR/usr/lib/libpixman-1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libpixman-1.so.0.13.2
+    $INSTALL -D -m 644 pixman/.libs/libpixman-1.so.${PIXMAN_VERSION} $ROOTFS_DIR/usr/lib/libpixman-1.so.${PIXMAN_VERSION} || error
+    ln -sf libpixman-1.so.${PIXMAN_VERSION} $ROOTFS_DIR/usr/lib/libpixman-1.so.0
+    ln -sf libpixman-1.so.${PIXMAN_VERSION} $ROOTFS_DIR/usr/lib/libpixman-1.so
+    $STRIP $ROOTFS_DIR/usr/lib/libpixman-1.so.${PIXMAN_VERSION}
 
     popd
-    touch "$STATE_DIR/pixman-0.13.2"
+    touch "$STATE_DIR/pixman-${PIXMAN_VERSION}"
 }
 
 build_pixman

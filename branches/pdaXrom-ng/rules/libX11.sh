@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBX11=libX11-1.1.5.tar.bz2
+LIBX11_VERSION=1.2
+LIBX11=libX11-${LIBX11_VERSION}.tar.bz2
 LIBX11_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBX11_DIR=$BUILD_DIR/libX11-1.1.5
+LIBX11_DIR=$BUILD_DIR/libX11-${LIBX11_VERSION}
 LIBX11_ENV=
 
 build_libX11() {
-    test -e "$STATE_DIR/libX11-1.1.3" && return
+    test -e "$STATE_DIR/libX11-${LIBX11_VERSION}" && return
     banner "Build $LIBX11"
     download $LIBX11_MIRROR $LIBX11
     extract $LIBX11
@@ -71,7 +72,7 @@ build_libX11() {
     $INSTALL -D -m 644 src/XErrorDB	$ROOTFS_DIR/usr/share/X11/XErrorDB
 
     popd
-    touch "$STATE_DIR/libX11-1.1.3"
+    touch "$STATE_DIR/libX11-${LIBX11_VERSION}"
 }
 
 build_libX11

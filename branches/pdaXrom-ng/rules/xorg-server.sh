@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XORG_SERVER=xorg-server-1.5.3.tar.bz2
+XORG_SERVER_VERSION=1.6.0
+XORG_SERVER=xorg-server-${XORG_SERVER_VERSION}.tar.bz2
 XORG_SERVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/xserver
-XORG_SERVER_DIR=$BUILD_DIR/xorg-server-1.5.3
+XORG_SERVER_DIR=$BUILD_DIR/xorg-server-${XORG_SERVER_VERSION}
 XORG_SERVER_ENV=
 #"ac_cv_sys_linker_h=yes \
 #	ac_cv_file__usr_share_sgml_X11_defs_ent=no \
@@ -19,7 +20,7 @@ XORG_SERVER_ENV=
 #	ac_cv_header_linux_agpgart_h=no"
 
 build_xorg_server() {
-    test -e "$STATE_DIR/xorg_server-1.4" && return
+    test -e "$STATE_DIR/xorg_server-${XORG_SERVER_VERSION}" && return
     banner "Build $XORG_SERVER"
     download $XORG_SERVER_MIRROR $XORG_SERVER
     extract $XORG_SERVER
@@ -78,7 +79,7 @@ build_xorg_server() {
     $STRIP $ROOTFS_DIR/usr/bin/Xorg
 
     popd
-    touch "$STATE_DIR/xorg_server-1.4"
+    touch "$STATE_DIR/xorg_server-${XORG_SERVER_VERSION}"
 }
 
 build_xorg_server

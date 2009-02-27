@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBICE=libICE-1.0.4.tar.bz2
+LIBICE_VERSION=1.0.5
+LIBICE=libICE-${LIBICE_VERSION}.tar.bz2
 LIBICE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBICE_DIR=$BUILD_DIR/libICE-1.0.4
+LIBICE_DIR=$BUILD_DIR/libICE-${LIBICE_VERSION}
 LIBICE_ENV=
 
 build_libICE() {
-    test -e "$STATE_DIR/libICE-1.0.4" && return
+    test -e "$STATE_DIR/libICE-${LIBICE_VERSION}" && return
     banner "Build $LIBICE"
     download $LIBICE_MIRROR $LIBICE
     extract $LIBICE
@@ -40,7 +41,7 @@ build_libICE() {
     $STRIP $ROOTFS_DIR/usr/lib/libICE.so.6.3.0
 
     popd
-    touch "$STATE_DIR/libICE-1.0.4"
+    touch "$STATE_DIR/libICE-${LIBICE_VERSION}"
 }
 
 build_libICE

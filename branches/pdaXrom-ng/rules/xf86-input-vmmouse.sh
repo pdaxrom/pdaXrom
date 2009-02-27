@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_INPUT_VMMOUSE=xf86-input-vmmouse-12.6.2.tar.bz2
+XF86_INPUT_VMMOUSE_VERSION=12.6.3
+XF86_INPUT_VMMOUSE=xf86-input-vmmouse-${XF86_INPUT_VMMOUSE_VERSION}.tar.bz2
 XF86_INPUT_VMMOUSE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_INPUT_VMMOUSE_DIR=$BUILD_DIR/xf86-input-vmmouse-12.6.2
+XF86_INPUT_VMMOUSE_DIR=$BUILD_DIR/xf86-input-vmmouse-${XF86_INPUT_VMMOUSE_VERSION}
 XF86_INPUT_VMMOUSE_ENV=
 
 build_xf86_input_vmmouse() {
-    test -e "$STATE_DIR/xf86_input_vmmouse-12.6.2" && return
+    test -e "$STATE_DIR/xf86_input_vmmouse-${XF86_INPUT_VMMOUSE_VERSION}" && return
     banner "Build $XF86_INPUT_VMMOUSE"
     download $XF86_INPUT_VMMOUSE_MIRROR $XF86_INPUT_VMMOUSE
     extract $XF86_INPUT_VMMOUSE
@@ -37,7 +38,7 @@ build_xf86_input_vmmouse() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/input/vmmouse_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_input_vmmouse-12.6.2"
+    touch "$STATE_DIR/xf86_input_vmmouse-${XF86_INPUT_VMMOUSE_VERSION}"
 }
 
 build_xf86_input_vmmouse

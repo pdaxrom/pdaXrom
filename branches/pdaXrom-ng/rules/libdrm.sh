@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBDRM=libdrm-2.4.4.tar.bz2
+LIBDRM_VERSION=2.4.5
+LIBDRM=libdrm-${LIBDRM_VERSION}.tar.bz2
 LIBDRM_MIRROR=http://dri.freedesktop.org/libdrm
-LIBDRM_DIR=$BUILD_DIR/libdrm-2.4.4
+LIBDRM_DIR=$BUILD_DIR/libdrm-${LIBDRM_VERSION}
 LIBDRM_ENV=
 
 build_libdrm() {
-    test -e "$STATE_DIR/libdrm-2.4.1" && return
+    test -e "$STATE_DIR/libdrm-${LIBDRM_VERSION}" && return
     banner "Build $LIBDRM"
     download $LIBDRM_MIRROR $LIBDRM
     extract $LIBDRM
@@ -46,7 +47,7 @@ build_libdrm() {
     $STRIP $ROOTFS_DIR/usr/lib/libdrm_intel.so.1.0.0
 
     popd
-    touch "$STATE_DIR/libdrm-2.4.1"
+    touch "$STATE_DIR/libdrm-${LIBDRM_VERSION}"
 }
 
 build_libdrm

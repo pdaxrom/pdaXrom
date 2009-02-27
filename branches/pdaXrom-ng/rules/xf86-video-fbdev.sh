@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_FBDEV=xf86-video-fbdev-0.4.0.tar.bz2
+XF86_VIDEO_FBDEV_VERSION=0.4.0
+XF86_VIDEO_FBDEV=xf86-video-fbdev-${XF86_VIDEO_FBDEV_VERSION}.tar.bz2
 XF86_VIDEO_FBDEV_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_FBDEV_DIR=$BUILD_DIR/xf86-video-fbdev-0.4.0
+XF86_VIDEO_FBDEV_DIR=$BUILD_DIR/xf86-video-fbdev-${XF86_VIDEO_FBDEV_VERSION}
 XF86_VIDEO_FBDEV_ENV=
 
 build_xf86_video_fbdev() {
-    test -e "$STATE_DIR/xf86_video_fbdev-0.4.0" && return
+    test -e "$STATE_DIR/xf86_video_fbdev-${XF86_VIDEO_FBDEV_VERSION}" && return
     banner "Build $XF86_VIDEO_FBDEV"
     download $XF86_VIDEO_FBDEV_MIRROR $XF86_VIDEO_FBDEV
     extract $XF86_VIDEO_FBDEV
@@ -37,7 +38,7 @@ build_xf86_video_fbdev() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/fbdev_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_fbdev-0.4.0"
+    touch "$STATE_DIR/xf86_video_fbdev-${XF86_VIDEO_FBDEV_VERSION}"
 }
 
 build_xf86_video_fbdev

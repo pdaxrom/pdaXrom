@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXFONT=libXfont-1.3.3.tar.bz2
+LIBXFONT_VERSION=1.4.0
+LIBXFONT=libXfont-${LIBXFONT_VERSION}.tar.bz2
 LIBXFONT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXFONT_DIR=$BUILD_DIR/libXfont-1.3.3
+LIBXFONT_DIR=$BUILD_DIR/libXfont-${LIBXFONT_VERSION}
 LIBXFONT_ENV=
 
 build_libXfont() {
-    test -e "$STATE_DIR/libXfont-1.3.1" && return
+    test -e "$STATE_DIR/libXfont-${LIBXFONT_VERSION}" && return
     banner "Build $LIBXFONT"
     download $LIBXFONT_MIRROR $LIBXFONT
     extract $LIBXFONT
@@ -51,7 +52,7 @@ build_libXfont() {
     $STRIP $ROOTFS_DIR/usr/lib/libXfont.so.1.4.1
 
     popd
-    touch "$STATE_DIR/libXfont-1.3.1"
+    touch "$STATE_DIR/libXfont-${LIBXFONT_VERSION}"
 }
 
 build_libXfont

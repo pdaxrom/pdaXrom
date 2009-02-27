@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XTRANS=xtrans-1.2.2.tar.bz2
+XTRANS_VERSION=1.2.3
+XTRANS=xtrans-${XTRANS_VERSION}.tar.bz2
 XTRANS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-XTRANS_DIR=$BUILD_DIR/xtrans-1.2.2
+XTRANS_DIR=$BUILD_DIR/xtrans-${XTRANS_VERSION}
 XTRANS_ENV=
 
 build_xtrans() {
-    test -e "$STATE_DIR/xtrans-1.0.4" && return
+    test -e "$STATE_DIR/xtrans-${XTRANS_VERSION}" && return
     banner "Build $XTRANS"
     download $XTRANS_MIRROR $XTRANS
     extract $XTRANS
@@ -35,7 +36,7 @@ build_xtrans() {
     install_sysroot_files
 
     popd
-    touch "$STATE_DIR/xtrans-1.0.4"
+    touch "$STATE_DIR/xtrans-${XTRANS_VERSION}"
 }
 
 build_xtrans

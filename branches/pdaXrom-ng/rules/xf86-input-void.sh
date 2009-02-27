@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_INPUT_VOID=xf86-input-void-1.1.1.tar.bz2
+XF86_INPUT_VOID_VERSION=1.2.0
+XF86_INPUT_VOID=xf86-input-void-${XF86_INPUT_VOID_VERSION}.tar.bz2
 XF86_INPUT_VOID_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_INPUT_VOID_DIR=$BUILD_DIR/xf86-input-void-1.1.1
+XF86_INPUT_VOID_DIR=$BUILD_DIR/xf86-input-void-${XF86_INPUT_VOID_VERSION}
 XF86_INPUT_VOID_ENV=
 
 build_xf86_input_void() {
-    test -e "$STATE_DIR/xf86_input_void-1.1.1" && return
+    test -e "$STATE_DIR/xf86_input_void-${XF86_INPUT_VOID_VERSION}" && return
     banner "Build $XF86_INPUT_VOID"
     download $XF86_INPUT_VOID_MIRROR $XF86_INPUT_VOID
     extract $XF86_INPUT_VOID
@@ -37,7 +38,7 @@ build_xf86_input_void() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/input/void_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_input_void-1.1.1"
+    touch "$STATE_DIR/xf86_input_void-${XF86_INPUT_VOID_VERSION}"
 }
 
 build_xf86_input_void

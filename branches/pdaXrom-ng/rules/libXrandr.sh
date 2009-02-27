@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXRANDR=libXrandr-1.2.3.tar.bz2
+LIBXRANDR_VERSION=1.2.99.4
+LIBXRANDR=libXrandr-${LIBXRANDR_VERSION}.tar.bz2
 LIBXRANDR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXRANDR_DIR=$BUILD_DIR/libXrandr-1.2.3
+LIBXRANDR_DIR=$BUILD_DIR/libXrandr-${LIBXRANDR_VERSION}
 LIBXRANDR_ENV=
 
 build_libXrandr() {
-    test -e "$STATE_DIR/libXrandr-1.2.2" && return
+    test -e "$STATE_DIR/libXrandr-${LIBXRANDR_VERSION}" && return
     banner "Build $LIBXRANDR"
     download $LIBXRANDR_MIRROR $LIBXRANDR
     extract $LIBXRANDR
@@ -36,13 +37,13 @@ build_libXrandr() {
 
     install_sysroot_files || error
     
-    $INSTALL -D -m 644 src/.libs/libXrandr.so.2.1.0 $ROOTFS_DIR/usr/lib/libXrandr.so.2.1.0 || error
-    ln -sf libXrandr.so.2.1.0 $ROOTFS_DIR/usr/lib/libXrandr.so.2
-    ln -sf libXrandr.so.2.1.0 $ROOTFS_DIR/usr/lib/libXrandr.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXrandr.so.2.1.0
+    $INSTALL -D -m 644 src/.libs/libXrandr.so.2.2.0 $ROOTFS_DIR/usr/lib/libXrandr.so.2.2.0 || error
+    ln -sf libXrandr.so.2.2.0 $ROOTFS_DIR/usr/lib/libXrandr.so.2
+    ln -sf libXrandr.so.2.2.0 $ROOTFS_DIR/usr/lib/libXrandr.so
+    $STRIP $ROOTFS_DIR/usr/lib/libXrandr.so.2.2.0
 
     popd
-    touch "$STATE_DIR/libXrandr-1.2.2"
+    touch "$STATE_DIR/libXrandr-${LIBXRANDR_VERSION}"
 }
 
 build_libXrandr

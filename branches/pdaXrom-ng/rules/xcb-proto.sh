@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XCB_PROTO=xcb-proto-1.3.tar.bz2
+XCB_PROTO_VERSION=1.4
+XCB_PROTO=xcb-proto-${XCB_PROTO_VERSION}.tar.bz2
 XCB_PROTO_MIRROR=http://xcb.freedesktop.org/dist
-XCB_PROTO_DIR=$BUILD_DIR/xcb-proto-1.3
+XCB_PROTO_DIR=$BUILD_DIR/xcb-proto-${XCB_PROTO_VERSION}
 XCB_PROTO_ENV=
 
 build_xcb_proto() {
-    test -e "$STATE_DIR/xcb_proto-1.3" && return
+    test -e "$STATE_DIR/xcb_proto-${XCB_PROTO_VERSION}" && return
     banner "Build $XCB_PROTO"
     download $XCB_PROTO_MIRROR $XCB_PROTO
     extract $XCB_PROTO
@@ -35,7 +36,7 @@ build_xcb_proto() {
     install_sysroot_files
 
     popd
-    touch "$STATE_DIR/xcb_proto-1.3"
+    touch "$STATE_DIR/xcb_proto-${XCB_PROTO_VERSION}"
 }
 
 build_xcb_proto

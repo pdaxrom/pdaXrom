@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_VESA=xf86-video-vesa-2.1.0.tar.bz2
+XF86_VIDEO_VESA_VERSION=2.2.0
+XF86_VIDEO_VESA=xf86-video-vesa-${XF86_VIDEO_VESA_VERSION}.tar.bz2
 XF86_VIDEO_VESA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_VESA_DIR=$BUILD_DIR/xf86-video-vesa-2.1.0
+XF86_VIDEO_VESA_DIR=$BUILD_DIR/xf86-video-vesa-${XF86_VIDEO_VESA_VERSION}
 XF86_VIDEO_VESA_ENV=
 
 build_xf86_video_vesa() {
-    test -e "$STATE_DIR/xf86_video_vesa-2.0.0" && return
+    test -e "$STATE_DIR/xf86_video_vesa-${XF86_VIDEO_VESA_VERSION}" && return
     banner "Build $XF86_VIDEO_VESA"
     download $XF86_VIDEO_VESA_MIRROR $XF86_VIDEO_VESA
     extract $XF86_VIDEO_VESA
@@ -37,7 +38,7 @@ build_xf86_video_vesa() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/vesa_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_vesa-2.0.0"
+    touch "$STATE_DIR/xf86_video_vesa-${XF86_VIDEO_VESA_VERSION}"
 }
 
 build_xf86_video_vesa

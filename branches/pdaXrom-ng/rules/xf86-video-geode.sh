@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_GEODE=xf86-video-geode-2.11.0.tar.bz2
+XF86_VIDEO_GEODE_VERSION=2.11.1
+XF86_VIDEO_GEODE=xf86-video-geode-${XF86_VIDEO_GEODE_VERSION}.tar.bz2
 XF86_VIDEO_GEODE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_GEODE_DIR=$BUILD_DIR/xf86-video-geode-2.11.0
+XF86_VIDEO_GEODE_DIR=$BUILD_DIR/xf86-video-geode-${XF86_VIDEO_GEODE_VERSION}
 XF86_VIDEO_GEODE_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_geode() {
-    test -e "$STATE_DIR/xf86_video_geode.installed" && return
+    test -e "$STATE_DIR/xf86_video_geode-${XF86_VIDEO_GEODE_VERSION}.installed" && return
     banner "Build xf86-video-geode"
     download $XF86_VIDEO_GEODE_MIRROR $XF86_VIDEO_GEODE
     extract $XF86_VIDEO_GEODE
@@ -41,7 +42,7 @@ build_xf86_video_geode() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/ztv_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_geode.installed"
+    touch "$STATE_DIR/xf86_video_geode-${XF86_VIDEO_GEODE_VERSION}.installed"
 }
 
 build_xf86_video_geode

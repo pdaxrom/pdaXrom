@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_INPUT_EVDEV=xf86-input-evdev-2.1.0.tar.bz2
+XF86_INPUT_EVDEV_VERSION=2.1.3
+XF86_INPUT_EVDEV=xf86-input-evdev-${XF86_INPUT_EVDEV_VERSION}.tar.bz2
 XF86_INPUT_EVDEV_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_INPUT_EVDEV_DIR=$BUILD_DIR/xf86-input-evdev-2.1.0
+XF86_INPUT_EVDEV_DIR=$BUILD_DIR/xf86-input-evdev-${XF86_INPUT_EVDEV_VERSION}
 XF86_INPUT_EVDEV_ENV=
 
 build_xf86_input_evdev() {
-    test -e "$STATE_DIR/xf86_input_evdev-2.1.0" && return
+    test -e "$STATE_DIR/xf86_input_evdev-${XF86_INPUT_EVDEV_VERSION}" && return
     banner "Build $XF86_INPUT_EVDEV"
     download $XF86_INPUT_EVDEV_MIRROR $XF86_INPUT_EVDEV
     extract $XF86_INPUT_EVDEV
@@ -37,7 +38,7 @@ build_xf86_input_evdev() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/input/evdev_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_input_evdev-2.1.0"
+    touch "$STATE_DIR/xf86_input_evdev-${XF86_INPUT_EVDEV_VERSION}"
 }
 
 build_xf86_input_evdev

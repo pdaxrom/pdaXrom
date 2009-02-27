@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_AST=xf86-video-ast-0.87.0.tar.bz2
+XF86_VIDEO_AST_VERSION=0.88.8
+XF86_VIDEO_AST=xf86-video-ast-${XF86_VIDEO_AST_VERSION}.tar.bz2
 XF86_VIDEO_AST_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_AST_DIR=$BUILD_DIR/xf86-video-ast-0.87.0
+XF86_VIDEO_AST_DIR=$BUILD_DIR/xf86-video-ast-${XF86_VIDEO_AST_VERSION}
 XF86_VIDEO_AST_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_ast() {
-    test -e "$STATE_DIR/xf86_video_ast.installed" && return
+    test -e "$STATE_DIR/xf86_video_ast-${XF86_VIDEO_AST_VERSION}.installed" && return
     banner "Build xf86-video-ast"
     download $XF86_VIDEO_AST_MIRROR $XF86_VIDEO_AST
     extract $XF86_VIDEO_AST
@@ -38,7 +39,7 @@ build_xf86_video_ast() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/ast_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_ast.installed"
+    touch "$STATE_DIR/xf86_video_ast-${XF86_VIDEO_AST_VERSION}.installed"
 }
 
 build_xf86_video_ast

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XCB_UTIL=xcb-util-0.3.2.tar.bz2
+XCB_UTIL_VERSION=0.3.3
+XCB_UTIL=xcb-util-${XCB_UTIL_VERSION}.tar.bz2
 XCB_UTIL_MIRROR=http://xcb.freedesktop.org/dist
-XCB_UTIL_DIR=$BUILD_DIR/xcb-util-0.3.2
+XCB_UTIL_DIR=$BUILD_DIR/xcb-util-${XCB_UTIL_VERSION}
 XCB_UTIL_ENV="$CROSS_ENV_AC"
 
 build_xcb_util() {
-    test -e "$STATE_DIR/xcb_util.installed" && return
+    test -e "$STATE_DIR/xcb_util-${XCB_UTIL_VERSION}.installed" && return
     banner "Build xcb-util"
     download $XCB_UTIL_MIRROR $XCB_UTIL
     extract $XCB_UTIL
@@ -44,7 +45,7 @@ build_xcb_util() {
     done
 
     popd
-    touch "$STATE_DIR/xcb_util.installed"
+    touch "$STATE_DIR/xcb_util-${XCB_UTIL_VERSION}.installed"
 }
 
 build_xcb_util

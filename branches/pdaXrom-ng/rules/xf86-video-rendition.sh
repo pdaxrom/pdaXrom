@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_RENDITION=xf86-video-rendition-4.2.0.tar.bz2
+XF86_VIDEO_RENDITION_VERSION=4.2.1
+XF86_VIDEO_RENDITION=xf86-video-rendition-${XF86_VIDEO_RENDITION_VERSION}.tar.bz2
 XF86_VIDEO_RENDITION_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_RENDITION_DIR=$BUILD_DIR/xf86-video-rendition-4.2.0
+XF86_VIDEO_RENDITION_DIR=$BUILD_DIR/xf86-video-rendition-${XF86_VIDEO_RENDITION_VERSION}
 XF86_VIDEO_RENDITION_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_rendition() {
-    test -e "$STATE_DIR/xf86_video_rendition.installed" && return
+    test -e "$STATE_DIR/xf86_video_rendition-${XF86_VIDEO_RENDITION_VERSION}.installed" && return
     banner "Build xf86-video-rendition"
     download $XF86_VIDEO_RENDITION_MIRROR $XF86_VIDEO_RENDITION
     extract $XF86_VIDEO_RENDITION
@@ -38,7 +39,7 @@ build_xf86_video_rendition() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/rendition_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_rendition.installed"
+    touch "$STATE_DIR/xf86_video_rendition-${XF86_VIDEO_RENDITION_VERSION}.installed"
 }
 
 build_xf86_video_rendition

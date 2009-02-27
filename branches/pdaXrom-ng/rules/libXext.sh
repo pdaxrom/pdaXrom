@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXEXT=libXext-1.0.4.tar.bz2
+LIBXEXT_VERSION=1.0.5
+LIBXEXT=libXext-${LIBXEXT_VERSION}.tar.bz2
 LIBXEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXEXT_DIR=$BUILD_DIR/libXext-1.0.4
+LIBXEXT_DIR=$BUILD_DIR/libXext-${LIBXEXT_VERSION}
 LIBXEXT_ENV=
 
 build_libXext() {
-    test -e "$STATE_DIR/libXext-1.0.2" && return
+    test -e "$STATE_DIR/libXext-${LIBXEXT_VERSION}" && return
     banner "Build $LIBXEXT"
     download $LIBXEXT_MIRROR $LIBXEXT
     extract $LIBXEXT
@@ -42,7 +43,7 @@ build_libXext() {
     $STRIP $ROOTFS_DIR/usr/lib/libXext.so.6.4.0
 
     popd
-    touch "$STATE_DIR/libXext-1.0.2"
+    touch "$STATE_DIR/libXext-${LIBXEXT_VERSION}"
 }
 
 build_libXext

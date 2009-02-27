@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_INPUT_JOYSTICK=xf86-input-joystick-1.3.3.tar.bz2
+XF86_INPUT_JOYSTICK_VERSION=1.4.0
+XF86_INPUT_JOYSTICK=xf86-input-joystick-${XF86_INPUT_JOYSTICK_VERSION}.tar.bz2
 XF86_INPUT_JOYSTICK_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_INPUT_JOYSTICK_DIR=$BUILD_DIR/xf86-input-joystick-1.3.3
+XF86_INPUT_JOYSTICK_DIR=$BUILD_DIR/xf86-input-joystick-${XF86_INPUT_JOYSTICK_VERSION}
 XF86_INPUT_JOYSTICK_ENV=
 
 build_xf86_input_joystick() {
-    test -e "$STATE_DIR/xf86_input_joystick-1.3.3" && return
+    test -e "$STATE_DIR/xf86_input_joystick-${XF86_INPUT_JOYSTICK_VERSION}" && return
     banner "Build $XF86_INPUT_JOYSTICK"
     download $XF86_INPUT_JOYSTICK_MIRROR $XF86_INPUT_JOYSTICK
     extract $XF86_INPUT_JOYSTICK
@@ -37,7 +38,7 @@ build_xf86_input_joystick() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/input/joystick_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_input_joystick-1.3.3"
+    touch "$STATE_DIR/xf86_input_joystick-${XF86_INPUT_JOYSTICK_VERSION}"
 }
 
 build_xf86_input_joystick

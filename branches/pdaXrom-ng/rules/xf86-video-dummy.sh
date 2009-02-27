@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_DUMMY=xf86-video-dummy-0.3.0.tar.bz2
+XF86_VIDEO_DUMMY_VERSION=0.3.1
+XF86_VIDEO_DUMMY=xf86-video-dummy-${XF86_VIDEO_DUMMY_VERSION}.tar.bz2
 XF86_VIDEO_DUMMY_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_DUMMY_DIR=$BUILD_DIR/xf86-video-dummy-0.3.0
+XF86_VIDEO_DUMMY_DIR=$BUILD_DIR/xf86-video-dummy-${XF86_VIDEO_DUMMY_VERSION}
 XF86_VIDEO_DUMMY_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_dummy() {
-    test -e "$STATE_DIR/xf86_video_dummy.installed" && return
+    test -e "$STATE_DIR/xf86_video_dummy-${XF86_VIDEO_DUMMY_VERSION}.installed" && return
     banner "Build xf86-video-dummy"
     download $XF86_VIDEO_DUMMY_MIRROR $XF86_VIDEO_DUMMY
     extract $XF86_VIDEO_DUMMY
@@ -38,7 +39,7 @@ build_xf86_video_dummy() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/dummy_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_dummy.installed"
+    touch "$STATE_DIR/xf86_video_dummy-${XF86_VIDEO_DUMMY_VERSION}.installed"
 }
 
 build_xf86_video_dummy

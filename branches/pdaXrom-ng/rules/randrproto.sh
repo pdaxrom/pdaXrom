@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-RANDRPROTO=randrproto-1.2.2.tar.bz2
+RANDRPROTO_VERSION=1.2.99.4
+RANDRPROTO=randrproto-${RANDRPROTO_VERSION}.tar.bz2
 RANDRPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-RANDRPROTO_DIR=$BUILD_DIR/randrproto-1.2.2
+RANDRPROTO_DIR=$BUILD_DIR/randrproto-${RANDRPROTO_VERSION}
 RANDRPROTO_ENV=
 
 build_randrproto() {
-    test -e "$STATE_DIR/randrproto-1.2.1" && return
+    test -e "$STATE_DIR/randrproto-${RANDRPROTO_VERSION}" && return
     banner "Build $RANDRPROTO"
     download $RANDRPROTO_MIRROR $RANDRPROTO
     extract $RANDRPROTO
@@ -36,7 +37,7 @@ build_randrproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/randrproto-1.2.1"
+    touch "$STATE_DIR/randrproto-${RANDRPROTO_VERSION}"
 }
 
 build_randrproto

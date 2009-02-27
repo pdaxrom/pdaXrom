@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_INPUT_MOUSE=xf86-input-mouse-1.3.0.tar.bz2
+XF86_INPUT_MOUSE_VERSION=1.4.0
+XF86_INPUT_MOUSE=xf86-input-mouse-${XF86_INPUT_MOUSE_VERSION}.tar.bz2
 XF86_INPUT_MOUSE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_INPUT_MOUSE_DIR=$BUILD_DIR/xf86-input-mouse-1.3.0
+XF86_INPUT_MOUSE_DIR=$BUILD_DIR/xf86-input-mouse-${XF86_INPUT_MOUSE_VERSION}
 XF86_INPUT_MOUSE_ENV=
 
 build_xf86_input_mouse() {
-    test -e "$STATE_DIR/xf86_input_mouse-1.3.0" && return
+    test -e "$STATE_DIR/xf86_input_mouse-${XF86_INPUT_MOUSE_VERSION}" && return
     banner "Build $XF86_INPUT_MOUSE"
     download $XF86_INPUT_MOUSE_MIRROR $XF86_INPUT_MOUSE
     extract $XF86_INPUT_MOUSE
@@ -37,7 +38,7 @@ build_xf86_input_mouse() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/input/mouse_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_input_mouse-1.3.0"
+    touch "$STATE_DIR/xf86_input_mouse-${XF86_INPUT_MOUSE_VERSION}"
 }
 
 build_xf86_input_mouse

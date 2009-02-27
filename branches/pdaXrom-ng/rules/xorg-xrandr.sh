@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XORG_XRANDR=xrandr-1.2.3.tar.bz2
+XORG_XRANDR_VERSION=1.2.3
+XORG_XRANDR=xrandr-${XORG_XRANDR_VERSION}.tar.bz2
 XORG_XRANDR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/app
-XORG_XRANDR_DIR=$BUILD_DIR/xrandr-1.2.3
+XORG_XRANDR_DIR=$BUILD_DIR/xrandr-${XORG_XRANDR_VERSION}
 XORG_XRANDR_ENV=
 
 build_xorg_xrandr() {
-    test -e "$STATE_DIR/xorg_xrandr-1.2.3" && return
+    test -e "$STATE_DIR/xorg_xrandr-${XORG_XRANDR_VERSION}" && return
     banner "Build $XORG_XRANDR"
     download $XORG_XRANDR_MIRROR $XORG_XRANDR
     extract $XORG_XRANDR
@@ -38,7 +39,7 @@ build_xorg_xrandr() {
     $STRIP $ROOTFS_DIR/usr/bin/xrandr
 
     popd
-    touch "$STATE_DIR/xorg_xrandr-1.2.3"
+    touch "$STATE_DIR/xorg_xrandr-${XORG_XRANDR_VERSION}"
 }
 
 build_xorg_xrandr

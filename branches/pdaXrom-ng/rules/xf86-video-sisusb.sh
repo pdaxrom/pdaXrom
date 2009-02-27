@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_SISUSB=xf86-video-sisusb-0.9.0.tar.bz2
+XF86_VIDEO_SISUSB_VERSION=0.9.1
+XF86_VIDEO_SISUSB=xf86-video-sisusb-${XF86_VIDEO_SISUSB_VERSION}.tar.bz2
 XF86_VIDEO_SISUSB_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_SISUSB_DIR=$BUILD_DIR/xf86-video-sisusb-0.9.0
+XF86_VIDEO_SISUSB_DIR=$BUILD_DIR/xf86-video-sisusb-${XF86_VIDEO_SISUSB_VERSION}
 XF86_VIDEO_SISUSB_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_sisusb() {
-    test -e "$STATE_DIR/xf86_video_sisusb.installed" && return
+    test -e "$STATE_DIR/xf86_video_sisusb-${XF86_VIDEO_SISUSB_VERSION}.installed" && return
     banner "Build xf86-video-sisusb"
     download $XF86_VIDEO_SISUSB_MIRROR $XF86_VIDEO_SISUSB
     extract $XF86_VIDEO_SISUSB
@@ -38,7 +39,7 @@ build_xf86_video_sisusb() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/sisusb_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_sisusb.installed"
+    touch "$STATE_DIR/xf86_video_sisusb-${XF86_VIDEO_SISUSB_VERSION}.installed"
 }
 
 build_xf86_video_sisusb

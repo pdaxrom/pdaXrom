@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXI=libXi-1.2.0.tar.bz2
+LIBXI_VERSION=1.2.1
+LIBXI=libXi-${LIBXI_VERSION}.tar.bz2
 LIBXI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXI_DIR=$BUILD_DIR/libXi-1.2.0
+LIBXI_DIR=$BUILD_DIR/libXi-${LIBXI_VERSION}
 LIBXI_ENV=
 
 build_libXi() {
-    test -e "$STATE_DIR/libXi-1.1.3" && return
+    test -e "$STATE_DIR/libXi-${LIBXI_VERSION}" && return
     banner "Build $LIBXI"
     download $LIBXI_MIRROR $LIBXI
     extract $LIBXI
@@ -43,7 +44,7 @@ build_libXi() {
     $STRIP $ROOTFS_DIR/usr/lib/libXi.so.6.0.0
 
     popd
-    touch "$STATE_DIR/libXi-1.1.3"
+    touch "$STATE_DIR/libXi-${LIBXI_VERSION}"
 }
 
 build_libXi

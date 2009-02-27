@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXCB=libxcb-1.1.tar.bz2
+LIBXCB_VERSION=1.2
+LIBXCB=libxcb-${LIBXCB_VERSION}.tar.bz2
 LIBXCB_MIRROR=http://xcb.freedesktop.org/dist
-LIBXCB_DIR=$BUILD_DIR/libxcb-1.1
+LIBXCB_DIR=$BUILD_DIR/libxcb-${LIBXCB_VERSION}
 LIBXCB_ENV=
 
 build_libxcb() {
-    test -e "$STATE_DIR/libxcb-1.1.92" && return
+    test -e "$STATE_DIR/libxcb-${LIBXCB_VERSION}" && return
     banner "Build $LIBXCB"
     download $LIBXCB_MIRROR $LIBXCB
     extract $LIBXCB
@@ -36,20 +37,20 @@ build_libxcb() {
     install_sysroot_files || error
     
     for f in composite damage dpms glx randr record render res screensaver shape shm \
-	    sync xevie xf86dri xfixes xinerama xlib xprint xtest xv xvmc ; do
+	    sync xevie xf86dri xfixes xinerama xprint xtest xv xvmc ; do
 	$INSTALL -D -m 644 src/.libs/libxcb-${f}.so.0.0.0 $ROOTFS_DIR/usr/lib/libxcb-${f}.so.0.0.0 || error
 	ln -sf libxcb-${f}.so.0.0.0 $ROOTFS_DIR/usr/lib/libxcb-${f}.so.0
 	ln -sf libxcb-${f}.so.0.0.0 $ROOTFS_DIR/usr/lib/libxcb-${f}.so
 	$STRIP $ROOTFS_DIR/usr/lib/libxcb-${f}.so.0.0.0
     done
 
-    $INSTALL -D -m 644 src/.libs/libxcb.so.1.0.0 $ROOTFS_DIR/usr/lib/libxcb.so.1.0.0 || error
-    ln -sf libxcb.so.1.0.0 $ROOTFS_DIR/usr/lib/libxcb.so.1
-    ln -sf libxcb.so.1.0.0 $ROOTFS_DIR/usr/lib/libxcb.so
-    $STRIP $ROOTFS_DIR/usr/lib/libxcb.so.1.0.0
+    $INSTALL -D -m 644 src/.libs/libxcb.so.1.1.0 $ROOTFS_DIR/usr/lib/libxcb.so.1.1.0 || error
+    ln -sf libxcb.so.1.1.0 $ROOTFS_DIR/usr/lib/libxcb.so.1
+    ln -sf libxcb.so.1.1.0 $ROOTFS_DIR/usr/lib/libxcb.so
+    $STRIP $ROOTFS_DIR/usr/lib/libxcb.so.1.1.0
 
     popd
-    touch "$STATE_DIR/libxcb-1.1.92"
+    touch "$STATE_DIR/libxcb-${LIBXCB_VERSION}"
 }
 
 build_libxcb
