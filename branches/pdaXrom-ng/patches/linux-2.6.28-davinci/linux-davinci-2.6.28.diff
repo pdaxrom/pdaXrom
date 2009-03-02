@@ -17755,8 +17755,8 @@ diff -Nur linux-2.6.28/arch/arm/include/asm/pgtable.h linux-davinci-2.6.28/arch/
  	do {				\
 diff -Nur linux-2.6.28/arch/arm/include/asm/setup.h linux-davinci-2.6.28/arch/arm/include/asm/setup.h
 --- linux-2.6.28/arch/arm/include/asm/setup.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/include/asm/setup.h	2009-01-28 07:57:04.000000000 +0100
-@@ -136,6 +136,17 @@
++++ linux-davinci-2.6.28/arch/arm/include/asm/setup.h	2009-02-26 11:20:59.000000000 +0100
+@@ -136,6 +136,13 @@
  	__u8 adfsdrives;
  };
  
@@ -17767,25 +17767,16 @@ diff -Nur linux-2.6.28/arch/arm/include/asm/setup.h linux-davinci-2.6.28/arch/ar
 +	u8 data[0];
 +};
 +
-+struct tag_davinci {
-+	u8 data[0];
-+};
-+
  /* footbridge memory clock, see arch/arm/mach-footbridge/arch.c */
  #define ATAG_MEMCLK	0x41000402
  
-@@ -162,6 +173,16 @@
+@@ -162,6 +169,11 @@
  		struct tag_acorn	acorn;
  
  		/*
 +		 * OMAP specific
 +                 */
 +                struct tag_omap         omap;
-+
-+		/*
-+		 * DaVinci specific
-+		 */
-+		struct tag_davinci	davinci;
 +
 +		/*
  		 * DC21285 specific
@@ -17817,8 +17808,8 @@ diff -Nur linux-2.6.28/arch/arm/Kconfig linux-davinci-2.6.28/arch/arm/Kconfig
  source "fs/Kconfig"
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c
 --- linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,253 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,294 @@
 +/*
 + * TI DaVinci EVM board support
 + *
@@ -17837,10 +17828,12 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +#include <linux/mtd/mtd.h>
 +#include <linux/mtd/partitions.h>
 +#include <linux/mtd/nand.h>
-+#include <linux/mtd/onenand_regs.h>
 +#include <linux/i2c.h>
 +#include <linux/io.h>
 +#include <linux/gpio.h>
++#include <linux/clk.h>
++#include <linux/spi/spi.h>
++#include <linux/spi/eeprom.h>
 +
 +#include <asm/setup.h>
 +#include <asm/mach-types.h>
@@ -17849,26 +17842,37 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +#include <asm/mach/flash.h>
 +
 +#include <mach/hardware.h>
++#include <mach/dm355.h>
 +#include <mach/psc.h>
 +#include <mach/common.h>
-+#include <mach/board.h>
 +#include <mach/emac.h>
 +#include <mach/i2c.h>
 +#include <mach/serial.h>
++#include <mach/nand.h>
++#include <mach/mmc.h>
 +
 +#define DAVINCI_ASYNC_EMIF_CONTROL_BASE		0x01e10000
 +#define DAVINCI_ASYNC_EMIF_DATA_CE0_BASE	0x02000000
 +
++/* NOTE:  this is geared for the standard config, with a socketed
++ * 2 GByte Micron NAND (MT29F16G08FAA) using 128KB sectors.  If you
++ * swap chips, maybe with a different block size, partitioning may
++ * need to be changed.
++ */
++#define NAND_BLOCK_SIZE		SZ_128K
++
 +struct mtd_partition davinci_nand_partitions[] = {
 +	{
++		/* UBL (a few copies) plus U-Boot */
 +		.name		= "bootloader",
 +		.offset		= 0,
-+		.size		= 0x3c0000,
++		.size		= 15 * NAND_BLOCK_SIZE,
 +		.mask_flags	= MTD_WRITEABLE, /* force read-only */
 +	}, {
++		/* U-Boot environment */
 +		.name		= "params",
 +		.offset		= MTDPART_OFS_APPEND,
-+		.size		= SZ_256K,
++		.size		= 1 * NAND_BLOCK_SIZE,
 +		.mask_flags	= 0,
 +	}, {
 +		.name		= "kernel",
@@ -17886,11 +17890,15 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +		.size		= MTDPART_SIZ_FULL,
 +		.mask_flags	= 0,
 +	}
++	/* two blocks with bad block table (and mirror) at the end */
 +};
 +
-+static struct flash_platform_data davinci_nand_data = {
++static struct davinci_nand_pdata davinci_nand_data = {
++	.mask_chipsel		= BIT(14),
 +	.parts			= davinci_nand_partitions,
 +	.nr_parts		= ARRAY_SIZE(davinci_nand_partitions),
++	.ecc_mode		= NAND_ECC_HW_SYNDROME,
++	.options		= NAND_USE_FLASH_BBT,
 +};
 +
 +static struct resource davinci_nand_resources[] = {
@@ -17907,7 +17915,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +
 +static struct platform_device davinci_nand_device = {
 +	.name			= "davinci_nand",
-+	.id			= -1,
++	.id			= 0,
 +
 +	.num_resources		= ARRAY_SIZE(davinci_nand_resources),
 +	.resource		= davinci_nand_resources,
@@ -17987,17 +17995,14 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +	&davinci_nand_device,
 +};
 +
-+static struct davinci_uart_config davinci_evm_uart_config __initdata = {
++static struct davinci_uart_config uart_config __initdata = {
 +	.enabled_uarts = (1 << 0),
-+};
-+
-+static struct davinci_board_config_kernel davinci_evm_config[] __initdata = {
-+	{ DAVINCI_TAG_UART,	&davinci_evm_uart_config },
 +};
 +
 +static void __init dm355_evm_map_io(void)
 +{
 +	davinci_map_common_io();
++	dm355_init();
 +}
 +
 +static int dm355evm_mmc_get_cd(int module)
@@ -18033,20 +18038,45 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +#define USB_ID_VALUE	1	/* ID pulled low */
 +#endif
 +
++static struct spi_eeprom at25640a = {
++	.byte_len	= SZ_64K / 8,
++	.name		= "at25640a",
++	.page_size	= 32,
++	.flags		= EE_ADDR2,
++};
++
++static struct spi_board_info dm355_evm_spi_info[] __initconst = {
++	{
++		.modalias	= "at25",
++		.platform_data	= &at25640a,
++		.max_speed_hz	= 10 * 1000 * 1000,	/* at 3v3 */
++		.bus_num	= 0,
++		.chip_select	= 0,
++		.mode		= SPI_MODE_0,
++	},
++};
++
 +static __init void dm355_evm_init(void)
 +{
-+	davinci_psc_init();
++	struct clk *aemif;
 +
 +	gpio_request(1, "dm9000");
 +	gpio_direction_input(1);
 +	dm355evm_dm9000_rsrc[2].start = gpio_to_irq(1);
 +
++	aemif = clk_get(&dm355evm_dm9000.dev, "aemif");
++	clk_enable(aemif);
++	clk_put(aemif);
++
 +	platform_add_devices(davinci_evm_devices,
 +			     ARRAY_SIZE(davinci_evm_devices));
 +	evm_init_i2c();
-+	davinci_board_config = davinci_evm_config;
-+	davinci_board_config_size = ARRAY_SIZE(davinci_evm_config);
-+	davinci_serial_init();
++	davinci_serial_init(&uart_config);
++
++	/* NOTE:  NAND flash timings set by the UBL are slower than
++	 * needed by MT29F16G08FAA chips ... EMIF.A1CR is 0x40400204
++	 * but could be 0x0400008c for about 25% faster page reads.
++	 */
 +
 +	gpio_request(2, "usb_id_toggle");
 +	gpio_direction_output(2, USB_ID_VALUE);
@@ -18055,11 +18085,13 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +
 +	davinci_setup_mmc(0, &dm355evm_mmc_config);
 +	davinci_setup_mmc(1, &dm355evm_mmc_config);
++
++	dm355_init_spi0(BIT(0), dm355_evm_spi_info,
++			ARRAY_SIZE(dm355_evm_spi_info));
 +}
 +
 +static __init void dm355_evm_irq_init(void)
 +{
-+	davinci_init_common_hw();
 +	davinci_irq_init();
 +}
 +
@@ -18074,8 +18106,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm355-evm.c linux-davinci-2.6
 +MACHINE_END
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c
 --- linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,656 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,691 @@
 +/*
 + * TI DaVinci EVM board support
 + *
@@ -18104,6 +18136,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +#include <linux/mtd/physmap.h>
 +#include <linux/io.h>
 +#include <linux/phy.h>
++#include <linux/clk.h>
 +
 +#include <asm/setup.h>
 +#include <asm/mach-types.h>
@@ -18114,11 +18147,13 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +
 +#include <mach/dm644x.h>
 +#include <mach/common.h>
-+#include <mach/board.h>
 +#include <mach/emac.h>
 +#include <mach/i2c.h>
 +#include <mach/serial.h>
++#include <mach/mux.h>
 +#include <mach/psc.h>
++#include <mach/nand.h>
++#include <mach/mmc.h>
 +
 +#define DAVINCI_CFC_ATA_BASE		  0x01C66000
 +
@@ -18132,11 +18167,11 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +#define LXT971_PHY_MASK	(0xfffffff0)
 +
 +static struct mtd_partition davinci_evm_norflash_partitions[] = {
-+	/* bootloader (U-Boot, etc) in first 4 sectors */
++	/* bootloader (UBL, U-Boot, etc) in first 5 sectors */
 +	{
 +		.name		= "bootloader",
 +		.offset		= 0,
-+		.size		= 4 * SZ_64K,
++		.size		= 5 * SZ_64K,
 +		.mask_flags	= MTD_WRITEABLE, /* force read-only */
 +	},
 +	/* bootloader params in the next 1 sectors */
@@ -18196,9 +18231,10 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +	}
 +};
 +
-+static struct flash_platform_data davinci_evm_nandflash_data = {
++static struct davinci_nand_pdata davinci_evm_nandflash_data = {
 +	.parts		= davinci_evm_nandflash_partition,
 +	.nr_parts	= ARRAY_SIZE(davinci_evm_nandflash_partition),
++	.ecc_mode	= NAND_ECC_HW,
 +};
 +
 +static struct resource davinci_evm_nandflash_resource[] = {
@@ -18653,25 +18689,19 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +}
 +
 +static struct platform_device *davinci_evm_devices[] __initdata = {
-+	&davinci_evm_norflash_device,
-+	&davinci_evm_nandflash_device,
 +	&davinci_fb_device,
 +	&rtc_dev,
-+	&ide_dev,
 +};
 +
-+static struct davinci_uart_config davinci_evm_uart_config __initdata = {
++static struct davinci_uart_config uart_config __initdata = {
 +	.enabled_uarts = (1 << 0),
-+};
-+
-+static struct davinci_board_config_kernel davinci_evm_config[] __initdata = {
-+	{ DAVINCI_TAG_UART,	&davinci_evm_uart_config },
 +};
 +
 +static void __init
 +davinci_evm_map_io(void)
 +{
 +	davinci_map_common_io();
++	dm644x_init();
 +}
 +
 +static int davinci_phy_fixup(struct phy_device *phydev)
@@ -18687,18 +18717,58 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +	return 0;
 +}
 +
-+static __init void davinci_evm_init(void)
-+{
-+	davinci_psc_init();
-+
 +#if defined(CONFIG_BLK_DEV_PALMCHIP_BK3710) || \
 +    defined(CONFIG_BLK_DEV_PALMCHIP_BK3710_MODULE)
++#define HAS_ATA 1
++#else
++#define HAS_ATA 0
++#endif
++
 +#if defined(CONFIG_MTD_PHYSMAP) || \
 +    defined(CONFIG_MTD_PHYSMAP_MODULE)
-+	printk(KERN_WARNING "WARNING: both IDE and NOR flash are enabled, "
-+	       "but share pins.\n\t Disable IDE for NOR support.\n");
++#define HAS_NOR 1
++#else
++#define HAS_NOR 0
 +#endif
++
++#if defined(CONFIG_MTD_NAND_DAVINCI) || \
++    defined(CONFIG_MTD_NAND_DAVINCI_MODULE)
++#define HAS_NAND 1
++#else
++#define HAS_NAND 0
 +#endif
++
++static __init void davinci_evm_init(void)
++{
++	struct clk *aemif_clk;
++
++	aemif_clk = clk_get(NULL, "aemif");
++	clk_enable(aemif_clk);
++	clk_put(aemif_clk);
++
++	if (HAS_ATA) {
++		if (HAS_NAND || HAS_NOR)
++			pr_warning("WARNING: both IDE and Flash are "
++				"enabled, but they share AEMIF pins.\n"
++				"\tDisable IDE for NAND/NOR support.\n");
++		davinci_cfg_reg(DM644X_HPIEN_DISABLE);
++		davinci_cfg_reg(DM644X_ATAEN);
++		davinci_cfg_reg(DM644X_HDIREN);
++		platform_device_register(&ide_dev);
++	} else if (HAS_NAND || HAS_NOR) {
++		davinci_cfg_reg(DM644X_HPIEN_DISABLE);
++		davinci_cfg_reg(DM644X_ATAEN_DISABLE);
++
++		/* only one device will be jumpered and detected */
++		if (HAS_NAND) {
++			platform_device_register(&davinci_evm_nandflash_device);
++			evm_leds[7].default_trigger = "nand-disk";
++			if (HAS_NOR)
++				pr_warning("WARNING: both NAND and NOR flash "
++					"are enabled; disable one of them.\n");
++		} else if (HAS_NOR)
++			platform_device_register(&davinci_evm_norflash_device);
++	}
 +
 +	platform_add_devices(davinci_evm_devices,
 +			     ARRAY_SIZE(davinci_evm_devices));
@@ -18706,9 +18776,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +
 +	davinci_setup_mmc(0, &dm6446evm_mmc_config);
 +
-+	davinci_board_config = davinci_evm_config;
-+	davinci_board_config_size = ARRAY_SIZE(davinci_evm_config);
-+	davinci_serial_init();
++	davinci_serial_init(&uart_config);
 +
 +	/* Register the fixup for PHY on DaVinci */
 +	phy_register_fixup_for_uid(LXT971_PHY_ID, LXT971_PHY_MASK,
@@ -18718,11 +18786,10 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +
 +static __init void davinci_evm_irq_init(void)
 +{
-+	davinci_init_common_hw();
 +	davinci_irq_init();
 +}
 +
-+MACHINE_START(DAVINCI_EVM, "DaVinci EVM")
++MACHINE_START(DAVINCI_EVM, "DaVinci DM644x EVM")
 +	/* Maintainer: MontaVista Software <source@mvista.com> */
 +	.phys_io      = IO_PHYS,
 +	.io_pg_offst  = (__IO_ADDRESS(IO_PHYS) >> 18) & 0xfffc,
@@ -18734,8 +18801,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm644x-evm.c linux-davinci-2.
 +MACHINE_END
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c
 --- linux-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,149 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,142 @@
 +/*
 + * TI DaVinci DM646X EVM board
 + *
@@ -18771,12 +18838,12 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c linux-davinci-2.
 +#include <asm/mach/arch.h>
 +#include <asm/mach/map.h>
 +#include <asm/mach/flash.h>
-+#include <mach/board.h>
++#include <mach/dm646x.h>
 +#include <mach/common.h>
-+#include <mach/hardware.h>
 +#include <mach/psc.h>
 +#include <mach/serial.h>
 +#include <mach/i2c.h>
++#include <mach/mmc.h>
 +
 +#include <linux/platform_device.h>
 +#include <linux/i2c.h>
@@ -18784,12 +18851,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c linux-davinci-2.
 +#include <linux/etherdevice.h>
 +#include <mach/emac.h>
 +
-+static struct davinci_uart_config davinci_evm_uart_config __initdata = {
++static struct davinci_uart_config uart_config __initdata = {
 +	.enabled_uarts = (1 << 0),
-+};
-+
-+static struct davinci_board_config_kernel davinci_evm_config[] __initdata = {
-+	{ DAVINCI_TAG_UART,     &davinci_evm_uart_config },
 +};
 +
 +/* Most of this EEPROM is unused, but U-Boot uses some data:
@@ -18858,20 +18921,17 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-dm646x-evm.c linux-davinci-2.
 +static void __init davinci_map_io(void)
 +{
 +	davinci_map_common_io();
++	dm646x_init();
 +}
 +
 +static __init void evm_init(void)
 +{
-+	davinci_psc_init();
 +	evm_init_i2c();
-+	davinci_board_config = davinci_evm_config;
-+	davinci_board_config_size = ARRAY_SIZE(davinci_evm_config);
-+	davinci_serial_init();
++	davinci_serial_init(&uart_config);
 +}
 +
 +static __init void davinci_dm646x_evm_irq_init(void)
 +{
-+	davinci_init_common_hw();
 +	davinci_irq_init();
 +}
 +
@@ -19331,8 +19391,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-evm.c linux-davinci-2.6.28/ar
 -MACHINE_END
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-sffsdr.c linux-davinci-2.6.28/arch/arm/mach-davinci/board-sffsdr.c
 --- linux-2.6.28/arch/arm/mach-davinci/board-sffsdr.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-sffsdr.c	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,203 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/board-sffsdr.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,200 @@
 +/*
 + * Lyrtech SFFSDR board support.
 + *
@@ -19383,11 +19443,11 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-sffsdr.c linux-davinci-2.6.28
 +
 +#include <mach/dm644x.h>
 +#include <mach/common.h>
-+#include <mach/board.h>
 +#include <mach/emac.h>
 +#include <mach/i2c.h>
 +#include <mach/serial.h>
 +#include <mach/psc.h>
++#include <mach/mux.h>
 +
 +#define DAVINCI_ASYNC_EMIF_CONTROL_BASE   0x01e00000
 +#define DAVINCI_ASYNC_EMIF_DATA_CE0_BASE  0x02000000
@@ -19476,30 +19536,28 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-sffsdr.c linux-davinci-2.6.28
 +	&davinci_sffsdr_nandflash_device,
 +};
 +
-+static struct davinci_uart_config davinci_sffsdr_uart_config __initdata = {
++static struct davinci_uart_config uart_config __initdata = {
 +	.enabled_uarts = (1 << 0),
-+};
-+
-+static struct davinci_board_config_kernel davinci_sffsdr_config[] __initdata = {
-+	{ DAVINCI_TAG_UART, &davinci_sffsdr_uart_config },
 +};
 +
 +static void __init davinci_sffsdr_map_io(void)
 +{
 +	davinci_map_common_io();
++	dm644x_init();
 +}
 +
 +static __init void davinci_sffsdr_init(void)
 +{
-+	davinci_psc_init();
 +	platform_add_devices(davinci_sffsdr_devices,
 +			     ARRAY_SIZE(davinci_sffsdr_devices));
 +	sffsdr_init_i2c();
-+	davinci_board_config = davinci_sffsdr_config;
-+	davinci_board_config_size = ARRAY_SIZE(davinci_sffsdr_config);
-+	davinci_serial_init();
++	davinci_serial_init(&uart_config);
 +	davinci_init_emac(davinci_sffsdr_mac_addr);
 +	setup_usb(0, 0); /* We support only peripheral mode. */
++
++	/* mux VLYNQ pins */
++	davinci_cfg_reg(DM644X_VLYNQEN);
++	davinci_cfg_reg(DM644X_VLYNQWD);
 +}
 +
 +static int davinci_cpmac_eth_setup(char *str)
@@ -19522,7 +19580,6 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-sffsdr.c linux-davinci-2.6.28
 +
 +static __init void davinci_sffsdr_irq_init(void)
 +{
-+	davinci_init_common_hw();
 +	davinci_irq_init();
 +}
 +
@@ -19538,8 +19595,19 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/board-sffsdr.c linux-davinci-2.6.28
 +MACHINE_END
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.c linux-davinci-2.6.28/arch/arm/mach-davinci/clock.c
 --- linux-2.6.28/arch/arm/mach-davinci/clock.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/clock.c	2009-01-28 07:57:05.000000000 +0100
-@@ -13,6 +13,7 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/clock.c	2009-02-26 11:20:59.000000000 +0100
+@@ -1,7 +1,8 @@
+ /*
+- * TI DaVinci clock config file
++ * Clock and PLL control for DaVinci devices
+  *
+- * Copyright (C) 2006 Texas Instruments.
++ * Copyright (C) 2006-2007 Texas Instruments.
++ * Copyright (C) 2008-2009 Deep Root Systems, LLC
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -13,6 +14,7 @@
  #include <linux/kernel.h>
  #include <linux/init.h>
  #include <linux/errno.h>
@@ -19547,28 +19615,24 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.c linux-davinci-2.6.28/arch/a
  #include <linux/err.h>
  #include <linux/mutex.h>
  #include <linux/platform_device.h>
-@@ -21,8 +22,11 @@
+@@ -21,41 +23,94 @@
  #include <mach/hardware.h>
  
  #include <mach/psc.h>
 +#include <mach/cpu.h>
  #include "clock.h"
  
-+#define DAVINCI_PLL_CNTRL0_BASE 0x01C40800
-+
- /* PLL/Reset register offsets */
- #define PLLM		0x110
- 
-@@ -31,12 +35,72 @@
+-/* PLL/Reset register offsets */
+-#define PLLM		0x110
+-
+ static LIST_HEAD(clocks);
+ static DEFINE_MUTEX(clocks_mutex);
  static DEFINE_SPINLOCK(clockfw_lock);
  
- static unsigned int commonrate;
-+static unsigned int div_by_four;
-+static unsigned int div_by_six;
-+static unsigned int div_by_eight;
- static unsigned int armrate;
- static unsigned int fixedrate = 27000000;	/* 27 MHZ */
- 
+-static unsigned int commonrate;
+-static unsigned int armrate;
+-static unsigned int fixedrate = 27000000;	/* 27 MHZ */
+-
  extern void davinci_psc_config(unsigned int domain, unsigned int id, char enable);
  
  /*
@@ -19632,18 +19696,25 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.c linux-davinci-2.6.28/arch/a
   * Returns a clock. Note that we first try to use device id on the bus
   * and clock name. If this fails, we try to use clock name only.
   */
-@@ -44,6 +108,7 @@
+ struct clk *clk_get(struct device *dev, const char *id)
  {
  	struct clk *p, *clk = ERR_PTR(-ENOENT);
- 	int idno;
+-	int idno;
 +	struct clk_mapping *mapping;
  
- 	if (dev == NULL || dev->bus != &platform_bus_type)
- 		idno = -1;
-@@ -52,6 +117,18 @@
+-	if (dev == NULL || dev->bus != &platform_bus_type)
+-		idno = -1;
+-	else
+-		idno = to_platform_device(dev)->id;
++	if (!id)
++		return ERR_PTR(-EINVAL);
  
  	mutex_lock(&clocks_mutex);
  
+-	list_for_each_entry(p, &clocks, node) {
+-		if (p->id == idno &&
+-		    strcmp(id, p->name) == 0 && try_module_get(p->owner)) {
+-			clk = p;
 +	/* always prefer logical clock names */
 +	if (dev) {
 +		for (mapping = maplist; mapping; mapping = mapping->next) {
@@ -19652,212 +19723,191 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.c linux-davinci-2.6.28/arch/a
 +			if (strcmp(id, mapping->name) != 0)
 +				continue;
 +			clk = mapping->clock;
-+			goto found;
-+		}
-+	}
-+
- 	list_for_each_entry(p, &clocks, node) {
- 		if (p->id == idno &&
- 		    strcmp(id, p->name) == 0 && try_module_get(p->owner)) {
-@@ -102,7 +179,7 @@
+ 			goto found;
+ 		}
+ 	}
+@@ -70,6 +125,8 @@
+ found:
+ 	mutex_unlock(&clocks_mutex);
+ 
++	WARN(IS_ERR(clk), "CLK: can't find %s/%s\n",
++			dev ? dev_name(dev) : "nodev", id);
+ 	return clk;
+ }
+ EXPORT_SYMBOL(clk_get);
+@@ -81,38 +138,43 @@
+ }
+ EXPORT_SYMBOL(clk_put);
+ 
+-static int __clk_enable(struct clk *clk)
++static unsigned psc_domain(struct clk *clk)
+ {
+-	if (clk->flags & ALWAYS_ENABLED)
+-		return 0;
++	return (clk->flags & PSC_DSP)
++		? DAVINCI_GPSC_DSPDOMAIN
++		: DAVINCI_GPSC_ARMDOMAIN;
++}
+ 
+-	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, clk->lpsc, 1);
+-	return 0;
++static void __clk_enable(struct clk *clk)
++{
++	if (clk->parent)
++		__clk_enable(clk->parent);
++	if (clk->usecount++ == 0 && (clk->flags & CLK_PSC))
++		davinci_psc_config(psc_domain(clk), clk->lpsc, 1);
+ }
+ 
+ static void __clk_disable(struct clk *clk)
+ {
+-	if (clk->usecount)
++	if (WARN_ON(clk->usecount == 0))
+ 		return;
+-
+-	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, clk->lpsc, 0);
++	if (--clk->usecount == 0 && !(clk->flags & CLK_PLL))
++		davinci_psc_config(psc_domain(clk), clk->lpsc, 0);
++	if (clk->parent)
++		__clk_disable(clk->parent);
+ }
+ 
+ int clk_enable(struct clk *clk)
  {
  	unsigned long flags;
- 	int ret = 0;
--
-+	
+-	int ret = 0;
+ 
  	if (clk == NULL || IS_ERR(clk))
  		return -EINVAL;
  
-@@ -191,11 +268,21 @@
- 		.flags = ALWAYS_ENABLED,
- 	},
- 	{
--		.name = "UART",
-+		.name = "UART0",
- 		.rate = &fixedrate,
- 		.lpsc = DAVINCI_LPSC_UART0,
- 	},
- 	{
-+		.name = "UART1",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_UART1,
-+	},
-+	{
-+		.name = "UART2",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_UART2,
-+	},
-+	{
- 		.name = "EMACCLK",
- 		.rate = &commonrate,
- 		.lpsc = DAVINCI_LPSC_EMAC_WRAPPER,
-@@ -231,25 +318,234 @@
- 		.lpsc = DAVINCI_LPSC_GPIO,
- 	},
- 	{
-+		.name = "USBCLK",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_USB,
-+	},
-+	{
-+		.name = "VLYNQCLK",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_VLYNQ,
-+	},
-+	{
- 		.name = "AEMIFCLK",
- 		.rate = &commonrate,
- 		.lpsc = DAVINCI_LPSC_AEMIF,
- 		.usecount = 1,
- 	}
- };
-+static struct clk davinci_dm646x_clks[] = {
-+	{
-+		.name = "ARMCLK",
-+		.rate = &armrate,
-+		.lpsc = -1,
-+		.flags = ALWAYS_ENABLED,
-+	},
-+	{
-+		.name = "UART0",
-+		.rate = &fixedrate,
-+		.lpsc = DM646X_LPSC_UART0,
-+	},
-+	{
-+		.name = "UART1",
-+		.rate = &fixedrate,
-+		.lpsc = DM646X_LPSC_UART1,
-+	},
-+	{
-+		.name = "UART2",
-+		.rate = &fixedrate,
-+		.lpsc = DM646X_LPSC_UART2,
-+	},
-+	{
-+		.name = "I2CCLK",
-+		.rate = &div_by_four,
-+		.lpsc = DM646X_LPSC_I2C,
-+	},
-+	{
-+		.name = "gpio",
-+		.rate = &commonrate,
-+		.lpsc = DM646X_LPSC_GPIO,
-+	},
-+	{
-+		.name = "AEMIFCLK",
-+		.rate = &div_by_four,
-+		.lpsc = DM646X_LPSC_AEMIF,
-+		.usecount = 1,
-+	},
-+	{
-+		.name = "EMACCLK",
-+		.rate = &div_by_four,
-+		.lpsc = DM646X_LPSC_EMAC,
-+	},
-+};
-+static struct clk davinci_dm355_clks[] = {
-+	{
-+		.name = "ARMCLK",
-+		.rate = &armrate,
-+		.lpsc = -1,
-+		.flags = ALWAYS_ENABLED,
-+	},
-+	{
-+		.name = "UART0",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_UART0,
-+		.usecount = 1,
-+	},
-+	{
-+		.name = "UART1",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_UART1,
-+		.usecount = 1,
-+	},
-+	{
-+		.name = "UART2",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_UART2,
-+		.usecount = 1,
-+	},
-+	{
-+		.name = "I2CCLK",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_I2C,
-+	},
-+	{
-+		.name = "McBSPCLK0",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_McBSP,
-+	},
-+	{
-+		.name = "McBSPCLK1",
-+		.rate = &commonrate,
-+		.lpsc = DM355_LPSC_McBSP1,
-+	},
-+	{
-+		.name = "MMCSDCLK0",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_MMC_SD,
-+	},
-+	{
-+		.name = "MMCSDCLK1",
-+		.rate = &commonrate,
-+		.lpsc = DM355_LPSC_MMC_SD1,
-+	},
-+	{
-+		.name = "SPICLK",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_SPI,
-+	},
-+	{
-+		.name = "SPICLK1",
-+		.rate = &commonrate,
-+		.lpsc = DM355_LPSC_SPI1,
-+	},
-+	{
-+		.name = "SPICLK2",
-+		.rate = &commonrate,
-+		.lpsc = DM355_LPSC_SPI2,
-+	},
-+	{
-+		.name = "gpio",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_GPIO,
-+	},
-+	{
-+		.name = "AEMIFCLK",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_AEMIF,
-+		.usecount = 1,
-+	},
-+	{
-+		.name = "PWM0_CLK",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_PWM0,
-+	},
-+	{
-+		.name = "PWM1_CLK",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_PWM1,
-+	},
-+	{
-+		.name = "PWM2_CLK",
-+		.rate = &fixedrate,
-+		.lpsc = DAVINCI_LPSC_PWM2,
-+	},
-+	{
-+		.name = "PWM3_CLK",
-+		.rate = &fixedrate,
-+		.lpsc = DM355_LPSC_PWM3,
-+	},
-+	{
-+		.name = "USBCLK",
-+		.rate = &commonrate,
-+		.lpsc = DAVINCI_LPSC_USB,
-+	},
-+};
+-	if (clk->usecount++ == 0) {
+-		spin_lock_irqsave(&clockfw_lock, flags);
+-		ret = __clk_enable(clk);
+-		spin_unlock_irqrestore(&clockfw_lock, flags);
+-	}
++	spin_lock_irqsave(&clockfw_lock, flags);
++	__clk_enable(clk);
++	spin_unlock_irqrestore(&clockfw_lock, flags);
+ 
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL(clk_enable);
+ 
+@@ -123,11 +185,9 @@
+ 	if (clk == NULL || IS_ERR(clk))
+ 		return;
+ 
+-	if (clk->usecount > 0 && !(--clk->usecount)) {
+-		spin_lock_irqsave(&clockfw_lock, flags);
+-		__clk_disable(clk);
+-		spin_unlock_irqrestore(&clockfw_lock, flags);
+-	}
++	spin_lock_irqsave(&clockfw_lock, flags);
++	__clk_disable(clk);
++	spin_unlock_irqrestore(&clockfw_lock, flags);
+ }
+ EXPORT_SYMBOL(clk_disable);
+ 
+@@ -136,7 +196,7 @@
+ 	if (clk == NULL || IS_ERR(clk))
+ 		return -EINVAL;
+ 
+-	return *(clk->rate);
++	return clk->rate;
+ }
+ EXPORT_SYMBOL(clk_get_rate);
+ 
+@@ -145,7 +205,7 @@
+ 	if (clk == NULL || IS_ERR(clk))
+ 		return -EINVAL;
+ 
+-	return *(clk->rate);
++	return clk->rate;
+ }
+ EXPORT_SYMBOL(clk_round_rate);
+ 
+@@ -164,10 +224,23 @@
+ 	if (clk == NULL || IS_ERR(clk))
+ 		return -EINVAL;
+ 
++	if (WARN(clk->parent && !clk->parent->rate,
++			"CLK: %s parent %s has no rate!\n",
++			clk->name, clk->parent->name))
++		return -EINVAL;
 +
+ 	mutex_lock(&clocks_mutex);
+-	list_add(&clk->node, &clocks);
++	list_add_tail(&clk->node, &clocks);
+ 	mutex_unlock(&clocks_mutex);
+ 
++	/* If rate is already set, use it */
++	if (clk->rate)
++		return 0;
++
++	/* Otherwise, default to parent rate */
++	if (clk->parent)
++		clk->rate = clk->parent->rate;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(clk_register);
+@@ -183,78 +256,146 @@
+ }
+ EXPORT_SYMBOL(clk_unregister);
+ 
+-static struct clk davinci_clks[] = {
+-	{
+-		.name = "ARMCLK",
+-		.rate = &armrate,
+-		.lpsc = -1,
+-		.flags = ALWAYS_ENABLED,
+-	},
+-	{
+-		.name = "UART",
+-		.rate = &fixedrate,
+-		.lpsc = DAVINCI_LPSC_UART0,
+-	},
+-	{
+-		.name = "EMACCLK",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_EMAC_WRAPPER,
+-	},
+-	{
+-		.name = "I2CCLK",
+-		.rate = &fixedrate,
+-		.lpsc = DAVINCI_LPSC_I2C,
+-	},
+-	{
+-		.name = "IDECLK",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_ATA,
+-	},
+-	{
+-		.name = "McBSPCLK",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_McBSP,
+-	},
+-	{
+-		.name = "MMCSDCLK",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_MMC_SD,
+-	},
+-	{
+-		.name = "SPICLK",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_SPI,
+-	},
+-	{
+-		.name = "gpio",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_GPIO,
+-	},
+-	{
+-		.name = "AEMIFCLK",
+-		.rate = &commonrate,
+-		.lpsc = DAVINCI_LPSC_AEMIF,
+-		.usecount = 1,
 +#ifdef CONFIG_DAVINCI_RESET_CLOCKS
 +/*
 + * Disable any unused clocks left on by the bootloader
@@ -19865,73 +19915,212 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.c linux-davinci-2.6.28/arch/a
 +static int __init clk_disable_unused(void)
 +{
 +	struct clk *ck;
-+	unsigned long flags;
 +
++	spin_lock_irq(&clockfw_lock);
 +	list_for_each_entry(ck, &clocks, node) {
-+		if (ck->usecount > 0 || (ck->flags & ALWAYS_ENABLED))
++		if (ck->usecount > 0)
++			continue;
++		if (!(ck->flags & CLK_PSC))
 +			continue;
 +
 +		printk(KERN_INFO "Clocks: disable unused %s\n", ck->name);
-+		spin_lock_irqsave(&clockfw_lock, flags);
-+		__clk_disable(ck);
-+		spin_unlock_irqrestore(&clockfw_lock, flags);
-+	}
++		davinci_psc_config(psc_domain(ck), ck->lpsc, 0);
+ 	}
+-};
++	spin_unlock_irq(&clockfw_lock);
 +
 +	return 0;
 +}
 +late_initcall(clk_disable_unused);
 +#endif
++
++static void clk_sysclk_recalc(struct clk *clk)
++{
++	u32 v, plldiv;
++	struct pll_data *pll;
++
++	/* If this is the PLL base clock, no more calculations needed */
++	if (clk->pll_data)
++		return;
++
++	if (WARN_ON(!clk->parent))
++		return;
++
++	clk->rate = clk->parent->rate;
++
++	/* Otherwise, the parent must be a PLL */
++	if (WARN_ON(!clk->parent->pll_data))
++		return;
++
++	pll = clk->parent->pll_data;
++
++	/* If pre-PLL, source clock is before the multiplier and divider(s) */
++	if (clk->flags & PRE_PLL)
++		clk->rate = pll->input_rate;
++
++	if (!clk->div_reg)
++		return;
++
++	v = __raw_readl(pll->base + clk->div_reg);
++	if (v & PLLDIV_EN) {
++		plldiv = (v & PLLDIV_RATIO_MASK) + 1;
++		if (plldiv)
++			clk->rate /= plldiv;
++	}
++}
  
- int __init davinci_clk_init(void)
+-int __init davinci_clk_init(void)
++static void __init clk_pll_init(struct clk *clk)
++{
++	u32 ctrl, mult = 1, prediv = 1, postdiv = 1;
++	u8 bypass;
++	struct pll_data *pll = clk->pll_data;
++
++	pll->base = IO_ADDRESS(pll->phys_base);
++	ctrl = __raw_readl(pll->base + PLLCTL);
++	clk->rate = pll->input_rate = clk->parent->rate;
++
++	if (ctrl & PLLCTL_PLLEN) {
++		bypass = 0;
++		mult = __raw_readl(pll->base + PLLM);
++		mult = (mult & PLLM_PLLM_MASK) + 1;
++	} else
++		bypass = 1;
++
++	if (pll->flags & PLL_HAS_PREDIV) {
++		prediv = __raw_readl(pll->base + PREDIV);
++		if (prediv & PLLDIV_EN)
++			prediv = (prediv & PLLDIV_RATIO_MASK) + 1;
++		else
++			prediv = 1;
++	}
++
++	/* pre-divider is fixed, but (some?) chips won't report that */
++	if (cpu_is_davinci_dm355() && pll->num == 1)
++		prediv = 8;
++
++	if (pll->flags & PLL_HAS_POSTDIV) {
++		postdiv = __raw_readl(pll->base + POSTDIV);
++		if (postdiv & PLLDIV_EN)
++			postdiv = (postdiv & PLLDIV_RATIO_MASK) + 1;
++		else
++			postdiv = 1;
++	}
++
++	if (!bypass) {
++		clk->rate /= prediv;
++		clk->rate *= mult;
++		clk->rate /= postdiv;
++	}
++
++	pr_debug("PLL%d: input = %lu MHz [ ",
++		 pll->num, clk->parent->rate / 1000000);
++	if (bypass)
++		pr_debug("bypass ");
++	if (prediv > 1)
++		pr_debug("/ %d ", prediv);
++	if (mult > 1)
++		pr_debug("* %d ", mult);
++	if (postdiv > 1)
++		pr_debug("/ %d ", postdiv);
++	pr_debug("] --> %lu MHz output.\n", clk->rate / 1000000);
++}
++
++int __init davinci_clk_init(struct clk *clocks[])
  {
  	struct clk *clkp;
 -	int count = 0;
-+	static struct clk *board_clks;
-+	int count = 0, num_clks;
- 	u32 pll_mult;
+-	u32 pll_mult;
++	int i = 0;
++
++	while ((clkp = clocks[i++])) {
++		if (clkp->pll_data)
++			clk_pll_init(clkp);
++
++		/* Calculate rates for PLL-derived clocks */
++		else if (clkp->flags & CLK_PLL)
++			clk_sysclk_recalc(clkp);
  
- 	pll_mult = davinci_readl(DAVINCI_PLL_CNTRL0_BASE + PLLM);
+-	pll_mult = davinci_readl(DAVINCI_PLL_CNTRL0_BASE + PLLM);
 -	commonrate = ((pll_mult + 1) * 27000000) / 6;
 -	armrate = ((pll_mult + 1) * 27000000) / 2;
-+	commonrate = ((pll_mult + 1) * DM646X_OSC_FREQ) / 6;
-+	armrate = ((pll_mult + 1) * DM646X_OSC_FREQ) / 2;
-+
-+	if (cpu_is_davinci_dm646x()) {
-+		fixedrate = 24000000;
-+		div_by_four = ((pll_mult + 1) * DM646X_OSC_FREQ) / 4;
-+		div_by_six = ((pll_mult + 1) * DM646X_OSC_FREQ) / 6;
-+		div_by_eight = ((pll_mult + 1) * DM646X_OSC_FREQ) / 8;
-+		armrate = ((pll_mult + 1) * DM646X_OSC_FREQ) / 2;
-+
-+		board_clks = davinci_dm646x_clks;
-+		num_clks = ARRAY_SIZE(davinci_dm646x_clks);
-+	} else if (cpu_is_davinci_dm355()) {
-+		unsigned long postdiv;
-+
-+		postdiv = (davinci_readl(DAVINCI_PLL_CNTRL0_BASE + 0x128)
-+			   & 0x1f) + 1;
-+
-+		fixedrate = 24000000;
-+		armrate = (pll_mult + 1) * (fixedrate / (16 * postdiv));
-+		commonrate = armrate / 2;
-+		board_clks = davinci_dm355_clks;
-+		num_clks = ARRAY_SIZE(davinci_dm355_clks);
-+	} else {
-+		fixedrate = DM646X_OSC_FREQ;
-+		armrate = (pll_mult + 1) * (fixedrate / 2);
-+		commonrate = armrate / 3;
-+
-+		board_clks = davinci_clks;
-+		num_clks = ARRAY_SIZE(davinci_clks);
-+	}
++		if (clkp->lpsc)
++			clkp->flags |= CLK_PSC;
  
 -	for (clkp = davinci_clks; count < ARRAY_SIZE(davinci_clks);
 -	     count++, clkp++) {
-+	for (clkp = board_clks; count < num_clks; count++, clkp++) {
  		clk_register(clkp);
  
- 		/* Turn on clocks that have been enabled in the
-@@ -316,4 +612,4 @@
+-		/* Turn on clocks that have been enabled in the
+-		 * table above */
+-		if (clkp->usecount)
++		/* FIXME: remove equivalent special-cased code from
++		 * davinci_psc_init() once cpus list *all* clocks.
++		 */
++
++		/* Turn on clocks that Linux doesn't otherwise manage */
++		if (clkp->flags & ALWAYS_ENABLED)
+ 			clk_enable(clkp);
+ 	}
+ 
+@@ -280,12 +421,52 @@
+ {
+ }
+ 
++#define CLKNAME_MAX	10		/* longest clock name */
++#define NEST_DELTA	2
++#define NEST_MAX	4
++
++static void
++dump_clock(struct seq_file *s, unsigned nest, struct clk *parent)
++{
++	char		*state;
++	char		buf[CLKNAME_MAX + NEST_DELTA * NEST_MAX];
++	struct clk	*clk;
++	unsigned	i;
++
++	if (parent->flags & CLK_PLL)
++		state = "pll";
++	else if (parent->flags & CLK_PSC)
++		state = "psc";
++	else
++		state = "";
++
++	/* <nest spaces> name <pad to end> */
++	memset(buf, ' ', sizeof(buf) - 1);
++	buf[sizeof(buf) - 1] = 0;
++	i = strlen(parent->name);
++	memcpy(buf + nest, parent->name,
++			min(i, (unsigned)(sizeof(buf) - 1 - nest)));
++
++	seq_printf(s, "%s users=%2d %-3s %9ld Hz\n",
++		   buf, parent->usecount, state, clk_get_rate(parent));
++	/* REVISIT show device associations too */
++
++	/* cost is now small, but not linear... */
++	list_for_each_entry(clk, &clocks, node) {
++		if (clk->parent == parent)
++			dump_clock(s, nest + NEST_DELTA, clk);
++	}
++}
++
+ static int davinci_ck_show(struct seq_file *m, void *v)
+ {
+-	struct clk *cp;
+-
+-	list_for_each_entry(cp, &clocks, node)
+-		seq_printf(m,"%s %d %d\n", cp->name, *(cp->rate), cp->usecount);
++	/* Show clock tree; we know the main oscillator is first.
++	 * We trust nonzero usecounts equate to PSC enables...
++	 */
++	mutex_lock(&clocks_mutex);
++	if (!list_empty(&clocks))
++		dump_clock(m, 0, list_first_entry(&clocks, struct clk, node));
++	mutex_unlock(&clocks_mutex);
+ 
+ 	return 0;
+ }
+@@ -316,4 +497,4 @@
  
  }
  __initcall(davinci_ck_proc_init);
@@ -19939,7 +20128,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.c linux-davinci-2.6.28/arch/a
 +#endif /* CONFIG_DEBUG_PROC_FS */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.h linux-davinci-2.6.28/arch/arm/mach-davinci/clock.h
 --- linux-2.6.28/arch/arm/mach-davinci/clock.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/clock.h	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/clock.h	2009-02-26 11:20:59.000000000 +0100
 @@ -1,7 +1,7 @@
  /*
   * TI DaVinci clock definitions
@@ -19949,214 +20138,93 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/clock.h linux-davinci-2.6.28/arch/a
   *
   * This program is free software; you can redistribute it and/or modify
   * it under the terms of the GNU General Public License version 2 as
-@@ -30,4 +30,13 @@
- #define ALWAYS_ENABLED		16
- #define ENABLE_REG_32BIT	32
+@@ -11,23 +11,72 @@
+ #ifndef __ARCH_ARM_DAVINCI_CLOCK_H
+ #define __ARCH_ARM_DAVINCI_CLOCK_H
  
-+/* various clock frequencies */
-+#define DM646X_OSC_FREQ    	27000000
-+#define DM646X_AUX_OSC_FREQ	24000000
-+#define DM646X_CLOCK_TICK_RATE	148500000
-+#define DM355_CLOCK_TICK_RATE	24000000
++#include <linux/list.h>
++
++#define DAVINCI_PLL1_BASE 0x01c40800
++#define DAVINCI_PLL2_BASE 0x01c40c00
++#define MAX_PLL 2
++
++/* PLL/Reset register offsets */
++#define PLLCTL          0x100
++#define PLLCTL_PLLEN    BIT(0)
++#define PLLCTL_CLKMODE  BIT(8)
++
++#define PLLM		0x110
++#define PLLM_PLLM_MASK  0xff
++
++#define PREDIV          0x114
++#define PLLDIV1         0x118
++#define PLLDIV2         0x11c
++#define PLLDIV3         0x120
++#define POSTDIV         0x128
++#define BPDIV           0x12c
++#define PLLCMD		0x138
++#define PLLSTAT		0x13c
++#define PLLALNCTL	0x140
++#define PLLDCHANGE	0x144
++#define PLLCKEN		0x148
++#define PLLCKSTAT	0x14c
++#define PLLSYSTAT	0x150
++#define PLLDIV4         0x160
++#define PLLDIV5         0x164
++#define PLLDIV6         0x168
++#define PLLDIV8         0x170
++#define PLLDIV9         0x174
++#define PLLDIV_EN       BIT(15)
++#define PLLDIV_RATIO_MASK 0x1f
++
++struct pll_data {
++	u32 phys_base;
++	void __iomem *base;
++	u32 num;
++	u32 flags;
++	u32 input_rate;
++};
++#define PLL_HAS_PREDIV          0x01
++#define PLL_HAS_POSTDIV         0x02
++
+ struct clk {
+ 	struct list_head	node;
+ 	struct module		*owner;
+ 	const char		*name;
+-	unsigned int		*rate;
+-	int			id;
+-	__s8			usecount;
+-	__u8			flags;
+-	__u8			lpsc;
++	unsigned long		rate;
++	u8			usecount;
++	u8			flags;
++	u8			lpsc;
++	struct clk              *parent;
++	struct pll_data         *pll_data;
++	u32                     div_reg;
+ };
+ 
+ /* Clock flags */
+-#define RATE_CKCTL		1
+-#define RATE_FIXED		2
+-#define RATE_PROPAGATES		4
+-#define VIRTUAL_CLOCK		8
+-#define ALWAYS_ENABLED		16
+-#define ENABLE_REG_32BIT	32
++#define ALWAYS_ENABLED		BIT(1)
++#define CLK_PSC                 BIT(2)
++#define PSC_DSP                 BIT(3) /* PSC uses DSP domain, not ARM */
++#define CLK_PLL			BIT(4) /* PLL-derived clock */
++#define PRE_PLL                 BIT(5) /* source is before PLL mult/div */
 +
 +int davinci_clk_associate(struct device *dev, const char *logical_clockname,
-+		const char *physical_clockname);
-+
++			  const char *physical_clockname);
+ 
  #endif
-diff -Nur linux-2.6.28/arch/arm/mach-davinci/common.c linux-davinci-2.6.28/arch/arm/mach-davinci/common.c
---- linux-2.6.28/arch/arm/mach-davinci/common.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/common.c	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,187 @@
-+/*
-+ * linux/arch/arm/mach-davinci/common.c
-+ *
-+ * Code common to all DaVinci machines.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/init.h>
-+#include <linux/delay.h>
-+#include <linux/pm.h>
-+#include <linux/console.h>
-+#include <linux/serial.h>
-+#include <linux/tty.h>
-+#include <linux/serial_8250.h>
-+#include <linux/serial_reg.h>
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+
-+#include <asm/system.h>
-+#include <asm/pgtable.h>
-+#include <asm/mach/map.h>
-+#include <asm/setup.h>
-+
-+#include <mach/hardware.h>
-+#include <mach/board.h>
-+#include <mach/serial.h>
-+#include <mach/mux.h>
-+
-+#include <mach/clock.h>
-+
-+#define NO_LENGTH_CHECK 0xffffffff
-+
-+unsigned char davinci_bootloader_tag[1024];
-+int davinci_bootloader_tag_len;
-+
-+struct davinci_board_config_kernel *davinci_board_config;
-+int davinci_board_config_size;
-+
-+#ifdef CONFIG_DAVINCI_BOOT_TAG
-+
-+static int __init parse_tag_davinci(const struct tag *tag)
-+{
-+	u32 size = tag->hdr.size - (sizeof(tag->hdr) >> 2);
-+
-+	size <<= 2;
-+	if (size > sizeof(davinci_bootloader_tag))
-+		return -1;
-+
-+	memcpy(davinci_bootloader_tag, tag->u.davinci.data, size);
-+	davinci_bootloader_tag_len = size;
-+
-+	return 0;
-+}
-+
-+__tagtable(ATAG_BOARD, parse_tag_davinci);
-+
-+#endif
-+
-+static const void *get_config(u16 tag, size_t len, int skip, size_t *len_out)
-+{
-+	struct davinci_board_config_kernel *kinfo = NULL;
-+	int i;
-+
-+#ifdef CONFIG_DAVINCI_BOOT_TAG
-+	struct davinci_board_config_entry *info = NULL;
-+
-+	if (davinci_bootloader_tag_len > 4)
-+		info = (struct davinci_board_config_entry *)
-+				davinci_bootloader_tag;
-+	while (info != NULL) {
-+		u8 *next;
-+
-+		if (info->tag == tag) {
-+			if (skip == 0)
-+				break;
-+			skip--;
-+		}
-+
-+		if ((info->len & 0x03) != 0) {
-+			/* We bail out to avoid an alignment fault */
-+			printk(KERN_ERR "DAVINCI peripheral config: Length (%d)"
-+				 "not word-aligned (tag %04x)\n", info->len,
-+				 info->tag);
-+			return NULL;
-+		}
-+		next = (u8 *) info + sizeof(*info) + info->len;
-+		if (next >= davinci_bootloader_tag + davinci_bootloader_tag_len)
-+			info = NULL;
-+		else
-+			info = (struct davinci_board_config_entry *) next;
-+	}
-+	if (info != NULL) {
-+		/* Check the length as a lame attempt to check for
-+		 * binary inconsistency. */
-+		if (len != NO_LENGTH_CHECK) {
-+			/* Word-align len */
-+			if (len & 0x03)
-+				len = (len + 3) & ~0x03;
-+			if (info->len != len) {
-+				printk(KERN_ERR "DaVinci peripheral config: "
-+					"Length mismatch with tag %x"
-+					" (want %d, got %d)\n", tag, len,
-+					 info->len);
-+				return NULL;
-+			}
-+		}
-+		if (len_out != NULL)
-+			*len_out = info->len;
-+		return info->data;
-+	}
-+#endif
-+	/* Try to find the config from the board-specific structures
-+	 * in the kernel. */
-+	for (i = 0; i < davinci_board_config_size; i++) {
-+		if (davinci_board_config[i].tag == tag) {
-+			if (skip == 0) {
-+				kinfo = &davinci_board_config[i];
-+				break;
-+			} else {
-+				skip--;
-+			}
-+		}
-+	}
-+	if (kinfo == NULL)
-+		return NULL;
-+	return kinfo->data;
-+}
-+
-+const void *__davinci_get_config(u16 tag, size_t len, int nr)
-+{
-+	return get_config(tag, len, nr, NULL);
-+}
-+EXPORT_SYMBOL(__davinci_get_config);
-+
-+const void *davinci_get_var_config(u16 tag, size_t *len)
-+{
-+	return get_config(tag, NO_LENGTH_CHECK, 0, len);
-+}
-+EXPORT_SYMBOL(davinci_get_var_config);
-+
-+static int __init davinci_add_serial_console(void)
-+{
-+	const struct davinci_serial_console_config *con_info;
-+	const struct davinci_uart_config *uart_info;
-+	static char speed[11], *opt;
-+	int line, i, uart_idx;
-+
-+	uart_info = davinci_get_config(DAVINCI_TAG_UART,
-+					 struct davinci_uart_config);
-+	con_info = davinci_get_config(DAVINCI_TAG_SERIAL_CONSOLE,
-+					struct davinci_serial_console_config);
-+	if (uart_info == NULL || con_info == NULL)
-+		return 0;
-+
-+	if (con_info->console_uart == 0)
-+		return 0;
-+
-+	if (con_info->console_speed) {
-+		snprintf(speed, sizeof(speed), "%u", con_info->console_speed);
-+		opt = speed;
-+	}
-+
-+	uart_idx = con_info->console_uart - 1;
-+	if (uart_idx >= DAVINCI_MAX_NR_UARTS) {
-+		printk(KERN_INFO "Console: external UART#%d. "
-+			"Not adding it as console this time.\n",
-+			uart_idx + 1);
-+		return 0;
-+	}
-+	if (!(uart_info->enabled_uarts & (1 << uart_idx))) {
-+		printk(KERN_ERR "Console: Selected UART#%d is "
-+			"not enabled for this platform\n",
-+			uart_idx + 1);
-+		return -1;
-+	}
-+	line = 0;
-+	for (i = 0; i < uart_idx; i++) {
-+		if (uart_info->enabled_uarts & (1 << i))
-+			line++;
-+	}
-+	return add_preferred_console("ttyS", line, opt);
-+}
-+console_initcall(davinci_add_serial_console);
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/devices.c linux-davinci-2.6.28/arch/arm/mach-davinci/devices.c
 --- linux-2.6.28/arch/arm/mach-davinci/devices.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/devices.c	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/devices.c	2009-02-26 11:20:59.000000000 +0100
 @@ -15,11 +15,32 @@
  #include <linux/platform_device.h>
  #include <linux/dma-mapping.h>
@@ -20168,13 +20236,13 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/devices.c linux-davinci-2.6.28/arch
 +#include <asm/mach-types.h>
  #include <asm/mach/map.h>
  
-+#include <mach/board.h>
  #include <mach/hardware.h>
 +#include <mach/edma.h>
 +#include <mach/emac.h>
  #include <mach/i2c.h>
 +#include <mach/cpu.h>
 +#include <mach/mux.h>
++#include <mach/mmc.h>
 +
 +#include "clock.h"
 +
@@ -20190,7 +20258,14 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/devices.c linux-davinci-2.6.28/arch
  
  static struct resource i2c_resources[] = {
  	{
-@@ -46,3 +67,327 @@
+@@ -42,7 +63,346 @@
+ 
+ void __init davinci_init_i2c(struct davinci_i2c_platform_data *pdata)
+ {
++	if (cpu_is_davinci_dm644x())
++		davinci_cfg_reg(DM644X_I2C);
++
+ 	davinci_i2c_device.dev.platform_data = pdata;
  	(void) platform_device_register(&davinci_i2c_device);
  }
  
@@ -20303,7 +20378,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/devices.c linux-davinci-2.6.28/arch
 +		davinci_cfg_reg(DM355_SD1_DATA3);
 +
 +		pdev = &davinci_mmcsd1_device;
-+		clockname = "MMCSDCLK1";
++		clockname = "mmcsd1";
 +		break;
 +	case 0:
 +		if (cpu_is_davinci_dm355()) {
@@ -20317,8 +20392,20 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/devices.c linux-davinci-2.6.28/arch
 +			/* enable RX EDMA */
 +			davinci_cfg_reg(DM355_EVT26_MMC0_RX);
 +		}
++
++		else if (cpu_is_davinci_dm644x()) {
++			/* REVISIT: should this be in board-init code? */
++			void __iomem *base =
++				IO_ADDRESS(DAVINCI_SYSTEM_MODULE_BASE);
++
++			/* Power-on 3.3V IO cells */
++			__raw_writel(0, base + DM64XX_VDD3P3V_PWDN);
++			/*Set up the pull regiter for MMC */
++			davinci_cfg_reg(DM644X_MSTK);
++		}
++
 +		pdev = &davinci_mmcsd0_device;
-+		clockname = cpu_is_davinci_dm355() ? "MMCSDCLK0" : "MMCSDCLK";
++		clockname = cpu_is_davinci_dm355() ? "mmcsd0" : "mmcsd";
 +		break;
 +	}
 +
@@ -20518,6 +20605,1123 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/devices.c linux-davinci-2.6.28/arch
 +	return 0;
 +}
 +late_initcall(davinci_init_devices_late);
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/dm355.c linux-davinci-2.6.28/arch/arm/mach-davinci/dm355.c
+--- linux-2.6.28/arch/arm/mach-davinci/dm355.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/dm355.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,469 @@
++/*
++ * TI DaVinci DM355 chip specific setup
++ *
++ * Author: Kevin Hilman, Deep Root Systems, LLC
++ *
++ * 2007 (c) Deep Root Systems, LLC. This file is licensed under
++ * the terms of the GNU General Public License version 2. This program
++ * is licensed "as is" without any warranty of any kind, whether express
++ * or implied.
++ */
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/clk.h>
++#include <linux/platform_device.h>
++#include <linux/dma-mapping.h>
++
++#include <linux/spi/spi.h>
++
++#include <mach/dm355.h>
++#include <mach/clock.h>
++#include <mach/psc.h>
++#include <mach/mux.h>
++
++#include "clock.h"
++#include "mux.h"
++
++/*
++ * Device specific clocks
++ */
++#define DM355_REF_FREQ		24000000	/* 24 or 36 MHz */
++
++static struct pll_data pll1_data = {
++	.num       = 1,
++	.phys_base = DAVINCI_PLL1_BASE,
++	.flags     = PLL_HAS_PREDIV | PLL_HAS_POSTDIV,
++};
++
++static struct pll_data pll2_data = {
++	.num       = 2,
++	.phys_base = DAVINCI_PLL2_BASE,
++	.flags     = PLL_HAS_PREDIV,
++};
++
++static struct clk ref_clk = {
++	.name = "ref_clk",
++	/* FIXME -- crystal rate is board-specific */
++	.rate = DM355_REF_FREQ,
++};
++
++static struct clk pll1_clk = {
++	.name = "pll1",
++	.parent = &ref_clk,
++	.flags = CLK_PLL,
++	.pll_data = &pll1_data,
++};
++
++static struct clk pll1_aux_clk = {
++	.name = "pll1_aux_clk",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL | PRE_PLL,
++};
++
++static struct clk pll1_sysclk1 = {
++	.name = "pll1_sysclk1",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV1,
++};
++
++static struct clk pll1_sysclk2 = {
++	.name = "pll1_sysclk2",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV2,
++};
++
++static struct clk pll1_sysclk3 = {
++	.name = "pll1_sysclk3",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV3,
++};
++
++static struct clk pll1_sysclk4 = {
++	.name = "pll1_sysclk4",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV4,
++};
++
++static struct clk pll1_sysclkbp = {
++	.name = "pll1_sysclkbp",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL | PRE_PLL,
++	.div_reg = BPDIV
++};
++
++static struct clk vpss_dac_clk = {
++	.name = "vpss_dac",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM355_LPSC_VPSS_DAC,
++};
++
++static struct clk vpss_master_clk = {
++	.name = "vpss_master",
++	.parent = &pll1_sysclk4,
++	.lpsc = DAVINCI_LPSC_VPSSMSTR,
++	.flags = CLK_PSC,
++};
++
++static struct clk vpss_slave_clk = {
++	.name = "vpss_slave",
++	.parent = &pll1_sysclk4,
++	.lpsc = DAVINCI_LPSC_VPSSSLV,
++};
++
++
++static struct clk clkout1_clk = {
++	.name = "clkout1",
++	.parent = &pll1_aux_clk,
++	/* NOTE:  clkout1 can be externally gated by muxing GPIO-18 */
++};
++
++static struct clk clkout2_clk = {
++	.name = "clkout2",
++	.parent = &pll1_sysclkbp,
++};
++
++static struct clk pll2_clk = {
++	.name = "pll2",
++	.parent = &ref_clk,
++	.flags = CLK_PLL,
++	.pll_data = &pll2_data,
++};
++
++static struct clk pll2_sysclk1 = {
++	.name = "pll2_sysclk1",
++	.parent = &pll2_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV1,
++};
++
++static struct clk pll2_sysclkbp = {
++	.name = "pll2_sysclkbp",
++	.parent = &pll2_clk,
++	.flags = CLK_PLL | PRE_PLL,
++	.div_reg = BPDIV
++};
++
++static struct clk clkout3_clk = {
++	.name = "clkout3",
++	.parent = &pll2_sysclkbp,
++	/* NOTE:  clkout3 can be externally gated by muxing GPIO-16 */
++};
++
++static struct clk arm_clk = {
++	.name = "arm_clk",
++	.parent = &pll1_sysclk1,
++	.lpsc = DAVINCI_LPSC_ARM,
++	.flags = ALWAYS_ENABLED,
++};
++
++/*
++ * NOT LISTED below, and not touched by Linux
++ *   - in SyncReset state by default
++ *	.lpsc = DAVINCI_LPSC_TPCC,
++ *	.lpsc = DAVINCI_LPSC_TPTC0,
++ *	.lpsc = DAVINCI_LPSC_TPTC1,
++ *	.lpsc = DAVINCI_LPSC_DDR_EMIF, .parent = &sysclk2_clk,
++ *	.lpsc = DAVINCI_LPSC_MEMSTICK,
++ *   - in Enabled state by default
++ *	.lpsc = DAVINCI_LPSC_SYSTEM_SUBSYS,
++ *	.lpsc = DAVINCI_LPSC_SCR2,	// "bus"
++ *	.lpsc = DAVINCI_LPSC_SCR3,	// "bus"
++ *	.lpsc = DAVINCI_LPSC_SCR4,	// "bus"
++ *	.lpsc = DAVINCI_LPSC_CROSSBAR,	// "emulation"
++ *	.lpsc = DAVINCI_LPSC_CFG27,	// "test"
++ *	.lpsc = DAVINCI_LPSC_CFG3,	// "test"
++ *	.lpsc = DAVINCI_LPSC_CFG5,	// "test"
++ */
++
++static struct clk mjcp_clk = {
++	.name = "mjcp",
++	.parent = &pll1_sysclk1,
++	.lpsc = DAVINCI_LPSC_IMCOP,
++};
++
++static struct clk uart0_clk = {
++	.name = "uart0",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_UART0,
++};
++
++static struct clk uart1_clk = {
++	.name = "uart1",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_UART1,
++};
++
++static struct clk uart2_clk = {
++	.name = "uart2",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_UART2,
++};
++
++static struct clk i2c_clk = {
++	.name = "I2CCLK",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_I2C,
++};
++
++static struct clk asp0_clk = {
++	.name = "asp0",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_McBSP,
++};
++
++static struct clk asp1_clk = {
++	.name = "asp1",
++	.parent = &pll1_sysclk2,
++	.lpsc = DM355_LPSC_McBSP1,
++};
++
++static struct clk mmcsd0_clk = {
++	.name = "mmcsd0",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_MMC_SD,
++};
++
++static struct clk mmcsd1_clk = {
++	.name = "mmcsd1",
++	.parent = &pll1_sysclk2,
++	.lpsc = DM355_LPSC_MMC_SD1,
++};
++
++static struct clk spi0_clk = {
++	.name = "spi0",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_SPI,
++};
++
++static struct clk spi1_clk = {
++	.name = "spi1",
++	.parent = &pll1_sysclk2,
++	.lpsc = DM355_LPSC_SPI1,
++};
++
++static struct clk spi2_clk = {
++	.name = "spi2",
++	.parent = &pll1_sysclk2,
++	.lpsc = DM355_LPSC_SPI2,
++};
++
++static struct clk gpio_clk = {
++	.name = "gpio",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_GPIO,
++};
++
++static struct clk aemif_clk = {
++	.name = "aemif",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_AEMIF,
++};
++
++static struct clk pwm0_clk = {
++	.name = "pwm0",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_PWM0,
++};
++
++static struct clk pwm1_clk = {
++	.name = "pwm1",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_PWM1,
++};
++
++static struct clk pwm2_clk = {
++	.name = "pwm2",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_PWM2,
++};
++
++static struct clk pwm3_clk = {
++	.name = "pwm3",
++	.parent = &pll1_aux_clk,
++	.lpsc = DM355_LPSC_PWM3,
++};
++
++static struct clk timer0_clk = {
++	.name = "timer0",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_TIMER0,
++};
++
++static struct clk timer1_clk = {
++	.name = "timer1",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_TIMER1,
++};
++
++static struct clk timer2_clk = {
++	.name = "timer2",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_TIMER2,
++};
++
++static struct clk timer3_clk = {
++	.name = "timer3",
++	.parent = &pll1_aux_clk,
++	.lpsc = DM355_LPSC_TIMER3,
++};
++
++static struct clk rto_clk = {
++	.name = "rto",
++	.parent = &pll1_aux_clk,
++	.lpsc = DM355_LPSC_RTO,
++};
++
++static struct clk usb_clk = {
++	.name = "usb",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_USB,
++};
++
++static struct clk *dm355_clks[] __initdata = {
++	&ref_clk,
++	&pll1_clk,
++	&pll1_sysclk1,
++	&pll1_sysclk2,
++	&pll1_sysclk3,
++	&pll1_sysclk4,
++	&pll1_aux_clk,
++	&pll1_sysclkbp,
++	&vpss_dac_clk,
++	&vpss_master_clk,
++	&vpss_slave_clk,
++	&clkout1_clk,
++	&clkout2_clk,
++	&pll2_clk,
++	&pll2_sysclk1,
++	&pll2_sysclkbp,
++	&clkout3_clk,
++	&arm_clk,
++	&mjcp_clk,
++	&uart0_clk,
++	&uart1_clk,
++	&uart2_clk,
++	&i2c_clk,
++	&asp0_clk,
++	&asp1_clk,
++	&mmcsd0_clk,
++	&mmcsd1_clk,
++	&spi0_clk,
++	&spi1_clk,
++	&spi2_clk,
++	&gpio_clk,
++	&aemif_clk,
++	&pwm0_clk,
++	&pwm1_clk,
++	&pwm2_clk,
++	&pwm3_clk,
++	&timer0_clk,
++	&timer1_clk,
++	&timer2_clk,
++	&timer3_clk,
++	&rto_clk,
++	&usb_clk,
++	NULL,
++};
++
++/*----------------------------------------------------------------------*/
++
++static u64 dm355_spi0_dma_mask = DMA_32BIT_MASK;
++
++static struct resource dm355_spi0_resources[] = {
++	{
++		.start = 0x01c66000,
++		.end   = 0x01c667ff,
++		.flags = IORESOURCE_MEM,
++	},
++	{
++		.start = IRQ_DM355_SPINT0_1,
++		.flags = IORESOURCE_IRQ,
++	},
++	/* Not yet used, so not included:
++	 * IORESOURCE_IRQ:
++	 *  - IRQ_DM355_SPINT0_0
++	 * IORESOURCE_DMA:
++	 *  - DAVINCI_DMA_SPI_SPIX
++	 *  - DAVINCI_DMA_SPI_SPIR
++	 */
++};
++
++static struct platform_device dm355_spi0_device = {
++	.name = "spi_davinci",
++	.id = 0,
++	.dev = {
++		.dma_mask = &dm355_spi0_dma_mask,
++		.coherent_dma_mask = DMA_32BIT_MASK,
++	},
++	.num_resources = ARRAY_SIZE(dm355_spi0_resources),
++	.resource = dm355_spi0_resources,
++};
++
++void __init dm355_init_spi0(unsigned chipselect_mask,
++		struct spi_board_info *info, unsigned len)
++{
++	/* for now, assume we need MISO */
++	davinci_cfg_reg(DM355_SPI0_SDI);
++
++	/* not all slaves will be wired up */
++	if (chipselect_mask & BIT(0))
++		davinci_cfg_reg(DM355_SPI0_SDENA0);
++	if (chipselect_mask & BIT(1))
++		davinci_cfg_reg(DM355_SPI0_SDENA1);
++
++	spi_register_board_info(info, len);
++
++	davinci_clk_associate(&dm355_spi0_device.dev, "spi", "spi0");
++	platform_device_register(&dm355_spi0_device);
++}
++
++/*----------------------------------------------------------------------*/
++
++/*
++ * Device specific mux setup
++ *
++ *	soc	description	mux  mode   mode  mux	 dbg
++ *				reg  offset mask  mode
++ */
++static const struct mux_config dm355_pins[] = {
++MUX_CFG(DM355,	MMCSD0,		4,   2,     1,	  0,	 false)
++
++MUX_CFG(DM355,	SD1_CLK,	3,   6,     1,	  1,	 false)
++MUX_CFG(DM355,	SD1_CMD,	3,   7,     1,	  1,	 false)
++MUX_CFG(DM355,	SD1_DATA3,	3,   8,     3,	  1,	 false)
++MUX_CFG(DM355,	SD1_DATA2,	3,   10,    3,	  1,	 false)
++MUX_CFG(DM355,	SD1_DATA1,	3,   12,    3,	  1,	 false)
++MUX_CFG(DM355,	SD1_DATA0,	3,   14,    3,	  1,	 false)
++
++MUX_CFG(DM355,	I2C_SDA,	3,   19,    1,	  1,	 false)
++MUX_CFG(DM355,	I2C_SCL,	3,   20,    1,	  1,	 false)
++
++MUX_CFG(DM355,	MCBSP0_BDX,	3,   0,     1,	  1,	 false)
++MUX_CFG(DM355,	MCBSP0_X,	3,   1,     1,	  1,	 false)
++MUX_CFG(DM355,	MCBSP0_BFSX,	3,   2,     1,	  1,	 false)
++MUX_CFG(DM355,	MCBSP0_BDR,	3,   3,     1,	  1,	 false)
++MUX_CFG(DM355,	MCBSP0_R,	3,   4,     1,	  1,	 false)
++MUX_CFG(DM355,	MCBSP0_BFSR,	3,   5,     1,	  1,	 false)
++
++MUX_CFG(DM355,	SPI0_SDI,	4,   1,     1,    0,	 false)
++MUX_CFG(DM355,	SPI0_SDENA0,	4,   0,     1,    0,	 false)
++MUX_CFG(DM355,	SPI0_SDENA1,	3,   28,    1,    1,	 false)
++
++INT_CFG(DM355,  INT_EDMA_CC,	      2,    1,    1,     false)
++INT_CFG(DM355,  INT_EDMA_TC0_ERR,     3,    1,    1,     false)
++INT_CFG(DM355,  INT_EDMA_TC1_ERR,     4,    1,    1,     false)
++
++EVT_CFG(DM355,  EVT8_ASP1_TX,	      0,    1,    0,     false)
++EVT_CFG(DM355,  EVT9_ASP1_RX,	      1,    1,    0,     false)
++EVT_CFG(DM355,  EVT26_MMC0_RX,	      2,    1,    0,     false)
++};
++
++void __init dm355_init(void)
++{
++	davinci_clk_init(dm355_clks);
++	davinci_mux_register(dm355_pins, ARRAY_SIZE(dm355_pins));;
++}
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/dm644x.c linux-davinci-2.6.28/arch/arm/mach-davinci/dm644x.c
+--- linux-2.6.28/arch/arm/mach-davinci/dm644x.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/dm644x.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,363 @@
++/*
++ * TI DaVinci DM644x chip specific setup
++ *
++ * Author: Kevin Hilman, Deep Root Systems, LLC
++ *
++ * 2007 (c) Deep Root Systems, LLC. This file is licensed under
++ * the terms of the GNU General Public License version 2. This program
++ * is licensed "as is" without any warranty of any kind, whether express
++ * or implied.
++ */
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/clk.h>
++
++#include <mach/dm644x.h>
++#include <mach/clock.h>
++#include <mach/psc.h>
++#include <mach/mux.h>
++
++#include "clock.h"
++#include "mux.h"
++
++/*
++ * Device specific clocks
++ */
++#define DM644X_REF_FREQ		27000000
++
++static struct pll_data pll1_data = {
++	.num       = 1,
++	.phys_base = DAVINCI_PLL1_BASE,
++};
++
++static struct pll_data pll2_data = {
++	.num       = 2,
++	.phys_base = DAVINCI_PLL2_BASE,
++};
++
++static struct clk ref_clk = {
++	.name = "ref_clk",
++	.rate = DM644X_REF_FREQ,
++};
++
++static struct clk pll1_clk = {
++	.name = "pll1",
++	.parent = &ref_clk,
++	.pll_data = &pll1_data,
++	.flags = CLK_PLL,
++};
++
++static struct clk pll1_sysclk1 = {
++	.name = "pll1_sysclk1",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV1,
++};
++
++static struct clk pll1_sysclk2 = {
++	.name = "pll1_sysclk2",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV2,
++};
++
++static struct clk pll1_sysclk3 = {
++	.name = "pll1_sysclk3",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV3,
++};
++
++static struct clk pll1_sysclk5 = {
++	.name = "pll1_sysclk5",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV5,
++};
++
++static struct clk pll1_aux_clk = {
++	.name = "pll1_aux_clk",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL | PRE_PLL,
++};
++
++static struct clk pll1_sysclkbp = {
++	.name = "pll1_sysclkbp",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL | PRE_PLL,
++	.div_reg = BPDIV
++};
++
++static struct clk pll2_clk = {
++	.name = "pll2",
++	.parent = &ref_clk,
++	.pll_data = &pll2_data,
++	.flags = CLK_PLL,
++};
++
++static struct clk pll2_sysclk1 = {
++	.name = "pll2_sysclk1",
++	.parent = &pll2_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV1,
++};
++
++static struct clk pll2_sysclk2 = {
++	.name = "pll2_sysclk2",
++	.parent = &pll2_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV2,
++};
++
++static struct clk pll2_sysclkbp = {
++	.name = "pll2_sysclkbp",
++	.parent = &pll2_clk,
++	.flags = CLK_PLL | PRE_PLL,
++	.div_reg = BPDIV
++};
++
++static struct clk dsp_clk = {
++	.name = "dsp",
++	.parent = &pll1_sysclk1,
++	.lpsc = DAVINCI_LPSC_GEM,
++	.flags = PSC_DSP,
++	.usecount = 1,			/* REVISIT how to disable? */
++};
++
++static struct clk arm_clk = {
++	.name = "arm",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_ARM,
++	.flags = ALWAYS_ENABLED,
++};
++
++static struct clk vicp_clk = {
++	.name = "vicp",
++	.parent = &pll1_sysclk2,
++	.lpsc = DAVINCI_LPSC_IMCOP,
++	.flags = PSC_DSP,
++	.usecount = 1,			/* REVISIT how to disable? */
++};
++
++static struct clk vpss_master_clk = {
++	.name = "vpss_master",
++	.parent = &pll1_sysclk3,
++	.lpsc = DAVINCI_LPSC_VPSSMSTR,
++	.flags = CLK_PSC,
++};
++
++static struct clk vpss_slave_clk = {
++	.name = "vpss_slave",
++	.parent = &pll1_sysclk3,
++	.lpsc = DAVINCI_LPSC_VPSSSLV,
++};
++
++static struct clk uart0_clk = {
++	.name = "uart0",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_UART0,
++};
++
++static struct clk uart1_clk = {
++	.name = "uart1",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_UART1,
++};
++
++static struct clk uart2_clk = {
++	.name = "uart2",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_UART2,
++};
++
++static struct clk emac_clk = {
++	.name = "EMACCLK",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_EMAC_WRAPPER,
++};
++
++static struct clk i2c_clk = {
++	.name = "I2CCLK",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_I2C,
++};
++
++static struct clk ide_clk = {
++	.name = "IDECLK",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_ATA,
++};
++
++static struct clk asp_clk = {
++	.name = "asp0",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_McBSP,
++};
++
++static struct clk mmcsd_clk = {
++	.name = "mmcsd",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_MMC_SD,
++};
++
++static struct clk spi_clk = {
++	.name = "spi",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_SPI,
++};
++
++static struct clk gpio_clk = {
++	.name = "gpio",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_GPIO,
++};
++
++static struct clk usb_clk = {
++	.name = "usb",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_USB,
++};
++
++static struct clk vlynq_clk = {
++	.name = "vlynq",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_VLYNQ,
++};
++
++static struct clk aemif_clk = {
++	.name = "aemif",
++	.parent = &pll1_sysclk5,
++	.lpsc = DAVINCI_LPSC_AEMIF,
++};
++
++static struct clk pwm0_clk = {
++	.name = "pwm0",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_PWM0,
++};
++
++static struct clk pwm1_clk = {
++	.name = "pwm1",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_PWM1,
++};
++
++static struct clk pwm2_clk = {
++	.name = "pwm2",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_PWM2,
++};
++
++static struct clk timer0_clk = {
++	.name = "timer0",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_TIMER0,
++};
++
++static struct clk timer1_clk = {
++	.name = "timer1",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_TIMER1,
++};
++
++static struct clk timer2_clk = {
++	.name = "timer2",
++	.parent = &pll1_aux_clk,
++	.lpsc = DAVINCI_LPSC_TIMER2,
++};
++
++static struct clk *dm644x_clks[] __initdata = {
++	&ref_clk,
++	&pll1_clk,
++	&pll1_sysclk1,
++	&pll1_sysclk2,
++	&pll1_sysclk3,
++	&pll1_sysclk5,
++	&pll1_aux_clk,
++	&pll1_sysclkbp,
++	&pll2_clk,
++	&pll2_sysclk1,
++	&pll2_sysclk2,
++	&pll2_sysclkbp,
++	&dsp_clk,
++	&arm_clk,
++	&vicp_clk,
++	&vpss_master_clk,
++	&vpss_slave_clk,
++	&uart0_clk,
++	&uart1_clk,
++	&uart2_clk,
++	&emac_clk,
++	&i2c_clk,
++	&ide_clk,
++	&asp_clk,
++	&mmcsd_clk,
++	&spi_clk,
++	&gpio_clk,
++	&usb_clk,
++	&vlynq_clk,
++	&aemif_clk,
++	&pwm0_clk,
++	&pwm1_clk,
++	&pwm2_clk,
++	&timer0_clk,
++	&timer1_clk,
++	&timer2_clk,
++	NULL,
++};
++
++/*
++ * Device specific mux setup
++ *
++ *	soc	description	mux  mode   mode  mux	 dbg
++ *				reg  offset mask  mode
++ */
++static const struct mux_config dm644x_pins[] = {
++MUX_CFG(DM644X, HDIREN,		0,   16,    1,	  1,	 true)
++MUX_CFG(DM644X, ATAEN,		0,   17,    1,	  1,	 true)
++MUX_CFG(DM644X, ATAEN_DISABLE,	0,   17,    1,	  0,	 true)
++
++MUX_CFG(DM644X, HPIEN_DISABLE,	0,   29,    1,	  0,	 true)
++
++MUX_CFG(DM644X, AEAW,		0,   0,     31,	  31,	 true)
++
++MUX_CFG(DM644X, MSTK,		1,   9,     1,	  0,	 false)
++
++MUX_CFG(DM644X, I2C,		1,   7,     1,	  1,	 false)
++
++MUX_CFG(DM644X, MCBSP,		1,   10,    1,	  1,	 false)
++
++MUX_CFG(DM644X, UART1,		1,   1,     1,	  1,	 true)
++MUX_CFG(DM644X, UART2,		1,   2,     1,	  1,	 true)
++
++MUX_CFG(DM644X, PWM0,		1,   4,     1,	  1,	 false)
++
++MUX_CFG(DM644X, PWM1,		1,   5,     1,	  1,	 false)
++
++MUX_CFG(DM644X, PWM2,		1,   6,     1,	  1,	 false)
++
++MUX_CFG(DM644X, VLYNQEN,	0,   15,    1,	  1,	 false)
++MUX_CFG(DM644X, VLSCREN,	0,   14,    1,	  1,	 false)
++MUX_CFG(DM644X, VLYNQWD,	0,   12,    3,	  3,	 false)
++
++MUX_CFG(DM644X, EMACEN,		0,   31,    1,	  1,	 true)
++
++MUX_CFG(DM644X, GPIO3V,		0,   31,    1,	  0,	 true)
++
++MUX_CFG(DM644X, GPIO0,		0,   24,    1,	  0,	 true)
++MUX_CFG(DM644X, GPIO3,		0,   25,    1,	  0,	 false)
++MUX_CFG(DM644X, GPIO43_44,	1,   7,     1,	  0,	 false)
++MUX_CFG(DM644X, GPIO46_47,	0,   22,    1,	  0,	 true)
++
++MUX_CFG(DM644X, RGB666,		0,   22,    1,	  1,	 true)
++
++MUX_CFG(DM644X, LOEEN,		0,   24,    1,	  1,	 true)
++MUX_CFG(DM644X, LFLDEN,		0,   25,    1,	  1,	 false)
++};
++
++
++void __init dm644x_init(void)
++{
++	davinci_clk_init(dm644x_clks);
++	davinci_mux_register(dm644x_pins, ARRAY_SIZE(dm644x_pins));
++}
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/dm646x.c linux-davinci-2.6.28/arch/arm/mach-davinci/dm646x.c
+--- linux-2.6.28/arch/arm/mach-davinci/dm646x.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/dm646x.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,273 @@
++/*
++ * TI DaVinci DM644x chip specific setup
++ *
++ * Author: Kevin Hilman, Deep Root Systems, LLC
++ *
++ * 2007 (c) Deep Root Systems, LLC. This file is licensed under
++ * the terms of the GNU General Public License version 2. This program
++ * is licensed "as is" without any warranty of any kind, whether express
++ * or implied.
++ */
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/clk.h>
++
++#include <mach/dm644x.h>
++#include <mach/clock.h>
++#include <mach/psc.h>
++#include <mach/mux.h>
++
++#include "clock.h"
++#include "mux.h"
++
++/*
++ * Device specific clocks
++ */
++#define DM646X_REF_FREQ		27000000
++#define DM646X_AUX_FREQ		24000000
++
++static struct pll_data pll1_data = {
++	.num       = 1,
++	.phys_base = DAVINCI_PLL1_BASE,
++};
++
++static struct pll_data pll2_data = {
++	.num       = 2,
++	.phys_base = DAVINCI_PLL2_BASE,
++};
++
++static struct clk ref_clk = {
++	.name = "ref_clk",
++	.rate = DM646X_REF_FREQ,
++};
++
++static struct clk aux_clkin = {
++	.name = "aux_clkin",
++	.rate = DM646X_AUX_FREQ,
++};
++
++static struct clk pll1_clk = {
++	.name = "pll1",
++	.parent = &ref_clk,
++	.pll_data = &pll1_data,
++	.flags = CLK_PLL,
++};
++
++static struct clk pll1_sysclk1 = {
++	.name = "pll1_sysclk1",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV1,
++};
++
++static struct clk pll1_sysclk2 = {
++	.name = "pll1_sysclk2",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV2,
++};
++
++static struct clk pll1_sysclk3 = {
++	.name = "pll1_sysclk3",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV3,
++};
++
++static struct clk pll1_sysclk4 = {
++	.name = "pll1_sysclk4",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV4,
++};
++
++static struct clk pll1_sysclk5 = {
++	.name = "pll1_sysclk5",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV5,
++};
++
++static struct clk pll1_sysclk6 = {
++	.name = "pll1_sysclk6",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV6,
++};
++
++static struct clk pll1_sysclk8 = {
++	.name = "pll1_sysclk8",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV8,
++};
++
++static struct clk pll1_sysclk9 = {
++	.name = "pll1_sysclk9",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV9,
++};
++
++static struct clk pll1_sysclkbp = {
++	.name = "pll1_sysclkbp",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL | PRE_PLL,
++	.div_reg = BPDIV,
++};
++
++static struct clk pll1_aux_clk = {
++	.name = "pll1_aux_clk",
++	.parent = &pll1_clk,
++	.flags = CLK_PLL | PRE_PLL,
++};
++
++static struct clk pll2_clk = {
++	.name = "pll2_clk",
++	.parent = &ref_clk,
++	.pll_data = &pll2_data,
++	.flags = CLK_PLL,
++};
++
++static struct clk pll2_sysclk1 = {
++	.name = "pll2_sysclk1",
++	.parent = &pll2_clk,
++	.flags = CLK_PLL,
++	.div_reg = PLLDIV1,
++};
++
++static struct clk dsp_clk = {
++	.name = "dsp",
++	.parent = &pll1_sysclk1,
++	.lpsc = DM646X_LPSC_C64X_CPU,
++	.flags = PSC_DSP,
++	.usecount = 1,			/* REVISIT how to disable? */
++};
++
++static struct clk arm_clk = {
++	.name = "arm",
++	.parent = &pll1_sysclk2,
++	.lpsc = DM646X_LPSC_ARM,
++	.flags = ALWAYS_ENABLED,
++};
++
++static struct clk uart0_clk = {
++	.name = "uart0",
++	.parent = &aux_clkin,
++	.lpsc = DM646X_LPSC_UART0,
++};
++
++static struct clk uart1_clk = {
++	.name = "uart1",
++	.parent = &aux_clkin,
++	.lpsc = DM646X_LPSC_UART1,
++};
++
++static struct clk uart2_clk = {
++	.name = "uart2",
++	.parent = &aux_clkin,
++	.lpsc = DM646X_LPSC_UART2,
++};
++
++static struct clk i2c_clk = {
++	.name = "I2CCLK",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_I2C,
++};
++
++static struct clk gpio_clk = {
++	.name = "gpio",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_GPIO,
++};
++
++static struct clk aemif_clk = {
++	.name = "aemif",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_AEMIF,
++	.flags = ALWAYS_ENABLED,
++};
++
++static struct clk emac_clk = {
++	.name = "EMACCLK",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_EMAC,
++};
++
++static struct clk pwm0_clk = {
++	.name = "pwm0",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_PWM0,
++	.usecount = 1,            /* REVIST: disabling hangs system */
++};
++
++static struct clk pwm1_clk = {
++	.name = "pwm1",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_PWM1,
++	.usecount = 1,            /* REVIST: disabling hangs system */
++};
++
++static struct clk timer0_clk = {
++	.name = "timer0",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_TIMER0,
++};
++
++static struct clk timer1_clk = {
++	.name = "timer1",
++	.parent = &pll1_sysclk3,
++	.lpsc = DM646X_LPSC_TIMER1,
++};
++
++static struct clk *dm646x_clks[] __initdata = {
++	&ref_clk,
++	&aux_clkin,
++	&pll1_clk,
++	&pll1_sysclk1,
++	&pll1_sysclk2,
++	&pll1_sysclk3,
++	&pll1_sysclk4,
++	&pll1_sysclk5,
++	&pll1_sysclk6,
++	&pll1_sysclk8,
++	&pll1_sysclk9,
++	&pll1_sysclkbp,
++	&pll1_aux_clk,
++	&pll2_clk,
++	&pll2_sysclk1,
++	&dsp_clk,
++	&arm_clk,
++	&uart0_clk,
++	&uart1_clk,
++	&uart2_clk,
++	&i2c_clk,
++	&gpio_clk,
++	&aemif_clk,
++	&emac_clk,
++	&pwm0_clk,
++	&pwm1_clk,
++	&timer0_clk,
++	&timer1_clk,
++	NULL,
++};
++
++/*
++ * Device specific mux setup
++ *
++ *	soc	description	mux  mode   mode  mux	 dbg
++ *				reg  offset mask  mode
++ */
++static const struct mux_config dm646x_pins[] = {
++MUX_CFG(DM646X, ATAEN,		0,   0,     1,	  1,	 true)
++
++MUX_CFG(DM646X, AUDCK1,		0,   29,    1,	  0,	 false)
++
++MUX_CFG(DM646X, AUDCK0,		0,   28,    1,	  0,	 false)
++};
++
++void __init dm646x_init(void)
++{
++	davinci_clk_init(dm646x_clks);
++	davinci_mux_register(dm646x_pins, ARRAY_SIZE(dm646x_pins));
++}
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/dma.c linux-davinci-2.6.28/arch/arm/mach-davinci/dma.c
 --- linux-2.6.28/arch/arm/mach-davinci/dma.c	1970-01-01 01:00:00.000000000 +0100
 +++ linux-davinci-2.6.28/arch/arm/mach-davinci/dma.c	2009-01-28 07:57:05.000000000 +0100
@@ -21811,16 +23015,18 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/gpio.c linux-davinci-2.6.28/arch/ar
  arch_initcall(davinci_gpio_irq_setup);
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/id.c linux-davinci-2.6.28/arch/arm/mach-davinci/id.c
 --- linux-2.6.28/arch/arm/mach-davinci/id.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/id.c	2009-01-28 07:57:05.000000000 +0100
-@@ -17,6 +17,8 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/id.c	2009-02-26 11:20:59.000000000 +0100
+@@ -15,7 +15,9 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
  
- #define JTAG_ID_BASE		0x01c40028
- 
-+static unsigned int davinci_revision;
+-#define JTAG_ID_BASE		0x01c40028
++#define JTAG_ID_BASE		IO_ADDRESS(0x01c40028)
 +
++static unsigned int davinci_revision;
+ 
  struct davinci_id {
  	u8	variant;	/* JTAG ID bits 31:28 */
- 	u16	part_no;	/* JTAG ID bits 27:12 */
 @@ -33,6 +35,20 @@
  		.manufacturer = 0x017,
  		.type	      = 0x64460000,
@@ -21842,7 +23048,24 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/id.c linux-davinci-2.6.28/arch/arm/
  };
  
  /*
-@@ -63,6 +79,12 @@
+@@ -42,7 +58,7 @@
+ {
+ 	u32 dev_id, part_no;
+ 
+-	dev_id = davinci_readl(JTAG_ID_BASE);
++	dev_id = __raw_readl(JTAG_ID_BASE);
+ 
+ 	part_no = ((dev_id >> 12) & 0xffff);
+ 
+@@ -56,13 +72,19 @@
+ {
+ 	u32 variant;
+ 
+-	variant = davinci_readl(JTAG_ID_BASE);
++	variant = __raw_readl(JTAG_ID_BASE);
+ 
+ 	variant = (variant >> 28) & 0xf;
+ 
  	return variant;
  }
  
@@ -21931,79 +23154,25 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/board-dm6446evm.h linu
 +int dm6446evm_eeprom_write(char *buf, off_t off, size_t count);
 +
 +#endif
-diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/board.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/board.h
---- linux-2.6.28/arch/arm/mach-davinci/include/mach/board.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/board.h	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,60 @@
-+/*
-+ *  Information structures for board-specific data
-+ *
-+ *  Derived from OMAP board.h:
-+ *  	Copyright (C) 2004	Nokia Corporation
-+ *  	Written by Juha Yrjölä <juha.yrjola@nokia.com>
-+ */
-+
-+#ifndef _DAVINCI_BOARD_H
-+#define _DAVINCI_BOARD_H
-+
-+#include <linux/types.h>
-+
-+/* Different peripheral ids */
-+#define DAVINCI_TAG_UART		0x4f01
-+#define DAVINCI_TAG_SERIAL_CONSOLE	0x4f02
-+
-+struct davinci_serial_console_config {
-+	u8 console_uart;
-+	u32 console_speed;
-+};
-+
-+struct davinci_uart_config {
-+	/* Bit field of UARTs present; bit 0 --> UART1 */
-+	unsigned int enabled_uarts;
-+};
-+
-+struct davinci_mmc_config {
-+	/* get_cd()/get_wp() may sleep */
-+	int	(*get_cd)(int module);
-+	int	(*get_ro)(int module);
-+	/* wires == 0 is equivalent to wires == 4 (4-bit parallel) */
-+	u8	wires;
-+};
-+void davinci_setup_mmc(int module, struct davinci_mmc_config *config);
-+
-+struct davinci_board_config_entry {
-+	u16 tag;
-+	u16 len;
-+	u8  data[0];
-+};
-+
-+struct davinci_board_config_kernel {
-+	u16 tag;
-+	const void *data;
-+};
-+
-+extern const void *__davinci_get_config(u16 tag, size_t len, int nr);
-+
-+#define davinci_get_config(tag, type) \
-+	((const type *) __davinci_get_config((tag), sizeof(type), 0))
-+#define davinci_get_nr_config(tag, type, nr) \
-+	((const type *) __davinci_get_config((tag), sizeof(type), (nr)))
-+
-+extern const void *davinci_get_var_config(u16 tag, size_t *len);
-+
-+extern struct davinci_board_config_kernel *davinci_board_config;
-+extern int davinci_board_config_size;
-+
-+#endif
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/clock.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/clock.h
+--- linux-2.6.28/arch/arm/mach-davinci/include/mach/clock.h	2008-12-25 00:26:37.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/clock.h	2009-02-26 11:20:59.000000000 +0100
+@@ -17,6 +17,6 @@
+ 
+ extern int clk_register(struct clk *clk);
+ extern void clk_unregister(struct clk *clk);
+-extern int davinci_clk_init(void);
++extern int davinci_clk_init(struct clk *clocks[]);
+ 
+ #endif
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/common.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/common.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/common.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/common.h	2009-01-28 07:57:05.000000000 +0100
-@@ -16,6 +16,13 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/common.h	2009-02-26 11:20:59.000000000 +0100
+@@ -16,6 +16,12 @@
  
  extern struct sys_timer davinci_timer;
  
 +extern void davinci_irq_init(void);
-+extern void davinci_init_common_hw(void);
 +extern void davinci_map_common_io(void);
 +
 +/* parameters describe VBUS sourcing for host mode */
@@ -22110,10 +23279,37 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/debug-macro.S linux-da
 +#endif
 +		.endm
 +
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/dm355.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm355.h
+--- linux-2.6.28/arch/arm/mach-davinci/include/mach/dm355.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm355.h	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,23 @@
++/*
++ * Chip specific defines for DM355 SoC
++ *
++ * Author: Kevin Hilman, Deep Root Systems, LLC
++ *
++ * 2007 (c) Deep Root Systems, LLC. This file is licensed under
++ * the terms of the GNU General Public License version 2. This program
++ * is licensed "as is" without any warranty of any kind, whether express
++ * or implied.
++ */
++#ifndef __ASM_ARCH_DM355_H
++#define __ASM_ARCH_DM355_H
++
++#include <mach/hardware.h>
++
++void __init dm355_init(void);
++
++struct spi_board_info;
++
++void dm355_init_spi0(unsigned chipselect_mask,
++		struct spi_board_info *info, unsigned len);
++
++#endif /* __ASM_ARCH_DM355_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/dm644x.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm644x.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/dm644x.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm644x.h	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,27 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm644x.h	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,29 @@
 +/*
 + * This file contains the processor specific definitions
 + * of the TI DM644x.
@@ -22140,7 +23336,31 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/dm644x.h linux-davinci
 +
 +#include <mach/hardware.h>
 +
++void __init dm644x_init(void);
++
 +#endif /* __ASM_ARCH_DM644X_H */
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/dm646x.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm646x.h
+--- linux-2.6.28/arch/arm/mach-davinci/include/mach/dm646x.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dm646x.h	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,18 @@
++/*
++ * Chip specific defines for DM646x SoC
++ *
++ * Author: Kevin Hilman, Deep Root Systems, LLC
++ *
++ * 2007 (c) Deep Root Systems, LLC. This file is licensed under
++ * the terms of the GNU General Public License version 2. This program
++ * is licensed "as is" without any warranty of any kind, whether express
++ * or implied.
++ */
++#ifndef __ASM_ARCH_DM646X_H
++#define __ASM_ARCH_DM646X_H
++
++#include <mach/hardware.h>
++
++void __init dm646x_init(void);
++
++#endif /* __ASM_ARCH_DM646X_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/dma.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dma.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/dma.h	2008-12-25 00:26:37.000000000 +0100
 +++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/dma.h	2009-01-28 07:57:05.000000000 +0100
@@ -22481,7 +23701,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/gpio.h linux-davinci-2
  	return ptr;
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h	2009-02-26 11:20:59.000000000 +0100
 @@ -1,9 +1,9 @@
  /*
 - * Common hardware definitions
@@ -22495,7 +23715,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h linux-davin
   * the terms of the GNU General Public License version 2. This program
   * is licensed "as is" without any warranty of any kind, whether express
   * or implied.
-@@ -12,41 +12,13 @@
+@@ -12,41 +12,16 @@
  #define __ASM_ARCH_HARDWARE_H
  
  /*
@@ -22542,8 +23762,42 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/hardware.h linux-davin
 -#define DAVINCI_ASYNC_EMIF_DATA_CE3_BASE	(0x08000000)
 -#define DAVINCI_VLYNQ_REMOTE_BASE		(0x0C000000)
 +#define DAVINCI_SYSTEM_MODULE_BASE        0x01C40000
++
++/* System control register offsets */
++#define DM64XX_VDD3P3V_PWDN	0x48
  
  #endif /* __ASM_ARCH_HARDWARE_H */
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/io.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/io.h
+--- linux-2.6.28/arch/arm/mach-davinci/include/mach/io.h	2008-12-25 00:26:37.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/io.h	2009-02-26 11:20:59.000000000 +0100
+@@ -41,22 +41,12 @@
+ #else
+ #define IOMEM(x)                ((void __force __iomem *)(x))
+ 
+-/*
+- * Functions to access the DaVinci IO region
+- *
+- * NOTE: - Use davinci_read/write[bwl] for physical register addresses
+- *	 - Use __raw_read/write[bwl]() for virtual register addresses
+- *	 - Use IO_ADDRESS(phys_addr) to convert registers to virtual addresses
+- *	 - DO NOT use hardcoded virtual addresses to allow changing the
+- *	   IO address space again if needed
+- */
+-#define davinci_readb(a)	__raw_readb(IO_ADDRESS(a))
+-#define davinci_readw(a)	__raw_readw(IO_ADDRESS(a))
+-#define davinci_readl(a)	__raw_readl(IO_ADDRESS(a))
++#define __arch_ioremap(p, s, t)	davinci_ioremap(p, s, t)
++#define __arch_iounmap(v)	davinci_iounmap(v)
+ 
+-#define davinci_writeb(v, a)	__raw_writeb(v, IO_ADDRESS(a))
+-#define davinci_writew(v, a)	__raw_writew(v, IO_ADDRESS(a))
+-#define davinci_writel(v, a)	__raw_writel(v, IO_ADDRESS(a))
++void __iomem *davinci_ioremap(unsigned long phys, size_t size,
++			      unsigned int type);
++void davinci_iounmap(volatile void __iomem *addr);
+ 
+ #endif /* __ASSEMBLER__ */
+ #endif /* __ASM_ARCH_IO_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/irqs.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/irqs.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/irqs.h	2008-12-25 00:26:37.000000000 +0100
 +++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/irqs.h	2009-01-28 07:57:05.000000000 +0100
@@ -22660,10 +23914,33 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/irqs.h linux-davinci-2
 +#define IRQ_DM355_GPIOBNK6	60
 +
  #endif /* __ASM_ARCH_IRQS_H */
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/mmc.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/mmc.h
+--- linux-2.6.28/arch/arm/mach-davinci/include/mach/mmc.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/mmc.h	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,19 @@
++/*
++ *  Board-specific MMC configuration
++ */
++
++#ifndef _DAVINCI_MMC_H
++#define _DAVINCI_MMC_H
++
++#include <linux/types.h>
++
++struct davinci_mmc_config {
++	/* get_cd()/get_wp() may sleep */
++	int	(*get_cd)(int module);
++	int	(*get_ro)(int module);
++	/* wires == 0 is equivalent to wires == 4 (4-bit parallel) */
++	u8	wires;
++};
++void davinci_setup_mmc(int module, struct davinci_mmc_config *config);
++
++#endif
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/mux.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/mux.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/mux.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/mux.h	2009-01-28 07:57:05.000000000 +0100
-@@ -1,55 +1,170 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/mux.h	2009-02-26 11:20:59.000000000 +0100
+@@ -1,55 +1,168 @@
  /*
 - * DaVinci pin multiplexing defines
 + * Table of the DAVINCI register configurations for the PINMUX combinations
@@ -22729,19 +24006,19 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/mux.h linux-davinci-2.
 +#include <mach/dm644x.h>
 +
 +/* System module registers */
-+#define PINMUX0			(DAVINCI_SYSTEM_MODULE_BASE + 0x00)
-+#define PINMUX1			(DAVINCI_SYSTEM_MODULE_BASE + 0x04)
++#define PINMUX0			0x00
++#define PINMUX1			0x04
 +/* dm355 only */
-+#define PINMUX2			(DAVINCI_SYSTEM_MODULE_BASE + 0x08)
-+#define PINMUX3			(DAVINCI_SYSTEM_MODULE_BASE + 0x0c)
-+#define PINMUX4			(DAVINCI_SYSTEM_MODULE_BASE + 0x10)
-+#define INTMUX			(DAVINCI_SYSTEM_MODULE_BASE + 0x18)
-+#define EVTMUX			(DAVINCI_SYSTEM_MODULE_BASE + 0x1c)
++#define PINMUX2			0x08
++#define PINMUX3			0x0c
++#define PINMUX4			0x10
++#define INTMUX			0x18
++#define EVTMUX			0x1c
 +
 +struct mux_config {
 +	char *name;
 +	const char *mux_reg_name;
-+	const unsigned int mux_reg;
++	const unsigned char mux_reg;
 +	const unsigned char mask_offset;
 +	const unsigned char mask;
 +	const unsigned char mode;
@@ -22857,7 +24134,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/mux.h linux-davinci-2.
 +	DM355_EVT9_ASP1_RX,
 +	DM355_EVT26_MMC0_RX,
 +};
-+
+ 
+-extern void davinci_mux_peripheral(unsigned int mux, unsigned int enable);
 +#ifdef CONFIG_DAVINCI_MUX
 +/* setup pin muxing */
 +extern void davinci_mux_init(void);
@@ -22866,23 +24144,20 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/mux.h linux-davinci-2.
 +extern int davinci_cfg_reg(unsigned long reg_cfg);
 +#else
 +/* boot loader does it all (no warnings from CONFIG_DAVINCI_MUX_WARNINGS) */
-+static inline void davinci_mux_init(void)
-+{
-+}
++static inline void davinci_mux_init(void) {}
++static inline int davinci_mux_register(const struct mux_config *pins,
++				       unsigned long size) { return 0; }
 +static inline int davinci_cfg_reg(unsigned long reg_cfg) { return 0; }
 +#endif
- 
--extern void davinci_mux_peripheral(unsigned int mux, unsigned int enable);
-+extern void (*davinci_pinmux_setup)(unsigned int id);
  
 -#endif /* __ASM_ARCH_MUX_H */
 +#endif /* __INC_MACH_MUX_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/nand.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/nand.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/nand.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/nand.h	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,45 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/nand.h	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,82 @@
 +/*
-+ * include/asm-arm/arch-davinci/nand.h
++ * mach-davinci/nand.h
 + *
 + * Copyright (C) 2006 Texas Instruments.
 + *
@@ -22913,6 +24188,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/nand.h linux-davinci-2
 +#ifndef __ARCH_ARM_DAVINCI_NAND_H
 +#define __ARCH_ARM_DAVINCI_NAND_H
 +
++#include <linux/mtd/nand.h>
++
 +#define NRCSR_OFFSET		0x00
 +#define AWCCR_OFFSET		0x04
 +#define A1CR_OFFSET		0x10
@@ -22920,16 +24197,68 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/nand.h linux-davinci-2
 +#define NANDFSR_OFFSET		0x64
 +#define NANDF1ECC_OFFSET	0x70
 +
++/* 4-bit ECC syndrome registers */
++#define NAND_4BIT_ECC_LOAD_OFFSET	0xbc
++#define NAND_4BIT_ECC1_OFFSET		0xc0
++#define NAND_4BIT_ECC2_OFFSET		0xc4
++#define NAND_4BIT_ECC3_OFFSET		0xc8
++#define NAND_4BIT_ECC4_OFFSET		0xcc
++#define NAND_ERR_ADD1_OFFSET		0xd0
++#define NAND_ERR_ADD2_OFFSET		0xd4
++#define NAND_ERR_ERRVAL1_OFFSET		0xd8
++#define NAND_ERR_ERRVAL2_OFFSET		0xdc
++
++/* NOTE:  boards don't need to use these address bits
++ * for ALE/CLE unless they support booting from NAND.
++ * They're used unless platform data overrides them.
++ */
 +#define	MASK_ALE		0x08
 +#define	MASK_CLE		0x10
 +
-+#define NAND_BUSY_FLAG		0x01
++struct davinci_nand_pdata {		/* platform_data */
++	u32			mask_ale;
++	u32			mask_cle;
++
++	/* for packages using two chipselects */
++	u32			mask_chipsel;
++
++	/* board's default static partition info */
++	struct mtd_partition	*parts;
++	unsigned		nr_parts;
++
++	/* none  == NAND_ECC_NONE (strongly *not* advised!!)
++	 * soft  == NAND_ECC_SOFT
++	 * 1-bit == NAND_ECC_HW
++	 * 4-bit == NAND_ECC_HW_SYNDROME (not on all chips)
++	 */
++	nand_ecc_modes_t	ecc_mode;
++
++	/* e.g. NAND_BUSWIDTH_16 or NAND_USE_FLASH_BBT */
++	unsigned		options;
++};
 +
 +#endif	/* __ARCH_ARM_DAVINCI_NAND_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/psc.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/psc.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/psc.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/psc.h	2009-01-28 07:57:05.000000000 +0100
-@@ -73,4 +73,53 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/psc.h	2009-02-26 11:20:59.000000000 +0100
+@@ -38,8 +38,6 @@
+ #define DAVINCI_LPSC_TPTC1          4
+ #define DAVINCI_LPSC_EMAC           5
+ #define DAVINCI_LPSC_EMAC_WRAPPER   6
+-#define DAVINCI_LPSC_MDIO           7
+-#define DAVINCI_LPSC_IEEE1394       8
+ #define DAVINCI_LPSC_USB            9
+ #define DAVINCI_LPSC_ATA            10
+ #define DAVINCI_LPSC_VLYNQ          11
+@@ -47,7 +45,6 @@
+ #define DAVINCI_LPSC_DDR_EMIF       13
+ #define DAVINCI_LPSC_AEMIF          14
+ #define DAVINCI_LPSC_MMC_SD         15
+-#define DAVINCI_LPSC_MEMSTICK       16
+ #define DAVINCI_LPSC_McBSP          17
+ #define DAVINCI_LPSC_I2C            18
+ #define DAVINCI_LPSC_UART0          19
+@@ -73,4 +70,53 @@
  #define DAVINCI_LPSC_GEM            39
  #define DAVINCI_LPSC_IMCOP          40
  
@@ -22940,11 +24269,12 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/psc.h linux-davinci-2.
 +#define DM355_LPSC_PWM3			10
 +#define DM355_LPSC_SPI2			11
 +#define DM355_LPSC_RTO			12
++#define DM355_LPSC_VPSS_DAC		41
 +
 +/*
 + * LPSC Assignments
 + */
-+#define DM646X_LPSC_RESERVED       0
++#define DM646X_LPSC_ARM            0
 +#define DM646X_LPSC_C64X_CPU       1
 +#define DM646X_LPSC_HDVICP0        2
 +#define DM646X_LPSC_HDVICP1        3
@@ -22978,15 +24308,14 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/psc.h linux-davinci-2.
 +#define DM646X_LPSC_TIMER1         35
 +#define DM646X_LPSC_ARM_INTC       45
 +
-+extern void davinci_psc_init(void);
 +extern void davinci_psc_config(unsigned int domain, unsigned int id,
 +			       char enable);
 +
  #endif /* __ASM_ARCH_PSC_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/serial.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/serial.h
 --- linux-2.6.28/arch/arm/mach-davinci/include/mach/serial.h	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/serial.h	2009-01-28 07:57:05.000000000 +0100
-@@ -13,8 +13,18 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/serial.h	2009-02-26 11:20:59.000000000 +0100
+@@ -13,8 +13,23 @@
  
  #include <mach/io.h>
  
@@ -23002,7 +24331,12 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/serial.h linux-davinci
 +#define UART_DM646X_SCR	              0x10
 +#define UART_DM646X_SCR_TX_WATERMARK  0x08
 +
-+extern void davinci_serial_init(void);
++struct davinci_uart_config {
++	/* Bit field of UARTs present; bit 0 --> UART1 */
++	unsigned int enabled_uarts;
++};
++
++extern void davinci_serial_init(struct davinci_uart_config *);
 +
  #endif /* __ASM_ARCH_SERIAL_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/system.h linux-davinci-2.6.28/arch/arm/mach-davinci/include/mach/system.h
@@ -23032,7 +24366,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/include/mach/timex.h linux-davinci-
 +#endif				/* __ASM_ARCH_TIMEX_H__ */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/io.c linux-davinci-2.6.28/arch/arm/mach-davinci/io.c
 --- linux-2.6.28/arch/arm/mach-davinci/io.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/io.c	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/io.c	2009-02-26 11:20:59.000000000 +0100
 @@ -18,6 +18,7 @@
  
  #include <asm/mach/map.h>
@@ -23041,13 +24375,35 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/io.c linux-davinci-2.6.28/arch/arm/
  
  extern void davinci_check_revision(void);
  
-@@ -53,5 +54,6 @@
- 
- void __init davinci_init_common_hw(void)
- {
-+	davinci_mux_init();
- 	davinci_clk_init();
+@@ -51,7 +52,26 @@
+ 	davinci_check_revision();
  }
+ 
+-void __init davinci_init_common_hw(void)
++#define BETWEEN(p, st, sz)	((p) >= (st) && (p) < ((st) + (sz)))
++#define XLATE(p, pst, vst)	((void __iomem *)((p) - (pst) + (vst)))
++
++/*
++ * Intercept ioremap() requests for addresses in our fixed mapping regions.
++ */
++void __iomem *davinci_ioremap(unsigned long p, size_t size, unsigned int type)
++{
++	if (BETWEEN(p, IO_PHYS, IO_SIZE))
++		return XLATE(p, IO_PHYS, IO_VIRT);
++
++	return __arm_ioremap(p, size, type);
++}
++EXPORT_SYMBOL(davinci_ioremap);
++
++void davinci_iounmap(volatile void __iomem *addr)
+ {
+-	davinci_clk_init();
++	unsigned long virt = (unsigned long)addr;
++
++	if (virt >= VMALLOC_START && virt < VMALLOC_END)
++		__iounmap(addr);
+ }
++EXPORT_SYMBOL(davinci_iounmap);
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/iram.c linux-davinci-2.6.28/arch/arm/mach-davinci/iram.c
 --- linux-2.6.28/arch/arm/mach-davinci/iram.c	1970-01-01 01:00:00.000000000 +0100
 +++ linux-davinci-2.6.28/arch/arm/mach-davinci/iram.c	2009-01-28 07:57:05.000000000 +0100
@@ -23112,7 +24468,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/iram.c linux-davinci-2.6.28/arch/ar
 +EXPORT_SYMBOL(davinci_free_iram);
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/irq.c linux-davinci-2.6.28/arch/arm/mach-davinci/irq.c
 --- linux-2.6.28/arch/arm/mach-davinci/irq.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/irq.c	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/irq.c	2009-02-26 11:20:59.000000000 +0100
 @@ -25,6 +25,8 @@
  #include <linux/io.h>
  
@@ -23122,16 +24478,28 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/irq.c linux-davinci-2.6.28/arch/arm
  #include <asm/mach/irq.h>
  
  #define IRQ_BIT(irq)		((irq) & 0x1f)
-@@ -40,6 +42,8 @@
+@@ -40,14 +42,18 @@
  #define IRQ_INTPRI0_REG_OFFSET	0x0030
  #define IRQ_INTPRI7_REG_OFFSET	0x004C
  
 +const u8 *davinci_def_priorities;
 +
++#define INTC_BASE IO_ADDRESS(DAVINCI_ARM_INTC_BASE)
++
  static inline unsigned int davinci_irq_readl(int offset)
  {
- 	return davinci_readl(DAVINCI_ARM_INTC_BASE + offset);
-@@ -108,9 +112,8 @@
+-	return davinci_readl(DAVINCI_ARM_INTC_BASE + offset);
++	return __raw_readl(INTC_BASE + offset);
+ }
+ 
+ static inline void davinci_irq_writel(unsigned long value, int offset)
+ {
+-	davinci_writel(value, DAVINCI_ARM_INTC_BASE + offset);
++	__raw_writel(value, INTC_BASE + offset);
+ }
+ 
+ /* Disable interrupt */
+@@ -108,9 +114,8 @@
  	.unmask = davinci_unmask_irq,
  };
  
@@ -23142,7 +24510,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/irq.c linux-davinci-2.6.28/arch/arm
  	[IRQ_VDINT0]		= 2,
  	[IRQ_VDINT1]		= 6,
  	[IRQ_VDINT2]		= 6,
-@@ -177,11 +180,149 @@
+@@ -177,11 +182,149 @@
  	[IRQ_EMUINT]		= 7,
  };
  
@@ -23293,7 +24661,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/irq.c linux-davinci-2.6.28/arch/arm
  
  	/* Clear all interrupt requests */
  	davinci_irq_writel(~0x0, FIQ_REG0_OFFSET);
-@@ -209,8 +350,8 @@
+@@ -209,8 +352,8 @@
  		unsigned	j;
  		u32		pri;
  
@@ -23304,7 +24672,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/irq.c linux-davinci-2.6.28/arch/arm
  		davinci_irq_writel(pri, i);
  	}
  
-@@ -218,9 +359,9 @@
+@@ -218,9 +361,9 @@
  	for (i = 0; i < DAVINCI_N_AINTC_IRQ; i++) {
  		set_irq_chip(i, &davinci_irq_chip_0);
  		set_irq_flags(i, IRQF_VALID | IRQF_PROBE);
@@ -23320,8 +24688,8 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/irq.c linux-davinci-2.6.28/arch/arm
  }
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/Kconfig linux-davinci-2.6.28/arch/arm/mach-davinci/Kconfig
 --- linux-2.6.28/arch/arm/mach-davinci/Kconfig	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/Kconfig	2009-01-28 07:57:05.000000000 +0100
-@@ -4,19 +4,105 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/Kconfig	2009-02-26 11:20:59.000000000 +0100
+@@ -4,19 +4,88 @@
  
  comment "DaVinci Core Type"
  
@@ -23412,37 +24780,25 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/Kconfig linux-davinci-2.6.28/arch/a
 +	  If you are booting from another operating system, you
 +	  probably do not want this option enabled until your
 +	  device drivers work properly.
-+
-+config DAVINCI_BOOT_TAG
-+	bool "DaVinci bootloader information passing"
-+        depends on ARCH_DAVINCI_DM644x
-+        default n
-+        help
-+          Say Y, if you have a bootloader which passes information
-+          about your board and its peripheral configuration.
-+
-+comment "DaVinci Options"
-+
-+config DAVINCI_BLK_DEV_CF
-+	bool "TI DaVinci CF Card Support"
-+	default Y
-+	depends on BLK_DEV_DAVINCI
-+	help
-+	  Configure this option to enable CF Card support.
  
  endmenu
  
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/Makefile linux-davinci-2.6.28/arch/arm/mach-davinci/Makefile
 --- linux-2.6.28/arch/arm/mach-davinci/Makefile	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/Makefile	2009-01-28 07:57:05.000000000 +0100
-@@ -5,7 +5,12 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/Makefile	2009-02-26 11:20:59.000000000 +0100
+@@ -5,7 +5,17 @@
  
  # Common objects
  obj-y 			:= time.o irq.o clock.o serial.o io.o id.o psc.o \
 -			   gpio.o mux.o devices.o usb.o
-+			   gpio.o devices.o usb.o dma.o common.o iram.o
++			   gpio.o devices.o usb.o dma.o iram.o
 +
-+obj-$(CONFIG_DAVINCI_MUX)		+= mux.o mux_cfg.o
++obj-$(CONFIG_DAVINCI_MUX)		+= mux.o
++
++# Chip specific
++obj-$(CONFIG_ARCH_DAVINCI_DM644x)       += dm644x.o
++obj-$(CONFIG_ARCH_DAVINCI_DM646x)       += dm646x.o
++obj-$(CONFIG_ARCH_DAVINCI_DM355)        += dm355.o
  
  # Board specific
 -obj-$(CONFIG_MACH_DAVINCI_EVM)  += board-evm.o
@@ -23452,7 +24808,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/Makefile linux-davinci-2.6.28/arch/
 +obj-$(CONFIG_MACH_SFFSDR)		+= board-sffsdr.o
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.c linux-davinci-2.6.28/arch/arm/mach-davinci/mux.c
 --- linux-2.6.28/arch/arm/mach-davinci/mux.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/mux.c	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/mux.c	2009-02-26 11:20:59.000000000 +0100
 @@ -1,41 +1,103 @@
  /*
 - * DaVinci pin multiplexing configurations
@@ -23485,18 +24841,18 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.c linux-davinci-2.6.28/arch/arm
 -#define PINMUX1         0x04
 +static const struct mux_config *mux_table;
 +static unsigned long pin_table_sz;
-+
+ 
+-static DEFINE_SPINLOCK(mux_lock);
 +int __init davinci_mux_register(const struct mux_config *pins,
 +				unsigned long size)
 +{
 +	mux_table = pins;
 +	pin_table_sz = size;
  
--static DEFINE_SPINLOCK(mux_lock);
+-void davinci_mux_peripheral(unsigned int mux, unsigned int enable)
 +	return 0;
 +}
- 
--void davinci_mux_peripheral(unsigned int mux, unsigned int enable)
++
 +/*
 + * Sets the DAVINCI MUX register based on the table
 + */
@@ -23504,7 +24860,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.c linux-davinci-2.6.28/arch/arm
  {
 -	u32 pinmux, muxreg = PINMUX0;
 +	static DEFINE_SPINLOCK(mux_spin_lock);
-+
++	void __iomem *base = IO_ADDRESS(DAVINCI_SYSTEM_MODULE_BASE);
 +	unsigned long flags;
 +	const struct mux_config *cfg;
 +	unsigned int reg_orig = 0, reg = 0;
@@ -23532,7 +24888,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.c linux-davinci-2.6.28/arch/arm
 +		unsigned	tmp1, tmp2;
 +
 +		spin_lock_irqsave(&mux_spin_lock, flags);
-+		reg_orig = davinci_readl(cfg->mux_reg);
++		reg_orig = __raw_readl(base + cfg->mux_reg);
 +
 +		mask = (cfg->mask << cfg->mask_offset);
 +		tmp1 = reg_orig & mask;
@@ -23544,7 +24900,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.c linux-davinci-2.6.28/arch/arm
 +		if (tmp1 != tmp2)
 +			warn = 1;
 +
-+		davinci_writel(reg, cfg->mux_reg);
++		__raw_writel(reg, base + cfg->mux_reg);
 +		spin_unlock_irqrestore(&mux_spin_lock, flags);
 +	}
 +
@@ -23576,19 +24932,14 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.c linux-davinci-2.6.28/arch/arm
 +	return 0;
  }
 +EXPORT_SYMBOL(davinci_cfg_reg);
-diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux_cfg.c linux-davinci-2.6.28/arch/arm/mach-davinci/mux_cfg.c
---- linux-2.6.28/arch/arm/mach-davinci/mux_cfg.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/mux_cfg.c	2009-01-28 07:57:05.000000000 +0100
-@@ -0,0 +1,169 @@
+diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux.h linux-davinci-2.6.28/arch/arm/mach-davinci/mux.h
+--- linux-2.6.28/arch/arm/mach-davinci/mux.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/mux.h	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,51 @@
 +/*
-+ * DAVINCI pin multiplexing configurations
++ * Pin-multiplex helper macros for TI DaVinci family devices
 + *
 + * Author: Vladimir Barinov, MontaVista Software, Inc. <source@mvista.com>
-+ *
-+ * Based on linux/arch/arm/mach-omap1/mux.c:
-+ * Copyright (C) 2003 - 2005 Nokia Corporation
-+ *
-+ * Written by Tony Lindgren
 + *
 + * 2007 (c) MontaVista Software, Inc. This file is licensed under
 + * the terms of the GNU General Public License version 2. This program
@@ -23597,12 +24948,9 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux_cfg.c linux-davinci-2.6.28/arch
 + *
 + * Copyright (C) 2008 Texas Instruments.
 + */
++#ifndef _MACH_DAVINCI_MUX_H_
++#define _MACH_DAVINCI_MUX_H_
 +
-+#include <linux/module.h>
-+#include <linux/init.h>
-+
-+#include <mach/hardware.h>
-+#include <mach/cpu.h>
 +#include <mach/mux.h>
 +
 +#define MUX_CFG(soc, desc, muxreg, mode_offset, mode_mask, mux_mode, dbg)\
@@ -23638,120 +24986,10 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/mux_cfg.c linux-davinci-2.6.28/arch
 +			.mode = mux_mode,				\
 +		},
 +
-+/*
-+ *	soc	description	mux  mode   mode  mux	 dbg
-+ *				reg  offset mask  mode
-+ */
-+static const struct mux_config davinci_dm644x_pins[] = {
-+MUX_CFG(DM644X, HDIREN,		0,   16,    1,	  1,	 true)
-+MUX_CFG(DM644X, ATAEN,		0,   17,    1,	  1,	 true)
-+MUX_CFG(DM644X, ATAEN_DISABLE,	0,   17,    1,	  0,	 true)
-+
-+MUX_CFG(DM644X, HPIEN_DISABLE,	0,   29,    1,	  0,	 true)
-+
-+MUX_CFG(DM644X, AEAW,		0,   0,     31,	  31,	 true)
-+
-+MUX_CFG(DM644X, MSTK,		1,   9,     1,	  0,	 false)
-+
-+MUX_CFG(DM644X, I2C,		1,   7,     1,	  1,	 false)
-+
-+MUX_CFG(DM644X, MCBSP,		1,   10,    1,	  1,	 false)
-+
-+MUX_CFG(DM644X, UART1,		1,   1,     1,	  1,	 true)
-+MUX_CFG(DM644X, UART2,		1,   2,     1,	  1,	 true)
-+
-+MUX_CFG(DM644X, PWM0,		1,   4,     1,	  1,	 false)
-+
-+MUX_CFG(DM644X, PWM1,		1,   5,     1,	  1,	 false)
-+
-+MUX_CFG(DM644X, PWM2,		1,   6,     1,	  1,	 false)
-+
-+MUX_CFG(DM644X, VLYNQEN,	0,   15,    1,	  1,	 false)
-+MUX_CFG(DM644X, VLSCREN,	0,   14,    1,	  1,	 false)
-+MUX_CFG(DM644X, VLYNQWD,	0,   12,    3,	  3,	 false)
-+
-+MUX_CFG(DM644X, EMACEN,		0,   31,    1,	  1,	 true)
-+
-+MUX_CFG(DM644X, GPIO3V,		0,   31,    1,	  0,	 true)
-+
-+MUX_CFG(DM644X, GPIO0,		0,   24,    1,	  0,	 true)
-+MUX_CFG(DM644X, GPIO3,		0,   25,    1,	  0,	 false)
-+MUX_CFG(DM644X, GPIO43_44,	1,   7,     1,	  0,	 false)
-+MUX_CFG(DM644X, GPIO46_47,	0,   22,    1,	  0,	 true)
-+
-+MUX_CFG(DM644X, RGB666,		0,   22,    1,	  1,	 true)
-+
-+MUX_CFG(DM644X, LOEEN,		0,   24,    1,	  1,	 true)
-+MUX_CFG(DM644X, LFLDEN,		0,   25,    1,	  1,	 false)
-+};
-+
-+/*
-+ *	soc	description	mux  mode   mode  mux	 dbg
-+ *				reg  offset mask  mode
-+ */
-+static const struct mux_config davinci_dm646x_pins[] = {
-+MUX_CFG(DM646X, ATAEN,		0,   0,     1,	  1,	 true)
-+
-+MUX_CFG(DM646X, AUDCK1,		0,   29,    1,	  0,	 false)
-+
-+MUX_CFG(DM646X, AUDCK0,		0,   28,    1,	  0,	 false)
-+};
-+
-+/*
-+ *	soc	description	mux  mode   mode  mux	 dbg
-+ *				reg  offset mask  mode
-+ */
-+static const struct mux_config davinci_dm355_pins[] = {
-+MUX_CFG(DM355,	MMCSD0,		4,   2,     1,	  0,	 false)
-+
-+MUX_CFG(DM355,	SD1_CLK,	3,   6,     1,	  1,	 false)
-+MUX_CFG(DM355,	SD1_CMD,	3,   7,     1,	  1,	 false)
-+MUX_CFG(DM355,	SD1_DATA3,	3,   8,     3,	  1,	 false)
-+MUX_CFG(DM355,	SD1_DATA2,	3,   10,    3,	  1,	 false)
-+MUX_CFG(DM355,	SD1_DATA1,	3,   12,    3,	  1,	 false)
-+MUX_CFG(DM355,	SD1_DATA0,	3,   14,    3,	  1,	 false)
-+
-+MUX_CFG(DM355,	I2C_SDA,	3,   19,    1,	  1,	 false)
-+MUX_CFG(DM355,	I2C_SCL,	3,   20,    1,	  1,	 false)
-+
-+MUX_CFG(DM355,	MCBSP0_BDX,	3,   0,     1,	  1,	 false)
-+MUX_CFG(DM355,	MCBSP0_X,	3,   1,     1,	  1,	 false)
-+MUX_CFG(DM355,	MCBSP0_BFSX,	3,   2,     1,	  1,	 false)
-+MUX_CFG(DM355,	MCBSP0_BDR,	3,   3,     1,	  1,	 false)
-+MUX_CFG(DM355,	MCBSP0_R,	3,   4,     1,	  1,	 false)
-+MUX_CFG(DM355,	MCBSP0_BFSR,	3,   5,     1,	  1,	 false)
-+
-+MUX_CFG(DM355,	SPI0_SDI,	4,   1,     1,    0,	 false)
-+MUX_CFG(DM355,	SPI0_SDENA0,	4,   0,     1,    0,	 false)
-+MUX_CFG(DM355,	SPI0_SDENA1,	3,   28,    1,    1,	 false)
-+
-+INT_CFG(DM355,  INT_EDMA_CC,	      2,    1,    1,     false)
-+INT_CFG(DM355,  INT_EDMA_TC0_ERR,     3,    1,    1,     false)
-+INT_CFG(DM355,  INT_EDMA_TC1_ERR,     4,    1,    1,     false)
-+
-+EVT_CFG(DM355,  EVT8_ASP1_TX,	      0,    1,    0,     false)
-+EVT_CFG(DM355,  EVT9_ASP1_RX,	      1,    1,    0,     false)
-+EVT_CFG(DM355,  EVT26_MMC0_RX,	      2,    1,    0,     false)
-+};
-+
-+void __init davinci_mux_init(void)
-+{
-+	if (cpu_is_davinci_dm644x())
-+		davinci_mux_register(davinci_dm644x_pins,
-+				     ARRAY_SIZE(davinci_dm644x_pins));
-+	else if (cpu_is_davinci_dm646x())
-+		davinci_mux_register(davinci_dm646x_pins,
-+					ARRAY_SIZE(davinci_dm646x_pins));
-+	else if (cpu_is_davinci_dm355())
-+		davinci_mux_register(davinci_dm355_pins,
-+					ARRAY_SIZE(davinci_dm355_pins));
-+	else
-+		printk(KERN_ERR "PSC: DaVinci variant not supported\n");
-+}
-+
++#endif /* _MACH_DAVINCI_MUX_H */
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/psc.c linux-davinci-2.6.28/arch/arm/mach-davinci/psc.c
 --- linux-2.6.28/arch/arm/mach-davinci/psc.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/psc.c	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/psc.c	2009-02-26 11:20:59.000000000 +0100
 @@ -23,10 +23,13 @@
  #include <linux/init.h>
  #include <linux/io.h>
@@ -23766,145 +25004,128 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/psc.c linux-davinci-2.6.28/arch/arm
  /* PSC register offsets */
  #define EPCPR		0x070
  #define PTCMD		0x120
-@@ -39,12 +42,14 @@
- /* System control register offsets */
- #define VDD3P3V_PWDN	0x48
+@@ -36,76 +39,46 @@
+ #define MDSTAT		0x800
+ #define MDCTL		0xA00
  
+-/* System control register offsets */
+-#define VDD3P3V_PWDN	0x48
+-
 -static void davinci_psc_mux(unsigned int id)
-+static void (*davinci_psc_mux)(unsigned int id);
-+
-+static void dm6446_psc_mux(unsigned int id)
- {
- 	switch (id) {
- 	case DAVINCI_LPSC_ATA:
+-{
+-	switch (id) {
+-	case DAVINCI_LPSC_ATA:
 -		davinci_mux_peripheral(DAVINCI_MUX_HDIREN, 1);
 -		davinci_mux_peripheral(DAVINCI_MUX_ATAEN, 1);
-+		davinci_cfg_reg(DM644X_HDIREN);
-+		davinci_cfg_reg(DM644X_ATAEN);
- 		break;
- 	case DAVINCI_LPSC_MMC_SD:
- 		/* VDD power manupulations are done in U-Boot for CPMAC
-@@ -52,19 +57,68 @@
- 		 */
- 		/*Set up the pull regiter for MMC */
- 		davinci_writel(0, DAVINCI_SYSTEM_MODULE_BASE + VDD3P3V_PWDN);
+-		break;
+-	case DAVINCI_LPSC_MMC_SD:
+-		/* VDD power manupulations are done in U-Boot for CPMAC
+-		 * so applies to MMC as well
+-		 */
+-		/*Set up the pull regiter for MMC */
+-		davinci_writel(0, DAVINCI_SYSTEM_MODULE_BASE + VDD3P3V_PWDN);
 -		davinci_mux_peripheral(DAVINCI_MUX_MSTK, 0);
-+		davinci_cfg_reg(DM644X_MSTK);
- 		break;
- 	case DAVINCI_LPSC_I2C:
+-		break;
+-	case DAVINCI_LPSC_I2C:
 -		davinci_mux_peripheral(DAVINCI_MUX_I2C, 1);
-+		davinci_cfg_reg(DM644X_I2C);
- 		break;
- 	case DAVINCI_LPSC_McBSP:
+-		break;
+-	case DAVINCI_LPSC_McBSP:
 -		davinci_mux_peripheral(DAVINCI_MUX_ASP, 1);
-+		davinci_cfg_reg(DM644X_MCBSP);
-+		break;
-+	case DAVINCI_LPSC_VLYNQ:
-+		davinci_cfg_reg(DM644X_VLYNQEN);
-+		davinci_cfg_reg(DM644X_VLYNQWD);
- 		break;
- 	default:
- 		break;
- 	}
- }
- 
-+#define DM355_ARM_PINMUX3	(DAVINCI_SYSTEM_MODULE_BASE + 0x0c)
-+#define DM355_ARM_PINMUX4	(DAVINCI_SYSTEM_MODULE_BASE + 0x10)
-+#define DM355_ARM_INTMUX	(DAVINCI_SYSTEM_MODULE_BASE + 0x18)
-+#define DM355_EDMA_EVTMUX	(DAVINCI_SYSTEM_MODULE_BASE + 0x1c)
-+
-+static void dm355_psc_mux(unsigned int id)
-+{
-+	u32	tmp;
-+
-+	/* REVISIT mixing pinmux with PSC setup seems pretty dubious,
-+	 * especially in cases like ASP0 where there are valid partial
-+	 * functionality use cases ... like half duplex links.  Best
-+	 * probably to do all this as part of platform_device setup,
-+	 * while declaring what pins/irqs/edmas/... we care about.
-+	 */
-+	switch (id) {
-+	case DM355_LPSC_McBSP1:		/* ASP1 */
-+		/* our ASoC code currently doesn't use these IRQs */
-+#if 0
-+		/* deliver ASP1_XINT and ASP1_RINT */
-+		tmp = davinci_readl(DM355_ARM_INTMUX);
-+		tmp |= BIT(6) | BIT(5);
-+		davinci_writel(tmp, DM355_ARM_INTMUX);
-+#endif
-+
-+		/* support EDMA for ASP1_RX and ASP1_TX */
-+		tmp = davinci_readl(DM355_EDMA_EVTMUX);
-+		tmp &= ~(BIT(1) | BIT(0));
-+		davinci_writel(tmp, DM355_EDMA_EVTMUX);
-+		break;
-+	case DAVINCI_LPSC_SPI:			/* SPI0 */
-+		/* expose SPI0_SDI
-+		 * NOTE: SPIO_SDENA0 and/or SPIO_SDENA1
-+		 * will need to be set too.
-+		 */
-+		davinci_cfg_reg(DM355_SPI0_SDI);
-+		break;
-+	}
-+}
-+
-+static void nop_psc_mux(unsigned int id)
-+{
-+	/* nothing */
-+}
-+
+-		break;
+-	default:
+-		break;
+-	}
+-}
+-
  /* Enable or disable a PSC domain */
  void davinci_psc_config(unsigned int domain, unsigned int id, char enable)
  {
-@@ -125,13 +179,32 @@
+ 	u32 epcpr, ptcmd, ptstat, pdstat, pdctl1, mdstat, mdctl, mdstat_mask;
++	void __iomem *psc_base = IO_ADDRESS(DAVINCI_PWR_SLEEP_CNTRL_BASE);
  
- void __init davinci_psc_init(void)
- {
+-	mdctl = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE + MDCTL + 4 * id);
++	mdctl = __raw_readl(psc_base + MDCTL + 4 * id);
+ 	if (enable)
+ 		mdctl |= 0x00000003;	/* Enable Module */
+ 	else
+ 		mdctl &= 0xFFFFFFF2;	/* Disable Module */
+-	davinci_writel(mdctl, DAVINCI_PWR_SLEEP_CNTRL_BASE + MDCTL + 4 * id);
++	__raw_writel(mdctl, psc_base + MDCTL + 4 * id);
+ 
+-	pdstat = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE + PDSTAT);
++	pdstat = __raw_readl(psc_base + PDSTAT);
+ 	if ((pdstat & 0x00000001) == 0) {
+-		pdctl1 = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE + PDCTL1);
++		pdctl1 = __raw_readl(psc_base + PDCTL1);
+ 		pdctl1 |= 0x1;
+-		davinci_writel(pdctl1, DAVINCI_PWR_SLEEP_CNTRL_BASE + PDCTL1);
++		__raw_writel(pdctl1, psc_base + PDCTL1);
+ 
+ 		ptcmd = 1 << domain;
+-		davinci_writel(ptcmd, DAVINCI_PWR_SLEEP_CNTRL_BASE + PTCMD);
++		__raw_writel(ptcmd, psc_base + PTCMD);
+ 
+ 		do {
+-			epcpr = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE +
+-					      EPCPR);
++			epcpr = __raw_readl(psc_base + EPCPR);
+ 		} while ((((epcpr >> domain) & 1) == 0));
+ 
+-		pdctl1 = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE + PDCTL1);
++		pdctl1 = __raw_readl(psc_base + PDCTL1);
+ 		pdctl1 |= 0x100;
+-		davinci_writel(pdctl1, DAVINCI_PWR_SLEEP_CNTRL_BASE + PDCTL1);
++		__raw_writel(pdctl1, psc_base + PDCTL1);
+ 
+ 		do {
+-			ptstat = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE +
++			ptstat = __raw_readl(psc_base +
+ 					       PTSTAT);
+ 		} while (!(((ptstat >> domain) & 1) == 0));
+ 	} else {
+ 		ptcmd = 1 << domain;
+-		davinci_writel(ptcmd, DAVINCI_PWR_SLEEP_CNTRL_BASE + PTCMD);
++		__raw_writel(ptcmd, psc_base + PTCMD);
+ 
+ 		do {
+-			ptstat = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE +
+-					       PTSTAT);
++			ptstat = __raw_readl(psc_base + PTSTAT);
+ 		} while (!(((ptstat >> domain) & 1) == 0));
+ 	}
+ 
+@@ -115,23 +88,6 @@
+ 		mdstat_mask = 0x2;
+ 
+ 	do {
+-		mdstat = davinci_readl(DAVINCI_PWR_SLEEP_CNTRL_BASE +
+-				       MDSTAT + 4 * id);
++		mdstat = __raw_readl(psc_base + MDSTAT + 4 * id);
+ 	} while (!((mdstat & 0x0000001F) == mdstat_mask));
+-
+-	if (enable)
+-		davinci_psc_mux(id);
+-}
+-
+-void __init davinci_psc_init(void)
+-{
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_VPSSMSTR, 1);
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_VPSSSLV, 1);
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_TPCC, 1);
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_TPTC0, 1);
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_TPTC1, 1);
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_GPIO, 1);
-+	if (cpu_is_davinci_dm644x() || cpu_is_davinci_dm646x()) {
-+		davinci_psc_mux = dm6446_psc_mux;
-+	} else if (cpu_is_davinci_dm355()) {
-+		davinci_psc_mux = dm355_psc_mux;
-+	} else {
-+		pr_err("PSC: no PSC mux hooks for this CPU\n");
-+		davinci_psc_mux = nop_psc_mux;
-+	}
- 
+-
 -	/* Turn on WatchDog timer LPSC.	 Needed for RESET to work */
 -	davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN, DAVINCI_LPSC_TIMER2, 1);
-+	if (cpu_is_davinci_dm644x() || cpu_is_davinci_dm355()) {
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DAVINCI_LPSC_VPSSMSTR, 1);
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DAVINCI_LPSC_VPSSSLV, 1);
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DAVINCI_LPSC_TPCC, 1);
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DAVINCI_LPSC_TPTC0, 1);
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DAVINCI_LPSC_TPTC1, 1);
-+
-+		/* Turn on WatchDog timer LPSC.	 Needed for RESET to work */
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DAVINCI_LPSC_TIMER2, 1);
-+	} else if (cpu_is_davinci_dm646x()) {
-+		davinci_psc_config(DAVINCI_GPSC_ARMDOMAIN,
-+					DM646X_LPSC_AEMIF, 1);
-+	}
  }
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/serial.c linux-davinci-2.6.28/arch/arm/mach-davinci/serial.c
 --- linux-2.6.28/arch/arm/mach-davinci/serial.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/serial.c	2009-01-28 07:57:05.000000000 +0100
-@@ -32,21 +32,22 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/serial.c	2009-02-26 11:20:59.000000000 +0100
+@@ -32,32 +32,47 @@
  #include <mach/hardware.h>
  #include <mach/serial.h>
  #include <mach/irqs.h>
-+#include <mach/board.h>
 +#include <mach/cpu.h>
 +#include "clock.h"
  
@@ -23917,7 +25138,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/serial.c linux-davinci-2.6.28/arch/
  {
  	offset <<= up->regshift;
 -	return (unsigned int)__raw_readb(up->membase + offset);
-+	return (unsigned int)__raw_readl(up->membase + offset);
++	return (unsigned int)__raw_readl(IO_ADDRESS(up->mapbase) + offset);
  }
  
 -static inline void davinci_serial_outp(struct plat_serial8250_port *p,
@@ -23927,36 +25148,41 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/serial.c linux-davinci-2.6.28/arch/
  {
  	offset <<= p->regshift;
 -	__raw_writeb(value, p->membase + offset);
-+	__raw_writel(value, p->membase + offset);
++	__raw_writel(value, IO_ADDRESS(p->mapbase) + offset);
  }
  
  static struct plat_serial8250_port serial_platform_data[] = {
-@@ -60,6 +61,24 @@
- 		.uartclk	= 27000000,
+ 	{
+-		.membase	= (char *)IO_ADDRESS(DAVINCI_UART0_BASE),
+-		.mapbase	= (unsigned long)DAVINCI_UART0_BASE,
++		.mapbase	= DAVINCI_UART0_BASE,
+ 		.irq		= IRQ_UARTINT0,
+-		.flags		= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST,
++		.flags		= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST |
++				  UPF_IOREMAP,
++		.iotype		= UPIO_MEM,
++		.regshift	= 2,
++	},
++	{
++		.mapbase	= DAVINCI_UART1_BASE,
++		.irq		= IRQ_UARTINT1,
++		.flags		= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST |
++				  UPF_IOREMAP,
++		.iotype		= UPIO_MEM,
++		.regshift	= 2,
++	},
++	{
++		.mapbase	= DAVINCI_UART2_BASE,
++		.irq		= IRQ_UARTINT2,
++		.flags		= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST |
++				  UPF_IOREMAP,
+ 		.iotype		= UPIO_MEM,
+ 		.regshift	= 2,
+-		.uartclk	= 27000000,
  	},
  	{
-+		.membase	= (char *)IO_ADDRESS(DAVINCI_UART1_BASE),
-+		.mapbase	= (unsigned long)DAVINCI_UART1_BASE,
-+		.irq		= IRQ_UARTINT1,
-+		.flags		= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST,
-+		.iotype		= UPIO_MEM,
-+		.regshift	= 2,
-+		.uartclk	= 27000000,
-+	},
-+	{
-+		.membase	= (char *)IO_ADDRESS(DAVINCI_UART2_BASE),
-+		.mapbase	= (unsigned long)DAVINCI_UART2_BASE,
-+		.irq		= IRQ_UARTINT2,
-+		.flags		= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST,
-+		.iotype		= UPIO_MEM,
-+		.regshift	= 2,
-+		.uartclk	= 27000000,
-+	},
-+	{
  		.flags		= 0
- 	},
- };
-@@ -74,22 +93,80 @@
+@@ -74,22 +89,69 @@
  
  static void __init davinci_serial_reset(struct plat_serial8250_port *p)
  {
@@ -23981,10 +25207,9 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/serial.c linux-davinci-2.6.28/arch/
 +				 UART_DM646X_SCR_TX_WATERMARK);
 +}
 +
-+void __init davinci_serial_init(void)
++void __init davinci_serial_init(struct davinci_uart_config *info)
 +{
 +	int i;
-+	const struct davinci_uart_config *info;
 +	char name[16];
 +	struct clk *uart_clk;
 +	struct device *dev = &serial_device.dev;
@@ -23994,38 +25219,28 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/serial.c linux-davinci-2.6.28/arch/
 +	 * You have to mux them off in device drivers later on
 +	 * if not needed.
 +	 */
-+
-+	info = davinci_get_config(DAVINCI_TAG_UART, struct davinci_uart_config);
-+
-+	if (info == NULL)
-+		return;
-+
 +	for (i = 0; i < DAVINCI_MAX_NR_UARTS; i++) {
 +		struct plat_serial8250_port *p = serial_platform_data + i;
 +
++		if (!(info->enabled_uarts & (1 << i))) {
++			p->flags = 0;
++			continue;
++		}
++
 +		if (cpu_is_davinci_dm646x()) {
-+			p->uartclk = DM646X_AUX_OSC_FREQ;
 +			p->iotype = UPIO_MEM32;
 +		}
 +
 +		if (cpu_is_davinci_dm355()) {
-+			p->uartclk = 24000000;
 +			if (i == 2) {
-+				p->membase = (char *)
-+					IO_ADDRESS(DM355_UART2_BASE);
 +				p->mapbase = (unsigned long)DM355_UART2_BASE;
 +				p->irq = IRQ_DM355_UARTINT2;
 +			}
 +		}
 +
-+		if (!(info->enabled_uarts & (1 << i))) {
-+			p->membase = 0;
-+			p->mapbase = 0;
-+			continue;
-+		}
-+
-+		sprintf(name, "UART%d", i);
++		sprintf(name, "uart%d", i);
 +		uart_clk = clk_get(dev, name);
++		p->uartclk = clk_get_rate(uart_clk);
 +		if (IS_ERR(uart_clk))
 +			printk(KERN_ERR "%s:%d: failed to get UART%d clock\n",
 +					__func__, __LINE__, i);
@@ -24044,8 +25259,17 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/serial.c linux-davinci-2.6.28/arch/
  
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/time.c linux-davinci-2.6.28/arch/arm/mach-davinci/time.c
 --- linux-2.6.28/arch/arm/mach-davinci/time.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/time.c	2009-01-28 07:57:05.000000000 +0100
-@@ -24,8 +24,11 @@
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/time.c	2009-02-26 11:20:59.000000000 +0100
+@@ -16,6 +16,8 @@
+ #include <linux/clockchips.h>
+ #include <linux/spinlock.h>
+ #include <linux/io.h>
++#include <linux/clk.h>
++#include <linux/err.h>
+ 
+ #include <mach/hardware.h>
+ #include <asm/system.h>
+@@ -24,8 +26,11 @@
  #include <asm/mach/time.h>
  #include <asm/errno.h>
  #include <mach/io.h>
@@ -24057,7 +25281,124 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/time.c linux-davinci-2.6.28/arch/ar
  
  #define DAVINCI_TIMER0_BASE (IO_PHYS + 0x21400)
  #define DAVINCI_TIMER1_BASE (IO_PHYS + 0x21800)
-@@ -274,7 +277,7 @@
+@@ -99,9 +104,9 @@
+ 	unsigned int id;
+ 	unsigned long period;
+ 	unsigned long opts;
+-	unsigned long reg_base;
+-	unsigned long tim_reg;
+-	unsigned long prd_reg;
++	void __iomem *base;
++	unsigned long tim_off;
++	unsigned long prd_off;
+ 	unsigned long enamode_shift;
+ 	struct irqaction irqaction;
+ };
+@@ -114,15 +119,15 @@
+ 
+ static int timer32_config(struct timer_s *t)
+ {
+-	u32 tcr = davinci_readl(t->reg_base + TCR);
++	u32 tcr = __raw_readl(t->base + TCR);
+ 
+ 	/* disable timer */
+ 	tcr &= ~(TCR_ENAMODE_MASK << t->enamode_shift);
+-	davinci_writel(tcr, t->reg_base + TCR);
++	__raw_writel(tcr, t->base + TCR);
+ 
+ 	/* reset counter to zero, set new period */
+-	davinci_writel(0, t->tim_reg);
+-	davinci_writel(t->period, t->prd_reg);
++	__raw_writel(0, t->base + t->tim_off);
++	__raw_writel(t->period, t->base + t->prd_off);
+ 
+ 	/* Set enable mode */
+ 	if (t->opts & TIMER_OPTS_ONESHOT) {
+@@ -131,13 +136,13 @@
+ 		tcr |= TCR_ENAMODE_PERIODIC << t->enamode_shift;
+ 	}
+ 
+-	davinci_writel(tcr, t->reg_base + TCR);
++	__raw_writel(tcr, t->base + TCR);
+ 	return 0;
+ }
+ 
+ static inline u32 timer32_read(struct timer_s *t)
+ {
+-	return davinci_readl(t->tim_reg);
++	return __raw_readl(t->base + t->tim_off);
+ }
+ 
+ static irqreturn_t timer_interrupt(int irq, void *dev_id)
+@@ -176,51 +181,54 @@
+ 
+ static void __init timer_init(void)
+ {
+-	u32 bases[] = {DAVINCI_TIMER0_BASE, DAVINCI_TIMER1_BASE};
++	u32 phys_bases[] = {DAVINCI_TIMER0_BASE, DAVINCI_TIMER1_BASE};
+ 	int i;
+ 
+ 	/* Global init of each 64-bit timer as a whole */
+ 	for(i=0; i<2; i++) {
+-		u32 tgcr, base = bases[i];
++		u32 tgcr;
++		void __iomem *base = IO_ADDRESS(phys_bases[i]);
+ 
+ 		/* Disabled, Internal clock source */
+-		davinci_writel(0, base + TCR);
++		__raw_writel(0, base + TCR);
+ 
+ 		/* reset both timers, no pre-scaler for timer34 */
+ 		tgcr = 0;
+-		davinci_writel(tgcr, base + TGCR);
++		__raw_writel(tgcr, base + TGCR);
+ 
+ 		/* Set both timers to unchained 32-bit */
+ 		tgcr = TGCR_TIMMODE_32BIT_UNCHAINED << TGCR_TIMMODE_SHIFT;
+-		davinci_writel(tgcr, base + TGCR);
++		__raw_writel(tgcr, base + TGCR);
+ 
+ 		/* Unreset timers */
+ 		tgcr |= (TGCR_UNRESET << TGCR_TIM12RS_SHIFT) |
+ 			(TGCR_UNRESET << TGCR_TIM34RS_SHIFT);
+-		davinci_writel(tgcr, base + TGCR);
++		__raw_writel(tgcr, base + TGCR);
+ 
+ 		/* Init both counters to zero */
+-		davinci_writel(0, base + TIM12);
+-		davinci_writel(0, base + TIM34);
++		__raw_writel(0, base + TIM12);
++		__raw_writel(0, base + TIM34);
+ 	}
+ 
+ 	/* Init of each timer as a 32-bit timer */
+ 	for (i=0; i< ARRAY_SIZE(timers); i++) {
+ 		struct timer_s *t = &timers[i];
++		u32 phys_base;
+ 
+ 		if (t->name) {
+ 			t->id = i;
+-			t->reg_base = (IS_TIMER1(t->id) ?
++			phys_base = (IS_TIMER1(t->id) ?
+ 			       DAVINCI_TIMER1_BASE : DAVINCI_TIMER0_BASE);
++			t->base = IO_ADDRESS(phys_base);
+ 
+ 			if (IS_TIMER_BOT(t->id)) {
+ 				t->enamode_shift = 6;
+-				t->tim_reg = t->reg_base + TIM12;
+-				t->prd_reg = t->reg_base + PRD12;
++				t->tim_off = TIM12;
++				t->prd_off = PRD12;
+ 			} else {
+ 				t->enamode_shift = 22;
+-				t->tim_reg = t->reg_base + TIM34;
+-				t->prd_reg = t->reg_base + PRD34;
++				t->tim_off = TIM34;
++				t->prd_off = PRD34;
+ 			}
+ 
+ 			/* Register interrupt */
+@@ -274,7 +282,7 @@
  
  	switch (mode) {
  	case CLOCK_EVT_MODE_PERIODIC:
@@ -24066,16 +25407,30 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/time.c linux-davinci-2.6.28/arch/ar
  		t->opts = TIMER_OPTS_PERIODIC;
  		timer32_config(t);
  		break;
-@@ -307,15 +310,22 @@
+@@ -301,21 +309,36 @@
+ 
+ static void __init davinci_timer_init(void)
+ {
++	struct clk *timer_clk, *wd_clk;
++
+ 	static char err[] __initdata = KERN_ERR
+ 		"%s: can't register clocksource!\n";
+ 
  	/* init timer hw */
  	timer_init();
  
-+	if (cpu_is_davinci_dm644x())
-+		davinci_clock_tick_rate = DM646X_OSC_FREQ;
-+	else if (cpu_is_davinci_dm646x())
-+		davinci_clock_tick_rate = DM646X_CLOCK_TICK_RATE;
-+	else if (cpu_is_davinci_dm355())
-+		davinci_clock_tick_rate = DM355_CLOCK_TICK_RATE;
++	timer_clk = clk_get(NULL, "timer0");
++	BUG_ON(IS_ERR(timer_clk));
++	clk_enable(timer_clk);
++
++	if (cpu_is_davinci_dm644x() || cpu_is_davinci_dm355()) {
++		wd_clk = clk_get(NULL, "timer2");
++		BUG_ON(IS_ERR(wd_clk));
++		clk_enable(wd_clk);
++	}
++
++	davinci_clock_tick_rate = clk_get_rate(timer_clk);
++	clk_put(timer_clk);
 +
  	/* setup clocksource */
  	clocksource_davinci.mult =
@@ -24091,9 +25446,66 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/time.c linux-davinci-2.6.28/arch/ar
  					 clockevent_davinci.shift);
  	clockevent_davinci.max_delta_ns =
  		clockevent_delta2ns(0xfffffffe, &clockevent_davinci);
+@@ -333,42 +356,43 @@
+ 
+ /* reset board using watchdog timer */
+ void davinci_watchdog_reset(void) {
+-	u32 tgcr, wdtcr, base = DAVINCI_WDOG_BASE;
++	u32 tgcr, wdtcr;
++	void __iomem *base = IO_ADDRESS(DAVINCI_WDOG_BASE);
+ 
+ 	/* disable, internal clock source */
+-	davinci_writel(0, base + TCR);
++	__raw_writel(0, base + TCR);
+ 
+ 	/* reset timer, set mode to 64-bit watchdog, and unreset */
+ 	tgcr = 0;
+-	davinci_writel(tgcr, base + TCR);
++	__raw_writel(tgcr, base + TCR);
+ 	tgcr = TGCR_TIMMODE_64BIT_WDOG << TGCR_TIMMODE_SHIFT;
+ 	tgcr |= (TGCR_UNRESET << TGCR_TIM12RS_SHIFT) |
+ 		(TGCR_UNRESET << TGCR_TIM34RS_SHIFT);
+-	davinci_writel(tgcr, base + TCR);
++	__raw_writel(tgcr, base + TCR);
+ 
+ 	/* clear counter and period regs */
+-	davinci_writel(0, base + TIM12);
+-	davinci_writel(0, base + TIM34);
+-	davinci_writel(0, base + PRD12);
+-	davinci_writel(0, base + PRD34);
++	__raw_writel(0, base + TIM12);
++	__raw_writel(0, base + TIM34);
++	__raw_writel(0, base + PRD12);
++	__raw_writel(0, base + PRD34);
+ 
+ 	/* enable */
+-	wdtcr = davinci_readl(base + WDTCR);
++	wdtcr = __raw_readl(base + WDTCR);
+ 	wdtcr |= WDTCR_WDEN_ENABLE << WDTCR_WDEN_SHIFT;
+-	davinci_writel(wdtcr, base + WDTCR);
++	__raw_writel(wdtcr, base + WDTCR);
+ 
+ 	/* put watchdog in pre-active state */
+ 	wdtcr = (WDTCR_WDKEY_SEQ0 << WDTCR_WDKEY_SHIFT) |
+ 		(WDTCR_WDEN_ENABLE << WDTCR_WDEN_SHIFT);
+-	davinci_writel(wdtcr, base + WDTCR);
++	__raw_writel(wdtcr, base + WDTCR);
+ 
+ 	/* put watchdog in active state */
+ 	wdtcr = (WDTCR_WDKEY_SEQ1 << WDTCR_WDKEY_SHIFT) |
+ 		(WDTCR_WDEN_ENABLE << WDTCR_WDEN_SHIFT);
+-	davinci_writel(wdtcr, base + WDTCR);
++	__raw_writel(wdtcr, base + WDTCR);
+ 
+ 	/* write an invalid value to the WDKEY field to trigger
+ 	 * a watchdog reset */
+ 	wdtcr = 0x00004000;
+-	davinci_writel(wdtcr, base + WDTCR);
++	__raw_writel(wdtcr, base + WDTCR);
+ }
 diff -Nur linux-2.6.28/arch/arm/mach-davinci/usb.c linux-davinci-2.6.28/arch/arm/mach-davinci/usb.c
 --- linux-2.6.28/arch/arm/mach-davinci/usb.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/arch/arm/mach-davinci/usb.c	2009-01-28 07:57:05.000000000 +0100
++++ linux-davinci-2.6.28/arch/arm/mach-davinci/usb.c	2009-02-26 11:20:59.000000000 +0100
 @@ -13,6 +13,8 @@
  #include <mach/common.h>
  #include <mach/hardware.h>
@@ -24107,7 +25519,7 @@ diff -Nur linux-2.6.28/arch/arm/mach-davinci/usb.c linux-davinci-2.6.28/arch/arm
  #elif defined(CONFIG_USB_MUSB_HOST)
  	.mode           = MUSB_HOST,
  #endif
-+	.clock		= "USBCLK",
++	.clock		= "usb",
  	.config		= &musb_config,
  };
  
@@ -82595,6 +84007,53 @@ diff -Nur linux-2.6.28/drivers/i2c/Kconfig linux-davinci-2.6.28/drivers/i2c/Kcon
  	---help---
  	  I2C (pronounce: I-square-C) is a slow serial bus protocol used in
  	  many micro controller applications and developed by Philips.  SMBus,
+diff -Nur linux-2.6.28/drivers/ide/palm_bk3710.c linux-davinci-2.6.28/drivers/ide/palm_bk3710.c
+--- linux-2.6.28/drivers/ide/palm_bk3710.c	2008-12-25 00:26:37.000000000 +0100
++++ linux-davinci-2.6.28/drivers/ide/palm_bk3710.c	2009-02-26 11:20:59.000000000 +0100
+@@ -347,7 +347,8 @@
+ {
+ 	struct clk *clk;
+ 	struct resource *mem, *irq;
+-	unsigned long base, rate;
++	void __iomem *base;
++	unsigned long rate, mem_size;
+ 	int i, rc;
+ 	hw_regs_t hw, *hws[] = { &hw, NULL, NULL, NULL };
+ 
+@@ -374,20 +375,28 @@
+ 		return -ENODEV;
+ 	}
+ 
+-	if (request_mem_region(mem->start, mem->end - mem->start + 1,
++	mem_size = mem->end - mem->start + 1;
++	if (request_mem_region(mem->start, mem_size,
+ 			       "palm_bk3710") == NULL) {
+ 		printk(KERN_ERR "failed to request memory region\n");
+ 		return -EBUSY;
+ 	}
+ 
+-	base = IO_ADDRESS(mem->start);
++	base = ioremap(mem->start, mem_size);
++	if (!base) {
++		printk(KERN_ERR "failed to map IO memory\n");
++		release_mem_region(mem->start, mem_size);
++		return -ENOMEM;
++	}
+ 
+ 	/* Configure the Palm Chip controller */
+-	palm_bk3710_chipinit((void __iomem *)base);
++	palm_bk3710_chipinit(base);
+ 
+ 	for (i = 0; i < IDE_NR_PORTS - 2; i++)
+-		hw.io_ports_array[i] = base + IDE_PALM_ATA_PRI_REG_OFFSET + i;
+-	hw.io_ports.ctl_addr = base + IDE_PALM_ATA_PRI_CTL_OFFSET;
++		hw.io_ports_array[i] = (unsigned long)
++				(base + IDE_PALM_ATA_PRI_REG_OFFSET + i);
++	hw.io_ports.ctl_addr = (unsigned long)
++			(base + IDE_PALM_ATA_PRI_CTL_OFFSET);
+ 	hw.irq = irq->start;
+ 	hw.dev = &pdev->dev;
+ 	hw.chipset = ide_palm3710;
 diff -Nur linux-2.6.28/drivers/input/keyboard/dm355evm_keys.c linux-davinci-2.6.28/drivers/input/keyboard/dm355evm_keys.c
 --- linux-2.6.28/drivers/input/keyboard/dm355evm_keys.c	1970-01-01 01:00:00.000000000 +0100
 +++ linux-davinci-2.6.28/drivers/input/keyboard/dm355evm_keys.c	2009-01-28 07:57:10.000000000 +0100
@@ -93099,7 +94558,7 @@ diff -Nur linux-2.6.28/drivers/misc/sti/sti-netlink.c linux-davinci-2.6.28/drive
 +MODULE_DESCRIPTION("STI netlink-driven communications interface");
 diff -Nur linux-2.6.28/drivers/mmc/host/davinci_mmc.c linux-davinci-2.6.28/drivers/mmc/host/davinci_mmc.c
 --- linux-2.6.28/drivers/mmc/host/davinci_mmc.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/drivers/mmc/host/davinci_mmc.c	2009-01-28 07:57:12.000000000 +0100
++++ linux-davinci-2.6.28/drivers/mmc/host/davinci_mmc.c	2009-02-26 11:20:59.000000000 +0100
 @@ -0,0 +1,1297 @@
 +/*
 + * davinci_mmc.c - TI DaVinci MMC/SD/SDIO driver
@@ -93134,7 +94593,7 @@ diff -Nur linux-2.6.28/drivers/mmc/host/davinci_mmc.c linux-davinci-2.6.28/drive
 +#include <linux/delay.h>
 +#include <linux/dma-mapping.h>
 +
-+#include <mach/board.h>
++#include <mach/mmc.h>
 +#include <mach/cpu.h>
 +#include <mach/edma.h>
 +#include <mach/hardware.h>
@@ -95862,21 +97321,17 @@ diff -Nur linux-2.6.28/drivers/mtd/maps/omap_nor.c linux-davinci-2.6.28/drivers/
  		} else
 diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/drivers/mtd/nand/davinci_nand.c
 --- linux-2.6.28/drivers/mtd/nand/davinci_nand.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/drivers/mtd/nand/davinci_nand.c	2009-01-28 07:57:12.000000000 +0100
-@@ -0,0 +1,840 @@
++++ linux-davinci-2.6.28/drivers/mtd/nand/davinci_nand.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,588 @@
 +/*
-+ * linux/drivers/mtd/nand/davinci_nand.c
-+ *
-+ * NAND Flash Driver
++ * davinci_nand.c - NAND Flash Driver for DaVinci family chips
 + *
 + * Copyright (C) 2006 Texas Instruments.
 + *
-+ * ported to 2.6.23 (C) 2008 by
-+ * Sander Huijsen <Shuijsen@optelecom-nkf.com>
-+ * Troy Kisky <troy.kisky@boundarydevices.com>
-+ * Dirk Behme <Dirk.Behme@gmail.com>
-+ *
-+ * --------------------------------------------------------------------------
++ * Port to 2.6.23 Copyright (C) 2008 by:
++ *   Sander Huijsen <Shuijsen@optelecom-nkf.com>
++ *   Troy Kisky <troy.kisky@boundarydevices.com>
++ *   Dirk Behme <Dirk.Behme@gmail.com>
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License as published by
@@ -95888,25 +97343,9 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 + * GNU General Public License for more details.
 + *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program; if not, write to the Free Software
-+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-+ * --------------------------------------------------------------------------
-+ *
-+ *  Overview:
-+ *   This is a device driver for the NAND flash device found on the
-+ *   DaVinci DM6446 EVM board which utilizes the Samsung k9k2g08 part.
-+ *   (small page NAND).  It should work for some other DaVinci NAND
-+ *   configurations, but it ignores the dm355 4-bit ECC hardware.
-+ *
-+ *   Currently makes assumptions about how the NAND device(s) are wired:
-+ *      - connected on the first chipselect, controlled by A1CR
-+ *      - single NAND chip
-+ *      - ALE and CLE wired to support boot-from-NAND
-+ *      - EM_WAIT is connected to the NAND device, not another device
-+ *
-+ *  Modifications:
-+ *  ver. 1.0: Feb 2005, Vinod/Sudhakar
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 + */
 +
 +#include <linux/kernel.h>
@@ -95916,16 +97355,13 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +#include <linux/err.h>
 +#include <linux/clk.h>
 +#include <linux/io.h>
-+#include <linux/mtd/mtd.h>
 +#include <linux/mtd/nand.h>
 +#include <linux/mtd/partitions.h>
 +
-+#include <mach/hardware.h>
++#include <mach/cpu.h>
 +#include <mach/nand.h>
-+#include <mach/mux.h>
 +
 +#include <asm/mach-types.h>
-+#include <asm/mach/flash.h>
 +
 +
 +#ifdef CONFIG_MTD_PARTITIONS
@@ -95940,19 +97376,20 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +static inline int mtd_has_cmdlinepart(void) { return 0; }
 +#endif
 +
-+#ifdef CONFIG_NAND_FLASH_HW_ECC
-+static inline int is_hw_ecc_1bit(void) { return 1; }
-+#else
-+static inline int is_hw_ecc_1bit(void) { return 0; }
-+#define NAND_ECC_HW3_256	100
-+#define NAND_ECC_HW3_512	101
-+#define NAND_ECC_HW6_512	102
-+#define NAND_ECC_HW8_512	103
-+#define NAND_ECC_HW12_2048	104
-+#endif
 +
-+#define DRIVER_NAME "davinci_nand"
-+
++/*
++ * This is a device driver for the NAND flash controller found on the
++ * various DaVinci family chips.  It handles up to four SoC chipselects,
++ * and some flavors of secondary chipselect (e.g. based on A12) as used
++ * with multichip packages.
++ *
++ * The 1-bit ECC hardware is supported, but not yet the newer 4-bit ECC
++ * available on chips like the DM355 and OMAP-L137 and needed with the
++ * more error-prone MLC NAND chips.
++ *
++ * This driver assumes EM_WAIT connects all the NAND devices' RDY/nBUSY
++ * outputs in a "wire-AND" configuration, with no per-chip signals.
++ */
 +struct davinci_nand_info {
 +	struct mtd_info		mtd;
 +	struct nand_chip	chip;
@@ -95965,30 +97402,19 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	void __iomem		*vaddr;
 +
 +	u32			ioaddr;
++	u32			current_cs;
++
++	u32			mask_chipsel;
 +	u32			mask_ale;
 +	u32			mask_cle;
++
++	u32			core_chipsel;
 +};
++
++static DEFINE_SPINLOCK(davinci_nand_lock);
 +
 +#define to_davinci_nand(m) container_of(m, struct davinci_nand_info, mtd)
 +
-+
-+static uint8_t scan_ff_pattern[] = { 0xff, 0xff };
-+
-+/* BB marker is byte 5 in OOB of page 0 */
-+static struct nand_bbt_descr davinci_memorybased_small = {
-+	.options	= NAND_BBT_SCAN2NDPAGE,
-+	.offs		= 5,
-+	.len		= 1,
-+	.pattern	= scan_ff_pattern
-+};
-+
-+/* BB marker is bytes 0-1 in OOB of page 0 */
-+static struct nand_bbt_descr davinci_memorybased_large = {
-+	.options	= 0,
-+	.offs		= 0,
-+	.len		= 2,
-+	.pattern	= scan_ff_pattern
-+};
 +
 +static inline unsigned int davinci_nand_readl(struct davinci_nand_info *info,
 +		int offset)
@@ -96002,16 +97428,17 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	__raw_writel(value, info->base + offset);
 +}
 +
++/*----------------------------------------------------------------------*/
++
 +/*
-+ * Hardware specific access to control-lines
-+ *
-+ * REVISIT avoid casting addresses
++ * Access to hardware control lines:  ALE, CLE, secondary chipselect.
 + */
++
 +static void nand_davinci_hwcontrol(struct mtd_info *mtd, int cmd,
 +				   unsigned int ctrl)
 +{
 +	struct davinci_nand_info	*info = to_davinci_nand(mtd);
-+	u32				addr = info->ioaddr;
++	u32				addr = info->current_cs;
 +	struct nand_chip		*nand = mtd->priv;
 +
 +	/* Did the control lines change? */
@@ -96030,45 +97457,62 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +
 +static void nand_davinci_select_chip(struct mtd_info *mtd, int chip)
 +{
-+	/* do nothing */
++	struct davinci_nand_info	*info = to_davinci_nand(mtd);
++	u32				addr = info->ioaddr;
++
++	/* maybe kick in a second chipselect */
++	if (chip > 0)
++		addr |= info->mask_chipsel;
++	info->current_cs = addr;
++
++	info->chip.IO_ADDR_W = (void __iomem __force *)addr;
++	info->chip.IO_ADDR_R = info->chip.IO_ADDR_W;
 +}
 +
-+static void nand_davinci_enable_hwecc_1bit(struct mtd_info *mtd, int mode)
-+{
-+	struct davinci_nand_info *info;
-+	u32 retval;
-+
-+	info = to_davinci_nand(mtd);
-+
-+	/* Reset ECC hardware */
-+	retval = davinci_nand_readl(info, NANDF1ECC_OFFSET);
-+
-+	/* Restart ECC hardware */
-+	retval = davinci_nand_readl(info, NANDFCR_OFFSET);
-+	retval |= (1 << 8);
-+	davinci_nand_writel(info, NANDFCR_OFFSET, retval);
-+}
++/*----------------------------------------------------------------------*/
 +
 +/*
-+ * Read DaVinci ECC register
++ * 1-bit hardware ECC ... context maintained for each core chipselect
 + */
++
 +static inline u32 nand_davinci_readecc_1bit(struct mtd_info *mtd)
 +{
 +	struct davinci_nand_info *info = to_davinci_nand(mtd);
 +
-+	/* Read register ECC and clear it */
-+	return davinci_nand_readl(info, NANDF1ECC_OFFSET);
++	return davinci_nand_readl(info, NANDF1ECC_OFFSET
++			+ 4 * info->core_chipsel);
++}
++
++static void nand_davinci_hwctl_1bit(struct mtd_info *mtd, int mode)
++{
++	struct davinci_nand_info *info;
++	u32 retval;
++	unsigned long flags;
++
++	info = to_davinci_nand(mtd);
++
++	/* Reset ECC hardware */
++	nand_davinci_readecc_1bit(mtd);
++
++	spin_lock_irqsave(&davinci_nand_lock, flags);
++
++	/* Restart ECC hardware */
++	retval = davinci_nand_readl(info, NANDFCR_OFFSET);
++	retval |= BIT(8 + info->core_chipsel);
++	davinci_nand_writel(info, NANDFCR_OFFSET, retval);
++
++	spin_unlock_irqrestore(&davinci_nand_lock, flags);
 +}
 +
 +/*
-+ * Read DaVinci ECC registers and rework into MTD format
++ * Read hardware ECC value and pack into three bytes
 + */
-+static int nand_davinci_calculate_ecc_1bit(struct mtd_info *mtd,
++static int nand_davinci_calculate_1bit(struct mtd_info *mtd,
 +				      const u_char *dat, u_char *ecc_code)
 +{
 +	unsigned int ecc_val = nand_davinci_readecc_1bit(mtd);
-+	/* squeeze 0 middle bits out so that it fits in 3 bytes */
 +	unsigned int tmp = (ecc_val & 0x0fff) | ((ecc_val & 0x0fff0000) >> 4);
++
 +	/* invert so that erased block ecc is correct */
 +	tmp = ~tmp;
 +	ecc_code[0] = (u_char)(tmp);
@@ -96078,7 +97522,7 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	return 0;
 +}
 +
-+static int nand_davinci_correct_data_1bit(struct mtd_info *mtd, u_char *dat,
++static int nand_davinci_correct_1bit(struct mtd_info *mtd, u_char *dat,
 +				     u_char *read_ecc, u_char *calc_ecc)
 +{
 +	struct nand_chip *chip = mtd->priv;
@@ -96092,14 +97536,14 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +		if ((((diff >> 12) ^ diff) & 0xfff) == 0xfff) {
 +			/* Correctable error */
 +			if ((diff >> (12 + 3)) < chip->ecc.size) {
-+				dat[diff >> (12 + 3)] ^= (1 << ((diff >> 12) & 7));
++				dat[diff >> (12 + 3)] ^= BIT((diff >> 12) & 7);
 +				return 1;
 +			} else {
 +				return -1;
 +			}
 +		} else if (!(diff & (diff - 1))) {
 +			/* Single bit ECC error in the ECC itself,
-+			   nothing to fix */
++			 * nothing to fix */
 +			return 1;
 +		} else {
 +			/* Uncorrectable error */
@@ -96110,141 +97554,7 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	return 0;
 +}
 +
-+/*
-+ * Read OOB data from flash.
-+ */
-+static int read_oob_and_check(struct mtd_info *mtd, loff_t offs, uint8_t *buf,
-+			      struct nand_bbt_descr *bd)
-+{
-+	int i, ret;
-+	int page;
-+	struct nand_chip *chip = mtd->priv;
-+
-+	/* Calculate page address from offset */
-+	page = (int)(offs >> chip->page_shift);
-+	page &= chip->pagemask;
-+
-+	/* Read OOB data from flash */
-+	ret = chip->ecc.read_oob(mtd, chip, page, 1);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Copy read OOB data to the buffer*/
-+	memcpy(buf, chip->oob_poi, mtd->oobsize);
-+
-+	/* Check pattern against BBM in OOB area */
-+	for (i = 0; i < bd->len; i++) {
-+		if (buf[bd->offs + i] != bd->pattern[i])
-+			return 1;
-+	}
-+	return 0;
-+}
-+
-+/*
-+ * Fill in the memory based Bad Block Table (BBT).
-+ */
-+static int nand_davinci_memory_bbt(struct mtd_info *mtd,
-+				   struct nand_bbt_descr *bd)
-+{
-+	int i, numblocks;
-+	int startblock = 0;
-+	loff_t from = 0;
-+	struct nand_chip *chip = mtd->priv;
-+	int blocksize = 1 << chip->bbt_erase_shift;
-+	uint8_t *buf = chip->buffers->databuf;
-+	int len = bd->options & NAND_BBT_SCAN2NDPAGE ? 2 : 1;
-+	struct davinci_nand_info *info = to_davinci_nand(mtd);
-+
-+	/* -numblocks- is 2 times the actual number of eraseblocks */
-+	numblocks = mtd->size >> (chip->bbt_erase_shift - 1);
-+
-+	/* Now loop through all eraseblocks in the flash */
-+	for (i = startblock; i < numblocks; i += 2) {
-+		int j, ret;
-+		int offs = from;
-+
-+		/* If NAND_BBT_SCAN2NDPAGE flag is set in bd->options,
-+		 * also each 2nd page of an eraseblock is checked
-+		 * for a Bad Block Marker. In that case, len equals 2.
-+		 */
-+		for (j = 0; j < len; j++) {
-+			/* Read OOB data and check pattern */
-+			ret = read_oob_and_check(mtd, from, buf, bd);
-+			if (ret < 0)
-+				return ret;
-+
-+			/* Check pattern for bad block markers */
-+			if (ret) {
-+				/* Mark bad block by writing 0b11 in the
-+				   table */
-+				chip->bbt[i >> 3] |= 0x03 << (i & 0x6);
-+
-+				dev_warn(info->dev, "Bad eraseblock %d at " \
-+						    "0x%08x\n", i >> 1,
-+						     (unsigned int)from);
-+
-+				mtd->ecc_stats.badblocks++;
-+				break;
-+			}
-+			offs += mtd->writesize;
-+		}
-+
-+		/* Make -from- point to next eraseblock */
-+		from += blocksize;
-+	}
-+
-+	dev_notice(info->dev, "Bad block scan: %d out of %d blocks are bad.\n",
-+			    mtd->ecc_stats.badblocks, numblocks>>1);
-+
-+	return 0;
-+}
-+
-+/*
-+ * This function creates a memory based bad block table (BBT).
-+ * It is largely based on the standard BBT function, but all
-+ * unnecessary junk is thrown out to speed up.
-+ */
-+static int nand_davinci_scan_bbt(struct mtd_info *mtd)
-+{
-+	struct nand_chip *chip = mtd->priv;
-+	struct nand_bbt_descr *bd;
-+	int len, ret = 0;
-+	struct davinci_nand_info *info = to_davinci_nand(mtd);
-+
-+	chip->bbt_td = NULL;
-+	chip->bbt_md = NULL;
-+
-+	/* pagesize determines location of BBM */
-+	if (mtd->writesize > 512)
-+		bd = &davinci_memorybased_large;
-+	else
-+		bd = &davinci_memorybased_small;
-+
-+	chip->badblock_pattern = bd;
-+
-+	/* Use 2 bits per page meaning 4 page markers per byte */
-+	len = mtd->size >> (chip->bbt_erase_shift + 2);
-+
-+	/* Allocate memory (2bit per block) and clear the memory bad block
-+	   table */
-+	chip->bbt = kzalloc(len, GFP_KERNEL);
-+	if (!chip->bbt) {
-+		dev_err(info->dev, "nand_davinci_scan_bbt: Out of memory\n");
-+		return -ENOMEM;
-+	}
-+
-+	/* Now try to fill in the BBT */
-+	ret = nand_davinci_memory_bbt(mtd, bd);
-+	if (ret) {
-+		dev_err(info->dev, "nand_davinci_scan_bbt: "
-+		       "Can't scan flash and build the RAM-based BBT\n");
-+
-+		kfree(chip->bbt);
-+		chip->bbt = NULL;
-+	}
-+
-+	return ret;
-+}
++/*----------------------------------------------------------------------*/
 +
 +/*
 + * NOTE:  NAND boot requires ALE == EM_A[1], CLE == EM_A[2], so that's
@@ -96288,149 +97598,21 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +{
 +	struct davinci_nand_info *info = to_davinci_nand(mtd);
 +
-+	return davinci_nand_readl(info, NANDFSR_OFFSET) & NAND_BUSY_FLAG;
-+}
-+
-+static void __init nand_davinci_set_eccsize(struct nand_chip *chip)
-+{
-+	chip->ecc.size = 256;
-+
-+	if (!is_hw_ecc_1bit())
-+		return;
-+
-+	switch (chip->ecc.mode) {
-+	case NAND_ECC_HW12_2048:
-+		chip->ecc.size = 2048;
-+		break;
-+
-+	case NAND_ECC_HW3_512:
-+	case NAND_ECC_HW6_512:
-+	case NAND_ECC_HW8_512:
-+		chip->ecc.size = 512;
-+		break;
-+
-+	case NAND_ECC_HW3_256:
-+	default:
-+		/* do nothing */
-+		break;
-+	}
-+}
-+
-+static void __init nand_davinci_set_eccbytes(struct nand_chip *chip)
-+{
-+	chip->ecc.bytes = 3;
-+
-+	if (!is_hw_ecc_1bit())
-+		return;
-+
-+	switch (chip->ecc.mode) {
-+	case NAND_ECC_HW12_2048:
-+		chip->ecc.bytes += 4;
-+	case NAND_ECC_HW8_512:
-+		chip->ecc.bytes += 2;
-+	case NAND_ECC_HW6_512:
-+		chip->ecc.bytes += 3;
-+	case NAND_ECC_HW3_512:
-+	case NAND_ECC_HW3_256:
-+	default:
-+		/* do nothing */
-+		break;
-+	}
-+}
-+
-+static void __init nand_dm355evm_flash_init(struct davinci_nand_info *info)
-+{
-+	u32 val, tmp;
-+
-+	/*
-+	 * For AEMIFCLK at 108.0 MHz (9.26 nsec/tick) these timings:
-+	 *  - have small (a few nsec) margins for pcb+socket delays
-+	 *  - assume standard mode operations (not cache mode)
-+	 *  - are WAY OFF for turnaround not gated by ARM instructions
-+	 *
-+	 * Write setup (tCS, tDS) min 15 nsec
-+	 * Write strobes (tWP) could be subsumed in setup
-+	 *
-+	 * Read setup (tCEA - tREA) min 5 nsec
-+	 * Read strobes (tRP) min 12 nsec
-+	 *
-+	 * Hold times (tALH, tCLH, tCH, tDH) min 5 nsec
-+	 * Read and write cycle times (tRC, tWC) min 25 nsec
-+	 * Turnaround (tWHR, tRHW) min 100 nsec
-+	 */
-+	val = 0
-+		| (0 << 31)	/* selectStrobe		normal mode */
-+		| (0 << 30)	/* extWait		mbz for NAND */
-+
-+		/* WRITE: */
-+		| (1 << 26)	/* Setup		2 ticks (18 ns) */
-+		| (0 << 20)	/* Strobe		1 tick (9 ns) */
-+		| (0 << 17)	/* Hold			1 tick (9 ns) */
-+
-+		/* READ: */
-+		| (0 << 13)	/* Setup		1 tick (9 ns) */
-+		| (1 << 7)	/* Strobe		2 ticks (18 ns) */
-+		| (0 << 4)	/* Hold			1 tick (9 ns) */
-+
-+		| (3 << 2)	/* turnAround		3 ticks (TOO LOW) */
-+		| (0 << 0)	/* asyncSize		eight-bit bus */
-+		;
-+
-+	tmp = davinci_nand_readl(info, A1CR_OFFSET);
-+	if (tmp != val) {
-+		dev_dbg(info->dev, "NAND config: Set A1CR "
-+		       "to 0x%08x, was 0x%08x\n", val, tmp);
-+		davinci_nand_writel(info, A1CR_OFFSET, val);
-+	}
++	return davinci_nand_readl(info, NANDFSR_OFFSET) & BIT(0);
 +}
 +
 +static void __init nand_dm6446evm_flash_init(struct davinci_nand_info *info)
 +{
 +	u32 regval, tmp;
 +
-+	/* The following mux setting are for dm6446 only,
-+	 * that's why we keep them inside the above conditional
-+	 * so we don't mess up other arch's mux settings.
-+	 *
-+	 * FIXME ideally, this should be done by board support,
-+	 * move it there at some point.
++	/*
++	 * NAND FLASH timings @ PLL1 == 459 MHz
++	 *  - AEMIF.CLK freq   = PLL1/6 = 459/6 = 76.5 MHz
++	 *  - AEMIF.CLK period = 1/76.5 MHz = 13.1 ns
 +	 */
-+	if (machine_is_davinci_evm()) {
-+		/* Check for correct pin mux, reconfigure if necessary */
-+		tmp = davinci_readl(PINMUX0);
-+
-+		if ((tmp & 0x20020C1F) != 0x00000C1F) {
-+			/* Disable HPI and ATA mux */
-+			davinci_cfg_reg(DM644X_HPIEN_DISABLE);
-+			davinci_cfg_reg(DM644X_ATAEN_DISABLE);
-+
-+			/* Enable VLYNQ and AEAW */
-+			davinci_cfg_reg(DM644X_AEAW);
-+			davinci_cfg_reg(DM644X_VLSCREN);
-+			davinci_cfg_reg(DM644X_VLYNQEN);
-+
-+			regval = davinci_readl(PINMUX0);
-+
-+			dev_warn(info->dev, "Warning: MUX config for NAND: Set " \
-+					"PINMUX0 reg to 0x%08x, was 0x%08x, should be done " \
-+					"by bootloader.\n", regval, tmp);
-+		}
-+	}
-+
-+	regval = davinci_nand_readl(info, AWCCR_OFFSET);
-+	regval |= 0x10000000;
-+	davinci_nand_writel(info, AWCCR_OFFSET, regval);
-+
-+	/*------------------------------------------------------------------*
-+	 *  NAND FLASH CHIP TIMEOUT @ 459 MHz                               *
-+	 *                                                                  *
-+	 *  AEMIF.CLK freq   = PLL1/6 = 459/6 = 76.5 MHz                    *
-+	 *  AEMIF.CLK period = 1/76.5 MHz = 13.1 ns                         *
-+	 *                                                                  *
-+	 *------------------------------------------------------------------*/
 +	regval = 0
 +		| (0 << 31)           /* selectStrobe */
-+		| (0 << 30)           /* extWait */
++		| (0 << 30)           /* extWait (never with NAND) */
 +		| (1 << 26)           /* writeSetup      10 ns */
 +		| (3 << 20)           /* writeStrobe     40 ns */
 +		| (1 << 17)           /* writeHold       10 ns */
@@ -96449,9 +97631,11 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	}
 +}
 +
++/*----------------------------------------------------------------------*/
++
 +static int __init nand_davinci_probe(struct platform_device *pdev)
 +{
-+	struct flash_platform_data	*pdata = pdev->dev.platform_data;
++	struct davinci_nand_pdata	*pdata = pdev->dev.platform_data;
 +	struct davinci_nand_info	*info;
 +	struct resource			*res1;
 +	struct resource			*res2;
@@ -96459,12 +97643,11 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	void __iomem			*base;
 +	int				ret;
 +	u32				val;
++	nand_ecc_modes_t		ecc_mode;
 +
-+	if (!pdata) {
-+		dev_err(&pdev->dev, "platform_data missing\n");
-+		ret = -ENODEV;
-+		goto err_pdata;
-+	}
++	/* which external chipselect will we be managing? */
++	if (pdev->id < 0 || pdev->id > 3)
++		return -ENODEV;
 +
 +	info = kzalloc(sizeof(*info), GFP_KERNEL);
 +	if (!info) {
@@ -96504,13 +97687,25 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	info->chip.IO_ADDR_W	= vaddr;
 +	info->chip.chip_delay	= 0;
 +	info->chip.select_chip	= nand_davinci_select_chip;
-+	info->chip.options	= 0;
++
++	/* options such as NAND_USE_FLASH_BBT or 16-bit widths */
++	info->chip.options	= pdata ? pdata->options : 0;
 +
 +	info->ioaddr		= (u32 __force) vaddr;
 +
-+	/* FIXME these masks should come from platform_data */
-+	info->mask_ale		= MASK_ALE;
-+	info->mask_cle		= MASK_CLE;
++	info->current_cs	= info->ioaddr;
++	info->core_chipsel	= pdev->id;
++	info->mask_chipsel	= pdata->mask_chipsel;
++
++	/* use nandboot-capable ALE/CLE masks by default */
++	if (pdata && pdata->mask_ale)
++		info->mask_ale	= pdata->mask_cle;
++	else
++		info->mask_ale	= MASK_ALE;
++	if (pdata && pdata->mask_cle)
++		info->mask_cle	= pdata->mask_cle;
++	else
++		info->mask_cle	= MASK_CLE;
 +
 +	/* Set address of hardware control function */
 +	info->chip.cmd_ctrl	= nand_davinci_hwcontrol;
@@ -96520,64 +97715,75 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +	info->chip.read_buf     = nand_davinci_read_buf;
 +	info->chip.write_buf    = nand_davinci_write_buf;
 +
-+	/* Speed up the creation of the bad block table */
-+	info->chip.scan_bbt      = nand_davinci_scan_bbt;
++	/* use board-specific ECC config; else, the best available */
++	if (pdata)
++		ecc_mode = pdata->ecc_mode;
++	else if (cpu_is_davinci_dm355())
++		ecc_mode = NAND_ECC_HW_SYNDROME;
++	else
++		ecc_mode = NAND_ECC_HW;
 +
-+	/*
-+	 * REVISIT should probably be using runtime check using board's
-+	 * platform_data, since three ECC modes (soft, 1bit, 4bit) are
-+	 * incompatible at the binary level.  If the board formatted its
-+	 * flash for a mode that's not supported by this kernel, bail!
-+	 *
-+	 * REVISIT dm355 adds an ECC mode that corrects up to 4 error
-+	 * bits, using 10 ECC bytes every 512 bytes of data.  And that
-+	 * is what TI's original LSP uses... along with quite a hacked
-+	 * up "inline OOB" scheme storing those ECC bytes, which happens
-+	 * to use (in good blocks) bytes used by factory bad-block marks
-+	 * (in bad blocks).  There was evidently a technical issue (now
-+	 * fixed?):  Linux seemed to limit ECC data to 32 bytes.
-+	 */
-+	if (is_hw_ecc_1bit()) {
-+		info->chip.ecc.mode	 = NAND_ECC_HW3_512;
-+		info->chip.ecc.calculate = nand_davinci_calculate_ecc_1bit;
-+		info->chip.ecc.correct   = nand_davinci_correct_data_1bit;
-+		info->chip.ecc.hwctl     = nand_davinci_enable_hwecc_1bit;
-+	} else {
-+		info->chip.ecc.mode	 = NAND_ECC_SOFT;
++	switch (ecc_mode) {
++	case NAND_ECC_NONE:
++	case NAND_ECC_SOFT:
++		break;
++	case NAND_ECC_HW:
++		info->chip.ecc.calculate = nand_davinci_calculate_1bit;
++		info->chip.ecc.correct = nand_davinci_correct_1bit;
++		info->chip.ecc.hwctl = nand_davinci_hwctl_1bit;
++		info->chip.ecc.size = 512;
++		info->chip.ecc.bytes = 3;
++		break;
++	case NAND_ECC_HW_SYNDROME:
++		/* FIXME implement */
++		info->chip.ecc.size = 512;
++		info->chip.ecc.bytes = 10;
++
++		dev_warn(&pdev->dev, "4-bit ECC nyet supported\n");
++		/* FALL THROUGH */
++	default:
++		ret = -EINVAL;
++		goto err_ecc;
 +	}
++	info->chip.ecc.mode = ecc_mode;
 +
-+	info->clk = clk_get(&pdev->dev, "AEMIFCLK");
++	info->clk = clk_get(&pdev->dev, "aemif");
 +	if (IS_ERR(info->clk)) {
 +		ret = PTR_ERR(info->clk);
-+		dev_dbg(&pdev->dev, "unable to get AEMIFCLK, err %d\n", ret);
++		dev_dbg(&pdev->dev, "unable to get AEMIF clock, err %d\n", ret);
 +		goto err_clk;
 +	}
 +
 +	ret = clk_enable(info->clk);
 +	if (ret < 0) {
-+		dev_dbg(&pdev->dev, "unable to enable AEMIFCLK, err %d\n", ret);
++		dev_dbg(&pdev->dev, "unable to enable AEMIF clock, err %d\n",
++			ret);
 +		goto err_clk_enable;
 +	}
 +
-+	/* Set ECC size and bytes */
-+	nand_davinci_set_eccsize(&info->chip);
-+	nand_davinci_set_eccbytes(&info->chip);
-+
-+	/* FIXME these don't belong here ... */
-+	if (machine_is_davinci_dm355_evm())
-+		nand_dm355evm_flash_init(info);
++	/* EMIF timings should normally be set by the boot loader,
++	 * especially after boot-from-NAND.  The *only* reason to
++	 * have this special casing for the DM6446 EVM is to work
++	 * with boot-from-NOR ... with CS0 manually re-jumpered
++	 * (after startup) so it addresses the NAND flash, not NOR.
++	 * Even for dev boards, that's unusually rude...
++	 */
 +	if (machine_is_davinci_evm())
 +		nand_dm6446evm_flash_init(info);
 +
-+	/* put "CS2NAND" (CS0) into NAND mode */
++	spin_lock_irq(&davinci_nand_lock);
++
++	/* put CSxNAND into NAND mode */
 +	val = davinci_nand_readl(info, NANDFCR_OFFSET);
-+	val |= BIT(0);
++	val |= BIT(info->core_chipsel);
 +	davinci_nand_writel(info, NANDFCR_OFFSET, val);
 +
-+	/* Scan to find existence of the device */
-+	if (nand_scan(&info->mtd, 1)) {
-+		dev_err(&pdev->dev, "chip select is not set for 'NAND'\n");
-+		ret = -ENXIO;
++	spin_unlock_irq(&davinci_nand_lock);
++
++	/* Scan to find existence of the device(s) */
++	ret = nand_scan(&info->mtd, pdata->mask_chipsel ? 2 : 1);
++	if (ret < 0) {
++		dev_dbg(&pdev->dev, "no NAND chip(s) found\n");
 +		goto err_scan;
 +	}
 +
@@ -96604,7 +97810,7 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +			info->mtd.name = master_name;
 +		}
 +
-+		if (mtd_parts_nb <= 0) {
++		if (mtd_parts_nb <= 0 && pdata) {
 +			mtd_parts = pdata->parts;
 +			mtd_parts_nb = pdata->nr_parts;
 +		}
@@ -96617,17 +97823,13 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +				info->partitioned = true;
 +		}
 +
-+	} else if (pdata->nr_parts) {
++	} else if (pdata && pdata->nr_parts) {
 +		dev_warn(&pdev->dev, "ignoring %d default partitions on %s\n",
 +				pdata->nr_parts, info->mtd.name);
 +	}
 +
 +	/* If there's no partition info, just package the whole chip
 +	 * as a single MTD device.
-+	 *
-+	 * NOTE:  When using the DM355 with large block NAND chips, don't
-+	 * use this driver to change data the ROM Boot Loader (RBL) reads
-+	 * from one of the first 24 blocks.  See DM355 errata for details.
 +	 */
 +	if (!info->partitioned)
 +		ret = add_mtd_device(&info->mtd) ? -ENODEV : 0;
@@ -96647,13 +97849,18 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +err_clk_enable:
 +	clk_put(info->clk);
 +
++err_ecc:
 +err_clk:
++	if (base)
++		iounmap(base);
++	if (vaddr)
++		iounmap(vaddr);
++
 +err_ioremap:
 +	kfree(info);
 +
 +err_nomem:
 +err_res:
-+err_pdata:
 +	return ret;
 +}
 +
@@ -96683,9 +97890,10 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +static struct platform_driver nand_davinci_driver = {
 +	.remove		= __exit_p(nand_davinci_remove),
 +	.driver		= {
-+		.name	= DRIVER_NAME,
++		.name	= "davinci_nand",
 +	},
 +};
++MODULE_ALIAS("platform:davinci_nand");
 +
 +static int __init nand_davinci_init(void)
 +{
@@ -96699,14 +97907,13 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/davinci_nand.c linux-davinci-2.6.28/driv
 +}
 +module_exit(nand_davinci_exit);
 +
-+MODULE_ALIAS(DRIVER_NAME);
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Texas Instruments");
 +MODULE_DESCRIPTION("Davinci NAND flash driver");
 +
 diff -Nur linux-2.6.28/drivers/mtd/nand/Kconfig linux-davinci-2.6.28/drivers/mtd/nand/Kconfig
 --- linux-2.6.28/drivers/mtd/nand/Kconfig	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/drivers/mtd/nand/Kconfig	2009-01-28 07:57:12.000000000 +0100
++++ linux-davinci-2.6.28/drivers/mtd/nand/Kconfig	2009-02-26 11:20:59.000000000 +0100
 @@ -74,6 +74,31 @@
  	help
  	  Support for NAND flash on Amstrad E3 (Delta).
@@ -96739,22 +97946,16 @@ diff -Nur linux-2.6.28/drivers/mtd/nand/Kconfig linux-davinci-2.6.28/drivers/mtd
  config MTD_NAND_TS7250
  	tristate "NAND Flash device on TS-7250 board"
  	depends on MACH_TS72XX
-@@ -420,4 +445,17 @@
+@@ -420,4 +445,11 @@
  	  Several Renesas SuperH CPU has FLCTL. This option enables support
  	  for NAND Flash using FLCTL. This driver support SH7723.
  
 +config MTD_NAND_DAVINCI
-+        tristate "NAND Flash device on DaVinci SoC"
++        tristate "Support NAND on DaVinci SoC"
 +        depends on MTD_NAND
-+	select MTD_PARTITIONS
 +        help
-+          Support for NAND flash on Texas Instruments DaVinci SoC.
-+
-+config NAND_FLASH_HW_ECC
-+        bool "Hardware ECC Support on NAND Device for DaVinci"
-+        depends on MTD_NAND_DAVINCI
-+        help
-+          Support for Hardware ECC on NAND device for DaVinci.
++	  Enable the driver for NAND flash chips on Texas Instruments
++	  DaVinci processors.
 +
  endif # MTD_NAND
 diff -Nur linux-2.6.28/drivers/mtd/nand/Makefile linux-davinci-2.6.28/drivers/mtd/nand/Makefile
@@ -98668,8 +99869,8 @@ diff -Nur linux-2.6.28/drivers/mtd/onenand/omap2.c linux-davinci-2.6.28/drivers/
  	release_mem_region(c->phys_base, ONENAND_IO_SIZE);
 diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/net/davinci_emac.c
 --- linux-2.6.28/drivers/net/davinci_emac.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/drivers/net/davinci_emac.c	2009-01-28 07:57:13.000000000 +0100
-@@ -0,0 +1,2882 @@
++++ linux-davinci-2.6.28/drivers/net/davinci_emac.c	2009-02-26 11:20:59.000000000 +0100
+@@ -0,0 +1,2908 @@
 +/*
 + * DaVinci EMAC Ethernet controller
 + *
@@ -98701,9 +99902,7 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 + */
 +
 +/** Pending Items in this driver:
-+ * 1. use ioremap(), remove davinci_readl()/etc, minimize __force
-+ * 2. Use Linux cache infrastcture for DMA'ed memory (dma_xxx functions)
-+ * 3. Add DM646x support (gigabit included)
++ * 1. Use Linux cache infrastcture for DMA'ed memory (dma_xxx functions)
 +*/
 +
 +#include <linux/module.h>
@@ -99157,8 +100356,10 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +	char mac_addr[6];
 +	spinlock_t tx_lock;
 +	spinlock_t rx_lock;
-+	u32 emac_base_regs;
-+	u32 emac_ctrl_regs;
++	u32 emac_base_phys;
++	void __iomem *emac_base;
++	u32 emac_ctrl_phys;
++	void __iomem *ctrl_base;
 +	void __iomem *emac_ctrl_ram;
 +	u32 ctrl_ram_size;
 +	struct emac_txch *txch[EMAC_DEF_MAX_TX_CH];
@@ -99229,16 +100430,15 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +#define EMAC_DEV (&(priv)->ndev->dev)
 +
 +/* Helper macros */
-+#define emac_read(reg)		davinci_readl((priv->emac_base_regs + (reg)))
-+#define emac_write(reg, val) \
-+	davinci_writel(val, (priv->emac_base_regs + (reg)))
++#define emac_read(reg)		  ioread32(priv->emac_base + (reg))
++#define emac_write(reg, val)      iowrite32(val, priv->emac_base + (reg))
 +
-+#define emac_ctrl_read(reg)	davinci_readl((priv->emac_ctrl_regs + (reg)))
-+#define emac_ctrl_write(reg, val) \
-+	davinci_writel(val, (priv->emac_ctrl_regs + (reg)))
++#define emac_ctrl_read(reg)	  ioread32((priv->ctrl_base + (reg)))
++#define emac_ctrl_write(reg, val) iowrite32(val, (priv->ctrl_base + (reg)))
 +
-+#define emac_mdio_read(reg)	davinci_readl((bus->priv + (reg)))
-+#define emac_mdio_write(reg, val)	davinci_writel(val, (bus->priv + (reg)))
++#define emac_mdio_read(reg)	  ioread32(bus->priv + (reg))
++#define emac_mdio_write(reg, val) iowrite32(val, (bus->priv + (reg)))
++
 +/**
 + * emac_dump_regs: Dump important EMAC registers to debug terminal
 + * @priv: The DaVinci EMAC private adapter structure
@@ -101275,6 +102475,7 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +	struct resource *res;
 +	struct net_device *ndev;
 +	struct emac_priv *priv;
++	unsigned long size;
 +
 +	/* obtain emac clock from kernel */
 +	emac_clk = clk_get(&pdev->dev, "EMACCLK");
@@ -101316,16 +102517,22 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +		rc = -ENOENT;
 +		goto probe_quit;
 +	}
-+	priv->emac_base_regs = res->start;
-+	ndev->base_addr = (unsigned long)IO_ADDRESS(res->start);
-+	if (!request_mem_region((u32)priv->emac_base_regs,
-+				(res->end - res->start + 1),
-+				ndev->name)) {
++	priv->emac_base_phys = res->start;
++	size = res->end - res->start + 1;
++	if (!request_mem_region(priv->emac_base_phys, size, ndev->name)) {
 +		dev_err(EMAC_DEV, "DaVinci EMAC: failed request_mem_region() \
 +					 for ctrl regs\n");
 +		rc = -ENXIO;
 +		goto probe_quit;
 +	}
++	priv->emac_base = ioremap(res->start, size);
++	if (!priv->emac_base) {
++		dev_err(EMAC_DEV, "Unable to map IO\n");
++		rc = -ENOMEM;
++		release_mem_region(priv->emac_base_phys, size);
++		goto probe_quit;
++	}
++	ndev->base_addr = (unsigned long)priv->emac_base;
 +
 +	res = platform_get_resource_byname(pdev,
 +					IORESOURCE_MEM, "ctrl_module_regs");
@@ -101335,10 +102542,15 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +		rc = -ENOENT;
 +		goto no_ctrl_mod_res;
 +	}
-+	priv->emac_ctrl_regs = res->start;
-+	if (!request_mem_region((u32)priv->emac_ctrl_regs,
-+				(res->end - res->start + 1),
-+				ndev->name)) {
++	priv->emac_ctrl_phys = res->start;
++	size = res->end - res->start + 1;
++	priv->ctrl_base = ioremap(res->start, size);
++	if (!priv->ctrl_base) {
++		dev_err(EMAC_DEV, "Unable to map ctrl regs\n");
++		rc = -ENOMEM;
++		goto no_ctrl_mod_res;
++	}
++	if (!request_mem_region(priv->emac_ctrl_phys, size, ndev->name)) {
 +		dev_err(EMAC_DEV, "DaVinci EMAC: failed request_mem_region() \
 +					for ctrl module regs\n");
 +		rc = -ENXIO;
@@ -101351,11 +102563,14 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +		rc = -ENOENT;
 +		goto no_ctrl_ram_res;
 +	}
-+	priv->emac_ctrl_ram = IO_ADDRESS(res->start);
 +	priv->ctrl_ram_size = res->end - res->start + 1;
-+	if (!request_mem_region(res->start,
-+				(res->end - res->start + 1),
-+				ndev->name)) {
++	priv->emac_ctrl_ram = ioremap(res->start, priv->ctrl_ram_size);
++	if (!priv->emac_ctrl_ram) {
++		dev_err(EMAC_DEV, "Unable to map ctrl RAM\n");
++		rc = -ENOMEM;
++		goto no_ctrl_ram_res;
++	}
++	if (!request_mem_region(res->start, priv->ctrl_ram_size, ndev->name)) {
 +		dev_err(EMAC_DEV, "DaVinci EMAC: failed request_mem_region() \
 +					for ctrl ram regs\n");
 +		rc = -ENXIO;
@@ -101423,9 +102638,14 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +	}
 +
 +	emac_mii->priv = (void *)(res->start);
-+	if (!request_mem_region(res->start,
-+				(res->end - res->start + 1),
-+				ndev->name)) {
++	size = res->end - res->start + 1;
++	emac_mii->priv = ioremap(res->start, size);
++	if (!emac_mii->priv) {
++		dev_err(EMAC_DEV, "Unable to map MDIO regs\n");
++		rc = -ENOMEM;
++		goto no_mdio_res;
++	}
++	if (!request_mem_region(res->start, size, ndev->name)) {
 +		dev_err(EMAC_DEV, "DaVinci EMAC: failed request_mem_region() \
 +					for mdio regs\n");
 +		rc = -ENXIO;
@@ -101443,7 +102663,7 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +	if (netif_msg_probe(priv)) {
 +		dev_notice(EMAC_DEV, "DaVinci EMAC Probe found device "\
 +			   "(regs: %p, irq: %d)\n",
-+			   (void *)priv->emac_base_regs, ndev->irq);
++			   (void *)priv->emac_base_phys, ndev->irq);
 +	}
 +	return 0;
 +
@@ -101458,15 +102678,18 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +no_irq_res:
 +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ctrl_ram");
 +	release_mem_region(res->start, res->end - res->start + 1);
++	iounmap(priv->emac_ctrl_ram);
 +
 +no_ctrl_ram_res:
 +	res = platform_get_resource_byname(pdev,
 +					IORESOURCE_MEM, "ctrl_module_regs");
 +	release_mem_region(res->start, res->end - res->start + 1);
++	iounmap(priv->ctrl_base);
 +
 +no_ctrl_mod_res:
 +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ctrl_regs");
 +	release_mem_region(res->start, res->end - res->start + 1);
++	iounmap(priv->emac_base);
 +
 +probe_quit:
 +	clk_put(emac_clk);
@@ -101503,6 +102726,10 @@ diff -Nur linux-2.6.28/drivers/net/davinci_emac.c linux-davinci-2.6.28/drivers/n
 +
 +	unregister_netdev(ndev);
 +	free_netdev(ndev);
++	iounmap(priv->emac_base);
++	iounmap(priv->ctrl_base);
++	iounmap(priv->emac_ctrl_ram);
++	iounmap(emac_mii->priv);
 +	clk_disable(emac_clk);
 +	clk_put(emac_clk);
 +
@@ -112827,7 +114054,7 @@ diff -Nur linux-2.6.28/drivers/usb/otg/twl4030-usb.c linux-davinci-2.6.28/driver
 +MODULE_LICENSE("GPL");
 diff -Nur linux-2.6.28/drivers/video/davincifb.c linux-davinci-2.6.28/drivers/video/davincifb.c
 --- linux-2.6.28/drivers/video/davincifb.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-davinci-2.6.28/drivers/video/davincifb.c	2009-01-28 07:57:17.000000000 +0100
++++ linux-davinci-2.6.28/drivers/video/davincifb.c	2009-02-26 11:20:59.000000000 +0100
 @@ -0,0 +1,1734 @@
 +/*
 + * drivers/video/davincifb.c
@@ -112884,18 +114111,18 @@ diff -Nur linux-2.6.28/drivers/video/davincifb.c linux-davinci-2.6.28/drivers/vi
 + */
 +static __inline__ u32 dispc_reg_in(u32 reg)
 +{
-+	return davinci_readl(reg);
++	return ioread32(IO_ADDRESS(reg));
 +}
 +static __inline__ u32 dispc_reg_out(u32 reg, u32 val)
 +{
-+	davinci_writel(val, reg);
++	iowrite32(val, IO_ADDRESS(reg));
 +	return (val);
 +}
 +static __inline__ u32 dispc_reg_merge(u32 reg, u32 val, u32 mask)
 +{
-+	u32 new_val = (davinci_readl(reg) & ~mask) | (val & mask);
++	u32 new_val = (ioread32(IO_ADDRESS(reg)) & ~mask) | (val & mask);
 +
-+	davinci_writel(new_val, reg);
++	iowrite32(new_val, IO_ADDRESS(reg));
 +	return (new_val);
 +}
 +
@@ -117745,6 +118972,121 @@ diff -Nur linux-2.6.28/drivers/video/omap/sossi.c linux-davinci-2.6.28/drivers/v
   *
   * This program is free software; you can redistribute it and/or modify it
   * under the terms of the GNU General Public License as published by the
+diff -Nur linux-2.6.28/drivers/watchdog/davinci_wdt.c linux-davinci-2.6.28/drivers/watchdog/davinci_wdt.c
+--- linux-2.6.28/drivers/watchdog/davinci_wdt.c	2008-12-25 00:26:37.000000000 +0100
++++ linux-davinci-2.6.28/drivers/watchdog/davinci_wdt.c	2009-02-26 11:20:59.000000000 +0100
+@@ -24,7 +24,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
+-#include <mach/hardware.h>
++#include <linux/device.h>
+ 
+ #define MODULE_NAME "DAVINCI-WDT: "
+ 
+@@ -75,9 +75,9 @@
+ 	spin_lock(&io_lock);
+ 
+ 	/* put watchdog in service state */
+-	davinci_writel(WDKEY_SEQ0, wdt_base + WDTCR);
++	iowrite32(WDKEY_SEQ0, wdt_base + WDTCR);
+ 	/* put watchdog in active state */
+-	davinci_writel(WDKEY_SEQ1, wdt_base + WDTCR);
++	iowrite32(WDKEY_SEQ1, wdt_base + WDTCR);
+ 
+ 	spin_unlock(&io_lock);
+ }
+@@ -90,29 +90,29 @@
+ 	spin_lock(&io_lock);
+ 
+ 	/* disable, internal clock source */
+-	davinci_writel(0, wdt_base + TCR);
++	iowrite32(0, wdt_base + TCR);
+ 	/* reset timer, set mode to 64-bit watchdog, and unreset */
+-	davinci_writel(0, wdt_base + TGCR);
++	iowrite32(0, wdt_base + TGCR);
+ 	tgcr = TIMMODE_64BIT_WDOG | TIM12RS_UNRESET | TIM34RS_UNRESET;
+-	davinci_writel(tgcr, wdt_base + TGCR);
++	iowrite32(tgcr, wdt_base + TGCR);
+ 	/* clear counter regs */
+-	davinci_writel(0, wdt_base + TIM12);
+-	davinci_writel(0, wdt_base + TIM34);
++	iowrite32(0, wdt_base + TIM12);
++	iowrite32(0, wdt_base + TIM34);
+ 	/* set timeout period */
+ 	timer_margin = (((u64)heartbeat * CLOCK_TICK_RATE) & 0xffffffff);
+-	davinci_writel(timer_margin, wdt_base + PRD12);
++	iowrite32(timer_margin, wdt_base + PRD12);
+ 	timer_margin = (((u64)heartbeat * CLOCK_TICK_RATE) >> 32);
+-	davinci_writel(timer_margin, wdt_base + PRD34);
++	iowrite32(timer_margin, wdt_base + PRD34);
+ 	/* enable run continuously */
+-	davinci_writel(ENAMODE12_PERIODIC, wdt_base + TCR);
++	iowrite32(ENAMODE12_PERIODIC, wdt_base + TCR);
+ 	/* Once the WDT is in pre-active state write to
+ 	 * TIM12, TIM34, PRD12, PRD34, TCR, TGCR, WDTCR are
+ 	 * write protected (except for the WDKEY field)
+ 	 */
+ 	/* put watchdog in pre-active state */
+-	davinci_writel(WDKEY_SEQ0 | WDEN, wdt_base + WDTCR);
++	iowrite32(WDKEY_SEQ0 | WDEN, wdt_base + WDTCR);
+ 	/* put watchdog in active state */
+-	davinci_writel(WDKEY_SEQ1 | WDEN, wdt_base + WDTCR);
++	iowrite32(WDKEY_SEQ1 | WDEN, wdt_base + WDTCR);
+ 
+ 	spin_unlock(&io_lock);
+ }
+@@ -197,17 +197,16 @@
+ {
+ 	int ret = 0, size;
+ 	struct resource *res;
++	struct device *dev = &pdev->dev;
+ 
+ 	if (heartbeat < 1 || heartbeat > MAX_HEARTBEAT)
+ 		heartbeat = DEFAULT_HEARTBEAT;
+ 
+-	printk(KERN_INFO MODULE_NAME
+-		"DaVinci Watchdog Timer: heartbeat %d sec\n", heartbeat);
++	dev_info(dev, "heartbeat %d sec\n", heartbeat);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+-		printk(KERN_INFO MODULE_NAME
+-			"failed to get memory region resource\n");
++		dev_err(dev, "failed to get memory region resource\n");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -215,20 +214,26 @@
+ 	wdt_mem = request_mem_region(res->start, size, pdev->name);
+ 
+ 	if (wdt_mem == NULL) {
+-		printk(KERN_INFO MODULE_NAME "failed to get memory region\n");
++		dev_err(dev, "failed to get memory region\n");
+ 		return -ENOENT;
+ 	}
+-	wdt_base = (void __iomem *)(res->start);
++
++	wdt_base = ioremap(res->start, size);
++	if (!wdt_base) {
++		dev_err(dev, "failed to map memory region\n");
++		return -ENOMEM;
++	}
+ 
+ 	ret = misc_register(&davinci_wdt_miscdev);
+ 	if (ret < 0) {
+-		printk(KERN_ERR MODULE_NAME "cannot register misc device\n");
++		dev_err(dev, "cannot register misc device\n");
+ 		release_resource(wdt_mem);
+ 		kfree(wdt_mem);
+ 	} else {
+ 		set_bit(WDT_DEVICE_INITED, &wdt_status);
+ 	}
+ 
++	iounmap(wdt_base);
+ 	return ret;
+ }
+ 
 diff -Nur linux-2.6.28/drivers/watchdog/Kconfig linux-davinci-2.6.28/drivers/watchdog/Kconfig
 --- linux-2.6.28/drivers/watchdog/Kconfig	2008-12-25 00:26:37.000000000 +0100
 +++ linux-davinci-2.6.28/drivers/watchdog/Kconfig	2009-01-28 07:57:17.000000000 +0100
@@ -122397,8 +123739,8 @@ diff -Nur linux-2.6.28/sound/soc/codecs/twl4030.h linux-davinci-2.6.28/sound/soc
 +#endif	/* End of __TWL4030_AUDIO_H__ */
 diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/sound/soc/davinci/davinci-evm.c
 --- linux-2.6.28/sound/soc/davinci/davinci-evm.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/sound/soc/davinci/davinci-evm.c	2009-01-28 07:57:23.000000000 +0100
-@@ -20,13 +20,15 @@
++++ linux-davinci-2.6.28/sound/soc/davinci/davinci-evm.c	2009-02-26 11:20:59.000000000 +0100
+@@ -20,13 +20,16 @@
  #include <sound/soc-dapm.h>
  
  #include <asm/dma.h>
@@ -122407,6 +123749,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
 +
 +#include <mach/asp.h>
 +#include <mach/edma.h>
++#include <mach/mux.h>
  
  #include "../codecs/tlv320aic3x.h"
  #include "davinci-pcm.h"
@@ -122416,7 +123759,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
  
  static int evm_hw_params(struct snd_pcm_substream *substream,
  			 struct snd_pcm_hw_params *params)
-@@ -35,6 +37,21 @@
+@@ -35,6 +38,21 @@
  	struct snd_soc_dai *codec_dai = rtd->dai->codec_dai;
  	struct snd_soc_dai *cpu_dai = rtd->dai->cpu_dai;
  	int ret = 0;
@@ -122438,7 +123781,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
  
  	/* set codec DAI configuration */
  	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
-@@ -49,8 +66,7 @@
+@@ -49,8 +67,7 @@
  		return ret;
  
  	/* set the codec system clock */
@@ -122448,7 +123791,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
  	if (ret < 0)
  		return ret;
  
-@@ -136,7 +152,7 @@
+@@ -136,7 +153,7 @@
  
  /* evm audio private data */
  static struct aic3x_setup_data evm_aic3x_setup = {
@@ -122457,7 +123800,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
  	.i2c_address = 0x1b,
  };
  
-@@ -148,35 +164,63 @@
+@@ -148,35 +165,69 @@
  	.codec_data = &evm_aic3x_setup,
  };
  
@@ -122504,10 +123847,16 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
  
 -	evm_snd_device = platform_device_alloc("soc-audio", 0);
 +	if (machine_is_davinci_evm()) {
++		davinci_cfg_reg(DM644X_MCBSP);
++
 +		resources = evm_snd_resources;
 +		data = &evm_snd_data;
 +		index = 0;
 +	} else if (machine_is_davinci_dm355_evm()) {
++		/* we don't use ASP1 IRQs, or we'd need to mux them ... */
++		davinci_cfg_reg(DM355_EVT8_ASP1_TX);
++		davinci_cfg_reg(DM355_EVT9_ASP1_RX);
++
 +		resources = dm335evm_snd_resources;
 +		data = &dm335evm_snd_data;
 +		index = 1;
@@ -122531,7 +123880,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-evm.c linux-davinci-2.6.28/soun
  		return ret;
 diff -Nur linux-2.6.28/sound/soc/davinci/davinci-i2s.c linux-davinci-2.6.28/sound/soc/davinci/davinci-i2s.c
 --- linux-2.6.28/sound/soc/davinci/davinci-i2s.c	2008-12-25 00:26:37.000000000 +0100
-+++ linux-davinci-2.6.28/sound/soc/davinci/davinci-i2s.c	2009-01-28 07:57:23.000000000 +0100
++++ linux-davinci-2.6.28/sound/soc/davinci/davinci-i2s.c	2009-02-26 11:20:59.000000000 +0100
 @@ -24,6 +24,26 @@
  
  #include "davinci-pcm.h"
@@ -122741,7 +124090,7 @@ diff -Nur linux-2.6.28/sound/soc/davinci/davinci-i2s.c linux-davinci-2.6.28/soun
  	struct resource *mem, *ioarea;
  	struct evm_snd_platform_data *pdata;
  	int ret;
-+	static const char *clocks[] = { "McBSPCLK", "McBSPCLK1", };
++	static const char *clocks[] = { "asp0", "asp1", };
 +
 +	if (pdev->id < 0 || pdev->id > ARRAY_SIZE(clocks))
 +		return -EINVAL;
