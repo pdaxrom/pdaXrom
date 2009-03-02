@@ -102,6 +102,19 @@ build_qt_x11_opensource_src() {
     ln -sf $TARGET_BIN_DIR/bin/uic   $HOST_BIN_DIR/bin/uic   || error
     ln -sf $TARGET_BIN_DIR/bin/rcc   $HOST_BIN_DIR/bin/rcc   || error
 
+    for f in libQt3Support  libQtNetwork  libQtSql   libQtWebKit \
+    libQtCore      libQtOpenGL   libQtSvg   libQtXmlPatterns \
+    libQtGui       libQtScript   libQtTest  libQtXml; do
+	$INSTALL -D -m 644 lib/$f.so.4.4.3 $ROOTFS_DIR/usr/lib/$f.so.4.4.3 || error
+	ln -sf $f.so.4.4.3 $ROOTFS_DIR/usr/lib/$f.so.4.4
+	ln -sf $f.so.4.4.3 $ROOTFS_DIR/usr/lib/$f.so.4
+	ln -sf $f.so.4.4.3 $ROOTFS_DIR/usr/lib/$f.so
+	$STRIP $ROOTFS_DIR/usr/lib/$f.so.4.4.3 || error
+    done
+    
+    cp -r $TARGET_LIB/qt4 $ROOTFS_DIR/usr/lib/ || error
+    find $ROOTFS_DIR/usr/lib/qt4/ -name "*.so" | xargs $STRIP
+    
     popd
     touch "$STATE_DIR/qt_x11_opensource_src.installed"
 }
