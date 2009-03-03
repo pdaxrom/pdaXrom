@@ -19,6 +19,7 @@ TARGET_JFFS2_ARGS="-p -n"
 . ./sets/packages-libs.inc
 
 . ./sets/packages-xorg-xlib.inc
+. ./sets/packages-x-gtk2.inc
 . ./sets/packages-xorg-xserver.inc
 . ./sets/packages-xorg-drivers.inc
 . ./sets/packages-xorg-apps.inc

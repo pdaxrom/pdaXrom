@@ -18,7 +18,7 @@ LABEL safe
   kernel /boot/bzImage
   append initrd=/boot/rootfs.img root=/dev/ram0
 DISPLAY isolinux.txt
-TIMEOUT 300
+TIMEOUT 50
 PROMPT 1
 " > $T/isolinux/isolinux.cfg
     printf "pdaXrom NG x86\n" > $T/isolinux/isolinux.txt
