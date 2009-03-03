@@ -19,8 +19,6 @@ KERNEL_CONFIG=i686-kernel-2.6.28
 
 . ./sets/packages-simplenx-client.sh
 
-. $RULES_DIR/rdesktop.sh
-
 . $RULES_DIR/tweak-i686.sh
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/host_syslinux.sh
