@@ -25,8 +25,13 @@ PROMPT 1
     
     pushd $TOP_DIR
     cd $T
+
+    local CDNAME="$ISOIMAGE_NAME"
+    if [ "x$CDNAME" = "x" ]; then
+	CDNAME="pdaXrom-ng-x86"
+    fi
     
-    genisoimage -r -V "$X86CD_TITLE" -cache-inodes -J -l -o $IMAGES_DIR/pdaXrom-ng-x86.iso \
+    genisoimage -r -V "$X86CD_TITLE" -cache-inodes -J -l -o ${IMAGES_DIR}/${CDNAME}.iso \
 	-b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table . \
 	|| error "create x86 cd image"
 

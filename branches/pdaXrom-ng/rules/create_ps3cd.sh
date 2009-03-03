@@ -12,7 +12,12 @@ create_ps3cd() {
     pushd $TOP_DIR
     cd $T
     
-    genisoimage -r -V "$PS3CD_TITLE" -cache-inodes -J -l -o $IMAGES_DIR/pdaXrom-ng-ps3.iso . || error "create ps3 cd image"
+    local CDNAME="$ISOIMAGE_NAME"
+    if [ "x$CDNAME" = "x" ]; then
+	CDNAME="pdaXrom-ng-ps3"
+    fi
+    
+    genisoimage -r -V "$PS3CD_TITLE" -cache-inodes -J -l -o ${IMAGES_DIR}/${CDNAME}.iso . || error "create ps3 cd image"
 
     popd
 }
