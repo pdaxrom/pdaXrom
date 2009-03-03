@@ -12,7 +12,7 @@ TARGET_KERNEL_IMAGE=uImage
 
 #TARGET_JFFS2_ERASEBLOCK=16384
 #TARGET_JFFS2_PAGESIZE=4096
-#TARGET_JFFS2_ARGS="-p -n"
+TARGET_JFFS2_ARGS="-p -n"
 
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc

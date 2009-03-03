@@ -231,6 +231,8 @@ apply_patches1()
 }
 
 apply_patches() {
+    test -e "$1/.pdaXrom-ng-patched" && return
+
     # hack! remove hardcoded libdir
     test -e $1/ltmain.sh && sed -i -e 's:add_dir="-L$libdir"::g' $1/ltmain.sh
 
@@ -242,6 +244,8 @@ apply_patches() {
 	src_d="${src_d}-${TARGET_VENDOR_PATCH}"
 	apply_patches1 $1 $src_d
     fi
+
+    touch "$1/.pdaXrom-ng-patched"
 }
 
 install_rc_start() {
