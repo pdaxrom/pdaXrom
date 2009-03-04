@@ -1,8 +1,0 @@
-config HEXEDIT
-	bool
-	prompt "hexedit"
-
-config HEXEDIT_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on HEXEDIT

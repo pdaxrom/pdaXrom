@@ -1,8 +1,0 @@
-config GTK22
-	bool
-	prompt "gtk22"
-
-config GTK22_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on GTK22

@@ -1,0 +1,32 @@
+# data file for the FLTK User Interface Designer (FLUID)
+version 2.1000 
+images_dir header_name 
+header_name {.h} 
+code_name {.cxx} 
+gridx 5 
+gridy 5 
+snap 3
+decl {\#include <stdlib.h>} {} 
+
+decl {\#include "netdevices.h"} {} 
+
+Function {} {open
+} {
+  {fltk::Window} {} {open
+    xywh {476 304 335 215} resizable visible
+  } {
+    {fltk::Browser} devList {selected
+      xywh {5 10 251 196}
+      extra_code {add_devices();}
+    } {}
+    {fltk::Button} {} {
+      label Edit
+      xywh {265 10 60 25}
+    }
+    {fltk::Button} quit {
+      label Quit
+      callback {exit(0);}
+      xywh {260 180 65 25}
+    }
+  }
+} 

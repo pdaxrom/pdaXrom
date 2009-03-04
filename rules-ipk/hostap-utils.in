@@ -1,8 +1,0 @@
-config HOSTAP-UTILS
-	bool
-	prompt "hostap-utils"
-
-config HOSTAP-UTILS_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on HOSTAP-UTILS

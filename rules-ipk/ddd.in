@@ -1,8 +1,0 @@
-config DDD
-	bool
-	prompt "ddd"
-
-config DDD_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on DDD

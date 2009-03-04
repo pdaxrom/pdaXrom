@@ -1,8 +1,0 @@
-config GPSDRIVE
-	bool
-	prompt "gpsdrive"
-
-config GPSDRIVE_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on GPSDRIVE

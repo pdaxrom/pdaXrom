@@ -1,8 +1,0 @@
-config LIBXSLT
-	bool
-	prompt "libxslt"
-
-config LIBXSLT_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBXSLT
