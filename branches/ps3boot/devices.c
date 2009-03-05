@@ -208,7 +208,7 @@ void bootdevices_draw_bootconfig(db_image *desk,
     while (conf) {
 	char buf[1024];
 	snprintf(buf, 1024, "%s", conf->label);
-	if (((!strcmp(dev->def, conf->label)) && (selected_config < 0)) ||
+	if (((!strcmp(dev->def?dev->def:conf->label, conf->label)) && (selected_config < 0)) ||
 	    (count == selected_config)) {
 	    db_message_draw(desk, font, buf, x, y, w, h, 0xffffff, DB_WINDOW_COORD_TOP_CENTER);
 	    current_config_x_pos = x;

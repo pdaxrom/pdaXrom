@@ -216,3 +216,8 @@ void db_ui_close_display(void)
     db_image_free(screen_image);
     screen_image = NULL;
 }
+
+int db_ui_readkey(void)
+{
+    return 0;
+}

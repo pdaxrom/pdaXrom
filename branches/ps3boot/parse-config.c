@@ -1,3 +1,10 @@
+/*
+ *
+ * Debug parser:
+ * gcc parse-config.c -o parse-config -DDEBUG_MAIN -I/usr/include/freetype2
+ *
+ */
+ 
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -5,6 +12,11 @@
 
 #include "parse-config.h"
 #include "devices.h"
+
+#ifdef DEBUG_MAIN
+#undef MOUNT_DIR
+#define MOUNT_DIR "./"
+#endif
 
 static void bootdevice_add_config(boot_device *dev, char *label, char *kernel, char *initrd, char *cmdline)
 {
@@ -14,6 +26,10 @@ static void bootdevice_add_config(boot_device *dev, char *label, char *kernel, c
     tmp->initrd = initrd;
     tmp->cmdline = cmdline;
     tmp->next = NULL;
+
+#ifdef DEBUG_MAIN
+    fprintf(stderr, "add new %s\n\tkernel=%s\n\tinitrd=%s\n\tcmdline=%s\n", label, kernel, initrd, cmdline);
+#endif
     
     if (dev->conf) {
 	boot_config *tmp2 = dev->conf;
@@ -164,6 +180,9 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 	if (cfile[i] == NULL)
 	    return 1;
 	snprintf(buf, 1024, MOUNT_DIR "%s/etc/%s", dev_path, cfile[i]);
+#ifdef DEBUG_MAIN
+	fprintf(stderr, "try to open %s\n", buf);
+#endif
 	f = fopen(buf, "rb");
 	if (f)
 	    break;
@@ -317,3 +336,20 @@ int ps3boot_conf_read(char *dev_path, boot_device *dev)
     
     return 1;
 }
+
+#ifdef DEBUG_MAIN
+int main(int argc, char *argv[])
+{
+    boot_device d;
+    memset(&d, 0, sizeof(d));
+    
+    int ret = yaboot_conf_read(argv[1], &d);
+    
+    fprintf(stderr, "yaboot_conf_read return %d\n", ret);
+    if (!ret) {
+	fprintf(stderr, "message=%s\ndefault=%s\ntimeout=%d\n", d.message, d.def, d.timeout);
+    }
+    
+    return 0;
+}
+#endif
