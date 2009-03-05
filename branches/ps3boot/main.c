@@ -11,6 +11,8 @@
 #include "server.h"
 #include "settings.h"
 
+static int f_quit = 0;
+
 db_font *font = NULL;
 
 static db_image *img_desk = NULL;
@@ -19,6 +21,11 @@ static db_image *img_wallp = NULL;
 void db_ui_create_display(void);
 void db_ui_close_display(void);
 int db_ui_readkey(void);
+
+void ps3boot_quit(void)
+{
+    f_quit = 1;
+}
 
 db_image *load_wallpaper(db_image *desk)
 {
@@ -112,7 +119,6 @@ int main(int argc, char *argv[])
     
     db_ui_update_screen();
     
-    int f_quit = 0;
     int f_edit = 0;
     int tmp_x = 0;
     int tmp_y = 0;

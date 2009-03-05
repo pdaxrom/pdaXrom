@@ -57,10 +57,21 @@ static char *get_str_val(char *ptr)
 
 int kboot_conf_read(char *dev_path, boot_device *dev)
 {
+    const char *cfile[] = { "kboot.conf", "KBOOT.CONF", "kboot.cnf", "KBOOT.CNF", "kboot.cfg", "KBOOT.CFG", NULL };
     char buf[1024];
-    snprintf(buf, 1024, MOUNT_DIR "%s/etc/kboot.conf", dev_path);
-    
-    FILE *f = fopen(buf, "rb");
+    FILE *f;
+    int i = 0;
+
+    while(1) {
+	if (cfile[i] == NULL)
+	    return 1;
+	snprintf(buf, 1024, MOUNT_DIR "%s/etc/%s", dev_path, cfile[i]);
+	f = fopen(buf, "rb");
+	if (f)
+	    break;
+	i++;
+    }
+
     if (f) {
 	while (fgets(buf, 1024, f)) {
 	    char *ptr = buf;
@@ -144,10 +155,21 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 
 int yaboot_conf_read(char *dev_path, boot_device *dev)
 {
+    const char *cfile[] = { "yaboot.conf", "YABOOT.CONF", "yaboot.cnf", "YABOOT.CNF", "yaboot.cfg", "YABOOT.CFG", NULL };
     char buf[1024];
-    snprintf(buf, 1024, MOUNT_DIR "%s/etc/yaboot.conf", dev_path);
-    
-    FILE *f = fopen(buf, "rb");
+    FILE *f;
+    int i = 0;
+
+    while(1) {
+	if (cfile[i] == NULL)
+	    return 1;
+	snprintf(buf, 1024, MOUNT_DIR "%s/etc/%s", dev_path, cfile[i]);
+	f = fopen(buf, "rb");
+	if (f)
+	    break;
+	i++;
+    }
+
     if (f) {
 	while (fgets(buf, 1024, f)) {
 	    char *ptr = buf;
@@ -174,6 +196,7 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		char *initrd = NULL;
 		char *cmdline = (char *) alloca(1024);
 		char *kernel = get_str_val(ptr);
+		cmdline[0] = 0;
 		while (fgets(buf, 1024, f)) {
 		    char *ptr = buf;
 		    if (*ptr > ' ')
@@ -218,6 +241,74 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		}
 		if (label)
 		    bootdevice_add_config(dev, label, kernel, initrd, strdup(cmdline));
+	    }
+	}
+	fclose(f);
+	return 0;
+    }
+    
+    return 1;
+}
+
+int ps3boot_conf_read(char *dev_path, boot_device *dev)
+{
+    const char *cfile[] = { "ps3boot.conf", "PS3BOOT.CONF", "ps3boot.cfg", "PS3BOOT.CFG", NULL };
+    char buf[1024];
+    FILE *f;
+    int i = 0;
+
+    while(1) {
+	if (cfile[i] == NULL)
+	    return 1;
+	snprintf(buf, 1024, MOUNT_DIR "%s/%s", dev_path, cfile[i]);
+	f = fopen(buf, "rb");
+	if (f)
+	    break;
+	i++;
+    }
+    
+    if (f) {
+	while (fgets(buf, 1024, f)) {
+	    char *ptr = buf;
+	    if ((*ptr == '#') ||
+		(*ptr == ';'))
+		continue;
+	    if (!strncmp(ptr, "timeout", 7))
+		dev->timeout = get_int_val(ptr);
+	    else if (!strncmp(ptr, "default", 7))
+		dev->def = get_str_val(ptr);
+	    else if (!strncmp(ptr, "message", 7)) {
+		char *msg = get_str_val(ptr);
+		char *ptr = msg;
+		while(*ptr) {
+		    if ((ptr[0] == '\\') && (ptr[1] == 'n')) {
+			strcpy(ptr, ptr + 1);
+			*ptr = 0xa;
+		    }
+		    ptr++;
+		}
+		dev->message = msg;
+	    } else if (!strncmp(ptr, "label", 5)) {
+		char *cmdline = (char *) alloca(1024);
+		char *label = get_str_val(ptr);
+		cmdline[0] = 0;
+		while (fgets(buf, 1024, f)) {
+		    char *ptr = buf;
+		    if (*ptr > ' ')
+			break;
+		    while ((*ptr != 0) && (*ptr <= ' '))
+			ptr++;
+		    if (!strlen(ptr))
+			break;
+		    if (!strncmp(ptr, "exec", 4)) {
+			char *tmp = get_str_val(ptr);
+			strcat(cmdline, tmp);
+			strcat(cmdline, " ");
+			free(tmp);
+		    }
+		}
+		if (label)
+		    bootdevice_add_config(dev, label, NULL, NULL, strdup(cmdline));
 	    }
 	}
 	fclose(f);

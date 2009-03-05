@@ -86,8 +86,10 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
     if (strcmp(dev_path, "gameos")) {
 	if (kboot_conf_read(dev_path, dev)) {
 	    if (yaboot_conf_read(dev_path, dev)) {
-		free(dev);
-		return NULL;
+		if (ps3boot_conf_read(dev_path, dev)) {
+		    free(dev);
+		    return NULL;
+		}
 	    }
 	}
     }
@@ -316,6 +318,8 @@ void bootdevice_config_next(void)
 	selected_config = count;
 }
 
+extern void ps3boot_quit(void);
+
 void bootdevice_boot(void)
 {
     int c = 0;
@@ -345,6 +349,18 @@ void bootdevice_boot(void)
 	    while (conf) {
 		if (c == selected_config) {
 		    char buf[1024];
+		    if (!conf->initrd && !conf->kernel) {
+			FILE *f = fopen("/tmp/ps3boot.inc", "w");
+			if (f) {
+			    fprintf(f, "mount %s /mnt\n", dev->device);
+			    fprintf(f, "cd /mnt\n");
+			    fprintf(f, "/mnt/%s\n", conf->cmdline);
+			    fprintf(f, "cd /tmp; umount /mnt || umount -lf /mnt\n");
+			    fclose(f);
+			}
+			ps3boot_quit();
+			return;
+		    }
 		    snprintf(buf, 1024, KEXEC_BIN " -f ");
 		    if (conf->initrd) {
 			strcat(buf, "--initrd=");
