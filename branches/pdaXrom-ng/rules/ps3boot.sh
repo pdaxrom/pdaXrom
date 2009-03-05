@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-PS3BOOT=ps3boot-0.1.tar.bz2
+PS3BOOT_VERSION=0.1.1
+PS3BOOT=ps3boot-${PS3BOOT_VERSION}.tar.bz2
 PS3BOOT_MIRROR=http://wiki.pdaxrom.org/downloads/PS3/bootloader/src
-PS3BOOT_DIR=$BUILD_DIR/ps3boot-0.1
+PS3BOOT_DIR=$BUILD_DIR/ps3boot-${PS3BOOT_VERSION}
 PS3BOOT_ENV="$CROSS_ENV_AC"
 
 build_ps3boot() {
-    test -e "$STATE_DIR/ps3boot.installed" && return
+    test -e "$STATE_DIR/ps3boot-${PS3BOOT_VERSION}.installed" && return
     banner "Build ps3boot"
     download $PS3BOOT_MIRROR $PS3BOOT
     extract $PS3BOOT
@@ -40,7 +41,7 @@ build_ps3boot() {
     install_rc_start ps3boot 50
 
     popd
-    touch "$STATE_DIR/ps3boot.installed"
+    touch "$STATE_DIR/ps3boot-${PS3BOOT_VERSION}.installed"
 }
 
 build_ps3boot
