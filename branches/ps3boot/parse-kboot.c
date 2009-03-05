@@ -217,7 +217,7 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 			initrd = get_str_val(ptr);
 		}
 		if (label)
-		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
+		    bootdevice_add_config(dev, label, kernel, initrd, strdup(cmdline));
 	    }
 	}
 	fclose(f);
