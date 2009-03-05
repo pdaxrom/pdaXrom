@@ -2,12 +2,23 @@
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-killall ps3boot-udev 2>/dev/null >/dev/null
+while true ; do
+    killall ps3boot-udev 2>/dev/null >/dev/null
 
-/usr/sbin/ps3boot
+    /usr/sbin/ps3boot
 
-killall ps3boot-udev 2>/dev/null >/dev/null
+    killall ps3boot-udev 2>/dev/null >/dev/null
 
-mount | grep '/media/dev' | awk '{ print $3 }' | while read f; do
-    umount $f && rm -rf $f
+    mount | grep '/media/dev' | awk '{ print $3 }' | while read f; do
+	umount $f && rm -rf $f
+    done
+
+    if [ -e /tmp/ps3boot.inc ]; then
+	reset
+	. /tmp/ps3boot.inc
+	rm -f /tmp/ps3boot.inc
+    else
+	break
+    fi
 done
+
