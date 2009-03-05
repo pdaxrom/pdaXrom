@@ -36,19 +36,23 @@ static int get_int_val(char *ptr)
 
 static char *get_str_val(char *ptr)
 {
-    char *buf = alloca(strlen(ptr));
-    char *val = NULL;
-    ptr = strchr(ptr, '=');
-    if (!ptr)
+    char *val = strchr(ptr, '=');
+    if (!val)
 	return NULL;
-    ptr++;
-    sscanf(ptr, "%s", buf);
-    int len = strlen(buf);
-    if (len) {
-	val = (char *) malloc(strlen(buf) + 1);
-	strcpy(val, buf);
-    }
-    return val;
+    val++;
+    
+    while ((*val != 0) && ((*val <= ' ') || (*val == '"') || (*val == '\'')))
+	val++;
+    
+    ptr = val + strlen(val) - 1;
+
+    if ((ptr >= val) && ((*ptr <= ' ') || (*ptr == '"') || (*ptr == '\'')))
+	*ptr-- = 0;
+
+    if (!strlen(val))
+	return NULL;
+
+    return strdup(val);
 }
 
 int kboot_conf_read(char *dev_path, boot_device *dev)
@@ -129,6 +133,82 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 		    cmdline = strdup(cmdline_buf);
 		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
 		}
+	    }
+	}
+	fclose(f);
+	return 0;
+    }
+    
+    return 1;
+}
+
+int yaboot_conf_read(char *dev_path, boot_device *dev)
+{
+    char buf[1024];
+    snprintf(buf, 1024, MOUNT_DIR "%s/etc/yaboot.conf", dev_path);
+    
+    FILE *f = fopen(buf, "rb");
+    if (f) {
+	while (fgets(buf, 1024, f)) {
+	    char *ptr = buf;
+	    if ((*ptr == '#') ||
+		(*ptr == ';'))
+		continue;
+	    if (!strncmp(ptr, "timeout", 7))
+		dev->timeout = get_int_val(ptr);
+	    else if (!strncmp(ptr, "default", 7))
+		dev->def = get_str_val(ptr);
+	    else if (!strncmp(ptr, "init-message", 12))
+		dev->message = get_str_val(ptr);
+	    else if (!strncmp(ptr, "image", 5)) {
+		char *label = NULL;
+		char *initrd = NULL;
+		char *cmdline = alloca(1024);
+		char *kernel = get_str_val(ptr);
+		while (fgets(buf, 1024, f)) {
+		    char *ptr = buf;
+		    if (*ptr > ' ')
+			break;
+		    while ((*ptr != 0) && (*ptr <= ' '))
+			ptr++;
+		    if (!strlen(buf))
+			break;
+		    if (!strncmp(ptr, "label", 5))
+			label = get_str_val(ptr);
+		    else if (!strncmp(ptr, "append", 6)) {
+			char *tmp = get_str_val(ptr);
+			strcat(cmdline, tmp);
+			strcat(cmdline, " ");
+			free(tmp);
+		    } else if (!strncmp(ptr, "root", 4)) {
+			char *tmp = get_str_val(ptr);
+			strcat(cmdline, "root=");
+			strcat(cmdline, tmp);
+			strcat(cmdline, " ");
+			free(tmp);
+		    } else if (!strncmp(ptr, "ramdisk", 7)) {
+			char *tmp = get_str_val(ptr);
+			strcat(cmdline, "ramdisk=");
+			strcat(cmdline, tmp);
+			strcat(cmdline, " ");
+			free(tmp);
+		    } else if (!strncmp(ptr, "initrd-size", 11)) {
+			char *tmp = get_str_val(ptr);
+			strcat(cmdline, "ramdisk_size=");
+			strcat(cmdline, tmp);
+			strcat(cmdline, " ");
+			free(tmp);
+		    } else if (!strncmp(ptr, "read-only", 9))
+			strcat(cmdline, "ro ");
+		    else if (!strncmp(ptr, "read-write", 10))
+			strcat(cmdline, "rw ");
+		    else if (!strncmp(ptr, "novideo", 7))
+			strcat(cmdline, "video=ofonly ");
+		    else if (!strncmp(ptr, "initrd", 6))
+			initrd = get_str_val(ptr);
+		}
+		if (label)
+		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
 	    }
 	}
 	fclose(f);

@@ -85,8 +85,10 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
 
     if (strcmp(dev_path, "gameos")) {
 	if (kboot_conf_read(dev_path, dev)) {
-	    free(dev);
-	    return NULL;
+	    if (yaboot_conf_read(dev_path, dev)) {
+		free(dev);
+		return NULL;
+	    }
 	}
     }
     

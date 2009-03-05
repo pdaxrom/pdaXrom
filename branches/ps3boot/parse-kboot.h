@@ -4,5 +4,6 @@
 #include "devices.h"
 
 int kboot_conf_read(char *dev_path, boot_device *dev);
+int yaboot_conf_read(char *dev_path, boot_device *dev);
 
 #endif
