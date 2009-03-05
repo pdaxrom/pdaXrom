@@ -3,7 +3,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 
-#include "parse-kboot.h"
+#include "parse-config.h"
 #include "devices.h"
 
 static void bootdevice_add_config(boot_device *dev, char *label, char *kernel, char *initrd, char *cmdline)

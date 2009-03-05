@@ -16,7 +16,7 @@ endif
 
 all: $(TARGET) $(HELPER)
 
-OBJS = jpegdec.o pngdec.o image.o font.o message.o util.o devices.o main.o parse-kboot.o settings.o $(UI_OBJ) server.o
+OBJS = jpegdec.o pngdec.o image.o font.o message.o util.o devices.o main.o parse-config.o settings.o $(UI_OBJ) server.o
 HELPER_OBJS = ps3boot-udev.o
 
 OPT_CFLAGS:=-O2

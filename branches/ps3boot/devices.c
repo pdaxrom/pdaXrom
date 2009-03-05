@@ -9,7 +9,7 @@
 
 #include "devices.h"
 #include "message.h"
-#include "parse-kboot.h"
+#include "parse-config.h"
 
 #define ICON_WIDTH	64
 #define ICON_HEIGHT	64
