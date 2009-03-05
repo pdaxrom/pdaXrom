@@ -44,9 +44,9 @@ static char *get_str_val(char *ptr)
     while ((*val != 0) && ((*val <= ' ') || (*val == '"') || (*val == '\'')))
 	val++;
     
-    ptr = val + strlen(val) - 1;
+    ptr = val + strlen(val);
 
-    if ((ptr >= val) && ((*ptr <= ' ') || (*ptr == '"') || (*ptr == '\'')))
+    while ((ptr >= val) && ((*ptr <= ' ') || (*ptr == '"') || (*ptr == '\'')))
 	*ptr-- = 0;
 
     if (!strlen(val))
@@ -158,12 +158,21 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		dev->timeout = get_int_val(ptr);
 	    else if (!strncmp(ptr, "default", 7))
 		dev->def = get_str_val(ptr);
-	    else if (!strncmp(ptr, "init-message", 12))
-		dev->message = get_str_val(ptr);
-	    else if (!strncmp(ptr, "image", 5)) {
+	    else if (!strncmp(ptr, "init-message", 12)) {
+		char *msg = get_str_val(ptr);
+		char *ptr = msg;
+		while(*ptr) {
+		    if ((ptr[0] == '\\') && (ptr[1] == 'n')) {
+			strcpy(ptr, ptr + 1);
+			*ptr = 0xa;
+		    }
+		    ptr++;
+		}
+		dev->message = msg;
+	    } else if (!strncmp(ptr, "image", 5)) {
 		char *label = NULL;
 		char *initrd = NULL;
-		char *cmdline = alloca(1024);
+		char *cmdline = (char *) alloca(1024);
 		char *kernel = get_str_val(ptr);
 		while (fgets(buf, 1024, f)) {
 		    char *ptr = buf;
@@ -171,7 +180,7 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 			break;
 		    while ((*ptr != 0) && (*ptr <= ' '))
 			ptr++;
-		    if (!strlen(buf))
+		    if (!strlen(ptr))
 			break;
 		    if (!strncmp(ptr, "label", 5))
 			label = get_str_val(ptr);
