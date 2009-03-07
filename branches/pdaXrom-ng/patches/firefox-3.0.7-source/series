@@ -1,0 +1,6 @@
+Linux.mk.diff
+configure.diff
+configure.in.diff
+Makefile.in.diff
+eabi-fix.patch
+mips/xulrunner-mips-o32.patch
