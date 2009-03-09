@@ -31,7 +31,7 @@ PROMPT 1
 	CDNAME="pdaXrom-ng-x86"
     fi
     
-    genisoimage -r -V "$X86CD_TITLE" -cache-inodes -J -l -o ${IMAGES_DIR}/${CDNAME}.iso \
+    genisoimage -r -V "$X86CD_TITLE" -cache-inodes -J -l -o ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso \
 	-b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table . \
 	|| error "create x86 cd image"
 
