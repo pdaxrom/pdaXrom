@@ -17,7 +17,13 @@ SQUASHFS_LZMA=no
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
 . ./sets/packages-xorg-xserver.inc
-. ./sets/packages-xorg-drivers.inc
+
+. $RULES_DIR/xf86-input-evdev.sh
+. $RULES_DIR/xf86-input-joystick.sh
+. $RULES_DIR/xf86-input-keyboard.sh
+. $RULES_DIR/xf86-input-mouse.sh
+. $RULES_DIR/xf86-video-fbdev.sh
+
 . ./sets/packages-xorg-apps.inc
 . ./sets/packages-xorg-fonts.inc
 
@@ -39,6 +45,6 @@ SQUASHFS_LZMA=no
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
 
-. ./sets/packages-host-squashfs.inc
+. ./sets/packages-host-squashfs4.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_ps3cd.sh
