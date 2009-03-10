@@ -5,12 +5,12 @@
 
 NAME=ps3vswap
 
-SWAPDEV=/dev/mtdblock0
+SWAPDEV=/dev/ps3vram
 
 grep "mtdblock" /proc/devices 2>/dev/null >/dev/null || exit 0
 grep "noswap" /proc/cmdline 2>/dev/null >/dev/null && exit 0
 
-[ -e $SWAPDEV ] || mknod $SWAPDEV b 31 0
+#[ -e $SWAPDEV ] || mknod $SWAPDEV b 31 0
 
 case "$1" in
   start)

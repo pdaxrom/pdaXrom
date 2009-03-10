@@ -30,4 +30,5 @@ KERNEL_CONFIG=malta_kernel_2.6.28
 
 . ./sets/packages-devel.inc
 
+. ./sets/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh

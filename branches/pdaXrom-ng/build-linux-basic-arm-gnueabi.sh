@@ -9,4 +9,5 @@ KERNEL_CONFIG=versatile-kernel-2.6.28
 
 . ./sets/packages-basic.inc
 
+. ./sets/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
