@@ -22,8 +22,11 @@ create_squashfs() {
     echo "c 1 3" > $ROOTFS_DIR/dev/.squashfs_dev_node.null
 
     rm -f $IMAGES_DIR/rootfs.img
-    mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -lzmadic 1M || error
-    #mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -nolzma || error
+    if [ ! "SQUASHFS_LZMA" = "no" ]; then
+	mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -lzmadic 1M || error
+    else
+	mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -nolzma || error
+    fi
     chmod 644 $IMAGES_DIR/rootfs.img
 }
 

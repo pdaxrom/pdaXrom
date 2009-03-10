@@ -3,7 +3,14 @@ if [ "x$KERNEL_VERSION" = "x" ]; then
 fi
 
 KERNEL=linux-${KERNEL_VERSION}.tar.bz2
-KERNEL_MIRROR=http://kernel.org/pub/linux/kernel/v2.6
+case ${KERNEL_VERSION} in
+*-rc*)
+    KERNEL_MIRROR=http://kernel.org/pub/linux/kernel/v2.6/testing
+    ;;
+*)
+    KERNEL_MIRROR=http://kernel.org/pub/linux/kernel/v2.6
+    ;;
+esac
 KERNEL_DIR=$BUILD_DIR/linux-${KERNEL_VERSION}
 
 #KERNEL_CONFIG=ps3_kernel_config

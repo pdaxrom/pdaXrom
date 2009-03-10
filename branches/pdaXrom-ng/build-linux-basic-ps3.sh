@@ -4,6 +4,7 @@ TARGET_ARCH="powerpc-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
+KERNEL_VERSION="2.6.29-rc7"
 KERNEL_CONFIG=ps3_kernel_config
 
 . ./sets/packages-basic.inc

@@ -1,0 +1,27 @@
+In the cell spe follow mode, 
+the monitored task does not notice ZOMBIE state. 
+So we unload and free the pfm context at __pfm_close().
+
+Signed-off-by: Takashi Yamamoto <TakashiA.Yamamoto@jp.sony.com>
+---
+ perfmon/perfmon_file.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/perfmon/perfmon_file.c
++++ b/perfmon/perfmon_file.c
+@@ -560,6 +560,15 @@ int __pfm_close(struct pfm_context *ctx,
+ 		 * ZOMBIE state as part of pfm_unload_context()
+ 		 */
+ 		can_unload = can_free = 0;
++
++		/*
++		 * If TIF_PERFMON_CTXSW is not set to the task,
++		 * the monitored task does not notice ZOMBIE state
++		 * because pfm_ctxsw() is not called from the task scheduler.
++		 * So the context is unloaded and freed here.
++		 */
++		if (ctx->flags.not_dflt_ctxsw)
++			can_unload = can_free = 1;
+ 	}
+ #endif
+ 	if (can_unload)
