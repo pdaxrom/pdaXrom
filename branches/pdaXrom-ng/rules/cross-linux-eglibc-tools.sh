@@ -105,7 +105,6 @@ install_glibc_headers() {
     mkdir -p $GLIBC_DIR/build0
     cd $GLIBC_DIR/build0
     
-    ac_cv_path_GREP=/bin/grep \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -113,9 +112,9 @@ install_glibc_headers() {
 	--without-gd \
 	--without-cvs \
 	--enable-add-ons \
-	--enable-kernel=2.6.14 || error
+	--enable-kernel=2.6.14 || error "configure build0"
 
-    make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install-bootstrap-headers=yes install-headers || error
+    make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install-bootstrap-headers=yes install-headers || error "install headers"
 
     case $TARGET_ARCH in
     powerpc64-*|ppc64-*)
@@ -138,7 +137,6 @@ build_glibc_stage1() {
     mkdir -p $GLIBC_DIR/build1
     cd $GLIBC_DIR/build1
     
-    ac_cv_path_GREP=/bin/grep \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -164,7 +162,6 @@ build_glibc_stage2() {
     mkdir -p $GLIBC_DIR/build2
     cd $GLIBC_DIR/build2
     
-    ac_cv_path_GREP=/bin/grep \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
