@@ -1,0 +1,86 @@
+#!/bin/sh
+
+/bin/mount -n -t proc none /proc
+/bin/mount -n -t sysfs none /sys
+
+echo "0 0 0 0" >/proc/sys/kernel/printk
+
+MODULES="usbcore.ko ehci-hcd.ko ohci-hcd.ko sg.ko usb-storage.ko fat.ko vfat.ko isofs.ko crc-itu-t.ko udf.ko"
+
+for f in $MODULES; do
+    /sbin/insmod -f /modules/$f
+done
+
+/sbin/lsmod
+
+for i in 5 4 3 2 1 0; do
+    /bin/echo -n "."
+    /bin/sleep 1
+    mknod /dev/loop$i b 7 $i
+done
+
+echo
+
+dmesg
+
+ls /sys/block/
+
+cd /sys/block
+
+create_node() {
+    local MAJOR=${2/:*}
+    local MINOR=${2/*:}
+
+    echo "Create /dev/$1 b $MAJOR $MINOR"
+
+    mknod /dev/$1 b $MAJOR $MINOR
+}
+
+boot_rootfs() {
+    echo "Boooooting!!!"
+    cd /rootfs
+    umount /sys
+    umount /proc
+    exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
+}
+
+check_rootfs() {
+    mount -n /dev/$1 /mnt || return
+    
+    if [ -e /mnt/boot/rootfs.img ]; then
+	echo "rootfs.img found!"
+	mount -n -o loop,ro -t squashfs /mnt/boot/rootfs.img /rootfs && boot_rootfs
+    fi
+    
+    umount /mnt
+}
+
+for d in *; do
+    case $d in
+	ram*|loop*)
+	    continue
+	    ;;
+    esac
+    echo "Device $d"
+    cat $d/dev
+    
+    create_node $d `cat $d/dev`
+    check_rootfs $d
+    
+    cd $d
+    for f in *; do
+	case $f in
+	${d}*)
+	    echo $f
+	    cat $f/dev
+	    create_node $f `cat $f/dev`
+	    check_rootfs $f
+	    ;;
+	esac
+    done
+    cd ..
+done
+
+ls -l /dev/
+
+/bin/sh
