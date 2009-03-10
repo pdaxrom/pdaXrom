@@ -105,6 +105,7 @@ install_glibc_headers() {
     mkdir -p $GLIBC_DIR/build0
     cd $GLIBC_DIR/build0
     
+    ac_cv_path_GREP=/bin/grep \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -137,6 +138,7 @@ build_glibc_stage1() {
     mkdir -p $GLIBC_DIR/build1
     cd $GLIBC_DIR/build1
     
+    ac_cv_path_GREP=/bin/grep \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -162,6 +164,7 @@ build_glibc_stage2() {
     mkdir -p $GLIBC_DIR/build2
     cd $GLIBC_DIR/build2
     
+    ac_cv_path_GREP=/bin/grep \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
