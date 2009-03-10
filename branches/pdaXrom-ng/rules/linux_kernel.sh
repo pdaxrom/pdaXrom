@@ -133,4 +133,8 @@ build_linux_kernel() {
     touch "$STATE_DIR/linux_kernel"
 }
 
+copy_kernel_image() {
+    cp -f `get_kernel_image_path $TARGET_ARCH` $IMAGES_DIR/
+}
+
 build_linux_kernel

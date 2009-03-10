@@ -18,6 +18,8 @@ create_ps3cd() {
     fi
     
     genisoimage -r -V "$PS3CD_TITLE" -cache-inodes -J -l -o ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso . || error "create ps3 cd image"
+    cd ${IMAGES_DIR}
+    md5sum ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso > ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso.md5sum
 
     popd
 }

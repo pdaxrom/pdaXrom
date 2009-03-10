@@ -35,6 +35,9 @@ PROMPT 1
 	-b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table . \
 	|| error "create x86 cd image"
 
+    cd ${IMAGES_DIR}
+    md5sum ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso > ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso.md5sum
+
     popd
 }
 

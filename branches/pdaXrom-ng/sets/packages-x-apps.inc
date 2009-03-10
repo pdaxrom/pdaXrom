@@ -80,3 +80,10 @@
 . $RULES_DIR/gettext.sh
 . $RULES_DIR/neon.sh
 . $RULES_DIR/audacious-plugins.sh
+
+#
+# mplayer
+#
+
+. $RULES_DIR/mplayer.sh
+
