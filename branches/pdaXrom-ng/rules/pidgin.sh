@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-PIDGIN=pidgin-2.5.3.tar.bz2
+PIDGIN_VERSION=2.5.5
+PIDGIN=pidgin-${PIDGIN_VERSION}.tar.bz2
 PIDGIN_MIRROR=http://downloads.sourceforge.net/pidgin
-PIDGIN_DIR=$BUILD_DIR/pidgin-2.5.3
+PIDGIN_DIR=$BUILD_DIR/pidgin-${PIDGIN_VERSION}
 PIDGIN_ENV="$CROSS_ENV_AC"
 
 build_pidgin() {
-    test -e "$STATE_DIR/pidgin.installed" && return
+    test -e "$STATE_DIR/pidgin-${PIDGIN_VERSION}.installed" && return
     banner "Build pidgin"
     download $PIDGIN_MIRROR $PIDGIN
     extract $PIDGIN
@@ -61,7 +62,7 @@ build_pidgin() {
     rm -f fakeroot/usr/lib/purple-2/*.la
     
     $STRIP fakeroot/usr/bin/pidgin || error
-    $STRIP fakeroot/usr/lib/libpurple.so.0.5.3 || error
+    $STRIP fakeroot/usr/lib/libpurple.so.0.5.5 || error
     $STRIP fakeroot/usr/lib/pidgin/*.so || error
     $STRIP fakeroot/usr/lib/purple-2/*.so || error
 
@@ -70,7 +71,7 @@ build_pidgin() {
     cp -R fakeroot/usr $ROOTFS_DIR/ || error
 
     popd
-    touch "$STATE_DIR/pidgin.installed"
+    touch "$STATE_DIR/pidgin-${PIDGIN_VERSION}.installed"
 }
 
 build_pidgin
