@@ -11,7 +11,7 @@
 
 # previous version: 2.3.2
 
-HOST_MPFR_VERSION=2.4.0
+HOST_MPFR_VERSION=2.4.1
 HOST_MPFR=mpfr-${HOST_MPFR_VERSION}.tar.bz2
 HOST_MPFR_MIRROR=http://www.mpfr.org/mpfr-current
 HOST_MPFR_DIR=$BUILD_DIR/mpfr-${HOST_MPFR_VERSION}
