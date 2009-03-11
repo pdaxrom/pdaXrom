@@ -27,6 +27,10 @@ build_tweak_ps3() {
 	rm -f $ROOTFS_DIR/usr/lib/dri/$f
     done
 
+    if [ -d $ROOTFS_DIR/etc/mplayer ]; then
+	echo "vo=x11" > $ROOTFS_DIR/etc/mplayer/mplayer.conf
+    fi
+
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
     install_rc_start xstart 99
     install_rc_stop  xstart 01

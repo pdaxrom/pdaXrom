@@ -29,7 +29,7 @@ build_mplayer() {
 	$MPLAYER_ENV \
 	./configure \
 	    --prefix=/usr \
-	    --confdir=/etc \
+	    --confdir=/etc/mplayer \
 	    --disable-mencoder \
 	    --disable-ossaudio \
 	    --disable-arts \
