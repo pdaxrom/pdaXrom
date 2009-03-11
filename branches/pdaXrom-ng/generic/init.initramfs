@@ -13,9 +13,7 @@ for f in $MODULES; do
     MODULES_REV="$f $MODULES_REV"
 done
 
-/sbin/lsmod
-
-for i in 5 4 3 2 1 0; do
+for i in 7 6 5 4 3 2 1 0; do
     /bin/echo -n "."
     /bin/sleep 1
     mknod /dev/loop$i b 7 $i
@@ -23,17 +21,11 @@ done
 
 echo
 
-dmesg
-
-ls /sys/block/
-
 cd /sys/block
 
 create_node() {
     local MAJOR=${2/:*}
     local MINOR=${2/*:}
-
-    echo "Create /dev/$1 b $MAJOR $MINOR"
 
     mknod /dev/$1 b $MAJOR $MINOR
 }
@@ -47,34 +39,25 @@ remove_modules() {
 boot_rootfs() {
     echo "Boooooting!!!"
     cd /rootfs
-
     remove_modules
-
-    /sbin/pivot_root /rootfs /rootfs/boot/initrd
-
+    #/sbin/pivot_root /rootfs /rootfs/boot/initrd
     umount /sys
-
-    lsmod
-    mount
-
     umount /proc
-
-    sleep 5
-
     exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
 }
 
 check_rootfs() {
-    mount -n /dev/$1 /mnt || return
+    mount -n /dev/$1 /mnt 2>/dev/null || return
     
     if [ -e /mnt/boot/rootfs.img ]; then
-	echo "rootfs.img found!"
 	if cmp -s /uuid /mnt/boot/uuid ; then
-	    echo "copy"
-	    cp /mnt/boot/rootfs.img /boot || echo "fail"
-	    echo "done"
+	    echo "Detected root image on /dev/$1 !"
+	    echo -n "Move root image to ram ... "
+	    cp /mnt/boot/rootfs.img /boot && echo "done!" || echo "error!"
 	    umount /mnt
 	    mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs && boot_rootfs
+	    echo "Can't mount root :("
+	    echo
 	fi
     fi
     
@@ -87,8 +70,6 @@ for d in *; do
 	    continue
 	    ;;
     esac
-    echo "Device $d"
-    cat $d/dev
     
     create_node $d `cat $d/dev`
     check_rootfs $d
@@ -97,8 +78,6 @@ for d in *; do
     for f in *; do
 	case $f in
 	${d}*)
-	    echo $f
-	    cat $f/dev
 	    create_node $f `cat $f/dev`
 	    check_rootfs $f
 	    ;;
@@ -108,5 +87,7 @@ for d in *; do
 done
 
 ls -l /dev/
+
+echo "No bootable rootfs found!"
 
 /bin/sh
