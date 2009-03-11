@@ -18,7 +18,7 @@ log_begin_msg -n "Мounting filesystems..."
 mount -a 2>/dev/null
 log_end_msg $?
 
-if mount | grep /dev/root | grep squashfs >/dev/null ; then
+if mount | grep ' / ' | grep -q 'squashfs' ; then
     for d in /etc /var /home /media ; do
 	log_begin_msg -n "Moving $d to ram"
 	tar c $d 2>/dev/null | tar x -C /tmp && mount -o bind /tmp$d $d
