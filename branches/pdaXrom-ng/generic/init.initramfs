@@ -69,12 +69,13 @@ check_rootfs() {
     
     if [ -e /mnt/boot/rootfs.img ]; then
 	echo "rootfs.img found!"
-	mkdir /boot
-	echo "copy"
-	cp /mnt/boot/rootfs.img /boot || echo "fail"
-	echo "done"
-	umount /mnt
-	mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs && boot_rootfs
+	if cmp -s /uuid /mnt/boot/uuid ; then
+	    echo "copy"
+	    cp /mnt/boot/rootfs.img /boot || echo "fail"
+	    echo "done"
+	    umount /mnt
+	    mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs && boot_rootfs
+	fi
     fi
     
     umount /mnt

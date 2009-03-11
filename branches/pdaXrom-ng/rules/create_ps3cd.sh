@@ -4,7 +4,14 @@ create_ps3cd() {
     local T=`echo /tmp/ps3cd.$$`
     mkdir -p $T/boot
     mkdir -p $T/etc
-    cp -f $GENERICFS_DIR/kboot/kboot.conf $T/etc/
+
+    if [ -e $IMAGES_DIR/uuid ]; then
+	cp -f $GENERICFS_DIR/kboot/kboot.conf.initramfs $T/etc/kboot.conf
+	cp -f $IMAGES_DIR/initrd.img $T/boot/
+	cp -f $IMAGES_DIR/uuid       $T/boot/
+    else
+	cp -f $GENERICFS_DIR/kboot/kboot.conf $T/etc/
+    fi
     cp -f $GENERICFS_DIR/kboot/kboot.msg  $T/etc/
     cp -f $IMAGES_DIR/rootfs.img $T/boot/
     cp -f $IMAGES_DIR/zImage     $T/boot/

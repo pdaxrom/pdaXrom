@@ -4,7 +4,7 @@ create_initramfs() {
     test -d $INITRAMFS_DIR || mkdir -p $INITRAMFS_DIR
     rm -rf $INITRAMFS_DIR/*
     local d=
-    for d in bin dev lib mnt modules sys proc rootfs sbin; do
+    for d in bin boot dev lib mnt modules sys proc rootfs sbin; do
 	mkdir -p $INITRAMFS_DIR/$d
     done
 
@@ -25,7 +25,7 @@ create_initramfs() {
 
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     
-    for f in [ test mknod tr cut; do
+    for f in [ test mknod tr cut cmp; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
     done
 
@@ -34,6 +34,9 @@ create_initramfs() {
     for f in $MODULES; do
 	find $ROOTFS_DIR/lib/modules -name $f -exec cp -R \{\} $INITRAMFS_DIR/modules \;
     done
+
+    uuidgen > $INITRAMFS_DIR/uuid
+    cp -f $INITRAMFS_DIR/uuid $IMAGES_DIR/uuid
 
     cd $INITRAMFS_DIR
     
