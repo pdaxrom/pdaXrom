@@ -86,4 +86,4 @@
 #
 
 . $RULES_DIR/mplayer.sh
-
+. $RULES_DIR/clearplayer.sh
