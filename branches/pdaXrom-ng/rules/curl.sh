@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-CURL=curl-7.19.2.tar.bz2
+CURL_VERSION=7.19.4
+CURL=curl-${CURL_VERSION}.tar.bz2
 CURL_MIRROR=http://curl.haxx.se/download
-CURL_DIR=$BUILD_DIR/curl-7.19.2
+CURL_DIR=$BUILD_DIR/curl-${CURL_VERSION}
 CURL_ENV="$CROSS_ENV_AC"
 
 build_curl() {
-    test -e "$STATE_DIR/curl.installed" && return
+    test -e "$STATE_DIR/curl-${CURL_VERSION}.installed" && return
     banner "Build curl"
     download $CURL_MIRROR $CURL
     extract $CURL
@@ -51,7 +52,7 @@ build_curl() {
     $STRIP $ROOTFS_DIR/usr/lib/libcurl.so.4.1.1
 
     popd
-    touch "$STATE_DIR/curl.installed"
+    touch "$STATE_DIR/curl-${CURL_VERSION}.installed"
 }
 
 build_curl
