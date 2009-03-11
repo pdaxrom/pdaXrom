@@ -70,6 +70,12 @@
 . $RULES_DIR/xchat.sh
 
 #
+# transmission
+#
+. $RULES_DIR/curl.sh
+. $RULES_DIR/transmission.sh
+
+#
 # audacious
 #
 . $RULES_DIR/libmowgli.sh
