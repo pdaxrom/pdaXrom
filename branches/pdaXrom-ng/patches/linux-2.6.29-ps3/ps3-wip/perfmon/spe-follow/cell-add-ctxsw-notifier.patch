@@ -1,0 +1,25 @@
+This patch add an arch private data pointer to pfm_arch_context structure.
+It is used to keep the spu notifier and the spu pointer. 
+
+The spu notifier is used to know the Cell SPE context switch.
+
+Signed-off-by: Takashi Yamamoto <TakashiA.Yamamoto@jp.sony.com>
+---
+ include/asm-powerpc/perfmon_kern.h |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/include/asm-powerpc/perfmon_kern.h
++++ b/include/asm-powerpc/perfmon_kern.h
+@@ -439,6 +439,12 @@ struct pfm_arch_context {
+ 	u64 powergs_pmc5, powergs_pmc6;
+ 	u64 delta_tb, delta_tb_start;
+ 	u64 delta_purr, delta_purr_start;
++
++	/*
++	 * for cell-spe-follow mode
++	 */
++	struct notifier_block   ctxsw_notifier;
++	void                    *arg;
+ };
+ 
+ #define PFM_ARCH_CTX_SIZE sizeof(struct pfm_arch_context)
