@@ -2,6 +2,18 @@
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
+SIXAXISD_PID=
+
+if [ -e /usr/bin/hciconfig ]; then
+    /usr/bin/hciconfig hci0 up
+    /usr/bin/hciconfig hci0 lm master
+    /usr/bin/hciconfig hci0 piscan
+    
+    /usr/bin/sixaxisd &
+    
+    SIXAXISD_PID=$!
+fi
+
 while true ; do
     killall ps3boot-udev 2>/dev/null >/dev/null
 
@@ -22,3 +34,6 @@ while true ; do
     fi
 done
 
+if [ ! "$SIXAXISD_PID" = "" ]; then
+    kill -9 $SIXAXISD_PID
+fi

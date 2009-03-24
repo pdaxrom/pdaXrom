@@ -327,4 +327,6 @@ int db_ui_check_events(db_ui_event *event);
 
 void db_ui_close(void);
 
+int db_ui_timer(void);
+
 #endif

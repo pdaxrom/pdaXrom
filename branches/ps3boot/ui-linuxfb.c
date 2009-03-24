@@ -431,6 +431,9 @@ static int keyboard_read(unsigned int *scancode, unsigned int *keycode)
 static int joystick_on(void)
 {
     char *joystickdevice;
+
+    if (js_fd >= 0)
+	return 0;
     
     if ((joystickdevice = getenv( "DANCEBOARD_JOYSTICKDEVICE" )) == NULL)
 	joystickdevice = "/dev/input/js0";
@@ -438,7 +441,7 @@ static int joystick_on(void)
     js_fd = open(joystickdevice, O_RDONLY | O_NONBLOCK);
 
     if (js_fd < 0) {
-	perror("open");
+	//perror("open");
 	return 1;
     }
 
@@ -632,6 +635,13 @@ int db_ui_readkey(void)
     if (keyboard_read(&s, &k)) {
 	return k;
     }
+    
+    return 0;
+}
+
+int db_ui_timer(void)
+{
+    joystick_on();
     
     return 0;
 }

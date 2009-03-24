@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/time.h>
 
 #include "ui.h"
 #include "image.h"
@@ -25,6 +27,11 @@ int db_ui_readkey(void);
 void ps3boot_quit(void)
 {
     f_quit = 1;
+}
+
+static void timer_handler(int signum)
+{
+    db_ui_timer();
 }
 
 db_image *load_wallpaper(db_image *desk)
@@ -81,10 +88,25 @@ static void set_screen_mode(int mode)
 
 int main(int argc, char *argv[])
 {
+    struct sigaction sa;
+    struct itimerval timer;
+
     db_ui_create();
     db_database_init();
 
     atexit(db_ui_close);
+
+    memset (&sa, 0, sizeof (sa));
+
+    sa.sa_handler = &timer_handler;
+    sigaction (SIGVTALRM, &sa, NULL);
+
+    timer.it_value.tv_sec = 0;
+    timer.it_value.tv_usec = 250000;
+    timer.it_interval.tv_sec = 0;
+    timer.it_interval.tv_usec = 250000;
+
+    setitimer (ITIMER_VIRTUAL, &timer, NULL);
     
     font = db_font_open(DATADIR "/fonts/Vera.ttf", 12, 0);
     if (!font) {
