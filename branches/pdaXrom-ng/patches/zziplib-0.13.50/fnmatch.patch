@@ -1,0 +1,10 @@
+--- s/zzip/__fnmatch.h-	2009-03-25 19:10:29.000000000 +0600
++++ s/zzip/__fnmatch.h	2009-03-25 19:10:37.000000000 +0600
+@@ -4,6 +4,7 @@
+ 
+ #include <zzip/conf.h>
+ #include <stdio.h>
++#include <string.h>
+ 
+ #ifdef ZZIP_HAVE_FNMATCH_H
+ #include <fnmatch.h>
