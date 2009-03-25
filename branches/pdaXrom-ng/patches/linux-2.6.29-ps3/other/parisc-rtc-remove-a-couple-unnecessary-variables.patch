@@ -1,0 +1,45 @@
+From 8b08998b1f79c2b4b24b337a165045a37442f915 Mon Sep 17 00:00:00 2001
+From: dann frazier <dannf@hp.com>
+Date: Thu, 15 Jan 2009 16:46:55 -0700
+Subject: [PATCH] parisc: rtc: remove a couple unnecessary variables
+
+Signed-off-by: dann frazier <dannf@hp.com>
+Acked-by: Alessandro Zummo <a.zummo@towertech.it>
+Signed-off-by: Kyle McMartin <kyle@mcmartin.ca>
+---
+ drivers/rtc/rtc-parisc.c |   12 +++---------
+ 1 files changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/rtc/rtc-parisc.c b/drivers/rtc/rtc-parisc.c
+index a2ca07a..c29e918 100644
+--- a/drivers/rtc/rtc-parisc.c
++++ b/drivers/rtc/rtc-parisc.c
+@@ -25,11 +25,7 @@ static int parisc_get_time(struct device *dev, struct rtc_time *tm)
+ 
+ static int parisc_set_time(struct device *dev, struct rtc_time *tm)
+ {
+-	int ret;
+-
+-	ret = set_rtc_time(tm);
+-
+-	if (ret < 0)
++	if (set_rtc_time(tm) < 0)
+ 		return -EOPNOTSUPP;
+ 
+ 	return 0;
+@@ -46,10 +42,8 @@ static int __init parisc_rtc_probe(struct platform_device *dev)
+ 
+ 	p = rtc_device_register("rtc-parisc", &dev->dev, &parisc_rtc_ops,
+ 				THIS_MODULE);
+-	if (IS_ERR(p)) {
+-		int err = PTR_ERR(p);
+-		return err;
+-	}
++	if (IS_ERR(p))
++		return PTR_ERR(p);
+ 
+ 	platform_set_drvdata(dev, p);
+ 
+-- 
+1.6.0.4
+
