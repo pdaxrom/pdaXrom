@@ -8,15 +8,15 @@ create_x86cd() {
     cp -f $IMAGES_DIR/bzImage    $T/boot/
     cp -f $HOST_BIN_DIR/share/syslinux/isolinux.bin $T/isolinux/
     printf "DEFAULT /boot/bzImage
-APPEND  initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=84000 vga=0x314 quiet
+APPEND  initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=96000 vga=0x314 quiet
 LABEL live
   menu label ^Try pdaXrom in vesa mode
   kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=84000 vga=0x314 quiet
+  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=96000 vga=0x314 quiet
 LABEL safe
   menu label ^Try pdaXrom in text mode
   kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=84000
+  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=96000
 DISPLAY isolinux.txt
 TIMEOUT 50
 PROMPT 1
