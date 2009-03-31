@@ -9,6 +9,9 @@ KERNEL_CONFIG=i686-kernel-2.6.29
 SQUASHFS_LZMA=no
 
 . ./sets/packages-basic.inc
+
+. ./sets/packages-acpi.inc
+
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc
 

@@ -6,7 +6,11 @@ auto lo
 iface lo inet loopback
 
 auto eth0
+auto eth1
+auto ath0
+auto wlan0
 
 iface eth0 inet dhcp
+iface eth1 inet dhcp
 iface ath0 inet dhcp
 iface wlan0 inet dhcp
