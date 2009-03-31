@@ -43,6 +43,8 @@ build_pm_utils() {
     cp -R fakeroot/etc $ROOTFS_DIR/ || error
     cp -R fakeroot/usr $ROOTFS_DIR/ || error
 
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/pm/sleep.d/50xorg.sh $ROOTFS_DIR/etc/pm/sleep.d/50xorg.sh || error
+
     popd
     touch "$STATE_DIR/pm_utils.installed"
 }
