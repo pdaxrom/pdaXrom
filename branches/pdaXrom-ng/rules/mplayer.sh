@@ -21,6 +21,17 @@ build_mplayer() {
     download $MPLAYER_MIRROR $MPLAYER
     extract $MPLAYER
     apply_patches $MPLAYER_DIR $MPLAYER
+
+    local T_ARCH=
+    case $TARGET_ARCH in
+    arm*)
+	T_ARCH=arm-linux
+	;;
+    *)
+	T_ARCH=$TARGET_ARCH
+	;;
+    esac
+
     pushd $TOP_DIR
     cd $MPLAYER_DIR
     (
@@ -49,7 +60,7 @@ build_mplayer() {
 	    --nm=${CROSS}nm \
 	    --ar=${CROSS}ar \
 	    --ranlib=${CROSS}ranlib \
-	    --target=$TARGET_ARCH \
+	    --target=$T_ARCH \
 	    --enable-gui \
 	    || error
     ) || error "configure"
