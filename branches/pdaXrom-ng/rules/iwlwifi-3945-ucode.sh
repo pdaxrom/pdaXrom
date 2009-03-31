@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-IWLWIFI_3945_UCODE=iwlwifi-3945-ucode-15.28.1.8.tgz
+IWLWIFI_3945_UCODE=iwlwifi-3945-ucode-15.28.2.8.tgz
 IWLWIFI_3945_UCODE_MIRROR=http://intellinuxwireless.org/iwlwifi/downloads
-IWLWIFI_3945_UCODE_DIR=$BUILD_DIR/iwlwifi-3945-ucode-15.28.1.8
+IWLWIFI_3945_UCODE_DIR=$BUILD_DIR/iwlwifi-3945-ucode-15.28.2.8
 IWLWIFI_3945_UCODE_ENV="$CROSS_ENV_AC"
 
 build_iwlwifi_3945_ucode() {
@@ -23,7 +23,7 @@ build_iwlwifi_3945_ucode() {
     pushd $TOP_DIR
     cd $IWLWIFI_3945_UCODE_DIR
     
-    $INSTALL -D -m 644 iwlwifi-3945-1.ucode $ROOTFS_DIR/lib/firmware/iwlwifi-3945-1.ucode || error
+    $INSTALL -D -m 644 iwlwifi-3945-2.ucode $ROOTFS_DIR/lib/firmware/iwlwifi-3945-2.ucode || error
 
     popd
     touch "$STATE_DIR/iwlwifi_3945_ucode.installed"

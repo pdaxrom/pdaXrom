@@ -54,6 +54,7 @@ build_xorg_server() {
 	    --enable-xorg \
 	    --with-fontdir=/usr/share/fonts \
 	    --without-dtrace \
+	    --with-xkb-output=/var/lib/xkb/compiled \
 	    || error
 #	    --disable-glx
 #	    --disable-dri
@@ -72,7 +73,7 @@ build_xorg_server() {
 	$STRIP $ROOTFS_DIR/$f
     done
 
-    mkdir -p $ROOTFS_DIR/usr/share/X11/xkb/compiled || error
+    mkdir -p $ROOTFS_DIR/var/lib/xkb/compiled || error
 
     $INSTALL -D -m 755 ./usr/bin/Xorg $ROOTFS_DIR/usr/bin/Xorg || error
     ln -sf Xorg $ROOTFS_DIR/usr/bin/X

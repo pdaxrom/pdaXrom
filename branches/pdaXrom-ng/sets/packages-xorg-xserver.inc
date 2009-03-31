@@ -14,6 +14,8 @@
 . $RULES_DIR/libpciaccess.sh
 . $RULES_DIR/xorg-server.sh
 
+. $RULES_DIR/xkeyboard-config.sh
+
 #
 # Xorg autoconfiguring at startup
 #

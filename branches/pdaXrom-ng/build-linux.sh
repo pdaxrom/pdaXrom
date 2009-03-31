@@ -35,6 +35,8 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-devel.inc
 
+. $RULES_DIR/flashplayer-adobe-x86.sh
+
 . $RULES_DIR/tweak-i686.sh
 
 . ./sets/packages-host-squashfs4.inc

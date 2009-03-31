@@ -40,6 +40,10 @@ build_xorg_xkbdata() {
     ln -sf xorg.lst $ROOTFS_DIR/usr/share/X11/xkb/rules/base.lst
     ln -sf xorg.xml $ROOTFS_DIR/usr/share/X11/xkb/rules/base.xml
 
+    ln -sf xorg $ROOTFS_DIR/usr/share/X11/xkb/rules/xfree86
+    ln -sf xorg.lst $ROOTFS_DIR/usr/share/X11/xkb/rules/xfree86.lst
+    ln -sf xorg.xml $ROOTFS_DIR/usr/share/X11/xkb/rules/xfree86.xml
+
     popd
     touch "$STATE_DIR/xorg_xkbdata-1.0.1"
 }
