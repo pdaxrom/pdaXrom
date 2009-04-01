@@ -21,6 +21,8 @@ build_lxde_tweaks() {
 
     cp -a $GENERICFS_DIR/themes/gnome $ROOTFS_DIR/usr/share/icons/ || error "install addon lxde icons"
 
+    find $ROOTFS_DIR/usr/share/icons/ -type d -name ".svn" | xargs rm -rf
+
     touch "$STATE_DIR/lxde_tweaks.installed"
 }
 
