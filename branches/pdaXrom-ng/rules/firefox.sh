@@ -23,6 +23,10 @@ build_firefox() {
     apply_patches $FIREFOX_DIR $FIREFOX
     pushd $TOP_DIR
     cd $FIREFOX_DIR
+
+    local HOST_LIBIDL_CFLAGS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --cflags`"
+    local HOST_LIBIDL_LIBS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --libs`"
+    
     (
     eval \
 	$CROSS_CONF_ENV \
@@ -121,10 +125,10 @@ build_firefox() {
     make $MAKEARGS \
 	CROSS_COMPILE=1 \
 	HOST_CXXFLAGS="$HOST_CPPFLAGS" \
-	HOST_CFLAGS="$HOST_CPPFLAGS -DXP_UNIX -DNO_X11 -O `host-libIDL-config-2 --cflags`" \
+	HOST_CFLAGS="$HOST_CPPFLAGS -DXP_UNIX -DNO_X11 -O $HOST_LIBIDL_CFLAGS" \
 	HOST_LDFLAGS="$HOST_LDFLAGS" \
-	HOST_LIBIDL_CFLAGS="`host-libIDL-config-2 --cflags`" \
-	HOST_LIBIDL_LIBS="$HOST_LDFLAGS `host-libIDL-config-2 --libs`" \
+	HOST_LIBIDL_CFLAGS="$HOST_LIBIDL_CFLAGS" \
+	HOST_LIBIDL_LIBS="$HOST_LDFLAGS $HOST_LIBIDL_LIBS" \
 	HOST_AR="ar" \
 	OS_RELEASE="2.6" \
 	WARNINGS_AS_ERRORS="" \
@@ -133,10 +137,10 @@ build_firefox() {
     make $MAKEARGS \
 	CROSS_COMPILE=1 \
 	HOST_CXXFLAGS="$HOST_CPPFLAGS" \
-	HOST_CFLAGS="$HOST_CPPFLAGS -DXP_UNIX -DNO_X11 -O `host-libIDL-config-2 --cflags`" \
+	HOST_CFLAGS="$HOST_CPPFLAGS -DXP_UNIX -DNO_X11 -O $HOST_LIBIDL_CFLAGS" \
 	HOST_LDFLAGS="$HOST_LDFLAGS" \
-	HOST_LIBIDL_CFLAGS="`host-libIDL-config-2 --cflags`" \
-	HOST_LIBIDL_LIBS="$HOST_LDFLAGS `host-libIDL-config-2 --libs`" \
+	HOST_LIBIDL_CFLAGS="$HOST_LIBIDL_CFLAGS" \
+	HOST_LIBIDL_LIBS="$HOST_LDFLAGS $HOST_LIBIDL_LIBS" \
 	HOST_AR="ar" \
 	OS_RELEASE="2.6" \
 	DESTDIR="$FIREFOX_DIR/fakeroot" \

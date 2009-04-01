@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-GTK2=gtk+-2.14.6.tar.bz2
-GTK2_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/gtk+/2.14
-GTK2_DIR=$BUILD_DIR/gtk+-2.14.6
+GTK2_VERSION=2.16.0
+GTK2=gtk+-${GTK2_VERSION}.tar.bz2
+GTK2_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/gtk+/2.16
+GTK2_DIR=$BUILD_DIR/gtk+-${GTK2_VERSION}
 GTK2_ENV="$CROSS_ENV_AC gio_can_sniff=yes"
 # ac_cv_path_CUPS_CONFIG=no
 
@@ -55,25 +56,25 @@ build_gtk2() {
     ln -sf libgailutil.so.18.0.1 $ROOTFS_DIR/usr/lib/libgailutil.so
     $STRIP $ROOTFS_DIR/usr/lib/libgailutil.so.18.0.1
     
-    $INSTALL -D -m 644 gdk/.libs/libgdk-x11-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so.0.1400.6 || error
-    ln -sf libgdk-x11-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so.0
-    ln -sf libgdk-x11-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so.0.1400.6
+    $INSTALL -D -m 644 gdk/.libs/libgdk-x11-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so.0.1600.0 || error
+    ln -sf libgdk-x11-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so.0
+    ln -sf libgdk-x11-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgdk-x11-2.0.so.0.1600.0
     
-    $INSTALL -D -m 644 gtk/.libs/libgtk-x11-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so.0.1400.6 || error
-    ln -sf libgtk-x11-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so.0
-    ln -sf libgtk-x11-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so.0.1400.6
+    $INSTALL -D -m 644 gtk/.libs/libgtk-x11-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so.0.1600.0 || error
+    ln -sf libgtk-x11-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so.0
+    ln -sf libgtk-x11-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgtk-x11-2.0.so.0.1600.0
 
-    $INSTALL -D -m 644 contrib/gdk-pixbuf-xlib/.libs/libgdk_pixbuf_xlib-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so.0.1400.6 || error
-    ln -sf libgdk_pixbuf_xlib-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so.0
-    ln -sf libgdk_pixbuf_xlib-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so.0.1400.6
+    $INSTALL -D -m 644 contrib/gdk-pixbuf-xlib/.libs/libgdk_pixbuf_xlib-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so.0.1600.0 || error
+    ln -sf libgdk_pixbuf_xlib-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so.0
+    ln -sf libgdk_pixbuf_xlib-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgdk_pixbuf_xlib-2.0.so.0.1600.0
     
-    $INSTALL -D -m 644 gdk-pixbuf/.libs/libgdk_pixbuf-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so.0.1400.6 || error
-    ln -sf libgdk_pixbuf-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so.0
-    ln -sf libgdk_pixbuf-2.0.so.0.1400.6 $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so.0.1400.6
+    $INSTALL -D -m 644 gdk-pixbuf/.libs/libgdk_pixbuf-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so.0.1600.0 || error
+    ln -sf libgdk_pixbuf-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so.0
+    ln -sf libgdk_pixbuf-2.0.so.0.1600.0 $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgdk_pixbuf-2.0.so.0.1600.0
 
     find modules/engines/ -name "*.so" -type f | while read f; do
 	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/lib/gtk-2.0/2.10.0/engines/${f/*\/} || error "$f"

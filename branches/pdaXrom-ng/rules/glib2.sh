@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-GLIB2=glib-2.19.3.tar.bz2
-GLIB2_MIRROR=http://ftp.gtk.org/pub/glib/2.19
-GLIB2_DIR=$BUILD_DIR/glib-2.19.3
+GLIB2_VERSION=2.20.0
+GLIB2=glib-${GLIB2_VERSION}.tar.bz2
+GLIB2_MIRROR=http://ftp.gtk.org/pub/glib/2.20
+GLIB2_DIR=$BUILD_DIR/glib-${GLIB2_VERSION}
 GLIB2_ENV="$CROSS_ENV_AC glib_cv_uscore=no glib_cv_stack_grows=no"
 
 build_glib2() {
@@ -36,30 +37,30 @@ build_glib2() {
 
     install_sysroot_files || error
     
-    $INSTALL -D -m 644 gio/.libs/libgio-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgio-2.0.so.0.1903.0 || error
-    ln -sf libgio-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgio-2.0.so.0
-    ln -sf libgio-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgio-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgio-2.0.so.0.1903.0
+    $INSTALL -D -m 644 gio/.libs/libgio-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgio-2.0.so.0.2000.0 || error
+    ln -sf libgio-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgio-2.0.so.0
+    ln -sf libgio-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgio-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgio-2.0.so.0.2000.0
 
-    $INSTALL -D -m 644 glib/.libs/libglib-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libglib-2.0.so.0.1903.0 || error
-    ln -sf libglib-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libglib-2.0.so.0
-    ln -sf libglib-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libglib-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libglib-2.0.so.0.1903.0
+    $INSTALL -D -m 644 glib/.libs/libglib-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libglib-2.0.so.0.2000.0 || error
+    ln -sf libglib-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libglib-2.0.so.0
+    ln -sf libglib-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libglib-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libglib-2.0.so.0.2000.0
 
-    $INSTALL -D -m 644 gmodule/.libs/libgmodule-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgmodule-2.0.so.0.1903.0 || error
-    ln -sf libgmodule-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgmodule-2.0.so.0
-    ln -sf libgmodule-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgmodule-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgmodule-2.0.so.0.1903.0
+    $INSTALL -D -m 644 gmodule/.libs/libgmodule-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgmodule-2.0.so.0.2000.0 || error
+    ln -sf libgmodule-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgmodule-2.0.so.0
+    ln -sf libgmodule-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgmodule-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgmodule-2.0.so.0.2000.0
     
-    $INSTALL -D -m 644 gobject/.libs/libgobject-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgobject-2.0.so.0.1903.0 || error
-    ln -sf libgobject-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgobject-2.0.so.0
-    ln -sf libgobject-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgobject-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgobject-2.0.so.0.1903.0
+    $INSTALL -D -m 644 gobject/.libs/libgobject-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgobject-2.0.so.0.2000.0 || error
+    ln -sf libgobject-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgobject-2.0.so.0
+    ln -sf libgobject-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgobject-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgobject-2.0.so.0.2000.0
 
-    $INSTALL -D -m 644 gthread/.libs/libgthread-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgthread-2.0.so.0.1903.0 || error
-    ln -sf libgthread-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgthread-2.0.so.0
-    ln -sf libgthread-2.0.so.0.1903.0 $ROOTFS_DIR/usr/lib/libgthread-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgthread-2.0.so.0.1903.0
+    $INSTALL -D -m 644 gthread/.libs/libgthread-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgthread-2.0.so.0.2000.0 || error
+    ln -sf libgthread-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgthread-2.0.so.0
+    ln -sf libgthread-2.0.so.0.2000.0 $ROOTFS_DIR/usr/lib/libgthread-2.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgthread-2.0.so.0.2000.0
 
     popd
     touch "$STATE_DIR/glib2.installed"

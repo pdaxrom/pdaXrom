@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-PANGO=pango-1.22.4.tar.bz2
-PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22
-PANGO_DIR=$BUILD_DIR/pango-1.22.4
+PANGO_VERSION=1.24.0
+PANGO=pango-${PANGO_VERSION}.tar.bz2
+PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24
+PANGO_DIR=$BUILD_DIR/pango-${PANGO_VERSION}
 PANGO_ENV="$CROSS_ENV_AC"
 PANGO_MODULES="basic-x,basic-fc"
 
@@ -42,10 +43,10 @@ build_pango() {
     install_sysroot_files || error
 
     for f in pango pangocairo pangoft2 pangox pangoxft; do
-	$INSTALL -D -m 644 pango/.libs/lib${f}-1.0.so.0.2203.1 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2203.1 || error
-	ln -sf lib${f}-1.0.so.0.2203.1 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0
-	ln -sf lib${f}-1.0.so.0.2203.1 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so
-	$STRIP $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2203.1
+	$INSTALL -D -m 644 pango/.libs/lib${f}-1.0.so.0.2400.0 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2400.0 || error
+	ln -sf lib${f}-1.0.so.0.2400.0 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0
+	ln -sf lib${f}-1.0.so.0.2400.0 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so
+	$STRIP $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2400.0
     done
 
     $INSTALL -D -m 755 pango/.libs/pango-querymodules $ROOTFS_DIR/usr/bin/pango-querymodules || error
