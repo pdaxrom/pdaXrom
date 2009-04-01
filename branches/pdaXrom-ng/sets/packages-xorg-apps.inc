@@ -21,6 +21,7 @@
 . $RULES_DIR/xorg-mkfontscale.sh
 . $RULES_DIR/xorg-xkbcomp.sh
 . $RULES_DIR/xorg-setxkbmap.sh
+. $RULES_DIR/xorg-xev.sh
 
 #. $RULES_DIR/xorg-xdm.sh
 #. $RULES_DIR/xorg-xclock.sh
