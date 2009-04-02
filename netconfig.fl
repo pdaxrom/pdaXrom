@@ -12,15 +12,71 @@ decl {\#include "netdevices.h"} {}
 
 Function {} {open
 } {
-  {fltk::Window} {} {open
-    xywh {476 304 335 215} resizable visible
+  {fltk::Window} interfaceWindow {
+    label interface open
+    xywh {423 456 325 280} resizable visible
   } {
-    {fltk::Browser} devList {selected
+    {fltk::TabGroup} {} {open
+      xywh {0 0 325 230} box NO_BOX
+    } {
+      {fltk::Group} {} {
+        label ipv4 open
+        xywh {0 25 325 205}
+      } {
+        {fltk::Choice} connType {
+          label type open
+          xywh {90 10 210 25}
+        } {}
+        {fltk::Input} ipaddrBox {
+          label ipaddr
+          xywh {90 45 210 25}
+        }
+        {fltk::Input} netmaskBox {
+          label netmask
+          xywh {90 75 210 25}
+        }
+        {fltk::Input} gatewayBox {
+          label gateway
+          xywh {90 105 210 25}
+        }
+      }
+      {fltk::Group} {} {
+        label wireless open
+        xywh {0 25 325 205} hide
+      } {}
+      {fltk::Group} {} {
+        label DNS open
+        xywh {0 25 325 205} hide
+      } {
+        {fltk::Input} dnsText {
+          label DNS
+          xywh {95 25 210 25}
+        }
+        {fltk::Input} dnsText2 {
+          label {DNS 2}
+          xywh {95 55 210 25}
+        }
+      }
+    }
+    {fltk::Button} {} {
+      label Cancel
+      xywh {205 250 65 25}
+    }
+    {fltk::ReturnButton} {} {
+      label Ok
+      xywh {105 250 65 25}
+    }
+  }
+  {fltk::Window} editInterface {open selected
+    xywh {813 332 335 215} resizable visible
+  } {
+    {fltk::Browser} devList {
       xywh {5 10 251 196}
       extra_code {add_devices();}
     } {}
     {fltk::Button} {} {
       label Edit
+      callback editButton
       xywh {265 10 60 25}
     }
     {fltk::Button} quit {

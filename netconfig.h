@@ -3,8 +3,22 @@
 #ifndef netconfig_h
 #define netconfig_h
 #include <fltk/Window.h>
+extern fltk::Window* interfaceWindow;
+#include <fltk/TabGroup.h>
+#include <fltk/Group.h>
+#include <fltk/Choice.h>
+extern fltk::Choice* connType;
+#include <fltk/Input.h>
+extern fltk::Input* ipaddrBox;
+extern fltk::Input* netmaskBox;
+extern fltk::Input* gatewayBox;
+extern fltk::Input* dnsText;
+extern fltk::Input* dnsText2;
+#include <fltk/Button.h>
+#include <fltk/ReturnButton.h>
+extern fltk::Window* editInterface;
 #include <fltk/Browser.h>
 extern fltk::Browser* devList;
-#include <fltk/Button.h>
+extern void editButton(fltk::Button*, void*);
 extern fltk::Button* quit;
 #endif
