@@ -27,6 +27,8 @@ SQUASHFS_LZMA=no
 . ./sets/packages-xorg-apps.inc
 . ./sets/packages-xorg-fonts.inc
 
+. ./sets/packages-xorg-msttcorefonts.inc
+
 #. ./sets/packages-emulators.inc
 
 . ./sets/packages-x-apps.inc
