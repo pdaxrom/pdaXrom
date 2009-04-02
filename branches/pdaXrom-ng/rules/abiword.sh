@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-ABIWORD=abiword-2.6.5.tar.gz
-ABIWORD_MIRROR=http://www.abisource.com/downloads/abiword/2.6.5/source
-ABIWORD_DIR=$BUILD_DIR/abiword-2.6.5
+ABIWORD_VERSION=2.6.8
+ABIWORD=abiword-${ABIWORD_VERSION}.tar.gz
+ABIWORD_MIRROR=http://www.abisource.com/downloads/abiword/${ABIWORD_VERSION}/source
+ABIWORD_DIR=$BUILD_DIR/abiword-${ABIWORD_VERSION}
 ABIWORD_ENV="$CROSS_ENV_AC"
 
 build_abiword() {
