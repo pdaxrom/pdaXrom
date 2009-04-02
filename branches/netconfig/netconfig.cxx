@@ -4,6 +4,22 @@
 #include <stdlib.h>
 #include "netdevices.h"
 
+fltk::Window *interfaceWindow=(fltk::Window *)0;
+
+fltk::Choice *connType=(fltk::Choice *)0;
+
+fltk::Input *ipaddrBox=(fltk::Input *)0;
+
+fltk::Input *netmaskBox=(fltk::Input *)0;
+
+fltk::Input *gatewayBox=(fltk::Input *)0;
+
+fltk::Input *dnsText=(fltk::Input *)0;
+
+fltk::Input *dnsText2=(fltk::Input *)0;
+
+fltk::Window *editInterface=(fltk::Window *)0;
+
 fltk::Browser *devList=(fltk::Browser *)0;
 
 fltk::Button *quit=(fltk::Button *)0;
@@ -17,14 +33,50 @@ static void cb_quit(fltk::Button*, void*) {
 int main (int argc, char **argv) {
 
   fltk::Window* w;
-   {fltk::Window* o = new fltk::Window(335, 215);
+   {fltk::Window* o = interfaceWindow = new fltk::Window(325, 280, "interface");
+    o->shortcut(0xff1b);
+    o->begin();
+     {fltk::TabGroup* o = new fltk::TabGroup(0, 0, 325, 230);
+      o->box(fltk::NO_BOX);
+      o->begin();
+       {fltk::Group* o = new fltk::Group(0, 25, 325, 205, "ipv4");
+        o->begin();
+         {fltk::Choice* o = connType = new fltk::Choice(90, 10, 210, 25, "type");
+        }
+        ipaddrBox = new fltk::Input(90, 45, 210, 25, "ipaddr");
+        netmaskBox = new fltk::Input(90, 75, 210, 25, "netmask");
+        gatewayBox = new fltk::Input(90, 105, 210, 25, "gateway");
+        o->end();
+      }
+       {fltk::Group* o = new fltk::Group(0, 25, 325, 205, "wireless");
+        o->hide();
+      }
+       {fltk::Group* o = new fltk::Group(0, 25, 325, 205, "DNS");
+        o->hide();
+        o->begin();
+        dnsText = new fltk::Input(95, 25, 210, 25, "DNS");
+        dnsText2 = new fltk::Input(95, 55, 210, 25, "DNS 2");
+        o->end();
+      }
+      o->end();
+    }
+    new fltk::Button(205, 250, 65, 25, "Cancel");
+     {fltk::ReturnButton* o = new fltk::ReturnButton(105, 250, 65, 25, "Ok");
+      o->shortcut(0xff0d);
+    }
+    o->end();
+    o->resizable(o);
+  }
+   {fltk::Window* o = editInterface = new fltk::Window(335, 215);
     w = o;
     o->shortcut(0xff1b);
     o->begin();
      {fltk::Browser* o = devList = new fltk::Browser(5, 10, 251, 196);
       add_devices();
     }
-    new fltk::Button(265, 10, 60, 25, "Edit");
+     {fltk::Button* o = new fltk::Button(265, 10, 60, 25, "Edit");
+      o->callback((fltk::Callback*)editButton);
+    }
      {fltk::Button* o = quit = new fltk::Button(260, 180, 65, 25, "Quit");
       o->callback((fltk::Callback*)cb_quit);
     }

@@ -26,11 +26,11 @@ TARGET=netconfig
 .cxx.o:
 	$(CXX) -I.. -I../fltk/compat $(CXXFLAGS) -c $<
 
-#CFILES = tclient.c
+CFILES = readconf.c
 
 CPPFILES = netconfig.cxx netdevices.cxx
 
-OBJECTS =	$(CPPFILES:.cxx=.o) $(CFILES:.c=.o)
+OBJECTS = $(CPPFILES:.cxx=.o) $(CFILES:.c=.o)
 
 all: $(TARGET)
 
