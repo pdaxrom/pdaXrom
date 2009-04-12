@@ -41,6 +41,9 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-bluetooth.inc
 
+. $RULES_DIR/libfakekey.sh
+. $RULES_DIR/matchbox-keyboard.sh
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/ps3-utils.sh
