@@ -1,8 +1,0 @@
-config LESS
-	bool
-	prompt "less"
-
-config LESS_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on LESS

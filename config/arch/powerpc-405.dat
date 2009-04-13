@@ -1,5 +1,0 @@
-TARGET=powerpc-405-linux-gnu
-GCC_EXTRA_CONFIG=--with-cpu=405 --enable-cxx-flags=-mcpu=405
-#GLIBC_EXTRA_CONFIG="--without-fp"
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
-TARGET_OPT_CFLAGS=-O3 -fomit-frame-pointer

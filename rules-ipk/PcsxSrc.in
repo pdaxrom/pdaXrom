@@ -1,8 +1,0 @@
-config PCSXSRC
-	bool
-	prompt "PCSX"
-
-config PCSXSRC_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on PCSXSRC

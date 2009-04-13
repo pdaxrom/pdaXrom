@@ -1,8 +1,0 @@
-config XIRCP
-	bool
-	prompt "xircp"
-
-config XIRCP_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XIRCP

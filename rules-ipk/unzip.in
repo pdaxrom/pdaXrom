@@ -1,8 +1,0 @@
-config UNZIP
-	bool
-	prompt "unzip"
-
-config UNZIP_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on UNZIP
