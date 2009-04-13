@@ -41,7 +41,7 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-bluetooth.inc
 
-. ./sers/packages-x-vkeyboard.inc
+. ./sets/packages-x-vkeyboard.inc
 
 . ./sets/packages-devel.inc
 
