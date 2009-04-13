@@ -36,6 +36,8 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-bluetooth.inc
 
+. ./sers/packages-x-vkeyboard.inc
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/flashplayer-adobe-x86.sh

@@ -30,6 +30,7 @@ build_matchbox_keyboard() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --enable-examples \
 	    --enable-cairo \
 	    || error
     ) || error "configure"

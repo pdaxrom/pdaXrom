@@ -41,8 +41,7 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-bluetooth.inc
 
-. $RULES_DIR/libfakekey.sh
-. $RULES_DIR/matchbox-keyboard.sh
+. ./sers/packages-x-vkeyboard.inc
 
 . ./sets/packages-devel.inc
 
