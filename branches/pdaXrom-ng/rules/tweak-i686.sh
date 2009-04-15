@@ -20,6 +20,16 @@ build_tweak_i686cd() {
     install_rc_start xstart 99
     install_rc_stop  xstart 01
 
+    if [ -e $ROOTFS_DIR/usr/bin/matchbox-keyboard ]; then
+	$INSTALL -D -m 755 $GENERICFS_DIR/mb-keyboard/mb-keyboard-switcher $ROOTFS_DIR/usr/bin/mb-keyboard-switcher || error
+	$INSTALL -D -m 644 $GENERICFS_DIR/mb-keyboard/mb-keyboard-switcher.desktop $ROOTFS_DIR/usr/share/applications/mb-keyboard-switcher.desktop || error
+
+	#$INSTALL -D -m 644 $GENERICFS_DIR/mb-keyboard/openbox-rc.xml $ROOTFS_DIR/etc/xdg/openbox/rc.xml || error
+	if [ -d $ROOTFS_DIR/usr/share/lxpanel/profile/default/panels ]; then
+	    $INSTALL -D -m 644 $GENERICFS_DIR/mb-keyboard/lxde-panel $ROOTFS_DIR/usr/share/lxpanel/profile/default/panels/panel || error
+	fi
+    fi
+
     touch "$STATE_DIR/tweak_i686cd-1.0"
 }
 
