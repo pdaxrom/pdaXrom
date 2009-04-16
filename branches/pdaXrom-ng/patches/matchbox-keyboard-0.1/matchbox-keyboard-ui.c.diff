@@ -1,0 +1,118 @@
+--- s/src/matchbox-keyboard-ui.c-	2006-03-01 00:41:54.000000000 +0600
++++ s/src/matchbox-keyboard-ui.c	2009-04-17 03:26:18.000000000 +0700
+@@ -17,6 +17,7 @@
+  *
+  */
+ 
++#include <X11/extensions/Xrandr.h>
+ #include "matchbox-keyboard.h"
+ 
+ #define PROP_MOTIF_WM_HINTS_ELEMENTS    5
+@@ -140,6 +141,33 @@
+   return True;
+ }
+ 
++static boolean
++get_screen_size(MBKeyboardUI *ui, int *w, int *h)
++{
++  XRRScreenSize *sizes;
++  XRRScreenConfiguration *sc;
++  SizeID size_index;
++  Rotation rotation;
++  int n;
++               
++  sc = XRRGetScreenInfo(ui->xdpy, ui->xwin_root);
++  if (!sc)
++  {
++    printf("ERROR: Couldn't get screen information\n");
++    return False;
++  }
++  size_index = XRRConfigCurrentConfiguration(sc, &rotation);
++  sizes = XRRSizes(ui->xdpy, XRRRootToScreen(ui->xdpy, ui->xwin_root), &n);
++  if (size_index < n)
++  {
++    *w = sizes[size_index].width;
++    *h = sizes[size_index].height;
++  }
++  XRRFreeScreenConfigInfo(sc);
++
++  return True;
++}
++
+ static void
+ update_display_size(MBKeyboardUI *ui)
+ {
+@@ -568,6 +596,7 @@
+      atom_NET_WM_WINDOW_TYPE, 
+      atom_NET_WM_WINDOW_TYPE_TOOLBAR,
+      atom_NET_WM_WINDOW_TYPE_DOCK,
++     atom_NET_WM_STRUT,
+      atom_NET_WM_STRUT_PARTIAL,
+      atom_NET_WM_STATE_SKIP_PAGER,
+      atom_NET_WM_STATE_SKIP_TASKBAR,
+@@ -604,6 +633,9 @@
+   atom_MOTIF_WM_HINTS =
+     XInternAtom(ui->xdpy, "_MOTIF_WM_HINTS", False);
+ 
++  atom_NET_WM_STRUT = 
++    XInternAtom(ui->xdpy, "_NET_WM_STRUT", False);
++
+   atom_NET_WM_STRUT_PARTIAL = 
+     XInternAtom(ui->xdpy, "_NET_WM_STRUT_PARTIAL", False);
+ 
+@@ -704,6 +736,16 @@
+ 	  
+ 	  if (get_desktop_area(ui, NULL, &desk_y, &desk_width, &desk_height))
+ 	    {
++	      int max_w = 0;
++	      int max_h = 0;
++
++	      if (get_screen_size(ui, &max_w, &max_h)) {
++	        DBG("screen size %i %i\n", max_w, max_h);
++	      } else {
++	        max_w = desk_width;
++	        max_h = desk_height;
++	      }
++
+ 	      /* Assuming we take up all available display width 
+ 	       * ( at least true with matchbox wm ). we resize
+ 	       * the base ui width to this ( and height as a factor ) 
+@@ -717,17 +759,26 @@
+ 				   ( desk_width * ui->xwin_height ) / ui->xwin_width);
+ 		}
+ 	      
+-	      wm_struct_vals[2]  = desk_y + desk_height - ui->xwin_height;
++	
++	      wm_struct_vals[3 ] = ui->xwin_height + (max_h - desk_height)*2;
+ 	      wm_struct_vals[11] = desk_width;
++
++	      DBG("desk width: %i, desk height: %i xwin_height :%i desk y: %i",
++		  desk_width, desk_height, ui->xwin_height, desk_y);
++
++	      DBG("new desk height: %i", wm_struct_vals[3]);
+ 	      
+ 	      XChangeProperty(ui->xdpy, ui->xwin, 
+ 			      atom_NET_WM_STRUT_PARTIAL, XA_CARDINAL, 32, 
+ 			      PropModeReplace, 
+ 			      (unsigned char *)wm_struct_vals , 12);
++
++	      XChangeProperty(ui->xdpy, ui->xwin, 
++			      atom_NET_WM_STRUT, XA_CARDINAL, 32, 
++			      PropModeReplace, 
++			      (unsigned char *)wm_struct_vals , 4);
+ 	      
+-	      DBG("desk width: %i, desk height: %i xwin_height :%i",
+-		  desk_width, desk_height, ui->xwin_height);
+-	      
++	      XMoveWindow(ui->xdpy, ui->xwin, 0, desk_height - ui->xwin_height - (max_h - desk_height));
+ 	    }
+ 	  
+ 	  if (have_matchbox_wm)
+@@ -958,7 +1009,6 @@
+   ui->xwin_width  = width;
+   ui->xwin_height = height;
+ 
+-
+   if (ui->backbuffer) /* may get called before initialised */
+     {
+       XFreePixmap(ui->xdpy, ui->backbuffer);

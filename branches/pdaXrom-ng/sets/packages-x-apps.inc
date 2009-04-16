@@ -6,8 +6,6 @@
 
 #. $RULES_DIR/idesk.sh
 
-#. $RULES_DIR/rdesktop.sh
-
 #
 # grab X11 screen
 #

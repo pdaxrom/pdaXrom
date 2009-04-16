@@ -38,6 +38,8 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-x-vkeyboard.inc
 
+. ./sets/packages-x-rdp.inc
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/flashplayer-adobe-x86.sh
