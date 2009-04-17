@@ -17,6 +17,18 @@ create_ps3kboot() {
     cd $IMAGES_DIR
     md5sum pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.bld > pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.bld.md5sum
 
+    local T=`echo /tmp/ps3boot.$$`
+
+    mkdir -p $T || error
+
+    $INSTALL -D -m 644 $KERNEL_DIR/arch/powerpc/boot/otheros.bld $T/PS3/otheros/otheros.bld || error
+
+    cd $T
+    
+    zip -9r $IMAGES_DIR/pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.zip .
+    cd $IMAGES_DIR
+    md5sum pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.zip > pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.zip.md5sum
+
     popd
     
 }
