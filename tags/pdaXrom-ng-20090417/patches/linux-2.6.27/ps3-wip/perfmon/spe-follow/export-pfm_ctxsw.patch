@@ -1,0 +1,32 @@
+This patch exports pfm_ctxsw() in perfmon_ctxsw.c
+so that perfmon_cell module can call it.
+And it adds Null check to pfm_ctxsw();
+
+Signed-off-by: Takashi Yamamoto <TakashiA.Yamamoto@jp.sony.com>
+---
+ perfmon/perfmon_ctxsw.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/perfmon/perfmon_ctxsw.c
++++ b/perfmon/perfmon_ctxsw.c
+@@ -36,6 +36,7 @@
+  * 02111-1307 USA
+  */
+ #include <linux/kernel.h>
++#include <linux/module.h>
+ #include <linux/perfmon_kern.h>
+ #include "perfmon_priv.h"
+ 
+@@ -320,6 +321,7 @@ void pfm_ctxsw_out(struct task_struct *p
+ 	pfm_stats_inc(ctxswout_count);
+ 	pfm_stats_add(ctxswout_ns, sched_clock() - now);
+ }
++EXPORT_SYMBOL_GPL(pfm_ctxsw_out);
+ 
+ void pfm_ctxsw_in(struct task_struct *prev,
+ 		  struct task_struct *next)
+@@ -339,3 +341,4 @@ void pfm_ctxsw_in(struct task_struct *pr
+ 	pfm_stats_inc(ctxswin_count);
+ 	pfm_stats_add(ctxswin_ns, sched_clock() - now);
+ }
++EXPORT_SYMBOL_GPL(pfm_ctxsw_in);

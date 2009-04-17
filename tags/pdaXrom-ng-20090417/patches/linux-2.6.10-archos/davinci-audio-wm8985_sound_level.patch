@@ -1,0 +1,15 @@
+--- linux-2.6.10/sound/oss/davinci-audio-wm8985.c.orig	2008-09-12 16:34:09.000000000 +0200
++++ linux-2.6.10/sound/oss/davinci-audio-wm8985.c	2008-09-12 16:35:17.000000000 +0200
+@@ -110,10 +110,10 @@
+ #define DEFAULT_OUTPUT_VOLUME         50L
+ #define DEFAULT_INPUT_VOLUME          0	/* 0 ==> mute line in */
+ 
+-#define VOL_0dB				57
++#define VOL_0dB				99
+ 
+ #define OUTPUT_VOLUME_MIN             0
+-#define OUTPUT_VOLUME_MAX             57
++#define OUTPUT_VOLUME_MAX             99
+ #define OUTPUT_VOLUME_RANGE           (OUTPUT_VOLUME_MAX - OUTPUT_VOLUME_MIN)
+ 
+ #define LINE_REC_LEVEL_MIN	0	/* -12dB gain: but does not match with reality which is around -10dB */

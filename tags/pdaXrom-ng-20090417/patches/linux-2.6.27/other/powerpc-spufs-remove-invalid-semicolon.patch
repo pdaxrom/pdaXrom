@@ -1,0 +1,21 @@
+Date: Tue, 19 Aug 2008 08:48:57 +0300 (EEST)
+From: "=?ISO-8859-1?Q?Ilpo_J=E4rvinen?=" <ilpo.jarvinen@helsinki.fi>
+To: paulus@samba.org, benh@kernel.crashing.org, linuxppc-dev@ozlabs.org
+Subject: [PATCH] powerpc/spufs: Remove invalid semicolon after if statement
+
+Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@helsinki.fi>
+---
+ arch/powerpc/platforms/cell/spufs/sched.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/powerpc/platforms/cell/spufs/sched.c
++++ b/arch/powerpc/platforms/cell/spufs/sched.c
+@@ -1030,7 +1030,7 @@ void spuctx_switch_state(struct spu_cont
+ 		node = spu->node;
+ 		if (old_state == SPU_UTIL_USER)
+ 			atomic_dec(&cbe_spu_info[node].busy_spus);
+-		if (new_state == SPU_UTIL_USER);
++		if (new_state == SPU_UTIL_USER)
+ 			atomic_inc(&cbe_spu_info[node].busy_spus);
+ 	}
+ }

@@ -1,0 +1,24 @@
+From 3c85b7aa76f2fb7456efc6cf9239db6006e0ab46 Mon Sep 17 00:00:00 2001
+From: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+Date: Thu, 19 Feb 2009 15:50:53 +0100
+Subject: [PATCH] rtc-parisc: Add missing module alias
+
+Make udev autoload the driver
+
+Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+---
+ drivers/rtc/rtc-parisc.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/rtc/rtc-parisc.c b/drivers/rtc/rtc-parisc.c
+index c6bfa6f..28fb7d3 100644
+--- a/drivers/rtc/rtc-parisc.c
++++ b/drivers/rtc/rtc-parisc.c
+@@ -110,3 +110,4 @@ module_exit(parisc_rtc_fini);
+ MODULE_AUTHOR("Kyle McMartin <kyle@mcmartin.ca>");
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("HP PA-RISC RTC driver");
++MODULE_ALIAS("platform:rtc-parisc");
+-- 
+1.6.0.4
+

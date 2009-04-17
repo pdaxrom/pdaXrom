@@ -1,0 +1,173 @@
+Subject: powerpc: Keep track of emulated instructions, fixes for ppc32
+
+Fixes for ppc32:
+  - arch/powerpc/kernel/sysfs.c is compiled for ppc64 only:
+      o Let the per CPU counters depend on CONFIG_PPC64
+      o Move the sysctl part to arch/powerpc/kernel/traps.c
+  - WARN_EMULATE() is a no-op if CONFIG_SYSCTL is disabled
+  - Now it compiles and works on my AMCC `Sequoia' EV-440PPX
+
+TODO:
+  - On ppc64, we could still have the counters if !CONFIG_SYSCTL
+  - Clean up some more stuff that should depend on CONFIG_SYSCTL
+  - Fold into other/powerpc-warn-on-emulation.diff
+---
+ arch/powerpc/include/asm/emulated_ops.h |   24 ++++++++++++++++++++-
+ arch/powerpc/kernel/sysfs.c             |   35 --------------------------------
+ arch/powerpc/kernel/traps.c             |   35 ++++++++++++++++++++++++++++++++
+ 3 files changed, 57 insertions(+), 37 deletions(-)
+
+--- a/arch/powerpc/include/asm/emulated_ops.h
++++ b/arch/powerpc/include/asm/emulated_ops.h
+@@ -18,6 +18,10 @@
+ #ifndef _ASM_POWERPC_EMULATED_OPS_H
+ #define _ASM_POWERPC_EMULATED_OPS_H
+ 
++#ifdef CONFIG_SYSCTL
++
++#ifdef CONFIG_PPC64
++
+ #include <linux/percpu.h>
+ 
+ #include <asm/atomic.h>
+@@ -37,16 +41,32 @@ DECLARE_PER_CPU(atomic_long_t, emulated_
+ DECLARE_PER_CPU(atomic_long_t, emulated_8xx);
+ #endif
+ 
++#define WARN_EMULATE_INC(type)						\
++	do {								\
++		atomic_long_inc(&per_cpu(emulated_ ## type,		\
++					 raw_smp_processor_id()));	\
++	} while (0)
++
++#else /* !CONFIG_PPC64 */
++
++#define WARN_EMULATE_INC(type)	do { } while (0)
++
++#endif /* !CONFIG_PPC64 */
++
+ extern int sysctl_warn_emulated;
+ extern void do_warn_emulate(const char *type);
+ 
+ #define WARN_EMULATE(type)						\
+ 	do {								\
+-		atomic_long_inc(&per_cpu(emulated_ ## type,		\
+-					 raw_smp_processor_id()));	\
++		WARN_EMULATE_INC(type);					\
+ 		if (sysctl_warn_emulated)				\
+ 			do_warn_emulate(#type);				\
+ 	} while (0)
+ 
++#else /* !CONFIG_SYSCTL */
++
++#define WARN_EMULATE(type)	do { } while (0)
++
++#endif /* !CONFIG_SYSCTL */
+ 
+ #endif /* _ASM_POWERPC_EMULATED_OPS_H */
+--- a/arch/powerpc/kernel/sysfs.c
++++ b/arch/powerpc/kernel/sysfs.c
+@@ -8,7 +8,6 @@
+ #include <linux/nodemask.h>
+ #include <linux/cpumask.h>
+ #include <linux/notifier.h>
+-#include <linux/sysctl.h>
+ 
+ #include <asm/current.h>
+ #include <asm/processor.h>
+@@ -639,38 +638,6 @@ static struct attribute_group emulated_a
+ 	.name = "emulated"
+ };
+ 
+-int sysctl_warn_emulated;
+-
+-#ifdef CONFIG_SYSCTL
+-static ctl_table warn_emulated_ctl_table[]={
+-	{
+-		.procname	= "cpu_emulation_warnings",
+-		.data		= &sysctl_warn_emulated,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= &proc_dointvec,
+-	},
+-	{}
+-};
+-
+-static ctl_table warn_emulated_sysctl_root[] = {
+-	{
+-		.ctl_name	= CTL_KERN,
+-		.procname	= "kernel",
+-		.mode		= 0555,
+-		.child		= warn_emulated_ctl_table,
+-	},
+-	{}
+-};
+-
+-static inline void warn_emulated_sysctl_register(void)
+-{
+-	register_sysctl_table(warn_emulated_sysctl_root);
+-}
+-#else /* !CONFIG_SYSCTL */
+-static inline void warn_emulated_sysctl_register(void) {}
+-#endif /* !CONFIG_SYSCTL */
+-
+ static void __cpuinit register_cpu_online(unsigned int cpu)
+ {
+ 	struct cpu *c = &per_cpu(cpu_devices, cpu);
+@@ -973,8 +940,6 @@ static int __init topology_init(void)
+ 			register_cpu_online(cpu);
+ 	}
+ 
+-	warn_emulated_sysctl_register();
+-
+ 	return 0;
+ }
+ subsys_initcall(topology_init);
+--- a/arch/powerpc/kernel/traps.c
++++ b/arch/powerpc/kernel/traps.c
+@@ -34,6 +34,7 @@
+ #include <linux/backlight.h>
+ #include <linux/bug.h>
+ #include <linux/kdebug.h>
++#include <linux/sysctl.h>
+ 
+ #include <asm/pgtable.h>
+ #include <asm/uaccess.h>
+@@ -1260,3 +1261,37 @@ void kernel_bad_stack(struct pt_regs *re
+ void __init trap_init(void)
+ {
+ }
++
++#ifdef CONFIG_SYSCTL
++int sysctl_warn_emulated;
++
++static ctl_table warn_emulated_ctl_table[]={
++	{
++		.procname	= "cpu_emulation_warnings",
++		.data		= &sysctl_warn_emulated,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= &proc_dointvec,
++	},
++	{}
++};
++
++static ctl_table warn_emulated_sysctl_root[] = {
++	{
++		.ctl_name	= CTL_KERN,
++		.procname	= "kernel",
++		.mode		= 0555,
++		.child		= warn_emulated_ctl_table,
++	},
++	{}
++};
++
++static inline int __init warn_emulated_sysctl_register(void)
++{
++	register_sysctl_table(warn_emulated_sysctl_root);
++
++	return 0;
++}
++
++__initcall(warn_emulated_sysctl_register);
++#endif /* !CONFIG_SYSCTL */

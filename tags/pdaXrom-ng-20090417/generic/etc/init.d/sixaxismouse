@@ -1,0 +1,32 @@
+#!/bin/sh
+
+test -f /usr/bin/sixaxisd || exit 0
+
+. /etc/init.d/functions
+
+DAEMON=/usr/bin/sixaxisd
+DAEMON_ARGS="-mouse"
+
+case "$1" in
+  start)
+	log_begin_msg -n "Starting sixaxis bluetooth mouse emulator"
+	/usr/sbin/hciconfig hci0 up
+	/usr/sbin/hciconfig hci0 lm master
+	/usr/sbin/hciconfig hci0 piscan
+    
+	start-stop-daemon -S -x "$DAEMON" -q -b -- $DAEMON_ARGS  >/dev/null 2>/dev/null
+    
+	log_end_msg $?
+	;;
+  stop)
+	log_begin_msg -n "Stopping sixaxis bluetooth mouse emulator"
+	killall sixaxisd 2>/dev/null >/dev/null
+	log_end_msg $?
+	;;
+  *)
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
