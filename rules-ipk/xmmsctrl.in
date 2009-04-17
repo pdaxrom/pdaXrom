@@ -1,9 +1,0 @@
-config XMMSCTRL
-	bool
-	prompt "xmmsctrl"
-	depends on XMMS
-
-config XMMSCTRL_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XMMSCTRL

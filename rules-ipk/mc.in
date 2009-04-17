@@ -1,8 +1,0 @@
-config MC
-	bool
-	prompt "mc"
-
-config MC_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on MC

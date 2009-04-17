@@ -1,0 +1,11 @@
+--- idesk-0.7.5/examples/default.lnk-	2008-12-18 20:07:41.000000000 +0600
++++ idesk-0.7.5/examples/default.lnk	2008-12-18 20:07:48.000000000 +0600
+@@ -1,7 +1,7 @@
+ table Icon
+   Caption: Idesk
+   Command: /usr/bin/Xdialog --msgbox "IDESK -- Icon Desktop Manager \n\n\n by FixXxeR \n\n\n 2005" 15 30 
+-  Icon: /usr/local/share/idesk/folder_home.xpm
++  Icon: /usr/share/idesk/folder_home.xpm
+   Width: 48
+   Height: 48
+   X: 30

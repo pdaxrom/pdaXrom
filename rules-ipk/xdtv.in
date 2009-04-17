@@ -1,9 +1,0 @@
-config XDTV
-	bool
-	prompt "xdtv"
-###	depends on ARCH_X86
-
-config XDTV_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XDTV

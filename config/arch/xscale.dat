@@ -1,6 +1,0 @@
-KERNELCONFIG=$PWD/arm.config
-TARGET=armv5tel-cacko-linux
-GCC_EXTRA_CONFIG=--with-cpu=xscale --enable-cxx-flags=-mcpu=xscale
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
-#TARGET_CFLAGS=
-TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer

@@ -1,0 +1,36 @@
+diff -Nur curl-7.19.4-orig/docs/examples/Makefile.m32 curl-7.19.4/docs/examples/Makefile.m32
+--- curl-7.19.4-orig/docs/examples/Makefile.m32	2008-05-10 01:16:34.000000000 +0700
++++ curl-7.19.4/docs/examples/Makefile.m32	2009-03-25 18:10:57.000000000 +0600
+@@ -74,7 +74,7 @@
+   INCLUDES += -I"$(OPENSSL_PATH)/outinc"
+   CFLAGS += -DUSE_SSLEAY -DHAVE_OPENSSL_ENGINE_H
+   ifdef DYN
+-    curl_LDADD += -L$(OPENSSL_PATH)/out -leay32 -lssl32
++    curl_LDADD += -L$(OPENSSL_PATH)/out -lssl -lcrypto -lgdi32
+   else
+     curl_LDADD += -L$(OPENSSL_PATH)/out -lssl -lcrypto -lgdi32
+   endif
+diff -Nur curl-7.19.4-orig/lib/Makefile.m32 curl-7.19.4/lib/Makefile.m32
+--- curl-7.19.4-orig/lib/Makefile.m32	2008-11-13 16:47:29.000000000 +0600
++++ curl-7.19.4/lib/Makefile.m32	2009-03-25 18:11:10.000000000 +0600
+@@ -69,7 +69,7 @@
+   CFLAGS += -DUSE_SSLEAY -DUSE_OPENSSL -DHAVE_OPENSSL_ENGINE_H -DHAVE_OPENSSL_PKCS12_H \
+             -DHAVE_ENGINE_LOAD_BUILTIN_ENGINES -DOPENSSL_NO_KRB5 \
+             -DCURL_WANTS_CA_BUNDLE_ENV
+-  DLL_LIBS += -L$(OPENSSL_PATH)/out -leay32 -lssl32
++  DLL_LIBS += -L$(OPENSSL_PATH)/out -lssl -lcrypto -lgdi32
+ endif
+ ifdef ZLIB
+   INCLUDES += -I"$(ZLIB_PATH)"
+diff -Nur curl-7.19.4-orig/src/Makefile.m32 curl-7.19.4/src/Makefile.m32
+--- curl-7.19.4-orig/src/Makefile.m32	2009-01-26 14:44:34.000000000 +0600
++++ curl-7.19.4/src/Makefile.m32	2009-03-25 18:11:20.000000000 +0600
+@@ -79,7 +79,7 @@
+ endif
+ ifdef SSL
+   CFLAGS += -DUSE_SSLEAY -DHAVE_OPENSSL_ENGINE_H
+-  curl_LDADD += -L$(OPENSSL_PATH)/out -leay32 -lssl32
++  curl_LDADD += -L$(OPENSSL_PATH)/out -lssl -lcrypto -lgdi32
+ endif
+ ifdef ZLIB
+   INCLUDES += -I"$(ZLIB_PATH)"

@@ -1,138 +1,44 @@
-# -*-makefile-*-
-# $Id: template,v 1.10 2004/01/24 15:50:34 mkl Exp $
 #
-# Copyright (C) 2004 by @AUTHOR@
+# packet template
+#
+# Copyright (C) 2009 by @AUTHOR@
 #          
 # See CREDITS for details about who has contributed to this project.
 #
-# For further information about the PTXdist project and license conditions
+# For further information about the pdaXrom project and license conditions
 # see the README file.
 #
 
-#
-# We provide this package
-#
-ifdef PTXCONF_@PACKET@
-PACKAGES += @packet@
-endif
+@PACKET@_VERSION=@VERSION@
+@PACKET@=@name@-${@PACKET@_VERSION}.@SUFFIX@
+@PACKET@_MIRROR=@URL@
+@PACKET@_DIR=$BUILD_DIR/@name@-${@PACKET@_VERSION}
+@PACKET@_ENV="$CROSS_ENV_AC"
 
-#
-# Paths and names
-#
-@PACKET@_VERSION	= @MAJOR@.@MINOR@.@MICRO@
-@PACKET@		= @packet@-$(@PACKET@_VERSION)
-@PACKET@_SUFFIX		= @SUFFIX@
-@PACKET@_URL		= @URL@/$(@PACKET@).$(@PACKET@_SUFFIX)
-@PACKET@_SOURCE		= $(SRCDIR)/$(@PACKET@).$(@PACKET@_SUFFIX)
-@PACKET@_DIR		= $(BUILDDIR)/$(@PACKET@)
+build_@packet@() {
+    test -e "$STATE_DIR/@packet@.installed" && return
+    banner "Build @name@"
+    download $@PACKET@_MIRROR $@PACKET@
+    extract $@PACKET@
+    apply_patches $@PACKET@_DIR $@PACKET@
+    pushd $TOP_DIR
+    cd $@PACKET@_DIR
+    (
+    eval \
+	$CROSS_CONF_ENV \
+	$@PACKET@_ENV \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
+	    --prefix=/usr \
+	    --sysconfdir=/etc \
+	    || error
+    ) || error "configure"
+    
+    make $MAKEARGS || error
 
-# ----------------------------------------------------------------------------
-# Get
-# ----------------------------------------------------------------------------
+    error "update install"
 
-@packet@_get: $(STATEDIR)/@packet@.get
+    popd
+    touch "$STATE_DIR/@packet@.installed"
+}
 
-@packet@_get_deps = $(@PACKET@_SOURCE)
-
-$(STATEDIR)/@packet@.get: $(@packet@_get_deps)
-	@$(call targetinfo, $@)
-	@$(call get_patches, $(@PACKET@))
-	touch $@
-
-$(@PACKET@_SOURCE):
-	@$(call targetinfo, $@)
-	@$(call get, $(@PACKET@_URL))
-
-# ----------------------------------------------------------------------------
-# Extract
-# ----------------------------------------------------------------------------
-
-@packet@_extract: $(STATEDIR)/@packet@.extract
-
-@packet@_extract_deps = $(STATEDIR)/@packet@.get
-
-$(STATEDIR)/@packet@.extract: $(@packet@_extract_deps)
-	@$(call targetinfo, $@)
-	@$(call clean, $(@PACKET@_DIR))
-	@$(call extract, $(@PACKET@_SOURCE))
-	@$(call patchin, $(@PACKET@))
-	touch $@
-
-# ----------------------------------------------------------------------------
-# Prepare
-# ----------------------------------------------------------------------------
-
-@packet@_prepare: $(STATEDIR)/@packet@.prepare
-
-#
-# dependencies
-#
-@packet@_prepare_deps = \
-	$(STATEDIR)/@packet@.extract \
-	$(STATEDIR)/virtual-xchain.install
-
-@PACKET@_PATH	=  PATH=$(CROSS_PATH)
-@PACKET@_ENV 	=  $(CROSS_ENV)
-#@PACKET@_ENV	+=
-
-#
-# autoconf
-#
-@PACKET@_AUTOCONF = \
-	--build=$(GNU_HOST) \
-	--host=$(PTXCONF_GNU_TARGET) \
-	--prefix=$(CROSS_LIB_DIR)
-
-$(STATEDIR)/@packet@.prepare: $(@packet@_prepare_deps)
-	@$(call targetinfo, $@)
-	@$(call clean, $(@PACKET@_DIR)/config.cache)
-	cd $(@PACKET@_DIR) && \
-		$(@PACKET@_PATH) $(@PACKET@_ENV) \
-		./configure $(@PACKET@_AUTOCONF)
-	touch $@
-
-# ----------------------------------------------------------------------------
-# Compile
-# ----------------------------------------------------------------------------
-
-@packet@_compile: $(STATEDIR)/@packet@.compile
-
-@packet@_compile_deps = $(STATEDIR)/@packet@.prepare
-
-$(STATEDIR)/@packet@.compile: $(@packet@_compile_deps)
-	@$(call targetinfo, $@)
-	$(@PACKET@_PATH) $(MAKE) -C $(@PACKET@_DIR)
-	touch $@
-
-# ----------------------------------------------------------------------------
-# Install
-# ----------------------------------------------------------------------------
-
-@packet@_install: $(STATEDIR)/@packet@.install
-
-$(STATEDIR)/@packet@.install: $(STATEDIR)/@packet@.compile
-	@$(call targetinfo, $@)
-	$(@PACKET@_PATH) $(MAKE) -C $(@PACKET@_DIR) install
-	touch $@
-
-# ----------------------------------------------------------------------------
-# Target-Install
-# ----------------------------------------------------------------------------
-
-@packet@_targetinstall: $(STATEDIR)/@packet@.targetinstall
-
-@packet@_targetinstall_deps = $(STATEDIR)/@packet@.compile
-
-$(STATEDIR)/@packet@.targetinstall: $(@packet@_targetinstall_deps)
-	@$(call targetinfo, $@)
-	touch $@
-
-# ----------------------------------------------------------------------------
-# Clean
-# ----------------------------------------------------------------------------
-
-@packet@_clean:
-	rm -rf $(STATEDIR)/@packet@.*
-	rm -rf $(@PACKET@_DIR)
-
-# vim: syntax=make
+build_@packet@

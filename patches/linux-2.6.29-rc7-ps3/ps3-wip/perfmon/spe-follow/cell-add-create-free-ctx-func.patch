@@ -1,0 +1,84 @@
+This patch add architecture depended create/free context functions
+for Cell.
+
+Signed-off-by: Takashi Yamamoto <TakashiA.Yamamoto@jp.sony.com>
+---
+ arch/powerpc/perfmon/perfmon_cell.c |   20 ++++++++++++++++++++
+ include/asm-powerpc/perfmon_kern.h  |   20 ++++++++++++++++++--
+ 2 files changed, 38 insertions(+), 2 deletions(-)
+
+--- a/arch/powerpc/perfmon/perfmon_cell.c
++++ b/arch/powerpc/perfmon/perfmon_cell.c
+@@ -1207,6 +1207,24 @@ static void pfm_cell_get_ovfl_pmds(struc
+ }
+ 
+ /**
++ * pfm_cell_create_context
++ *
++ **/
++static int pfm_cell_create_context(struct pfm_context *ctx, u32 ctx_flags)
++{
++	return 0;
++}
++
++/**
++ * pfm_cell_free_context
++ *
++ **/
++static void pfm_cell_free_context(struct pfm_context *ctx)
++{
++	return ;
++}
++
++/**
+  * pfm_cell_acquire_pmu
+  *
+  * acquire PMU resource.
+@@ -1381,6 +1399,8 @@ static struct pfm_arch_pmu_info pfm_cell
+ 	.pmu_style        = PFM_POWERPC_PMU_CELL,
+ 	.acquire_pmu      = pfm_cell_acquire_pmu,
+ 	.release_pmu      = pfm_cell_release_pmu,
++	.create_context   = pfm_cell_create_context,
++	.free_context     = pfm_cell_free_context,
+ 	.write_pmc        = pfm_cell_write_pmc,
+ 	.write_pmd        = pfm_cell_write_pmd,
+ 	.read_pmd         = pfm_cell_read_pmd,
+--- a/include/asm-powerpc/perfmon_kern.h
++++ b/include/asm-powerpc/perfmon_kern.h
+@@ -77,6 +77,9 @@ struct pfm_arch_pmu_info {
+ 			       struct pfm_event_set *set);
+ 	int  (*load_context)(struct pfm_context *ctx);
+ 	void (*unload_context)(struct pfm_context *ctx);
++	int  (*create_context)(struct pfm_context *ctx,
++			       u32 ctx_flags);
++	void (*free_context)(struct pfm_context *ctx);
+ 	int  (*acquire_pmu)(u64 *unavail_pmcs, u64 *unavail_pmds);
+ 	void (*release_pmu)(void);
+ 	void *platform_info;
+@@ -272,11 +275,24 @@ static inline int pfm_arch_pmu_config_in
+ static inline int pfm_arch_context_create(struct pfm_context *ctx,
+ 					  u32 ctx_flags)
+ {
+-	return 0;
++	struct pfm_arch_pmu_info *arch_info;
++	int rc = 0;
++
++	arch_info = pfm_pmu_info();
++	if (arch_info->create_context)
++		rc = arch_info->create_context(ctx, ctx_flags);
++
++	return rc;
+ }
+ 
+ static inline void pfm_arch_context_free(struct pfm_context *ctx)
+-{}
++{
++	struct pfm_arch_pmu_info *arch_info;
++
++	arch_info = pfm_pmu_info();
++	if (arch_info->free_context)
++		arch_info->free_context(ctx);
++}
+ 
+ /* not necessary on PowerPC */
+ static inline void pfm_cacheflush(void *addr, unsigned int len)

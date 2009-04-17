@@ -1,8 +1,0 @@
-config LIBBONOBO
-	bool
-	prompt "libbonobo"
-
-config LIBBONOBO_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on LIBBONOBO

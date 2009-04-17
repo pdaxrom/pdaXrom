@@ -1,8 +1,0 @@
-config CRIAWIPS
-	bool
-	prompt "criawips"
-
-config CRIAWIPS_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on CRIAWIPS

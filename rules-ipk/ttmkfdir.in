@@ -1,8 +1,0 @@
-config TTMKFDIR
-	bool
-	prompt "ttmkfdir"
-
-config TTMKFDIR_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on TTMKFDIR

@@ -1,9 +1,0 @@
-config MB-APPLET-KEYRUS
-	bool
-	prompt "Compile mb-applet-keymap"
-	depends on XFREE430
-
-config MB-APPLET-KEYRUS_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on MB-APPLET-KEYRUS

@@ -1,8 +1,0 @@
-config NATIVE_AUTOMAKE
-	bool
-	prompt "automake"
-
-config NATIVE_AUTOMAKE_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on NATIVE_AUTOMAKE
