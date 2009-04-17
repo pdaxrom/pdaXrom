@@ -33,6 +33,8 @@ build_sixaxisd() {
     install_rc_start sixaxismouse 71
     install_rc_stop  sixaxismouse 19
 
+    rm -f $ROOTFS_DIR/etc/rc.d/*_bluetooth
+
     popd
     touch "$STATE_DIR/sixaxisd.installed"
 }
