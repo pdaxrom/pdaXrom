@@ -1,0 +1,30 @@
+#!/bin/sh
+
+test -f /usr/bin/sixaxisd || exit 0
+
+. /etc/init.d/functions
+
+case "$1" in
+  start)
+	/etc/init.d/bluetooth stop
+	log_begin_msg -n "Starting sixaxis bluetooth mouse emulator"
+	/usr/sbin/hciconfig hci0 up
+	/usr/sbin/hciconfig hci0 lm master
+	/usr/sbin/hciconfig hci0 piscan
+    
+        /usr/bin/sixaxisd -mouse &
+    
+	log_end_msg $?
+	;;
+  stop)
+	log_begin_msg -n "Stopping sixaxis bluetooth mouse emulator"
+	killall sixaxisd 2>/dev/null >/dev/null
+	log_end_msg $?
+	;;
+  *)
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

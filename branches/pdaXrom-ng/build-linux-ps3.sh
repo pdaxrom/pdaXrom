@@ -43,6 +43,8 @@ SQUASHFS_LZMA=no
 
 . ./sets/packages-x-vkeyboard.inc
 
+. $RULES_DIR/sixaxisdmouse.sh
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/ps3-utils.sh
