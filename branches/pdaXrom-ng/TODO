@@ -1,3 +1,5 @@
 Network Manager
 pcmanfm startup notification
 libsamplerate - check endianess
+
+libXrender,libXp,libXTrap,libXdamage,libXevie,libXxf86dga,libXxf86misc,libxkbui,startup-notification,imlib2,libdrm - autoreconf -i before uclibc build

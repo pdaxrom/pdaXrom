@@ -78,6 +78,13 @@ build_gettext() {
     ln -sf libgettextsrc-0.17.so $ROOTFS_DIR/usr/lib/libgettextsrc.so
     $STRIP $ROOTFS_DIR/usr/lib/libgettextsrc-0.17.so || error
 
+    if [ -e gettext-runtime/intl/.libs/libintl.so.8.0.2 ]; then
+	$INSTALL -D -m 644 gettext-runtime/intl/.libs/libintl.so.8.0.2 $ROOTFS_DIR/usr/lib/libintl.so.8.0.2 || error
+	ln -sf libintl.so.8.0.2 $ROOTFS_DIR/usr/lib/libintl.so.8 || error
+        ln -sf libintl.so.8.0.2 $ROOTFS_DIR/usr/lib/libintl.so || error
+        $STRIP $ROOTFS_DIR/usr/lib/libintl.so.8.0.2 || error
+    fi
+
     popd
     touch "$STATE_DIR/gettext.installed"
 }
