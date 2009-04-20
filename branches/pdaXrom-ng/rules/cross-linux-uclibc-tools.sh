@@ -83,9 +83,10 @@ install_linux_headers() {
     touch "$STATE_DIR/linux_kernel_headers"
 }
 
-UCLIBC=uClibc-0.9.30.tar.bz2
+UCLIBC_VERSION=0.9.30
+UCLIBC=uClibc-${UCLIBC_VERSION}.tar.bz2
 UCLIBC_MIRROR=http://www.uclibc.org/downloads
-UCLIBC_DIR=$BUILD_DIR/uClibc-0.9.30
+UCLIBC_DIR=$BUILD_DIR/uClibc-${UCLIBC_VERSION}
 UCLIBC_ENV="$CROSS_ENV_AC"
 
 install_uclibc_headers() {

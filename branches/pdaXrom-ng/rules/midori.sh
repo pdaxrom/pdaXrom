@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-MIDORI=midori-0.1.1.tar.bz2
+MIDORI_VERSION=0.1.6
+MIDORI=midori-${MIDORI_VERSION}.tar.bz2
 MIDORI_MIRROR=http://goodies.xfce.org/releases/midori
-MIDORI_DIR=$BUILD_DIR/midori-0.1.1
+MIDORI_DIR=$BUILD_DIR/midori-${MIDORI_VERSION}
 MIDORI_ENV="$CROSS_ENV_AC"
 
 build_midori() {
@@ -23,36 +24,23 @@ build_midori() {
     pushd $TOP_DIR
     cd $MIDORI_DIR
     (
-    ./legacy.sh
-    make distclean
-    eval \
-	$CROSS_CONF_ENV \
-	$MIDORI_ENV \
-	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
-	    --prefix=/usr \
-	    --sysconfdir=/etc \
-	    || error
-	ln -sf `which intltool-merge` ./intltool-merge
+
+    LINKFLAGS="-L${TARGET_LIB} -Wl,-rpath,${TARGET_LIB}" CC=${CROSS}gcc ./waf configure --prefix=/usr || error
+
     ) || error "configure"
     
-    make $MAKEARGS || error
+    ./waf build || error
 
-    $INSTALL -D -m 755 midori/midori $ROOTFS_DIR/usr/bin/midori || error
-    $STRIP $ROOTFS_DIR/usr/bin/midori
-
-    $INSTALL -D -m 644 midori.desktop $ROOTFS_DIR/usr/share/applications/midori.desktop || error
+    ./waf install --destdir=${MIDORI_DIR}/fakeroot || error
     
-    $INSTALL -D -m 644 icons/16x16/extension.png $ROOTFS_DIR/usr/share/icons/hicolor/16x16/categories/extension.png
-    $INSTALL -D -m 644 icons/16x16/midori.png 	 $ROOTFS_DIR/usr/share/icons/hicolor/16x16/apps/midori.png
-    $INSTALL -D -m 644 icons/16x16/news-feed.png $ROOTFS_DIR/usr/share/icons/hicolor/16x16/status/news-feed.png
+    rm -rf fakeroot/usr/share/doc fakeroot/usr/share/locale || error
+    
+    find fakeroot/ -name "*.la" | xargs rm -f
+    
+    find fakeroot/ -type f -executable | xargs $STRIP
 
-    $INSTALL -D -m 644 icons/22x22/extension.png $ROOTFS_DIR/usr/share/icons/hicolor/22x22/categories/extension.png
-    $INSTALL -D -m 644 icons/22x22/midori.png 	 $ROOTFS_DIR/usr/share/icons/hicolor/22x22/apps/midori.png
-    $INSTALL -D -m 644 icons/22x22/news-feed.png $ROOTFS_DIR/usr/share/icons/hicolor/22x22/status/news-feed.png
-
-    $INSTALL -D -m 644 icons/scalable/extension.svg 	$ROOTFS_DIR/usr/share/icons/hicolor/scalable/categories/extension.svg
-    $INSTALL -D -m 644 icons/scalable/midori.svg  	$ROOTFS_DIR/usr/share/icons/hicolor/scalable/apps/midori.svg
-    $INSTALL -D -m 644 icons/scalable/news-feed.svg 	$ROOTFS_DIR/usr/share/icons/hicolor/scalable/status/news-feed.svg
+    cp -R fakeroot/etc $ROOTFS_DIR/ || error "copy target binaries"
+    cp -R fakeroot/usr $ROOTFS_DIR/ || error "copy target binaries"
 
     popd
     touch "$STATE_DIR/midori.installed"
