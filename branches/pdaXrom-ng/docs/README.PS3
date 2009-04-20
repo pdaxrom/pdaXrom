@@ -1,0 +1,16 @@
+Compile uclibc crosscompiler:
+
+UCLIBC_CONFIG=powerpc-config-wchar-locale  ./build-crosstools.sh powerpc-linux-uclibc
+
+Compile powerpc32 crosscompiler:
+
+./build-crosstools.sh powerpc-linux
+
+Compile ps3boot bootloader:
+
+./build-ps3-boot-bt.sh
+
+Compile full pdaXrom-ng-ps3 distro:
+
+./build-linux-ps3.sh
+
