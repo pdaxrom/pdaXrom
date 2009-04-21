@@ -14,6 +14,8 @@ SQUASHFS_LZMA=no
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc
 
+. $RULES_DIR/wpa_supplicant.sh
+
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
 . ./sets/packages-xorg-xserver.inc
