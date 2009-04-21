@@ -17,6 +17,7 @@
 . $RULES_DIR/module-init-tools.sh
 . $RULES_DIR/udev.sh
 . $RULES_DIR/wireless_tools.sh
+. $RULES_DIR/wpa_supplicant.sh
 . $RULES_DIR/dhcpcd.sh
 . $RULES_DIR/install_libc.sh
 . $RULES_DIR/zlib.sh
