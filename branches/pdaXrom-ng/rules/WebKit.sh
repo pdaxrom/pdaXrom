@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-WEBKIT=WebKit-r39474.tar.bz2
+WEBKIT_REVISION=r42583
+WEBKIT=WebKit-${WEBKIT_REVISION}.tar.bz2
 WEBKIT_MIRROR=http://builds.nightly.webkit.org/files/trunk/src
-WEBKIT_DIR=$BUILD_DIR/WebKit-r39474
+WEBKIT_DIR=$BUILD_DIR/WebKit-${WEBKIT_REVISION}
 WEBKIT_ENV="$CROSS_ENV_AC"
 
 build_WebKit() {
@@ -23,7 +24,7 @@ build_WebKit() {
     pushd $TOP_DIR
     cd $WEBKIT_DIR
     (
-    autoreconf -i
+    ./autogen.sh
     eval \
 	$CROSS_CONF_ENV \
 	$WEBKIT_ENV \
@@ -31,6 +32,7 @@ build_WebKit() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --enable-svg-animation \
+	    --disable-video \
 	    || error
     ) || error "configure"
     
@@ -38,10 +40,10 @@ build_WebKit() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 .libs/libwebkit-1.0.so.1.0.0 $ROOTFS_DIR/usr/lib/libwebkit-1.0.so.1.0.0 || error
-    ln -sf libwebkit-1.0.so.1.0.0 $ROOTFS_DIR/usr/lib/libwebkit-1.0.so.1
-    ln -sf libwebkit-1.0.so.1.0.0 $ROOTFS_DIR/usr/lib/libwebkit-1.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libwebkit-1.0.so.1.0.0 || error
+    $INSTALL -D -m 644 .libs/libwebkit-1.0.so.2.3.0 $ROOTFS_DIR/usr/lib/libwebkit-1.0.so.2.3.0 || error
+    ln -sf libwebkit-1.0.so.2.3.0 $ROOTFS_DIR/usr/lib/libwebkit-1.0.so.2
+    ln -sf libwebkit-1.0.so.2.3.0 $ROOTFS_DIR/usr/lib/libwebkit-1.0.so
+    $STRIP $ROOTFS_DIR/usr/lib/libwebkit-1.0.so.2.3.0 || error
 
     popd
     touch "$STATE_DIR/WebKit.installed"

@@ -9,7 +9,8 @@
 # see the README file.
 #
 
-WEBKIT_REVISION=r42583
+#WEBKIT_REVISION=r42583
+WEBKIT_REVISION=r39790
 WEBKIT=WebKit-${WEBKIT_REVISION}.tar.bz2
 WEBKIT_MIRROR=http://builds.nightly.webkit.org/files/trunk/src
 WEBKIT_DIR=$BUILD_DIR/WebKit-${WEBKIT_REVISION}

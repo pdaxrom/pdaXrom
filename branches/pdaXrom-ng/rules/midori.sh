@@ -39,6 +39,7 @@ build_midori() {
     
     find fakeroot/ -type f -executable | xargs $STRIP
 
+    mv -f fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
     cp -R fakeroot/etc $ROOTFS_DIR/ || error "copy target binaries"
     cp -R fakeroot/usr $ROOTFS_DIR/ || error "copy target binaries"
 

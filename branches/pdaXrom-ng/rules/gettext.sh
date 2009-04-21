@@ -17,11 +17,19 @@ ac_cv_func_mmap_fixed_mapped=yes \
 ac_cv_func_munmap=yes \
 ac_cv_func_malloc_0_nonnull=yes \
 ac_cv_func_strnlen_working=yes \
-am_cv_func_iconv_works=yes \
-gl_cv_func_wcwidth_works=yes \
 gt_cv_func_printf_posix=yes \
 gt_cv_int_divbyzero_sigfpe=yes \
 "
+
+case $CROSS in
+ *uclibc*)
+    GETTEXT_CONF_ARGS="--with-libiconv-prefix=$TARGET_BIN_DIR"
+    GETTEXT_ENV="$GETTEXT_ENV gl_cv_func_wcwidth_works=no"
+    ;;
+ *)
+    GETTEXT_ENV="$GETTEXT_ENV am_cv_func_iconv_works=yes gl_cv_func_wcwidth_works=yes"
+    ;;
+esac
 
 if [ "${TARGET_ARCH/-*}" = "x86_64" -o "${TARGET_ARCH/-*}" = "amd64" ]; then
     GETTEXT_ENV="CFLAGS='-O2 -D_FORTIFY_SOURCE=0' $GETTEXT_ENV"
@@ -45,6 +53,7 @@ build_gettext() {
 	    --disable-java \
 	    --disable-native-java \
 	    --disable-csharp \
+	    $GETTEXT_CONF_ARGS \
 	    --with-libncurses-prefix=$TARGET_BIN_DIR \
 	    --with-libglib-2.0-prefix=$TARGET_BIN_DIR \
 	    --with-libxml2-prefix=$TARGET_BIN_DIR \
