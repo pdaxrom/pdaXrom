@@ -4,13 +4,13 @@
 
 case "${1}" in
         start)
-                log_begin_msg -n "Starting acpid..."
+                log_begin_msg -n "Starting acpid"
                 /usr/sbin/acpid
                 log_end_msg $?
                 ;;
 
         stop)
-                log_begin_msg -n "Stopping acpid..."
+                log_begin_msg -n "Stopping acpid"
                 killall -9 acpid >/dev/null 2>/dev/null
                 log_end_msg $?
                 ;;

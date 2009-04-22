@@ -14,12 +14,12 @@ grep "noswap" /proc/cmdline 2>/dev/null >/dev/null && exit 0
 
 case "$1" in
   start)
-	log_begin_msg -n "Enable PS3 vram swap"
+	log_begin_msg -n "Starting PS3 vram swap"
 	mkswap $SWAPDEV >/dev/null 2>/dev/null && swapon $SWAPDEV >/dev/null 2>/dev/null
 	log_end_msg $?
 	;;
   stop)
-	log_begin_msg -n "Disable PS3 vram swap"
+	log_begin_msg -n "Stopping PS3 vram swap"
 	swapoff $SWAPDEV >/dev/null 2>/dev/null
 	log_end_msg $?
 	;;

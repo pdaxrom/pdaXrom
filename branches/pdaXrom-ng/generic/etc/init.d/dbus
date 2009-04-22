@@ -67,7 +67,7 @@ start_it_up()
  
   dbus-uuidgen --ensure  
 
-  log_begin_msg -n "Starting $DESC: "
+  log_begin_msg -n "Starting $DESC"
   start-stop-daemon --start --quiet --pidfile $PIDFILE \
     --user $DAEMONUSER --exec $DAEMON -- --system $PARAMS
   log_end_msg $?
@@ -82,7 +82,7 @@ shut_it_down()
       # TODO: --reverse when busybox supports it
       run-parts --arg=stop $EVENTDIR
   fi
-  log_begin_msg -n "Stopping $DESC: "
+  log_begin_msg -n "Stopping $DESC"
   start-stop-daemon --stop  --quiet --pidfile $PIDFILE \
     --user $DAEMONUSER
   # We no longer include these arguments so that start-stop-daemon
@@ -95,7 +95,7 @@ shut_it_down()
 
 reload_it()
 {
-  log_begin_msg -n "Reloading $DESC config: "
+  log_begin_msg -n "Reloading $DESC config"
   dbus-send --print-reply --system --type=method_call \
             --dest=org.freedesktop.DBus \
             / org.freedesktop.DBus.ReloadConfig > /dev/null

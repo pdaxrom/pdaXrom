@@ -42,8 +42,11 @@ create_root() {
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/rcK $ROOTFS_DIR/etc/init.d/ || error
     $INSTALL -m 644 $GENERICFS_DIR/etc/init.d/functions $ROOTFS_DIR/etc/init.d/ || error
     $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/sysklogd $ROOTFS_DIR/etc/init.d/ || error
+    $INSTALL -m 755 $GENERICFS_DIR/etc/init.d/network $ROOTFS_DIR/etc/init.d/ || error
     install_rc_start sysklogd 05
     install_rc_stop  sysklogd 75
+    install_rc_start network 40
+    install_rc_stop  network 60
 
     for f in $GENERICFS_DIR/etc/*; do
 	test -f $f && $INSTALL -m 644 $f $ROOTFS_DIR/etc/
