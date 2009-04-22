@@ -22,7 +22,7 @@ create_initramfs() {
     for f in bin/busybox bin/ash bin/sh bin/ls bin/cat bin/cp bin/dd bin/echo \
 	    sbin/mkfs.minix bin/mount bin/umount bin/mkdir sbin/insmod \
 	    sbin/init sbin/pivot_root sbin/rmmod bin/sleep bin/dmesg \
-	    sbin/lsmod sbin/swapon sbin/swapoff ; do
+	    sbin/lsmod sbin/swapon sbin/swapoff sbin/mkswap sbin/losetup ; do
 	cp -a $ROOTFS_DIR/$f $INITRAMFS_DIR/$f || error
     done
 

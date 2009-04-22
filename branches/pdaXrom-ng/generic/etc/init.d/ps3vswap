@@ -17,8 +17,7 @@ go_background $1
 case "$1" in
   start)
 	log_begin_msg -n "Starting PS3 vram swap"
-	if mount | grep boot | grep -q ps3vram ; then
-	    nice -n 15 dd if=/dev/zero of=/boot/swapfile bs=1M count=128 >/dev/null 2>/dev/null && mkswap /boot/swapfile && swapon /boot/swapfile
+	if mount | grep squashfs | grep -q ps3vram ; then
 	    log_end_msg $?
 	else
 	    mkswap $SWAPDEV >/dev/null 2>/dev/null && swapon $SWAPDEV >/dev/null 2>/dev/null
@@ -27,8 +26,8 @@ case "$1" in
 	;;
   stop)
 	log_begin_msg -n "Stopping PS3 vram swap"
-	if [ -e /boot/swapfile ]; then
-	    swapoff /boot/swapfile  >/dev/null 2>/dev/null
+	if mount | grep squashfs | grep -q ps3vram ; then
+	    swapoff /dev/loop0  >/dev/null 2>/dev/null
 	else
 	    swapoff $SWAPDEV >/dev/null 2>/dev/null
 	fi
