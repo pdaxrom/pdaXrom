@@ -4,23 +4,34 @@
 . /etc/init.d/functions
 
 NAME=ps3vswap
-
+DESC="PS3 vram swap"
 SWAPDEV=/dev/ps3vram
 
 grep "mtdblock" /proc/devices 2>/dev/null >/dev/null || exit 0
 grep "noswap" /proc/cmdline 2>/dev/null >/dev/null && exit 0
+
+go_background $1
 
 #[ -e $SWAPDEV ] || mknod $SWAPDEV b 31 0
 
 case "$1" in
   start)
 	log_begin_msg -n "Starting PS3 vram swap"
-	mkswap $SWAPDEV >/dev/null 2>/dev/null && swapon $SWAPDEV >/dev/null 2>/dev/null
-	log_end_msg $?
+	if mount | grep boot | grep -q ps3vram ; then
+	    nice -n 15 dd if=/dev/zero of=/boot/swapfile bs=1M count=128 >/dev/null 2>/dev/null && mkswap /boot/swapfile && swapon /boot/swapfile
+	    log_end_msg $?
+	else
+	    mkswap $SWAPDEV >/dev/null 2>/dev/null && swapon $SWAPDEV >/dev/null 2>/dev/null
+	    log_end_msg $?
+	fi
 	;;
   stop)
 	log_begin_msg -n "Stopping PS3 vram swap"
-	swapoff $SWAPDEV >/dev/null 2>/dev/null
+	if [ -e /boot/swapfile ]; then
+	    swapoff /boot/swapfile  >/dev/null 2>/dev/null
+	else
+	    swapoff $SWAPDEV >/dev/null 2>/dev/null
+	fi
 	log_end_msg $?
 	;;
   *)

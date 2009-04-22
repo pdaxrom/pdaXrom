@@ -14,7 +14,7 @@ build_tweak_ps3() {
     banner "Tweaking PS3 rootfs"
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/ps3vswap $ROOTFS_DIR/etc/init.d/ps3vswap || error
-    install_rc_start ps3vswap 10
+    install_rc_start ps3vswap 50
     install_rc_stop  ps3vswap 70
 
     $INSTALL -D -m 644 $GENERICFS_DIR/asound.state.PS3 $ROOTFS_DIR/var/lib/alsa/asound.state || error

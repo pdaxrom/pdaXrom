@@ -79,3 +79,20 @@ log_end_msg() {
 	echo
     fi
 }
+
+go_background() {
+    local NAME=`basename $0`
+    if [ ! -e /var/run/${NAME}.init ]; then
+	touch /var/run/${NAME}.init
+
+	case "$1" in
+	start)
+	    log_begin_msg -n "Starting $DESC "
+    	    start-stop-daemon -S -x "$0" -q -b -- start  >/dev/null 2>/dev/null
+	    log_end_msg $?
+	    exit 0
+	    ;;
+	esac
+    fi
+    rm -f /var/run/${NAME}.init
+}

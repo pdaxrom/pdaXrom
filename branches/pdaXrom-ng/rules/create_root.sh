@@ -1,5 +1,6 @@
 DIRS="
 bin
+boot
 dev
 etc
 etc/init.d

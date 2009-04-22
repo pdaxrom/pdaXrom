@@ -10,19 +10,7 @@ DAEMON=/usr/sbin/dropbear
 NAME=dropbear
 DESC="Dropbear SSH server"
 
-if [ -z /var/run/${NAME}.init ]; then
-    touch /var/run/${NAME}.init
-
-    case "$1" in
-    start)
-	log_begin_msg -n "Starting $DESC "
-    	start-stop-daemon -S -x "/etc/init.d/$NAME" -q -b -- start  >/dev/null 2>/dev/null
-	log_end_msg $?
-	exit 0
-	;;
-    esac
-    rm -f /var/run/${NAME}.init
-fi
+go_background $1
 
 DROPBEAR_PORT=22
 DROPBEAR_EXTRA_ARGS=
@@ -58,7 +46,7 @@ done
 
 case "$1" in
   start)
-	#log_begin_msg -n "Starting $DESC "
+	log_begin_msg -n "Starting $DESC "
 	gen_keys
 	KEY_ARGS=""
 	test -f $DROPBEAR_DSSKEY && KEY_ARGS="$KEY_ARGS -d $DROPBEAR_DSSKEY"
@@ -66,7 +54,7 @@ case "$1" in
 	start-stop-daemon -S \
 	  -x "$DAEMON" -- $KEY_ARGS \
 	    -p "$DROPBEAR_PORT" $DROPBEAR_EXTRA_ARGS
-	#log_end_msg $?
+	log_end_msg $?
 	;;
   stop)
 	log_begin_msg -n "Stopping $DESC "
