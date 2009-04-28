@@ -8,6 +8,7 @@ KERNEL_VERSION="2.6.29"
 TARGET_VENDOR_PATCH=ps3
 
 KERNEL_CONFIG=ps3_kboot_bt
+BUSYBOX_CONFIG=busybox_config_ps3boot
 
 BLUEZ_UTILS3_BIN_FILES="tools/hciconfig"
 

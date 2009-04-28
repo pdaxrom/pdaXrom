@@ -1,7 +1,10 @@
-BUSYBOX=busybox-1.13.2.tar.bz2
+BUSYBOX_VERSION=1.13.2
+BUSYBOX=busybox-${BUSYBOX_VERSION}.tar.bz2
 BUSYBOX_MIRROR=http://busybox.net/downloads
-BUSYBOX_DIR=$BUILD_DIR/busybox-1.13.2
-BUSYBOX_CONFIG=busybox_config
+BUSYBOX_DIR=$BUILD_DIR/busybox-${BUSYBOX_VERSION}
+if [ "x$BUSYBOX_CONFIG" = "x" ]; then
+    BUSYBOX_CONFIG=busybox_config
+fi
 
 build_busybox() {
     test -e "$STATE_DIR/busybox" && return
