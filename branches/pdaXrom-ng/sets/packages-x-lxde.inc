@@ -19,5 +19,7 @@
 #. $RULES_DIR/lxde-lxmusic.sh
 #. $RULES_DIR/lxde-lxlauncher.sh
 
+. $RULES_DIR/dancesplash.sh
+
 . $RULES_DIR/lxde-tweaks.sh
 
