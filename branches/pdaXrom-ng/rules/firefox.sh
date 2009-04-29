@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-FIREFOX_VERSION=3.0.9
+FIREFOX_VERSION=3.0.10
 FIREFOX=firefox-${FIREFOX_VERSION}-source.tar.bz2
 FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${FIREFOX_VERSION}/source
 FIREFOX_DIR=$BUILD_DIR/mozilla
