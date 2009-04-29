@@ -219,8 +219,6 @@ int db_ui_check_events(db_ui_event *event)
     XEvent e;
     event->type = DB_EVENT_NONE;
     if (XCheckMaskEvent(dpy, ExposureMask|ButtonPressMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|PropertyChangeMask, &e) == True) {
-    fprintf(stderr, "xxx\n");
-
 	if (e.type == Expose && e.xexpose.count < 1) {
 	    if (_img)
 		XPutImage (dpy, win, gc, _img, 0, 0, 
@@ -255,7 +253,6 @@ int db_ui_check_events(db_ui_event *event)
 		if (e.xclient.data.b)
 		    event->splash.data = NULL; //strdup(e.xclient.data.b);
 	    //}
-	    fprintf(stderr, "zzz\n");
 	}
     }
     return event->type;

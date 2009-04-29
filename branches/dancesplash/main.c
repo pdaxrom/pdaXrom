@@ -63,8 +63,6 @@ void app_close(void)
 	db_image_free(img_anim[i]);
 
     db_ui_close();
-    
-    fprintf(stderr, "Bye!\n");
 }
 
 int main(int argc, char *argv[])
