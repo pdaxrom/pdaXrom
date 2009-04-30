@@ -46,7 +46,8 @@ boot_rootfs() {
     #/sbin/pivot_root /rootfs /rootfs/boot/initrd
     umount /sys
     umount /proc
-    exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
+    #exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
+    exec /sbin/switch_root . /sbin/init
 }
 
 check_rootfs() {
