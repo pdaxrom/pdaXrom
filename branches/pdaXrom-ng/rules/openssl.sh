@@ -71,15 +71,29 @@ build_openssl() {
 		    `build_openssl_thud $TARGET_ARCH` \
 	    || error
     )
-    
-    make INSTALLTOP=$TARGET_BIN_DIR openssl.pc CC=${TARGET_ARCH}-gcc \
-	RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
 
-    make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
+    case $TARGET_ARCH in
+    *uclibc*)
+	make INSTALLTOP=$TARGET_BIN_DIR openssl.pc libcrypto.pc libssl.pc CC=${TARGET_ARCH}-gcc \
+	    RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
 
-    make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc \
-	install INSTALL_PREFIX=$TARGET_BIN_DIR INSTALLTOP='/usr' \
-	|| error
+	make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc \
+	    build_libs || error
+
+	make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc \
+	     INSTALL_PREFIX=$TARGET_BIN_DIR INSTALLTOP='/usr' \
+	     DIRS="crypto fips ssl engines" install_sw || error "install_sw"
+	;;
+    *)
+	make INSTALLTOP=$TARGET_BIN_DIR openssl.pc CC=${TARGET_ARCH}-gcc \
+	    RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
+
+	make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc || error
+
+	make CC=${TARGET_ARCH}-gcc RANLIB=${TARGET_ARCH}-ranlib AR="${TARGET_ARCH}-ar r" ARD="${TARGET_ARCH}-ar d" MAKEDEPPROG=${TARGET_ARCH}-gcc \
+	    install INSTALL_PREFIX=$TARGET_BIN_DIR INSTALLTOP='/usr' || error
+	;;
+    esac
 
     $INSTALL -D -m 644 libcrypto.so.0.9.8 $ROOTFS_DIR/usr/lib/libcrypto.so.0.9.8 || error
     ln -sf libcrypto.so.0.9.8 $ROOTFS_DIR/usr/lib/libcrypto.so.0
