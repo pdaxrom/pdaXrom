@@ -11,6 +11,7 @@ MODULES="usbcore.ko ehci-hcd.ko ohci-hcd.ko sg.ko usb-storage.ko fat.ko vfat.ko 
 MODULES_REV=""
 
 for f in $MODULES; do
+    /bin/test -e /modules/$f || continue
     /sbin/insmod -f /modules/$f
     MODULES_REV="$f $MODULES_REV"
 done
