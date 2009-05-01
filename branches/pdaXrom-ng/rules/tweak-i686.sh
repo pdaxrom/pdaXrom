@@ -17,7 +17,11 @@ build_tweak_i686cd() {
     test -e $ROOTFS_DIR/usr/bin/startlxde && ln -sf ../../../usr/bin/startlxde $ROOTFS_DIR/etc/X11/xinit/xinitrc
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
-    install_rc_start xstart 99
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start xstart 03
+    else
+	install_rc_start xstart 99
+    fi
     install_rc_stop  xstart 01
 
     if [ -e $ROOTFS_DIR/usr/bin/matchbox-keyboard ]; then

@@ -52,7 +52,11 @@ build_alsa_utils() {
     mkdir -p $ROOTFS_DIR/var/lib/alsa
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/alsa-utils $ROOTFS_DIR/etc/init.d/alsa-utils
-    install_rc_start alsa-utils 90
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start alsa-utils 00
+    else
+	install_rc_start alsa-utils 90
+    fi
     install_rc_stop  alsa-utils 10
 
     popd

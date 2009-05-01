@@ -80,7 +80,11 @@ build_dbus() {
     $INSTALL -d $ROOTFS_DIR/var/run/dbus || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/dbus $ROOTFS_DIR/etc/init.d/dbus || error
-    install_rc_start dbus 10
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start dbus 00
+    else
+	install_rc_start dbus 10
+    fi
     install_rc_stop  dbus 71
 
     popd

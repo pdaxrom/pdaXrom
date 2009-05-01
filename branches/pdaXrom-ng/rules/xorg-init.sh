@@ -17,7 +17,11 @@ build_xorg_init() {
     banner "Build $XORG_INIT"
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xorg $ROOTFS_DIR/etc/init.d/xorg || error
-    install_rc_start xorg 99
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start xorg 00
+    else
+	install_rc_start xorg 99
+    fi
 
     touch "$STATE_DIR/xorg_init-1.0.0"
 }

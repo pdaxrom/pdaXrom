@@ -35,7 +35,12 @@ build_udev() {
     install_sysroot_files || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/udev $ROOTFS_DIR/etc/init.d/udev || error
-    install_rc_start udev 00
+
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start udev 04
+    else
+	install_rc_start udev 00
+    fi
     install_rc_stop  udev 97
 
     $INSTALL -D -m 644 $GENERICFS_DIR/etc/udev/udev.conf  $ROOTFS_DIR/etc/udev/udev.conf || error

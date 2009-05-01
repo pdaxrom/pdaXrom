@@ -67,7 +67,11 @@ build_hal() {
     cp -R fakeroot/var $ROOTFS_DIR/ || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/hal $ROOTFS_DIR/etc/init.d/hal || error
-    install_rc_start hal 10
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start hal 01
+    else
+	install_rc_start hal 10
+    fi
     install_rc_stop  hal 70
 
     popd

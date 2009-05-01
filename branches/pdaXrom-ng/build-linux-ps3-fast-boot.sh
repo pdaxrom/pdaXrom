@@ -10,6 +10,8 @@ TARGET_VENDOR_PATCH=ps3
 
 SQUASHFS_LZMA=no
 
+USE_FASTBOOT=yes
+
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc

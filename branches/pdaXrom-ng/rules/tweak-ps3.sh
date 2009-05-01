@@ -42,7 +42,11 @@ build_tweak_ps3() {
     fi
     
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
-    install_rc_start xstart 99
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start xstart 03
+    else
+	install_rc_start xstart 99
+    fi
     install_rc_stop  xstart 01
 
     touch "$STATE_DIR/tweak_ps3-1.0"

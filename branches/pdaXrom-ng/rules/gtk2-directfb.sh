@@ -108,7 +108,11 @@ build_gtk2() {
     $INSTALL -D -m 644 modules/input/im-multipress.conf $ROOTFS_DIR/etc/gtk-2.0/im-multipress.conf || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/gtk $ROOTFS_DIR/etc/init.d/gtk || error
-    install_rc_start gtk 91
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start gtk 02
+    else
+	install_rc_start gtk 91
+    fi
 
     popd
     touch "$STATE_DIR/gtk2.installed"

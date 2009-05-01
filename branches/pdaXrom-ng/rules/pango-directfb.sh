@@ -62,7 +62,11 @@ build_pango() {
 
     $INSTALL -D -m 644 pango/pangox.aliases $ROOTFS_DIR/etc/pango/pangox.aliases || error
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/pango $ROOTFS_DIR/etc/init.d/pango || error
-    install_rc_start pango 90
+    if [ "$USE_FASTBOOT" = "yes" ]; then
+	install_rc_start pango 01
+    else
+	install_rc_start pango 90
+    fi
 
     popd
     touch "$STATE_DIR/pango.installed"

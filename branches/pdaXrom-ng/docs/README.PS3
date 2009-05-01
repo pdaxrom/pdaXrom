@@ -1,6 +1,6 @@
 Compile uclibc crosscompiler:
 
-UCLIBC_CONFIG=powerpc-config-wchar-locale  ./build-crosstools.sh powerpc-linux-uclibc
+./build-crosstools.sh powerpc-linux-uclibc
 
 Compile powerpc32 crosscompiler:
 
