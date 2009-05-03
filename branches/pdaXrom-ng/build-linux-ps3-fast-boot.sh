@@ -49,7 +49,7 @@ USE_FASTBOOT=yes
 
 . $RULES_DIR/sixaxisdmouse.sh
 
-. ./sets/packages-devel.inc
+#. ./sets/packages-devel.inc
 
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/spufs.sh
