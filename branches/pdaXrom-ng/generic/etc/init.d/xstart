@@ -16,6 +16,7 @@ case "$1" in
 	test -e /etc/profile && . /etc/profile
 	start-stop-daemon -S -x "$DAEMON" -q -b >/dev/null 2>/dev/null
 	log_end_msg $?
+	sleep 2
 	;;
   stop)
 	log_begin_msg -n "Stopping X11"
