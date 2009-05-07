@@ -11,7 +11,7 @@
 
 U_BOOT_VERSION=2006-04-18-1106
 U_BOOT=u-boot-${U_BOOT_VERSION}.tar.bz2
-U_BOOT_MIRROR=ftp://ftp.denx.de/pub/u-boot
+U_BOOT_MIRROR=http://mail.pdaxrom.org/src/
 U_BOOT_DIR=$BUILD_DIR/u-boot-${U_BOOT_VERSION}
 U_BOOT_ENV="$CROSS_ENV_AC"
 CROSS_COMPILE=${TARGET_ARCH}-
