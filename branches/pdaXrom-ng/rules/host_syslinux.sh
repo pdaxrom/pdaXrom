@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-HOST_SYSLINUX=syslinux-3.72.tar.bz2
+HOST_SYSLINUX_VERSION=3.82
+HOST_SYSLINUX=syslinux-${HOST_SYSLINUX_VERSION}.tar.bz2
 HOST_SYSLINUX_MIRROR=http://www.kernel.org/pub/linux/utils/boot/syslinux
-HOST_SYSLINUX_DIR=$HOST_BUILD_DIR/syslinux-3.72
+HOST_SYSLINUX_DIR=$HOST_BUILD_DIR/syslinux-${HOST_SYSLINUX_VERSION}
 HOST_SYSLINUX_ENV=
 
 build_host_syslinux() {
-    test -e "$STATE_DIR/host_syslinux-3.72" && return
+    test -e "$STATE_DIR/host_syslinux-${HOST_SYSLINUX_VERSION}" && return
     banner "Build $HOST_SYSLINUX"
     download $HOST_SYSLINUX_MIRROR $HOST_SYSLINUX
     extract_host $HOST_SYSLINUX
@@ -31,7 +32,7 @@ build_host_syslinux() {
     $INSTALL -D -m 644 core/isolinux.bin $HOST_BIN_DIR/share/syslinux/isolinux.bin || error
 
     popd
-    touch "$STATE_DIR/host_syslinux-3.72"
+    touch "$STATE_DIR/host_syslinux-${HOST_SYSLINUX_VERSION}"
 }
 
 build_host_syslinux

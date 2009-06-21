@@ -4,8 +4,8 @@ TARGET_ARCH="i686-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
-KERNEL_VERSION="2.6.29"
-KERNEL_CONFIG=i686-kernel-2.6.29
+KERNEL_VERSION="2.6.30"
+KERNEL_CONFIG=i686-kernel-2.6.30
 SQUASHFS_LZMA=no
 
 . ./sets/packages-basic.inc
