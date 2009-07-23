@@ -44,4 +44,4 @@ rm -rf $ROOTFS_DIR/lib/modules/*
 # we don't use c++ here :)
 rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
 
-. $RULES_DIR/create_ps3kboot.sh
+. $RULES_DIR/create_ps3kboot-fastboot.sh

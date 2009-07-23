@@ -1,6 +1,6 @@
-BINUTILS="binutils-2.19.50.0.1.tar.bz2"
+BINUTILS="binutils-${BINUTILS_VERSION-2.19.50.0.1}.tar.bz2"
 BINUTILS_MIRROR="ftp://ftp.kernel.org/pub/linux/devel/binutils"
-BINUTILS_DIR="$BUILD_DIR/binutils-2.19.50.0.1"
+BINUTILS_DIR="$BUILD_DIR/binutils-${BINUTILS_VERSION-2.19.50.0.1}"
 
 build_binutils() {
     test -e "$STATE_DIR/binutils" && return
@@ -51,13 +51,9 @@ get_kernel_subarch() {
     esac
 }
 
-if [ "x$KERNEL_VERSION" = "x" ]; then
-KERNEL_VERSION="2.6.27"
-fi
-
-KERNEL=linux-${KERNEL_VERSION}.tar.bz2
+KERNEL=linux-${KERNEL_VERSION-2.6.27}.tar.bz2
 KERNEL_MIRROR=http://kernel.org/pub/linux/kernel/v2.6
-KERNEL_DIR=$BUILD_DIR/linux-${KERNEL_VERSION}
+KERNEL_DIR=$BUILD_DIR/linux-${KERNEL_VERSION-2.6.27}
 
 install_linux_headers() {
     test -e "$STATE_DIR/linux_kernel_headers" && return
@@ -83,8 +79,8 @@ install_linux_headers() {
     touch "$STATE_DIR/linux_kernel_headers"
 }
 
-GLIBC=eglibc-2.8
-GLIBC_MIRROR=svn://svn.eglibc.org/branches/eglibc-2_8
+GLIBC=eglibc-2.9
+GLIBC_MIRROR=svn://svn.eglibc.org/branches/eglibc-2_9
 GLIBC_DIR="$BUILD_DIR/$GLIBC"
 install_glibc_headers() {
     test -e "$STATE_DIR/glibc_headers" && return
@@ -102,6 +98,20 @@ install_glibc_headers() {
     fi
     pushd $TOP_DIR
 
+    cd $GLIBC_DIR
+
+    case $TARGET_ARCH in
+    mips*)
+	if [ ! "x$DEFAULT_MABI" = "x" ]; then
+	    echo "" > ports/sysdeps/mips/mips64/n64/Makefile
+	    echo "" > ports/sysdeps/mips/mips64/n32/Makefile
+	    echo "" > ports/sysdeps/mips/mips32/Makefile
+	    sed -i "/default) machine=/s/n32/${DEFAULT_MABI}/g" ports/sysdeps/mips/preconfigure || error "mips default mabi"
+	    true
+	fi
+	;;
+    esac
+
     mkdir -p $GLIBC_DIR/build0
     cd $GLIBC_DIR/build0
     
@@ -117,7 +127,7 @@ install_glibc_headers() {
     make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install-bootstrap-headers=yes install-headers || error "install headers"
 
     case $TARGET_ARCH in
-    powerpc64-*|ppc64-*)
+    powerpc64-*|ppc64-*|mips64*-*)
 	ln -sf lib64 $TOOLCHAIN_SYSROOT/lib
 	ln -sf lib64 $TOOLCHAIN_SYSROOT/usr/lib
 	;;
@@ -137,6 +147,11 @@ build_glibc_stage1() {
     mkdir -p $GLIBC_DIR/build1
     cd $GLIBC_DIR/build1
     
+    BUILD_CC=gcc \
+    CC="${TARGET_ARCH}-gcc ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
+    CXX="${TARGET_ARCH}-g++ ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
+    AR=${TARGET_ARCH}-ar \
+    RANLIB=${TARGET_ARCH}-ranlib \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -162,6 +177,11 @@ build_glibc_stage2() {
     mkdir -p $GLIBC_DIR/build2
     cd $GLIBC_DIR/build2
     
+    BUILD_CC=gcc \
+    CC="${TARGET_ARCH}-gcc ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
+    CXX="${TARGET_ARCH}-g++ ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
+    AR=${TARGET_ARCH}-ar \
+    RANLIB=${TARGET_ARCH}-ranlib \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -177,9 +197,9 @@ build_glibc_stage2() {
     touch "$STATE_DIR/glibc_installed2"
 }
 
-GCC="gcc-4.3.2.tar.bz2"
-GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3.2"
-GCC_DIR="$BUILD_DIR/gcc-4.3.2"
+GCC="gcc-${GCC_VERSION-4.3.2}.tar.bz2"
+GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-${GCC_VERSION-4.3.2}"
+GCC_DIR="$BUILD_DIR/gcc-${GCC_VERSION-4.3.2}"
 
 build_gcc_bootstrap() {
     test -e "$STATE_DIR/gcc_bootstrap" && return
@@ -231,10 +251,17 @@ build_gcc_bootstrap() {
 	esac
 	;;
     mips*)
-	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \
-		    --with-float=hard \
-		    --enable-mips-nonpic \
-		    --enable-extra-sgxxlite-multilibs"
+	if [ ! "x$DEFAULT_MABI" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-abi=${DEFAULT_MABI}"
+	fi
+	if [ ! "x$DEFAULT_CPU" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-arch=$DEFAULT_CPU"
+	fi
+	if [ ! "x$DEFAULT_FPU" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-float=$DEFAULT_FPU"
+	fi
+	#CONF_ARGS="$CONF_ARGS --enable-mips-nonpic \
+	#	    --enable-extra-sgxxlite-multilibs"
 	;;
     *)
 	error "Unknown arch"
@@ -329,10 +356,17 @@ build_gcc_stage1() {
 	esac
 	;;
     mips*)
-	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \
-		    --with-float=hard \
-		    --enable-mips-nonpic \
-		    --enable-extra-sgxxlite-multilibs"
+	if [ ! "x$DEFAULT_MABI" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-abi=${DEFAULT_MABI}"
+	fi
+	if [ ! "x$DEFAULT_CPU" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-arch=$DEFAULT_CPU"
+	fi
+	if [ ! "x$DEFAULT_FPU" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-float=$DEFAULT_FPU"
+	fi
+	#CONF_ARGS="$CONF_ARGS --enable-mips-nonpic \
+	#	    --enable-extra-sgxxlite-multilibs"
 	;;
     *)
 	error "Unknown arch"
@@ -429,10 +463,17 @@ build_gcc() {
 	esac
 	;;
     mips*)
-	CONF_ARGS="--with-arch=${DEFAULT_CPU-mips32r2} \
-		    --with-float=hard \
-		    --enable-mips-nonpic \
-		    --enable-extra-sgxxlite-multilibs"
+	if [ ! "x$DEFAULT_MABI" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-abi=${DEFAULT_MABI}"
+	fi
+	if [ ! "x$DEFAULT_CPU" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-arch=$DEFAULT_CPU"
+	fi
+	if [ ! "x$DEFAULT_FPU" = "x" ]; then
+	    CONF_ARGS="$CONF_ARGS --with-float=$DEFAULT_FPU"
+	fi
+	#CONF_ARGS="$CONF_ARGS --enable-mips-nonpic \
+	#	    --enable-extra-sgxxlite-multilibs"
 	;;
     *)
 	error "Unknown arch"

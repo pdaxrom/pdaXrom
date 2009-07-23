@@ -1,0 +1,53 @@
+# 作者（author）: 孙海勇
+# 发布协议（License）: GPL v2
+# 邮件（email）: youbest@sina.com
+# 说明：此补丁用于修正Linux-2.6.29在gcc-4.4版本中的编译为龙芯2f优化的编译问题。
+
+diff -Nur linux-2.6.29.1/arch/mips/include/asm/delay.h linux-2.6.29.1-gcc4.4/arch/mips/include/asm/delay.h
+--- linux-2.6.29.1/arch/mips/include/asm/delay.h	2009-04-02 20:55:27.000000000 +0000
++++ linux-2.6.29.1-gcc4.4/arch/mips/include/asm/delay.h	2009-05-02 21:59:35.429890364 +0000
+@@ -82,12 +82,14 @@
+ 		: "=h" (usecs), "=l" (lo)
+ 		: "r" (usecs), "r" (lpj)
+ 		: GCC_REG_ACCUM);
+-	else if (sizeof(long) == 8 && !R4000_WAR)
+-		__asm__("dmultu\t%2, %3"
+-		: "=h" (usecs), "=l" (lo)
+-		: "r" (usecs), "r" (lpj)
+-		: GCC_REG_ACCUM);
+-	else if (sizeof(long) == 8 && R4000_WAR)
++	else if (sizeof(long) == 8 && !R4000_WAR){
++		//__asm__("dmultu\t%2, %3"
++		//: "=h" (usecs), "=l" (lo)
++		//: "r" (usecs), "r" (lpj)
++		//: GCC_REG_ACCUM);
++		typedef unsigned int uint128_t __attribute__((mode(TI)));
++		usecs = ((uint128_t) usecs * lpj) >> 64;
++	}else if (sizeof(long) == 8 && R4000_WAR)
+ 		__asm__("dmultu\t%3, %4\n\tmfhi\t%0"
+ 		: "=r" (usecs), "=h" (hi), "=l" (lo)
+ 		: "r" (usecs), "r" (lpj)
+diff -Nur linux-2.6.29.1/arch/mips/Makefile linux-2.6.29.1-gcc4.4/arch/mips/Makefile
+--- linux-2.6.29.1/arch/mips/Makefile	2009-05-02 21:58:55.943463943 +0000
++++ linux-2.6.29.1-gcc4.4/arch/mips/Makefile	2009-05-02 21:59:35.448915529 +0000
+@@ -119,7 +119,7 @@
+ cflags-$(CONFIG_CPU_VR41XX)	+= -march=r4100 -Wa,--trap
+ cflags-$(CONFIG_CPU_R4X00)	+= -march=r4600 -Wa,--trap
+ cflags-$(CONFIG_CPU_TX49XX)	+= -march=r4600 -Wa,--trap
+-cflags-$(CONFIG_CPU_LOONGSON2)	+= -march=r4600 -Wa,--trap
++cflags-$(CONFIG_CPU_LOONGSON2)	+= -march=loongson2f -Wa,-mfix-ls2f-kernel,--trap
+ cflags-$(CONFIG_CPU_MIPS32_R1)	+= $(call cc-option,-march=mips32,-mips32 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS32) \
+ 			-Wa,-mips32 -Wa,--trap
+ cflags-$(CONFIG_CPU_MIPS32_R2)	+= $(call cc-option,-march=mips32r2,-mips32r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS32) \
+diff -Nur linux-2.6.29.1/drivers/usb/core/urb.c linux-2.6.29.1-gcc4.4/drivers/usb/core/urb.c
+--- linux-2.6.29.1/drivers/usb/core/urb.c	2009-04-02 20:55:27.000000000 +0000
++++ linux-2.6.29.1-gcc4.4/drivers/usb/core/urb.c	2009-05-02 21:59:35.470884760 +0000
+@@ -450,7 +450,7 @@
+ 			return -EINVAL;
+ 		}
+ 		/* Round down to a power of 2, no more than max */
+-		urb->interval = min(max, 1 << ilog2(urb->interval));
++		urb->interval = min(max, 1 << __ilog2_u64(urb->interval));
+ 	}
+ 
+ 	return usb_hcd_submit_urb(urb, mem_flags);

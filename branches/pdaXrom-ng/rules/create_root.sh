@@ -54,7 +54,7 @@ create_root() {
     done
 
     case $TARGET_ARCH in
-    powerpc64-*|ppc64-*|x86_64-*|amd64-*)
+    powerpc64-*|ppc64-*|x86_64-*|amd64-*|mips64*-*)
 	ln -sf lib $ROOTFS_DIR/lib64
 	ln -sf lib $ROOTFS_DIR/usr/lib64
 	;;
