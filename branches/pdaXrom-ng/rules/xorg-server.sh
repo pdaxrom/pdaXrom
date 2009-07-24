@@ -32,6 +32,9 @@ build_xorg_server() {
     arm*)
 	XORG_SERVER_GLXDRI_CONF="--disable-dri --disable-glx"
 	;;
+    mips64*)
+	XORG_SERVER_GLXDRI_CONF="--disable-dri --disable-glx"
+	;;
     mips*)
 	XORG_SERVER_GLXDRI_CONF="--disable-dri --disable-glx"
 	;;

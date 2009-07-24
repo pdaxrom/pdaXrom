@@ -88,13 +88,21 @@ build_firefox() {
 	    T_ARCH="arm"
 	    T_CONF="armeb"
 	    ;;
-	mips*l-*)
+	mipsel-*)
 	    T_ARCH="mips"
 	    T_CONF="mipsel"
 	    ;;
 	mips*-*)
 	    T_ARCH="mips"
 	    T_CONF="mipseb"
+	    ;;
+	mips64el-*)
+	    T_ARCH="mips"
+	    T_CONF="mips64el"
+	    ;;
+	mips64*-*)
+	    T_ARCH="mips"
+	    T_CONF="mips64eb"
 	    ;;
 	powerpc-*|ppc-*)
 	    T_ARCH="ppc"

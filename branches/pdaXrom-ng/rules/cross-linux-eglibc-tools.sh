@@ -127,9 +127,18 @@ install_glibc_headers() {
     make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install-bootstrap-headers=yes install-headers || error "install headers"
 
     case $TARGET_ARCH in
-    powerpc64-*|ppc64-*|mips64*-*)
+    powerpc64-*|ppc64-*)
 	ln -sf lib64 $TOOLCHAIN_SYSROOT/lib
 	ln -sf lib64 $TOOLCHAIN_SYSROOT/usr/lib
+	;;
+    mips64*-*)
+	if [ "$DEFAULT_MABI" = "64"  ]; then
+	    ln -sf lib64 $TOOLCHAIN_SYSROOT/lib
+	    ln -sf lib64 $TOOLCHAIN_SYSROOT/usr/lib
+	else
+	    ln -sf lib32 $TOOLCHAIN_SYSROOT/lib
+	    ln -sf lib32 $TOOLCHAIN_SYSROOT/usr/lib
+	fi
 	;;
     esac
 
