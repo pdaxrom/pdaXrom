@@ -115,6 +115,7 @@ install_glibc_headers() {
     mkdir -p $GLIBC_DIR/build0
     cd $GLIBC_DIR/build0
     
+    ac_test_x="test -x" \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -161,6 +162,7 @@ build_glibc_stage1() {
     CXX="${TARGET_ARCH}-g++ ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
     AR=${TARGET_ARCH}-ar \
     RANLIB=${TARGET_ARCH}-ranlib \
+    ac_test_x="test -x" \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
@@ -191,6 +193,7 @@ build_glibc_stage2() {
     CXX="${TARGET_ARCH}-g++ ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
     AR=${TARGET_ARCH}-ar \
     RANLIB=${TARGET_ARCH}-ranlib \
+    ac_test_x="test -x" \
     ../configure \
 	--build=$BUILD_ARCH --host=$TARGET_ARCH \
 	--prefix=/usr \
