@@ -13,6 +13,8 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc
 
+. $RULES_DIR/wpa_supplicant.sh
+
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
 . ./sets/packages-xorg-xserver.inc
@@ -30,6 +32,8 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 . ./sets/packages-xorg-apps.inc
 . ./sets/packages-xorg-fonts.inc
 
+. ./sets/packages-xorg-msttcorefonts.inc
+
 #. ./sets/packages-emulators.inc
 
 . ./sets/packages-x-apps.inc
@@ -42,5 +46,4 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
 #. ./sets/packages-devel.inc
 
-. ./sets/packages-host-squashfs.inc
-. $RULES_DIR/create_squashfs.sh
+. $RULES_DIR/tweak-yeelong2f.sh
