@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XORG_SERVER_VERSION=1.6.0
+XORG_SERVER_VERSION=1.6.2
 XORG_SERVER=xorg-server-${XORG_SERVER_VERSION}.tar.bz2
 XORG_SERVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/xserver
 XORG_SERVER_DIR=$BUILD_DIR/xorg-server-${XORG_SERVER_VERSION}
@@ -66,6 +66,13 @@ build_xorg_server() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
+
+#
+#
+    cp -f hw/xfree86/parser/xf86Optrec.h ${TARGET_INC}/xorg/ || error "workaround 1.6.2"
+    cp -f hw/xfree86/parser/xf86Parser.h ${TARGET_INC}/xorg/ || error "workaround 1.6.2"
+#
+#
     
     make DESTDIR=$XORG_SERVER_DIR/fakeroot install || error
     

@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LIBGCRYPT=libgcrypt-1.4.3.tar.bz2
+LIBGCRYPT_VERSION=1.4.4
+LIBGCRYPT=libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2
 LIBGCRYPT_MIRROR=ftp://ftp.gnupg.org/gcrypt/libgcrypt
-LIBGCRYPT_DIR=$BUILD_DIR/libgcrypt-1.4.3
+LIBGCRYPT_DIR=$BUILD_DIR/libgcrypt-${LIBGCRYPT_VERSION}
 LIBGCRYPT_ENV="$CROSS_ENV_AC ac_cv_sys_symbol_underscore=no"
 
 build_libgcrypt() {
@@ -37,10 +38,10 @@ build_libgcrypt() {
     
     ln -sf $TARGET_BIN_DIR/bin/libgcrypt-config $HOST_BIN_DIR/bin/ || error
     
-    $INSTALL -D -m 644 src/.libs/libgcrypt.so.11.5.1 $ROOTFS_DIR/usr/lib/libgcrypt.so.11.5.1 || error
-    ln -sf libgcrypt.so.11.5.1 $ROOTFS_DIR/usr/lib/libgcrypt.so.11
-    ln -sf libgcrypt.so.11.5.1 $ROOTFS_DIR/usr/lib/libgcrypt.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgcrypt.so.11.5.1 || error
+    $INSTALL -D -m 644 src/.libs/libgcrypt.so.11.5.2 $ROOTFS_DIR/usr/lib/libgcrypt.so.11.5.2 || error
+    ln -sf libgcrypt.so.11.5.2 $ROOTFS_DIR/usr/lib/libgcrypt.so.11
+    ln -sf libgcrypt.so.11.5.2 $ROOTFS_DIR/usr/lib/libgcrypt.so
+    $STRIP $ROOTFS_DIR/usr/lib/libgcrypt.so.11.5.2 || error
 
     popd
     touch "$STATE_DIR/libgcrypt.installed"

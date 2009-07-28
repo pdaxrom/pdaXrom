@@ -1,3 +1,5 @@
 optimize.diff
 amd64-64bit.diff
 autoconf
+mips/libmad-0.15.1b-cflags-O2.patch
+mips/libmad-gcc4.4.patch

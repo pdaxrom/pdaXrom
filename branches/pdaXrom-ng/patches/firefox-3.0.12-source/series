@@ -1,0 +1,9 @@
+Linux.mk.diff
+configure.diff
+configure.in.diff
+Makefile.in.diff
+eabi-fix.patch
+mips/xulrunner-1.9.0.5-gcc4.4.patch
+mips/xulrunner-mips-bus-error.patch
+mips/xulrunner-mips-o32.patch
+mips/xulrunner-mips-n32.patch
