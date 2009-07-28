@@ -24,6 +24,9 @@ build_mplayer() {
 
     local T_ARCH=
     case $TARGET_ARCH in
+    mips*)
+	T_ARCH=mips
+	;;
     arm*)
 	T_ARCH=arm-linux
 	;;
