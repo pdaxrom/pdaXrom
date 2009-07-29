@@ -2,7 +2,7 @@
 
 ISOIMAGE_NAME="simplenx-client-ps3"
 
-TARGET_ARCH="powerpc-linux"
+TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
