@@ -40,6 +40,7 @@ build_gdb() {
 	    --enable-serial-configure \
 	    --with-build-sysroot=$TARGET_BIN_DIR \
 	    --with-curses \
+	    --enable-werror=no \
 	    || error
     ) || error "configure"
     

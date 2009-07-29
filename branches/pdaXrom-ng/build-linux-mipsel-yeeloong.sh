@@ -10,6 +10,7 @@ KERNEL_VERSION="2.6.30.2"
 KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
 . ./sets/packages-basic.inc
+. ./sets/packages-acpi.inc
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc
 
@@ -44,6 +45,12 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
 . ./sets/packages-x-office.inc
 
-#. ./sets/packages-devel.inc
+. ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-yeelong2f.sh
+
+cp -f `get_kernel_image_path $TARGET_ARCH` $ROOTFS_DIR/boot/ || error "install vmlinux to /boot"
+banner "create targzipped rootfs"
+cd $ROOTFS_DIR
+rm -f $IMAGES_DIR/rootfs.tar.gz
+tar czf $IMAGES_DIR/rootfs.tar.gz .

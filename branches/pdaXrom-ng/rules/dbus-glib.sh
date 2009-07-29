@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-DBUS_GLIB=dbus-glib-0.78.tar.gz
+DBUS_GLIB_VERSION=0.82
+DBUS_GLIB=dbus-glib-${DBUS_GLIB_VERSION}.tar.gz
 DBUS_GLIB_MIRROR=http://dbus.freedesktop.org/releases/dbus-glib
-DBUS_GLIB_DIR=$BUILD_DIR/dbus-glib-0.78
+DBUS_GLIB_DIR=$BUILD_DIR/dbus-glib-${DBUS_GLIB_VERSION}
 DBUS_GLIB_ENV="$CROSS_ENV_AC \
     ac_cv_func_posix_getpwnam_r=yes \
     ac_cv_have_abstract_sockets=no \
@@ -39,7 +40,7 @@ build_dbus_glib() {
 
     #sed -i "s| /usr/bin/dbus-daemon| dbus-daemon|" tools/Makefile
     
-    make $MAKEARGS || error
+    make $MAKEARGS DBUS_BINDING_TOOL=dbus-binding-tool || error
 
     install_sysroot_files || error
     

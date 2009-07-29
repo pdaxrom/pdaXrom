@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-DBUS=dbus-1.2.10.tar.gz
+DBUS_VERSION=1.2.16
+DBUS=dbus-${DBUS_VERSION}.tar.gz
 DBUS_MIRROR=http://dbus.freedesktop.org/releases/dbus
-DBUS_DIR=$BUILD_DIR/dbus-1.2.10
+DBUS_DIR=$BUILD_DIR/dbus-${DBUS_VERSION}
 DBUS_ENV="$CROSS_ENV_AC ac_cv_have_abstract_sockets=no"
 
 build_dbus() {
