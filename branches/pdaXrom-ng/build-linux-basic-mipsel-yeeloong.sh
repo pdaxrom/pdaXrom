@@ -9,6 +9,8 @@ TARGET_VENDOR_PATCH=ls2f
 KERNEL_VERSION="2.6.30.2"
 KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
+SQUASHFS_LZMA=no
+
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
 
