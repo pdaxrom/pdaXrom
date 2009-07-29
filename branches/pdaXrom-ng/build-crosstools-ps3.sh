@@ -2,19 +2,16 @@
 
 #export BINUTILS_VERSION=2.19.1
 export GCC_VERSION=4.4.1
-export KERNEL_VERSION=2.6.29.2
 
-export KERNEL_CONFIG=yeeloong_2.6.29.2
-export TARGET_VENDOR_PATCH=ls2f
+export KERNEL_VERSION="2.6.29"
+export KERNEL_CONFIG=ps3_kernel_2.6.29
+export TARGET_VENDOR_PATCH=ps3
 
-export DEFAULT_CPU="loongson2f"
-#export DEFAULT_FPU=
-#export DEFAULT_MABI="n32"
-
-#export CROSS_OPT_ARCH="-march=loongson2f"
+#export DEFAULT_CPU="cell"
+export CROSS_OPT_ARCH="-mtune=cell"
 #export CROSS_OPT_MABI="-mabi=${DEFAULT_MABI}"
 
-TARGET_ARCH="mipsel-ls2f-linux"
+TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}

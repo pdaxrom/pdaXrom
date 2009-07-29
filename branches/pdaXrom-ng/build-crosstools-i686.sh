@@ -13,6 +13,8 @@ export KERNEL_CONFIG=i686-kernel-2.6.30
 TARGET_ARCH="i686-linux"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
+test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}
+
 #mkdir -p $TOOLCHAIN_SYSROOT/usr
 #ln -sf lib32 $TOOLCHAIN_SYSROOT/lib
 #ln -sf lib32 $TOOLCHAIN_SYSROOT/usr/lib
