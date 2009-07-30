@@ -27,6 +27,14 @@ build_firefox() {
 
     local HOST_LIBIDL_CFLAGS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --cflags`"
     local HOST_LIBIDL_LIBS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --libs`"
+
+    local FF_OPT_ARGS=
+    
+    case $TARGET_ARCH in
+    powerpc*)
+	FF_OPT_ARGS="--disable-necko-wifi"
+	;;
+    esac
     
     (
     eval \
@@ -70,7 +78,8 @@ build_firefox() {
 	    --enable-extensions=default,-reporter \
 	    --enable-single-profile \
 	    --enable-system-myspell \
-	    --with-distribution-id=org.pdaXrom
+	    --with-distribution-id=org.pdaXrom \
+	    ${FF_OPT_ARGS}
 
 #	    --enable-system-sqlite
 
