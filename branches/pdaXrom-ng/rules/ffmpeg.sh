@@ -62,6 +62,9 @@ build_ffmpeg() {
 	    --nm=${CROSS}nm \
 	    --arch=`get_ffmpeg_arch ${TARGET_ARCH}` \
 	    --disable-stripping \
+	    --enable-libspeex \
+	    --enable-libtheora \
+	    --enable-libvorbis \
 	    || error
     ) || error "configure"
     

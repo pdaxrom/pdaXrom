@@ -43,6 +43,8 @@ USE_FASTBOOT=yes
 
 . ./sets/packages-x-office.inc
 
+. ./sets/packages-x-voip.inc
+
 . ./sets/packages-bluetooth.inc
 
 . ./sets/packages-x-vkeyboard.inc

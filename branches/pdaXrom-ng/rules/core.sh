@@ -268,6 +268,7 @@ install_sysroot_files() {
 
     sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
 	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
+	    -e "/^libdir=/s:\(libdir=\)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
 	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
 
     sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
@@ -293,6 +294,17 @@ install_gcc_wrappers() {
 	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} -isystem ${TARGET_INC} \${1+\"\$@\"}" >> $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
 	chmod 755 $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
     done
+}
+
+install_rootfs_usr_lib() {
+    local f=`basename $1`
+    local f1=`echo $f | sed -e "s/.so.*//"`
+    echo "Installing $f1 /$f/"
+    local s=`echo $1 | sed -e "s/^.*so\.//g" | cut -f1 -d'.'`
+    $INSTALL -D -m 644 $1 ${ROOTFS_DIR}/usr/lib/${f} || error
+    ln -sf ${f} ${ROOTFS_DIR}/usr/lib/${f1}.so.${s} || error
+    ln -sf ${f} ${ROOTFS_DIR}/usr/lib/${f1}.so || error
+    $STRIP ${ROOTFS_DIR}/usr/lib/${f} || error
 }
 
 mkdir -p "$SRC_DIR" || error mkdir

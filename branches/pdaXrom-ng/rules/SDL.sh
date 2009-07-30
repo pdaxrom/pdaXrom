@@ -35,6 +35,7 @@ build_SDL() {
 	    --enable-pulseaudio=no \
 	    --enable-arts=no \
 	    --enable-nas=no \
+	    --enable-video-directfb=no \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
 	    || error

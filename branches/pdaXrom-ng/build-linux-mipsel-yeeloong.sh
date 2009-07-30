@@ -45,6 +45,8 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
 . ./sets/packages-x-office.inc
 
+. ./sets/packages-x-voip.inc
+
 . ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-yeelong2f.sh

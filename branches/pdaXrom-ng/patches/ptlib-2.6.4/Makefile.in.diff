@@ -1,0 +1,45 @@
+--- s/Makefile.in-	2009-07-30 12:32:05.000000000 +0700
++++ s/Makefile.in	2009-07-30 12:32:35.000000000 +0700
+@@ -85,8 +85,8 @@
+                      $(DESTDIR)$(PREFIX)/share/ptlib/make ; \
+ 		do mkdir -p $$dir ; chmod 755 $$dir ; \
+ 	done )
+-	$(INSTALL) -m 444 $(PT_LIBDIR)/$(PTLIB_FILE).@MAJOR_VERSION@.@MINOR_VERSION@@BUILD_TYPE@@BUILD_NUMBER@ $(DESTDIR)$(LIBDIR)
+-	$(INSTALL) -m 444 $(PT_LIBDIR)/lib$(PTLIB_BASE)_s.a $(DESTDIR)$(LIBDIR)
++	$(INSTALL) -m 644 $(PT_LIBDIR)/$(PTLIB_FILE).@MAJOR_VERSION@.@MINOR_VERSION@@BUILD_TYPE@@BUILD_NUMBER@ $(DESTDIR)$(LIBDIR)
++	$(INSTALL) -m 644 $(PT_LIBDIR)/lib$(PTLIB_BASE)_s.a $(DESTDIR)$(LIBDIR)
+ 	(cd $(DESTDIR)$(LIBDIR) ; \
+ 		rm -f  $(PTLIB_FILE) ; \
+ 		ln -sf $(PTLIB_FILE).@MAJOR_VERSION@.@MINOR_VERSION@@BUILD_TYPE@@BUILD_NUMBER@ $(PTLIB_FILE) \
+@@ -98,24 +98,24 @@
+ 		do mkdir -p $(DESTDIR)$(LIBDIR)/$(DEV_PLUGIN_DIR)/$$dir ; \
+ 		chmod 755 $(DESTDIR)$(LIBDIR)/$(DEV_PLUGIN_DIR)/$$dir ; \
+ 		(for fn in ./$$dir/*.so ; \
+-			do $(INSTALL) -m 444 $$fn $(DESTDIR)$(LIBDIR)/$(DEV_PLUGIN_DIR)/$$dir; \
++			do $(INSTALL) -m 644 $$fn $(DESTDIR)$(LIBDIR)/$(DEV_PLUGIN_DIR)/$$dir; \
+ 		done ); \
+ 	done ) ; \
+ 	fi
+ endif
+-	$(INSTALL) -m 444 include/ptlib.h                $(DESTDIR)$(PREFIX)/include
+-	$(INSTALL) -m 444 include/ptbuildopts.h          $(DESTDIR)$(PREFIX)/include
++	$(INSTALL) -m 644 include/ptlib.h                $(DESTDIR)$(PREFIX)/include
++	$(INSTALL) -m 644 include/ptbuildopts.h          $(DESTDIR)$(PREFIX)/include
+ 	(for fn in include/ptlib/*.h include/ptlib/*.inl; \
+-		do $(INSTALL) -m 444 $$fn $(DESTDIR)$(PREFIX)/include/ptlib; \
++		do $(INSTALL) -m 644 $$fn $(DESTDIR)$(PREFIX)/include/ptlib; \
+ 	done)
+ 	(for fn in include/ptlib/$(ARCH_INCLUDE)/ptlib/*.h include/ptlib/$(ARCH_INCLUDE)/ptlib/*.inl ; \
+-		do $(INSTALL) -m 444 $$fn $(DESTDIR)$(PREFIX)/include/ptlib/$(ARCH_INCLUDE)/ptlib ; \
++		do $(INSTALL) -m 644 $$fn $(DESTDIR)$(PREFIX)/include/ptlib/$(ARCH_INCLUDE)/ptlib ; \
+ 	done)
+ 	(for fn in include/ptclib/*.h ; \
+-		do $(INSTALL) -m 444 $$fn $(DESTDIR)$(PREFIX)/include/ptclib; \
++		do $(INSTALL) -m 644 $$fn $(DESTDIR)$(PREFIX)/include/ptclib; \
+ 	done)
+ 	(for fn in make/*.mak ; \
+-		do $(INSTALL) -m 444 $$fn $(DESTDIR)$(PREFIX)/share/ptlib/make; \
++		do $(INSTALL) -m 644 $$fn $(DESTDIR)$(PREFIX)/share/ptlib/make; \
+ 	done)
+ 	$(INSTALL) -m 755 make/ptlib-config $(DESTDIR)$(PREFIX)/share/ptlib/make/
+ 	(cd $(DESTDIR)$(PREFIX)/bin; rm -f ptlib-config ; ln -snf ../share/ptlib/make/ptlib-config ptlib-config)
