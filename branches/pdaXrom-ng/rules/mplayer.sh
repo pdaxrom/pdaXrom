@@ -56,6 +56,9 @@ build_mplayer() {
 	    --disable-sunaudio \
 	    --disable-dart \
 	    --disable-win32waveout \
+	    --enable-tv \
+	    --enable-tv-v4l2 \
+	    --enable-tv-v4l1 \
 	    --enable-cross-compile \
 	    --cc=${CROSS}gcc \
 	    --host-cc=gcc \

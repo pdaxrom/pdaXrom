@@ -89,6 +89,12 @@
 #
 # mplayer
 #
+. $RULES_DIR/SDL.sh
+. $RULES_DIR/libogg.sh
+. $RULES_DIR/libvorbis.sh
+. $RULES_DIR/speex.sh
+. $RULES_DIR/libtheora.sh
+. $RULES_DIR/libv4l.sh
 
 . $RULES_DIR/mplayer.sh
 . $RULES_DIR/clearplayer.sh
