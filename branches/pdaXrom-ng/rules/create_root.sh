@@ -24,6 +24,7 @@ usr/bin
 usr/lib
 usr/sbin
 var
+var/lock
 var/log
 var/lib
 var/run
