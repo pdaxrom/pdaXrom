@@ -36,14 +36,14 @@ simplenx_nxcomp() {
 
     make $MAKEARGS LDFLAGS="-L$TARGET_LIB" || error
 
-    $INSTALL -D -m 644 libXcomp.so.3.2-mipc $TARGET_LIB/libXcomp.so.3.2 || error
-    ln -sf libXcomp.so.3.2 $TARGET_LIB/libXcomp.so.3
-    ln -sf libXcomp.so.3.2 $TARGET_LIB/libXcomp.so
+    $INSTALL -D -m 644 libXcomp.so.3.3.0-mipc $TARGET_LIB/libXcomp.so.3.3.0 || error
+    ln -sf libXcomp.so.3.3.0 $TARGET_LIB/libXcomp.so.3
+    ln -sf libXcomp.so.3.3.0 $TARGET_LIB/libXcomp.so
 
-    $INSTALL -D -m 644 libXcomp.so.3.2-mipc $ROOTFS_DIR/usr/lib/libXcomp.so.3.2 || error
-    ln -sf libXcomp.so.3.2 $ROOTFS_DIR/usr/lib/libXcomp.so.3
-    ln -sf libXcomp.so.3.2 $ROOTFS_DIR/usr/lib/libXcomp.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXcomp.so.3.2 || error
+    $INSTALL -D -m 644 libXcomp.so.3.3.0-mipc $ROOTFS_DIR/usr/lib/libXcomp.so.3.3.0 || error
+    ln -sf libXcomp.so.3.3.0 $ROOTFS_DIR/usr/lib/libXcomp.so.3
+    ln -sf libXcomp.so.3.3.0 $ROOTFS_DIR/usr/lib/libXcomp.so
+    $STRIP $ROOTFS_DIR/usr/lib/libXcomp.so.3.3.0 || error
 
     make distclean
     popd    
