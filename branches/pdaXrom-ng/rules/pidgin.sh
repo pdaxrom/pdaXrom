@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PIDGIN_VERSION=2.5.5
+PIDGIN_VERSION=2.5.8
 PIDGIN=pidgin-${PIDGIN_VERSION}.tar.bz2
 PIDGIN_MIRROR=http://downloads.sourceforge.net/pidgin
 PIDGIN_DIR=$BUILD_DIR/pidgin-${PIDGIN_VERSION}
@@ -62,7 +62,7 @@ build_pidgin() {
     rm -f fakeroot/usr/lib/purple-2/*.la
     
     $STRIP fakeroot/usr/bin/pidgin || error
-    $STRIP fakeroot/usr/lib/libpurple.so.0.5.5 || error
+    $STRIP fakeroot/usr/lib/libpurple.so.0.5.8 || error
     $STRIP fakeroot/usr/lib/pidgin/*.so || error
     $STRIP fakeroot/usr/lib/purple-2/*.so || error
 
