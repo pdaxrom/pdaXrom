@@ -34,11 +34,11 @@ get_qt_arch() {
     arm*|xscale*)
 	echo arm
 	;;
-    powerpc|ppc)
-	echo ppc
+    powerpc*|ppc*)
+	echo powerpc
 	;;
-    powerpc64|ppc64)
-	echo ppc64
+    powerpc64*|ppc64*)
+	echo powerpc64
 	;;
     mips*)
 	echo mips
