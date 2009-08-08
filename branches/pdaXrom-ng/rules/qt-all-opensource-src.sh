@@ -40,6 +40,9 @@ get_qt_arch() {
     powerpc64|ppc64)
 	echo ppc64
 	;;
+    mips*)
+	echo mips
+	;;
     *)
 	echo $1
 	;;
@@ -95,6 +98,19 @@ build_qt_x11_opensource_src() {
 
     make $MAKEARGS INSTALL_ROOT=$TARGET_BIN_DIR install || error
 
+    local fla=""
+    for f in $TARGET_LIB/*.prl ; do
+	fla=`echo $f | sed 's/\.prl/\.la/'`
+	echo $f $fla
+	sed -i "s|-L/usr/lib|-L${TARGET_LIB}|g" $f
+	sed -i "s|-L/usr/lib|-L${TARGET_LIB}|g" $fla
+	sed -i -e "/^dependency_libs/s:\( \)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g" \
+	    -e "/^libdir=/s:\(libdir='\)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g" $fla || true
+    done
+
+    sed -i "s|\$\$\[QT_INSTALL_HEADERS\]|$TARGET_INC/qt4|" $TARGET_BIN_DIR/mkspecs/common-cross/linux.conf
+    sed -i "s|\$\$\[QT_INSTALL_LIBS\]|$TARGET_LIB|" $TARGET_BIN_DIR/mkspecs/common-cross/linux.conf
+
     export QMAKESPEC=$TARGET_BIN_DIR/mkspecs/default
     
     ln -sf $TARGET_BIN_DIR/bin/qmake $HOST_BIN_DIR/bin/qmake || error
@@ -120,3 +136,4 @@ build_qt_x11_opensource_src() {
 }
 
 build_qt_x11_opensource_src
+export QMAKESPEC=$TARGET_BIN_DIR/mkspecs/default
