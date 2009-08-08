@@ -21,6 +21,6 @@
 # linphone
 #
 
-. $RULES_DIR/libosip2.sh
-. $RULES_DIR/libeXosip2.sh
-. $RULES_DIR/linphone.sh
+#. $RULES_DIR/libosip2.sh
+#. $RULES_DIR/libeXosip2.sh
+#. $RULES_DIR/linphone.sh
