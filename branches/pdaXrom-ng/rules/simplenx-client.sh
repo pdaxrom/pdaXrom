@@ -69,6 +69,7 @@ simplenx_nxproxy() {
     $STRIP $ROOTFS_DIR/usr/bin/nxproxy
 
     make distclean
+    popd
 
     touch "$STATE_DIR/simplenx_nxproxy.installed"
 }

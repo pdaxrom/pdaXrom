@@ -66,7 +66,8 @@ pcio_nxcomp() {
     $STRIP $ROOTFS_DIR/home/.pcio/lib/libXcomp.so.3.3.0 || error
 
     make distclean
-    popd    
+    popd
+
     touch "$STATE_DIR/pcio_nxcomp.installed"
 }
 
@@ -89,6 +90,7 @@ pcio_nxproxy() {
     $STRIP $ROOTFS_DIR/home/.pcio/bin/rmproxy
 
     make distclean
+    popd
 
     touch "$STATE_DIR/pcio_nxproxy.installed"
 }
@@ -131,6 +133,7 @@ pcio_rmsystem() {
     $STRIP $ROOTFS_DIR/home/.pcio/bin/rmsystem
 
     make distclean
+    popd
 
     touch "$STATE_DIR/pcio_rmsystem.installed"
 }
@@ -155,6 +158,7 @@ pcio_rmftpd() {
     $STRIP $ROOTFS_DIR/home/.pcio/bin/rmftpd
 
     make distclean
+    popd
 
     touch "$STATE_DIR/pcio_rmftpd.installed"
 }
@@ -176,8 +180,8 @@ pcio_rmprintd() {
     $STRIP $ROOTFS_DIR/home/.pcio/bin/rmprintd || error
 
     make clean
-
     popd
+
     touch "$STATE_DIR/pcio_rmprintd.installed"
 }
 
