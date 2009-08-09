@@ -25,11 +25,7 @@ SQUASHFS_LZMA=no
 
 . $RULES_DIR/tweak-i686.sh
 
-echo "---- $PWD"
-
 . ./sets/packages-host-squashfs4.inc
-
-echo "---- $PWD"
 
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/host_syslinux.sh

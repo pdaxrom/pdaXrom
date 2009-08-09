@@ -4,8 +4,8 @@ TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
-KERNEL_VERSION="2.6.29"
-KERNEL_CONFIG=ps3_kernel_2.6.29-fast-boot
+KERNEL_VERSION="2.6.30"
+KERNEL_CONFIG=ps3_kernel_2.6.30-fast-boot
 TARGET_VENDOR_PATCH=ps3
 
 SQUASHFS_LZMA=no
