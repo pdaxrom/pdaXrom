@@ -14,5 +14,8 @@ SQUASHFS_LZMA=no
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
 
-. ./sets/packages-host-squashfs.inc
+. ./sets/packages-host-squashfs4.inc
+. $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
+
+. $RULES_DIR/create_lemote.sh

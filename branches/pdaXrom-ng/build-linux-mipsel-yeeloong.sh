@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ISOIMAGE_NAME=pdaXrom-ng-yeelong-8089
+
 TARGET_ARCH="mipsel-ls2f-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
@@ -8,6 +10,8 @@ TARGET_VENDOR_PATCH=ls2f
 
 KERNEL_VERSION="2.6.30.2"
 KERNEL_CONFIG=yeeloong2f_2.6.30.2
+
+SQUASHFS_LZMA=no
 
 . ./sets/packages-basic.inc
 . ./sets/packages-acpi.inc
@@ -51,8 +55,8 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
 . $RULES_DIR/tweak-yeelong2f.sh
 
-cp -f `get_kernel_image_path $TARGET_ARCH` $ROOTFS_DIR/boot/ || error "install vmlinux to /boot"
-banner "create targzipped rootfs"
-cd $ROOTFS_DIR
-rm -f $IMAGES_DIR/rootfs.tar.gz
-tar czf $IMAGES_DIR/rootfs.tar.gz .
+. ./sets/packages-host-squashfs4.inc
+. $RULES_DIR/create_initramfs.sh
+. $RULES_DIR/create_squashfs.sh
+
+. $RULES_DIR/create_lemote.sh
