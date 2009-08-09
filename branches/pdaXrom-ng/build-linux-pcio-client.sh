@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISOIMAGE_NAME="pcio-client-x86"
+ISOIMAGE_NAME="pcio-client-i686"
 
 TARGET_ARCH="i686-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
@@ -25,7 +25,11 @@ SQUASHFS_LZMA=no
 
 . $RULES_DIR/tweak-i686.sh
 
+echo "---- $PWD"
+
 . ./sets/packages-host-squashfs4.inc
+
+echo "---- $PWD"
 
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/host_syslinux.sh
