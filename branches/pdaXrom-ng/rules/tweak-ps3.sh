@@ -44,6 +44,7 @@ build_tweak_ps3() {
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
     if [ "$USE_FASTBOOT" = "yes" ]; then
 	install_rc_start xstart 03
+	$INSTALL -D -m 644 $GENERICFS_DIR/modules.PS3 $ROOTFS_DIR/etc/modules || error
     else
 	install_rc_start xstart 99
     fi
