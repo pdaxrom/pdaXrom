@@ -29,5 +29,6 @@ SQUASHFS_LZMA=no
 . $RULES_DIR/tweak-ps3.sh
 
 . ./sets/packages-host-squashfs4.inc
+. $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_ps3cd.sh
