@@ -40,5 +40,4 @@ BLUEZ_UTILS3_BIN_FILES="tools/hciconfig"
 # we don't use c++ here :)
 rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
 
-. $RULES_DIR/host_lzma.sh
 . $RULES_DIR/create_ps3kboot.sh
