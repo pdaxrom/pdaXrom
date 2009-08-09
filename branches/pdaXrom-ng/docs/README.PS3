@@ -1,16 +1,17 @@
-Compile uclibc crosscompiler:
+Compile ps3 uclibc crosscompiler:
+sudo ./build-crosstools-ps3boot.sh
 
-./build-crosstools.sh powerpc-linux-uclibc
-
-Compile powerpc32 crosscompiler:
-
-./build-crosstools.sh powerpc-linux
+Clean working directory:
+sudo ./build-crosstools-ps3boot.sh clean
 
 Compile ps3boot bootloader:
-
 ./build-ps3-boot-bt.sh
 
-Compile full pdaXrom-ng-ps3 distro:
+Compile ps3 powerpc crosscompiler:
+sudo ./build-crosstools-ps3.sh
 
+Clean working directory:
+sudo ./build-crosstools-ps3.sh clean
+
+Compile pdaXrom-ng-ps3 distro:
 ./build-linux-ps3.sh
-
