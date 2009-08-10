@@ -2,3 +2,5 @@
 . $RULES_DIR/SDL_image.sh
 
 . $RULES_DIR/pyldin601.sh
+
+. $RULES_DIR/qemu.sh
