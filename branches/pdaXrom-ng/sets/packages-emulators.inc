@@ -3,4 +3,7 @@
 
 . $RULES_DIR/pyldin601.sh
 
-. $RULES_DIR/qemu.sh
+#. $RULES_DIR/qemu.sh
+
+#. $RULES_DIR/host_sdlmame.sh
+#. $RULES_DIR/sdlmame.sh
