@@ -15,7 +15,14 @@
 . $RULES_DIR/host_ncurses.sh
 . $RULES_DIR/ncurses.sh
 . $RULES_DIR/module-init-tools.sh
-. $RULES_DIR/udev.sh
+if [ -e ${TOOLCHAIN_SYSROOT}/lib/ld-uClibc.so.0 ]; then
+    . $RULES_DIR/udev.sh
+else
+    . $RULES_DIR/libusb.sh
+    . $RULES_DIR/libusb-compat.sh
+    . $RULES_DIR/usbutils.sh
+    . $RULES_DIR/udev-145.sh
+fi
 . $RULES_DIR/wireless_tools.sh
 . $RULES_DIR/dhcpcd.sh
 . $RULES_DIR/install_libc.sh
