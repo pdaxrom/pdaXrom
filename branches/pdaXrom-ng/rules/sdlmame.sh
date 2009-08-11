@@ -38,9 +38,11 @@ build_sdlmame() {
     esac
 
     local ARCHOPTS=
+    local OPTIMIZE=
     case $TARGET_ARCH in
     ppc*|powerpc*)
 	ARCHOPTS='-mcpu=G4'
+	OPTIMIZE=2
 	;;
     esac
 
@@ -58,7 +60,7 @@ build_sdlmame() {
 	TARGET=mame \
 	SUBTARGET=mame \
 	OSD=sdl \
-	OPTIMIZE=3 \
+	OPTIMIZE=${OPTIMIZE-3} \
 	ARCHOPTS=$ARCHOPTS \
 	|| error
 
