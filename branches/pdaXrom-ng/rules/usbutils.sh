@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-USBUTILS=usbutils-0.73.tar.gz
+USBUTILS=usbutils-0.84.tar.gz
 USBUTILS_MIRROR=http://downloads.sourceforge.net/linux-usb
-USBUTILS_DIR=$BUILD_DIR/usbutils-0.73
+USBUTILS_DIR=$BUILD_DIR/usbutils-0.84
 USBUTILS_ENV="$CROSS_ENV_AC"
 
 build_usbutils() {
@@ -35,6 +35,8 @@ build_usbutils() {
     ) || error "configure"
     
     make $MAKEARGS || error
+
+    install_sysroot_files || error
 
     $INSTALL -D -m 644 usb.ids $ROOTFS_DIR/usr/share/hwdata/usb.ids || error
     $INSTALL -D -m 755 lsusb $ROOTFS_DIR/usr/sbin/lsusb || error

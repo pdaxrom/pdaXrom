@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBUSB=libusb-1.0.0.tar.bz2
+LIBUSB=libusb-1.0.2.tar.bz2
 LIBUSB_MIRROR=http://downloads.sourceforge.net/libusb
-LIBUSB_DIR=$BUILD_DIR/libusb-1.0.0
+LIBUSB_DIR=$BUILD_DIR/libusb-1.0.2
 LIBUSB_ENV="$CROSS_ENV_AC"
 
 build_libusb() {

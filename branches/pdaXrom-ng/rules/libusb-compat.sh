@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBUSB_COMPAT=libusb-compat-0.1.0.tar.bz2
+LIBUSB_COMPAT=libusb-compat-0.1.3.tar.bz2
 LIBUSB_COMPAT_MIRROR=http://downloads.sourceforge.net/libusb
-LIBUSB_COMPAT_DIR=$BUILD_DIR/libusb-compat-0.1.0
+LIBUSB_COMPAT_DIR=$BUILD_DIR/libusb-compat-0.1.3
 LIBUSB_COMPAT_ENV="$CROSS_ENV_AC"
 
 build_libusb_compat() {
