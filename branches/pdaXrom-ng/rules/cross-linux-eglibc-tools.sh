@@ -124,7 +124,7 @@ install_glibc_headers() {
 	--without-gd \
 	--without-cvs \
 	--enable-add-ons \
-	--enable-kernel=2.6.14 || error "configure build0"
+	--enable-kernel=2.6.27 || error "configure build0"
 
     make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install-bootstrap-headers=yes install-headers || error "install headers"
 
@@ -172,7 +172,7 @@ build_glibc_stage1() {
 	--without-gd \
 	--without-cvs \
 	--enable-add-ons \
-	--enable-kernel=2.6.14 || error
+	--enable-kernel=2.6.27 || error
 
     make $MAKEARGS || error
     make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install || error
@@ -204,7 +204,7 @@ build_glibc_stage2() {
 	--without-gd \
 	--without-cvs \
 	--enable-add-ons \
-	--enable-kernel=2.6.14 || error
+	--enable-kernel=2.6.27 || error
 
     make $MAKEARGS || error
     make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install || error
