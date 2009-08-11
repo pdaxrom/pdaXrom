@@ -2,20 +2,21 @@
 # packet template
 #
 # Copyright (C) 2004 by Alexander Chukov <sash@pdaXrom.org>
-#          
+#
 # See CREDITS for details about who has contributed to this project.
 #
 # For further information about the pdaXrom project and license conditions
 # see the README file.
 #
 
-UDEV=udev-145.tar.bz2
+UDEV_VERSION=145
+UDEV=udev-${UDEV_VERSION}.tar.bz2
 UDEV_MIRROR=http://www.kernel.org/pub/linux/utils/kernel/hotplug
-UDEV_DIR=$BUILD_DIR/udev-145
+UDEV_DIR=$BUILD_DIR/udev-${UDEV_VERSION}
 UDEV_ENV=
 
 build_udev() {
-    test -e "$STATE_DIR/udev-135" && return
+    test -e "$STATE_DIR/udev-${UDEV_VERSION}" && return
     banner "Build $UDEV"
     download $UDEV_MIRROR $UDEV
     extract $UDEV
@@ -27,6 +28,7 @@ build_udev() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/ \
 	    --sysconfdir=/etc \
+	    --libexecdir=/lib/udev \
 	    --with-pci-ids-path=/usr/share/hwdata || error
 
     make $MAKEARGS || error
@@ -49,8 +51,8 @@ build_udev() {
     $INSTALL -D -m 644 $GENERICFS_DIR/etc/udev/links.conf $ROOTFS_DIR/etc/udev/links.conf || error
 
     make DESTDIR=$UDEV_DIR/fakeroot install || error
-    rm -rf fakeroot/include fakeroot/lib/pkgconfig fakeroot/share
-    
+    rm -rf fakeroot/include fakeroot/lib/pkgconfig fakeroot/share fakeroot/lib/*.*a
+
     find fakeroot/ -executable -a ! -type d -a ! -type l | while read f; do
 	$STRIP $f
     done
@@ -85,7 +87,7 @@ build_udev() {
     #done
 
     popd
-    touch "$STATE_DIR/udev-135"
+    touch "$STATE_DIR/udev-${UDEV_VERSION}"
 }
 
 build_udev
