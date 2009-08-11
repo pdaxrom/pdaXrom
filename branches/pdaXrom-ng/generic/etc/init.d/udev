@@ -41,6 +41,7 @@ udev_start() {
     # want /dev to be unavailable (such as by `umount -a').
     logger "mounting... tmpfs at $udev_root"
     mount -n -t tmpfs tmpfs $udev_root -o mode=755
+    mkdir -p /dev/.udev
     mknod /dev/null c 1 3
     # Udev handles uevents itself, so we don't need to have
     # the kernel call out to any binary in response to them
@@ -68,7 +69,7 @@ udev_start() {
 
 udev_stop() {
     log_begin_msg -n "Stopping udev"
-    killall udevd >/dev/null 2>/dev/null
+    killall udevd >/dev/null 2>/dev/null || true
     log_end_msg $?
     umount -l /dev
 }
