@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISOIMAGE_NAME="pcio-client-ps3"
+ISOIMAGE_NAME="sdlmame-ps3"
 
 TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
