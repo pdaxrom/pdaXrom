@@ -121,7 +121,9 @@ void bootdevice_add(char *dev_path, char *icon)
     int rc = system(buf);
     if (rc)
 	fprintf(stderr, "mkdir problem\n");
-    
+
+    bootdevice_remove(dev_path);
+
     sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev_path, dev_path);
     rc = system(buf);
     if (!rc) {
