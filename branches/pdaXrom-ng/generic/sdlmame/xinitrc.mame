@@ -1,0 +1,15 @@
+#!/bin/sh
+
+while true; do
+    if [ -e /usr/bin/qmc2 ]; then
+	/usr/bin/qmc2
+    elif [ -e /usr/bin/sdlmame ]; then
+	/usr/bin/sdlmame
+    elif [ -e /usr/bin/xmame ]; then
+	/usr/bin/xmame
+    elif [ -e /usr/bin/mame ]; then
+	/usr/bin/mame
+    else
+	break
+    fi
+done
