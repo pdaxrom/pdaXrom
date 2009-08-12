@@ -34,7 +34,7 @@ build_udev() {
     make $MAKEARGS || error
 
     sed -i "s|=/|=$TARGET_BIN_DIR|" extras/volume_id/lib/libvolume_id.pc
-    sed -i "s|=/|=$TARGET_BIN_DIR|" udev/lib/libudev.pc
+    sed -i "s|=/|=$TARGET_BIN_DIR|" libudev/libudev.pc
 
     install_sysroot_files || error
 
