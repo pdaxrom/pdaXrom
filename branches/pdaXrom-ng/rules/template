@@ -2,7 +2,7 @@
 # packet template
 #
 # Copyright (C) 2009 by @AUTHOR@
-#          
+#
 # See CREDITS for details about who has contributed to this project.
 #
 # For further information about the pdaXrom project and license conditions
@@ -32,7 +32,7 @@ build_@packet@() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     error "update install"
