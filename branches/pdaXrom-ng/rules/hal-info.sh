@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-HAL_INFO=hal-info-20081219.tar.gz
+HAL_INFO_VERSION=20081219
+HAL_INFO=hal-info-${HAL_INFO_VERSION}.tar.gz
 HAL_INFO_MIRROR=http://hal.freedesktop.org/releases
-HAL_INFO_DIR=$BUILD_DIR/hal-info-20081219
+HAL_INFO_DIR=$BUILD_DIR/hal-info-${HAL_INFO_VERSION}
 HAL_INFO_ENV="$CROSS_ENV_AC"
 
 build_hal_info() {

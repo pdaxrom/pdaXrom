@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-HAL=hal-0.5.12rc1.tar.gz
+HAL_VERSION=0.5.12rc1
+HAL=hal-${HAL_VERSION}.tar.gz
 HAL_MIRROR=http://hal.freedesktop.org/releases
-HAL_DIR=$BUILD_DIR/hal-0.5.12rc1
+HAL_DIR=$BUILD_DIR/hal-${HAL_VERSION}
 HAL_ENV="$CROSS_ENV_AC"
 
 build_hal() {
