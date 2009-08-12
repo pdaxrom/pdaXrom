@@ -20,3 +20,9 @@
 
 . $RULES_DIR/poppler.sh
 . $RULES_DIR/epdfview.sh
+
+#
+# mtpaint
+#
+
+. $RULES_DIR/mtpaint.sh
