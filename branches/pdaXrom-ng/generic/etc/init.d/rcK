@@ -5,6 +5,8 @@
 
 . /etc/init.d/functions
 
+test -e /sbin/usplash && usplash -c -v &
+
 for i in /etc/rc.d/K*; do 
     $i stop
 done
