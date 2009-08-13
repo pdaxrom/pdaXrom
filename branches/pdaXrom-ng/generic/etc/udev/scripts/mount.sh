@@ -7,11 +7,13 @@
 
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
-MNTDIR="/media"
+DEVICE=/dev/disk/by-uuid/$ID_FS_UUID
 
 VOL_ID="/lib/udev/vol_id"
 
-if [ "$ACTION" = "add" ] && [ -n "$DEVNAME" ]; then
+echo "$ACTION device $DEVICE" >> /var/log/mounts.log
+
+if [ "$ACTION" = "add" ] && [ "$ID_FS_UUID" ]; then
     if [ ! -e /sys${DEVPATH}/device ]; then
 	DEVPATH=${DEVPATH}/..
     fi
@@ -21,42 +23,16 @@ if [ "$ACTION" = "add" ] && [ -n "$DEVNAME" ]; then
     if [ "`cat /sys${DEVPATH}/removable`" = "0" ]; then
 	exit 0
     fi
-    FSTYPE="`$VOL_ID --type $DEVNAME`"
+    FSTYPE="`$VOL_ID --type $DEVICE`"
     if [ "x$FSTYPE" = "x" ]; then
 	exit 1
     fi
     modprobe $FSTYPE || exit 1
-    if grep "^$DEVNAME" /etc/fstab >/dev/null ; then
-	mount $DEVNAME
-	exit 0
-    fi
-    MNT="`$VOL_ID --label $DEVNAME`"
-    if [ "x$MNT" = "x" ]; then
-	MNT="NO NAME"
-    fi
-    MNT="${MNTDIR}/${MNT}"
-    if [ -d "${MNT}" ]; then
-	NUM=2
-	while [ -d "$MNT ($NUM)" ]; do
-	    NUM=$(($NUM+1))
-	done
-	MNT="$MNT ($NUM)"
-    fi
-    mkdir "$MNT"
-    mount $DEVNAME "$MNT" 2> /dev/null || rmdir "$MNT"
-    exit 0
+
+    mkdir /media/disk-$ID_FS_UUID
+    mount $DEVICE /media/disk-$ID_FS_UUID
 fi
 
-if [ "$ACTION" = "remove" ]; then
-    if grep "^$DEVNAME" /etc/fstab >/dev/null ; then
-	umount $DEVNAME
-	exit 0
-    fi
-
-    for MNT in `cat /proc/mounts | grep "^$DEVNAME" | cut -f 2 -d " " `
-    do
-	MNT=`printf $MNT`
-	umount "$MNT" && rmdir "$MNT"
-    done
-    exit 0
+if [ "$ACTION" = "remove" ] && [ "$ID_FS_UUID" ]; then
+    umount -l $DEVICE && rmdir /media/disk-$ID_FS_UUID
 fi
