@@ -5,7 +5,10 @@
 
 . /etc/init.d/functions
 
-test -e /sbin/usplash && usplash -c -v &
+if [ -e /sbin/usplash ]; then
+    USPLASH="y"
+    usplash -c -v &
+fi
 
 for i in /etc/rc.d/K*; do 
     $i stop

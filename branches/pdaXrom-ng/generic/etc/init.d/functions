@@ -66,7 +66,9 @@ log_begin_msg() {
         else
 	    echo $*
         fi
-	pidof usplash >/dev/null && usplash_write "TEXT $*"
+        if [ "$USPLASH" = "y" ]; then
+	    usplash_write "TEXT $*"
+	fi
     fi
 }
 
@@ -74,10 +76,14 @@ log_end_msg() {
     if [ -z "$SILENT" ] ; then
 	if [ "$1" = "0" ]; then
 	    echo_success
-	    pidof usplash >/dev/null && usplash_write "SUCCESS ok"
+	    if [ "$USPLASH" = "y" ]; then
+		usplash_write "SUCCESS ok"
+	    fi
 	else
 	    echo_failure
-	    pidof usplash >/dev/null && usplash_write "SUCCESS fail"
+	    if [ "$USPLASH" = "y" ]; then
+		usplash_write "SUCCESS fail"
+	    fi
 	fi
 	echo
     fi
