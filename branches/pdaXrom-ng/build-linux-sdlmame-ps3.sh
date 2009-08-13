@@ -27,6 +27,12 @@ SQUASHFS_LZMA=no
 . $RULES_DIR/zip.sh
 . $RULES_DIR/unrar.sh
 
+. $RULES_DIR/nano.sh
+
+. ./sets/packages-hal.inc
+. $RULES_DIR/boolstuff.sh
+. $RULES_DIR/halevt.sh
+
 . ./sets/packages-emulators.inc
 
 #
