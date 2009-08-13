@@ -1,0 +1,10 @@
+--- boolstuff-0.1.12/src/commands/booldnf.cpp-	2009-08-13 15:08:36.000000000 +0700
++++ boolstuff-0.1.12/src/commands/booldnf.cpp	2009-08-13 15:08:46.000000000 +0700
+@@ -23,6 +23,7 @@
+ #include <boolstuff/BoolExprParser.h>
+ #include <assert.h>
+ #include <stdlib.h>
++#include <cstdio>
+ 
+ #ifdef HAVE_GETOPT_LONG
+ #include <unistd.h>
