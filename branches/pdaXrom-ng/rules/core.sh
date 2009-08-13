@@ -307,6 +307,18 @@ install_rootfs_usr_lib() {
     $STRIP ${ROOTFS_DIR}/usr/lib/${f} || error
 }
 
+install_rootfs_usr_bin() {
+    local f=`basename $1`
+    $INSTALL -D -m 755 $1 ${ROOTFS_DIR}/usr/bin/$f || error
+    $STRIP ${ROOTFS_DIR}/usr/bin/$f || error
+}
+
+install_rootfs_usr_sbin() {
+    local f=`basename $1`
+    $INSTALL -D -m 755 $1 ${ROOTFS_DIR}/usr/sbin/$f || error
+    $STRIP ${ROOTFS_DIR}/usr/sbin/$f || error
+}
+
 mkdir -p "$SRC_DIR" || error mkdir
 mkdir -p "$BUILD_DIR" || error mkdir
 mkdir -p "$HOST_BUILD_DIR" || error mkdir
