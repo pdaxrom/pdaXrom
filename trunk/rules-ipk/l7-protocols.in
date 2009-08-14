@@ -1,8 +1,0 @@
-config L7-PROTOCOLS
-	bool
-	prompt "l7-protocols"
-
-config L7-PROTOCOLS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on L7-PROTOCOLS

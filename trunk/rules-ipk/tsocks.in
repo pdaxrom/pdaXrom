@@ -1,8 +1,0 @@
-config TSOCKS
-	bool
-	prompt "tsocks"
-
-config TSOCKS_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on TSOCKS

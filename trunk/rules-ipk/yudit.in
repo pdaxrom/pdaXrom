@@ -1,8 +1,0 @@
-config YUDIT
-	bool
-	prompt "yudit"
-
-config YUDIT_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on YUDIT

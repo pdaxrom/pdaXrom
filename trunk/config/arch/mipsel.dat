@@ -1,4 +1,0 @@
-KERNELCONFIG=$PWD/mipsel.config
-TARGET=mipsel-cacko-linux-gnu
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time -finline-limit=10000
-TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer -finline-limit=10000

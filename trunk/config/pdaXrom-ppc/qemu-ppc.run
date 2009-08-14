@@ -1,3 +1,0 @@
-#!/bin/sh
-
-qemu-system-ppc -M prep -m 128 -kernel zImage.prep -hda rootfs.img -serial stdio

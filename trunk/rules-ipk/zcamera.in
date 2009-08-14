@@ -1,8 +1,0 @@
-config ZCAMERA
-	bool
-	prompt "zcamera"
-
-config ZCAMERA_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on ZCAMERA

@@ -1,8 +1,0 @@
-config XFCE4-MIXER
-	bool
-	prompt "xfce4-mixer"
-
-config XFCE4-MIXER_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on XFCE4-MIXER

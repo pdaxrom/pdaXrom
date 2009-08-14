@@ -1,8 +1,0 @@
-config CPUOVERCLOCK
-	bool
-	prompt "CPU Overclock"
-
-config CPUOVERCLOCK_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on CPUOVERCLOCK

@@ -1,8 +1,0 @@
-config OCTAVE
-	bool
-	prompt "octave"
-
-config OCTAVE_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on OCTAVE

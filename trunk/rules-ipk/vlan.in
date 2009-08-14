@@ -1,8 +1,0 @@
-config VLAN
-	bool
-	prompt "vlan-utils"
-
-config VLAN_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on VLAN

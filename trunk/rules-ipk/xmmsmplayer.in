@@ -1,9 +1,0 @@
-config XMMSMPLAYER
-	bool
-	prompt "xmmsmplayer"
-	depends on XMMS && MPLAYER
-
-config XMMSMPLAYER_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on XMMSMPLAYER

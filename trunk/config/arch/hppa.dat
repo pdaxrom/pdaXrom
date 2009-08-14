@@ -1,3 +1,0 @@
-KERNELCONFIG=$PWD/hppa.config
-TARGET=hppa-cacko-linux-gnu
-TARGET_CFLAGS="-O"

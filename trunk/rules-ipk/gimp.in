@@ -1,8 +1,0 @@
-config GIMP
-	bool
-	prompt "gimp"
-
-config GIMP_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on GIMP
