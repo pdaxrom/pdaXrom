@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-SIXAXISD_VERSION=0.2
+SIXAXISD_VERSION=0.2.1
 SIXAXISD=sixaxisd-${SIXAXISD_VERSION}.tar.bz2
 SIXAXISD_MIRROR=http://wiki.pdaxrom.org/downloads/PS3/bootloader/src
 SIXAXISD_DIR=$BUILD_DIR/sixaxisd-${SIXAXISD_VERSION}
