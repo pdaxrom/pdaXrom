@@ -6,6 +6,8 @@
 
 #define CONF_PATH	"test"
 
+static char iface_curr[128];
+
 int add_devices(void)
 {
     char buf[1024];
@@ -41,18 +43,57 @@ int read_net_config(const char *iface)
 	ipaddrBox->text(val);
     else
 	ipaddrBox->text("");
+
+    if (readconf(buf, "netmask", val))
+	netmaskBox->text(val);
+    else
+	netmaskBox->text("255.255.255.0");
+
+    if (readconf(buf, "gateway", val))
+	gatewayBox->text(val);
+    else
+	gatewayBox->text("");
+
+    if (readconf(buf, "dns1", val))
+	dnsBox->text(val);
+    else
+	dnsBox->text("");
+
+    if (readconf(buf, "dns2", val))
+	dns2Box->text(val);
+    else
+	dns2Box->text("");
 	
     return 0;
 }
 
 int write_net_config(void)
 {
+    return 0;
 }
 
 void editButton(fltk::Button*, void*)
 {
-    fprintf(stderr, "--%d %s\n", devList->value(), devList->item()->label());
-    read_net_config(devList->item()->label());
-    interfaceWindow->label(devList->item()->label());
+    int i = devList->value();
+    strcpy(iface_curr, devList->child(i)->label());
+    fprintf(stderr, "--%d %s\n", i, iface_curr);
+    read_net_config(iface_curr);
+    interfaceWindow->label(iface_curr);
     interfaceWindow->show();
+}
+
+void saveInterface(fltk::ReturnButton*, void*)
+{
+    char buf[256];
+    sprintf(buf, CONF_PATH "/%s.conf", iface_curr);
+    FILE *f = fopen(buf, "wb");
+    if (f) {
+	fprintf(f, "ipaddr %s\n", ipaddrBox->text());
+	fprintf(f, "netmask %s\n", netmaskBox->text());
+	fprintf(f, "gateway %s\n", gatewayBox->text());
+	fprintf(f, "dns1 %s\n", dnsBox->text());
+	fprintf(f, "dns2 %s\n", dns2Box->text());
+	fclose(f);
+    }
+    interfaceWindow->hide();
 }
