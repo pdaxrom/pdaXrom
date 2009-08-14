@@ -65,6 +65,8 @@ SDLMAME_MAKE_ARGS="NO_OPENGL=1"
 
 . $RULES_DIR/host_sdlmame.sh
 . $RULES_DIR/sdlmame.sh
+
+. ./sets/packages-bluez3.inc
 . $RULES_DIR/sixaxisd.sh
 
 $INSTALL -D -m 644 $GENERICFS_DIR/sdlmame/default.cfg $ROOTFS_DIR/var/games/sdlmame/cfg/default.cfg || error
