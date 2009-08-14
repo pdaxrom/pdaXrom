@@ -2,6 +2,14 @@
 
 export HOME=/home
 
+if [ -e /usr/bin/hciconfig ]; then
+    /usr/bin/hciconfig hci0 up
+    /usr/bin/hciconfig hci0 lm master
+    /usr/bin/hciconfig hci0 piscan
+
+    /usr/bin/sixaxisd >/dev/null 2>/dev/null &
+fi
+
 mkdir -p $HOME/.mame/roms
 
 (
