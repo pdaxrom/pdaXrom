@@ -1,0 +1,13 @@
+state.PS3 {
+	control.1 {
+		comment.access 'read write user'
+		comment.type INTEGER
+		comment.count 2
+		comment.range '0 - 255'
+		comment.tlv '0000000100000008ffffec1400000014'
+		iface MIXER
+		name 'PCM Playback Volume'
+		value.0 128
+		value.1 128
+	}
+}

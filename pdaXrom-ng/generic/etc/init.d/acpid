@@ -1,0 +1,28 @@
+#!/bin/sh
+
+. /etc/init.d/functions
+
+case "${1}" in
+        start)
+                log_begin_msg -n "Starting acpid"
+                /usr/sbin/acpid
+                log_end_msg $?
+                ;;
+
+        stop)
+                log_begin_msg -n "Stopping acpid"
+                killall -9 acpid >/dev/null 2>/dev/null
+                log_end_msg $?
+                ;;
+
+        restart)
+                ${0} stop
+                sleep 1
+                ${0} start
+                ;;
+
+        *)
+                echo "Usage: ${0} {start|stop|restart|status}"
+                exit 1
+                ;;
+esac

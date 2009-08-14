@@ -1,0 +1,12 @@
+#!/bin/sh
+
+test -f /usr/bin/pango-querymodules || exit 0
+
+. /etc/init.d/functions
+
+if [ ! -e /etc/pango/pango.modules ]; then
+
+    log_begin_msg -n "Update pango modules"
+    /usr/bin/pango-querymodules >/etc/pango/pango.modules
+    log_end_msg $?
+fi

@@ -1,0 +1,273 @@
+--- qt-all-opensource-src-4.5.0/src/corelib/arch/powerpc/qatomic32.s-	2009-08-08 23:09:48.000000000 +0700
++++ qt-all-opensource-src-4.5.0/src/corelib/arch/powerpc/qatomic32.s	2009-08-08 23:26:47.000000000 +0700
+@@ -1,14 +1,12 @@
+ 	.machine "ppc"
+-	.toc
+-	.csect .text[PR]
++	.text
+ 
+ 	.align 2
+ 	.globl q_atomic_test_and_set_int
+ 	.globl .q_atomic_test_and_set_int
+-	.csect q_atomic_test_and_set_int[DS],3
+ q_atomic_test_and_set_int:
+-	.long .q_atomic_test_and_set_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_test_and_set_int
++	.text
+ .q_atomic_test_and_set_int:
+ 	lwarx  6,0,3
+         xor.   6,6,4
+@@ -30,10 +28,9 @@
+ 	.align 2
+ 	.globl q_atomic_test_and_set_acquire_int
+ 	.globl .q_atomic_test_and_set_acquire_int
+-	.csect q_atomic_test_and_set_acquire_int[DS],3
+ q_atomic_test_and_set_acquire_int:
+-	.long .q_atomic_test_and_set_acquire_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_test_and_set_acquire_int
++	.text
+ .q_atomic_test_and_set_acquire_int:
+ 	lwarx  6,0,3
+         xor.   6,6,4
+@@ -56,10 +53,9 @@
+ 	.align 2
+ 	.globl q_atomic_test_and_set_release_int
+ 	.globl .q_atomic_test_and_set_release_int
+-	.csect q_atomic_test_and_set_release_int[DS],3
+ q_atomic_test_and_set_release_int:
+-	.long .q_atomic_test_and_set_release_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_test_and_set_release_int
++	.text
+ .q_atomic_test_and_set_release_int:
+         eieio
+ 	lwarx  6,0,3
+@@ -82,10 +78,9 @@
+ 	.align 2
+ 	.globl q_atomic_test_and_set_ptr
+ 	.globl .q_atomic_test_and_set_ptr
+-	.csect q_atomic_test_and_set_ptr[DS],3
+ q_atomic_test_and_set_ptr:
+-	.long .q_atomic_test_and_set_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_test_and_set_ptr
++	.text
+ .q_atomic_test_and_set_ptr:
+ 	lwarx  6,0,3
+         xor.   6,6,4
+@@ -107,10 +102,9 @@
+ 	.align 2
+ 	.globl q_atomic_test_and_set_acquire_ptr
+ 	.globl .q_atomic_test_and_set_acquire_ptr
+-	.csect q_atomic_test_and_set_acquire_ptr[DS],3
+ q_atomic_test_and_set_acquire_ptr:
+-	.long .q_atomic_test_and_set_acquire_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_test_and_set_acquire_ptr
++	.text
+ .q_atomic_test_and_set_acquire_ptr:
+ 	lwarx  6,0,3
+         xor.   6,6,4
+@@ -133,10 +127,8 @@
+ 	.align 2
+ 	.globl q_atomic_test_and_set_release_ptr
+ 	.globl .q_atomic_test_and_set_release_ptr
+-	.csect q_atomic_test_and_set_release_ptr[DS],3
+ q_atomic_test_and_set_release_ptr:
+-	.long .q_atomic_test_and_set_release_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_test_and_set_release_ptr
+ .q_atomic_test_and_set_release_ptr:
+         eieio
+ 	lwarx  6,0,3
+@@ -159,10 +151,9 @@
+ 	.align 2
+ 	.globl q_atomic_increment
+ 	.globl .q_atomic_increment
+-	.csect q_atomic_increment[DS],3
+ q_atomic_increment:
+-	.long .q_atomic_increment,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_increment
++	.text
+ .q_atomic_increment:
+ 	lwarx  4,0,3
+ 	addi   4,4,1
+@@ -182,10 +173,9 @@
+ 	.align 2
+ 	.globl q_atomic_decrement
+ 	.globl .q_atomic_decrement
+-	.csect q_atomic_decrement[DS],3
+ q_atomic_decrement:
+-	.long .q_atomic_decrement,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_decrement
++	.text
+ .q_atomic_decrement:
+ 	lwarx  4,0,3
+ 	subi   4,4,1
+@@ -205,10 +195,9 @@
+ 	.align 2
+ 	.globl q_atomic_set_int
+ 	.globl .q_atomic_set_int
+-	.csect q_atomic_set_int[DS],3
+ q_atomic_set_int:
+-	.long .q_atomic_set_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_set_int
++	.text
+ .q_atomic_set_int:
+ 	lwarx  5,0,3
+ 	stwcx. 4,0,3
+@@ -227,10 +216,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_store_acquire_int
+ 	.globl .q_atomic_fetch_and_store_acquire_int
+-	.csect q_atomic_fetch_and_store_acquire_int[DS],3
+ q_atomic_fetch_and_store_acquire_int:
+-	.long .q_atomic_fetch_and_store_acquire_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_store_acquire_int
++	.text
+ .q_atomic_fetch_and_store_acquire_int:
+ 	lwarx  5,0,3
+ 	stwcx. 4,0,3
+@@ -250,10 +238,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_store_release_int
+ 	.globl .q_atomic_fetch_and_store_release_int
+-	.csect q_atomic_fetch_and_store_release_int[DS],3
+ q_atomic_fetch_and_store_release_int:
+-	.long .q_atomic_fetch_and_store_release_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_store_release_int
++	.text
+ .q_atomic_fetch_and_store_release_int:
+         eieio
+ 	lwarx  5,0,3
+@@ -273,10 +260,9 @@
+         .align 2
+ 	.globl q_atomic_set_ptr
+ 	.globl .q_atomic_set_ptr
+-	.csect q_atomic_set_ptr[DS],3
+ q_atomic_set_ptr:
+-	.long .q_atomic_set_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_set_ptr
++	.text
+ .q_atomic_set_ptr:
+ 	lwarx  5,0,3
+ 	stwcx. 4,0,3
+@@ -295,10 +281,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_store_acquire_ptr
+ 	.globl .q_atomic_fetch_and_store_acquire_ptr
+-	.csect q_atomic_fetch_and_store_acquire_ptr[DS],3
+ q_atomic_fetch_and_store_acquire_ptr:
+-	.long .q_atomic_fetch_and_store_acquire_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_store_acquire_ptr
++	.text
+ .q_atomic_fetch_and_store_acquire_ptr:
+ 	lwarx  5,0,3
+ 	stwcx. 4,0,3
+@@ -318,10 +303,9 @@
+         .align 2
+ 	.globl q_atomic_fetch_and_store_release_ptr
+ 	.globl .q_atomic_fetch_and_store_release_ptr
+-	.csect q_atomic_fetch_and_store_release_ptr[DS],3
+ q_atomic_fetch_and_store_release_ptr:
+-	.long .q_atomic_fetch_and_store_release_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_store_release_ptr
++	.text
+ .q_atomic_fetch_and_store_release_ptr:
+         eieio
+ 	lwarx  5,0,3
+@@ -341,10 +325,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_add_int
+ 	.globl .q_atomic_fetch_and_add_int
+-	.csect q_atomic_fetch_and_add_int[DS],3
+ q_atomic_fetch_and_add_int:
+-	.long .q_atomic_fetch_and_add_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_add_int
++	.text
+ .q_atomic_fetch_and_add_int:
+ 	lwarx  5,0,3
+ 	add    6,4,5
+@@ -364,10 +347,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_add_acquire_int
+ 	.globl .q_atomic_fetch_and_add_acquire_int
+-	.csect q_atomic_fetch_and_add_acquire_int[DS],3
+ q_atomic_fetch_and_add_acquire_int:
+-	.long .q_atomic_fetch_and_add_acquire_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_add_acquire_int
++	.text
+ .q_atomic_fetch_and_add_acquire_int:
+ 	lwarx  5,0,3
+ 	add    6,4,5
+@@ -388,10 +370,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_add_release_int
+ 	.globl .q_atomic_fetch_and_add_release_int
+-	.csect q_atomic_fetch_and_add_release_int[DS],3
+ q_atomic_fetch_and_add_release_int:
+-	.long .q_atomic_fetch_and_add_release_int,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_add_release_int
++	.text
+ .q_atomic_fetch_and_add_release_int:
+         eieio
+ 	lwarx  5,0,3
+@@ -412,10 +393,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_add_ptr
+ 	.globl .q_atomic_fetch_and_add_ptr
+-	.csect q_atomic_fetch_and_add_ptr[DS],3
+ q_atomic_fetch_and_add_ptr:
+-	.long .q_atomic_fetch_and_add_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_add_ptr
++	.text
+ .q_atomic_fetch_and_add_ptr:
+ 	lwarx  5,0,3
+ 	add    6,4,5
+@@ -435,10 +415,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_add_acquire_ptr
+ 	.globl .q_atomic_fetch_and_add_acquire_ptr
+-	.csect q_atomic_fetch_and_add_acquire_ptr[DS],3
+ q_atomic_fetch_and_add_acquire_ptr:
+-	.long .q_atomic_fetch_and_add_acquire_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_add_acquire_ptr
++	.text
+ .q_atomic_fetch_and_add_acquire_ptr:
+ 	lwarx  5,0,3
+ 	add    6,4,5
+@@ -459,10 +438,9 @@
+ 	.align 2
+ 	.globl q_atomic_fetch_and_add_release_ptr
+ 	.globl .q_atomic_fetch_and_add_release_ptr
+-	.csect q_atomic_fetch_and_add_release_ptr[DS],3
+ q_atomic_fetch_and_add_release_ptr:
+-	.long .q_atomic_fetch_and_add_release_ptr,TOC[tc0],0
+-	.csect .text[PR]
++	.long .q_atomic_fetch_and_add_release_ptr
++	.text
+ .q_atomic_fetch_and_add_release_ptr:
+         eieio
+ 	lwarx  5,0,3
+@@ -481,5 +459,5 @@
+ 	.align 2
+ 
+ _section_.text:
+-	.csect .data[RW],3
++	.data
+ 	.long _section_.text

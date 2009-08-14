@@ -1,0 +1,11 @@
+--- s/configure.ac-	2009-01-26 20:28:31.000000000 +0600
++++ s/configure.ac	2009-01-26 20:28:38.000000000 +0600
+@@ -216,7 +216,7 @@
+ 		PICFLAGS="-fPIC -DPIC"
+ 		PICLDFLAGS="-fPIC -DPIC -shared"
+ 		LIBLDFLAGS="-fPIC -DPIC -shared"
+-		AUDLDFLAGS="-L \${libdir} -Wl,-export-dynamic -Wl,-rpath,${libdir}"
++		AUDLDFLAGS="-Wl,-export-dynamic -Wl,-rpath,${libdir}"
+ 		SHARED_SUFFIX=".so"
+ 		;;
+ esac

@@ -1,0 +1,22 @@
+--- fontconfig-2.6.0/fc-glyphname/Makefile.am-	2008-12-11 01:18:19.000000000 +0600
++++ fontconfig-2.6.0/fc-glyphname/Makefile.am	2008-12-11 01:18:37.000000000 +0600
+@@ -24,7 +24,7 @@
+ 
+ CC = @CC_FOR_BUILD@
+ EXEEXT = @EXEEXT_FOR_BUILD@
+-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
++LINK = $(CCLD) -o $@
+ 
+ INCLUDES=-I${top_srcdir}/src -I${top_srcdir} $(WARN_CFLAGS)
+ 
+--- fontconfig-2.6.0/fc-glyphname/Makefile.in-	2008-12-11 01:18:26.000000000 +0600
++++ fontconfig-2.6.0/fc-glyphname/Makefile.in	2008-12-11 01:18:49.000000000 +0600
+@@ -242,7 +242,7 @@
+ sharedstatedir = @sharedstatedir@
+ sysconfdir = @sysconfdir@
+ target_alias = @target_alias@
+-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
++LINK = $(CCLD) -o $@
+ INCLUDES = -I${top_srcdir}/src -I${top_srcdir} $(WARN_CFLAGS)
+ TMPL = fcglyphname.tmpl.h
+ STMPL = ${top_srcdir}/fc-glyphname/${TMPL}

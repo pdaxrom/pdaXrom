@@ -1,0 +1,7 @@
+#!/bin/sh
+
+test -e $HOME/Desktop || mkdir $HOME/Desktop
+
+test -e /usr/bin/dancesplash && dancesplash &
+
+exec /usr/bin/lxsession -s LXDE

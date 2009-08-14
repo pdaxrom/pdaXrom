@@ -1,0 +1,20 @@
+libSM 1.0.3 but need 1.1.0?
+libXaw 1.0.4 but new 1.0.5?
+
+xorg-xdm incomplete
+
+xf86-input-void incomplete
+
+xf86-video-cyrix broken
+xf86-video-i810 broken
+xf86-video-vermilion broken
+xf86-video-via broken
+xf86-video-xgixp broken
+
+lxlauncher incomplete
+lxmusic incomplete
+
+skipstone-gecko broken
+xarchiver broken
+
+cell uclibc - no tls support, libspe2 has unresolved symbols

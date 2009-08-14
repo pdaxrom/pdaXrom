@@ -1,0 +1,11 @@
+--- s/zzip/fseeko.c-	2009-03-25 18:41:34.000000000 +0600
++++ s/zzip/fseeko.c	2009-03-25 18:41:37.000000000 +0600
+@@ -61,7 +61,7 @@
+ 
+ #ifndef ZZIP_HAVE_FSEEKO
+ #define fseeko fseek
+-#define ftello ftello
++#define ftello ftell
+ #endif
+ 
+ /* note that the struct zzip_entry inherits the zzip_disk_entry values

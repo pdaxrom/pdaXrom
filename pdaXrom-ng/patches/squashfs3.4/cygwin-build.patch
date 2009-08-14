@@ -1,0 +1,72 @@
+--- squashfs3.4/squashfs-tools/mksquashfs.c.orig	2009-01-14 21:35:02.000000000 +0600
++++ squashfs3.4/squashfs-tools/mksquashfs.c	2009-01-14 21:15:44.000000000 +0600
+@@ -48,11 +48,17 @@
+ #include <regex.h>
+ #include <fnmatch.h>
+ 
++#ifdef __CYGWIN__
++#include <sys/termios.h>
++#endif
++
+ #ifndef linux
+ #define __BYTE_ORDER BYTE_ORDER
+ #define __BIG_ENDIAN BIG_ENDIAN
+ #define __LITTLE_ENDIAN LITTLE_ENDIAN
++#ifndef __CYGWIN__
+ #include <sys/sysctl.h>
++#endif
+ #else
+ #include <endian.h>
+ #include <sys/sysinfo.h>
+@@ -3191,6 +3197,7 @@
+ 	signal(SIGUSR1, sigusr1_handler);
+ 
+ 	if(processors == -1) {
++#ifndef __CYGWIN__
+ #ifndef linux
+ 		int mib[2];
+ 		size_t len = sizeof(processors);
+@@ -3209,6 +3216,7 @@
+ #else
+ 		processors = get_nprocs();
+ #endif
++#endif
+ 	}
+ 
+ 	if((thread = malloc((2 + processors * 2) * sizeof(pthread_t))) == NULL)
+--- squashfs3.4/squashfs-tools/unsquashfs.c.orig	2009-01-14 21:35:09.000000000 +0600
++++ squashfs3.4/squashfs-tools/unsquashfs.c	2009-01-14 21:31:38.000000000 +0600
+@@ -48,11 +48,17 @@
+ #include <sys/ioctl.h>
+ #include <sys/time.h>
+ 
++#ifdef __CYGWIN__
++#include <sys/termios.h>
++#endif
++
+ #ifndef linux
+ #define __BYTE_ORDER BYTE_ORDER
+ #define __BIG_ENDIAN BIG_ENDIAN
+ #define __LITTLE_ENDIAN LITTLE_ENDIAN
++#ifndef __CYGWIN__
+ #include <sys/sysctl.h>
++#endif
+ #else
+ #include <endian.h>
+ #endif
+@@ -2428,6 +2434,7 @@
+ 		EXIT_UNSQUASH("Failed to set signal mask in intialise_threads\n");
+ 
+ 	if(processors == -1) {
++#ifndef __CYGWIN__
+ #ifndef linux
+ 		int mib[2];
+ 		size_t len = sizeof(processors);
+@@ -2446,6 +2453,7 @@
+ #else
+ 		processors = get_nprocs();
+ #endif
++#endif
+ 	}
+ 
+ 	if((thread = malloc((3 + processors) * sizeof(pthread_t))) == NULL)

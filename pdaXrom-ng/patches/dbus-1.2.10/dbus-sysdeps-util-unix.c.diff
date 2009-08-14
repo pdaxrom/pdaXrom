@@ -1,0 +1,11 @@
+--- dbus-1.2.10/dbus/dbus-sysdeps-util-unix.c-	2009-01-02 21:25:34.000000000 +0600
++++ dbus-1.2.10/dbus/dbus-sysdeps-util-unix.c	2009-01-02 21:25:47.000000000 +0600
+@@ -49,6 +49,8 @@
+ #include <libaudit.h>
+ #endif /* HAVE_LIBAUDIT */
+ 
++#include <syslog.h>
++
+ #ifdef HAVE_SYS_SYSLIMITS_H
+ #include <sys/syslimits.h>
+ #endif

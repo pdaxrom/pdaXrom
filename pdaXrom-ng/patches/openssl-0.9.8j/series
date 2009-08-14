@@ -1,0 +1,4 @@
+Configure.diff
+conf-linux-mipsel.patch
+Makefile.shared.diff
+configure-cross-mingw32-static.patch

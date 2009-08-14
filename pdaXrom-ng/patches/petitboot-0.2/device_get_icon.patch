@@ -1,0 +1,108 @@
+--- petitboot-0.2/devices/kboot-parser.c-	2009-01-16 12:56:53.000000000 +0600
++++ petitboot-0.2/devices/kboot-parser.c	2009-01-16 12:57:24.000000000 +0600
+@@ -242,6 +242,7 @@
+ 	int fd, len, rc = 0;
+ 	struct stat stat;
+ 	struct device *dev;
++	int t;
+ 
+ 	devpath = device;
+ 
+@@ -273,7 +274,11 @@
+ 	dev = malloc(sizeof(*dev));
+ 	memset(dev, 0, sizeof(*dev));
+ 	dev->id = strdup(device);
+-	dev->icon_file = strdup(generic_icon_file(guess_device_type()));
++
++	t = guess_device_type();
++	if (t == ICON_TYPE_UNKNOWN)
++		t = get_device_type(dev->id);
++	dev->icon_file = strdup(generic_icon_file(t));
+ 
+ 	parse_buf(dev, buf);
+ 
+--- petitboot-0.2/devices/native-parser.c-	2009-01-16 12:47:51.000000000 +0600
++++ petitboot-0.2/devices/native-parser.c	2009-01-16 12:51:42.000000000 +0600
+@@ -16,8 +16,12 @@
+ 
+ int check_and_add_device(struct device *dev)
+ {
+-	if (!dev->icon_file)
+-		dev->icon_file = strdup(generic_icon_file(guess_device_type()));
++	if (!dev->icon_file) {
++		int t = guess_device_type();
++		if (t == ICON_TYPE_UNKNOWN)
++		    t = get_device_type(dev->id);
++		dev->icon_file = strdup(generic_icon_file(t));
++	}
+ 
+ 	return !add_device(dev);
+ }
+--- petitboot-0.2/devices/parser.h-	2008-01-04 10:23:06.000000000 +0600
++++ petitboot-0.2/devices/parser.h	2009-01-16 12:44:47.000000000 +0600
+@@ -39,6 +39,7 @@
+ const char *mountpoint_for_device(const char *dev_path);
+ 
+ enum generic_icon_type guess_device_type(void);
++enum generic_icon_type get_device_type(const char *device);
+ 
+ int add_device(const struct device *dev);
+ int add_boot_option(const struct boot_option *opt);
+--- petitboot-0.2/devices/petitboot-udev-helper.c-	2009-01-16 12:36:46.000000000 +0600
++++ petitboot-0.2/devices/petitboot-udev-helper.c	2009-01-16 12:44:57.000000000 +0600
+@@ -408,6 +408,17 @@
+ 	return ICON_TYPE_UNKNOWN;
+ }
+ 
++enum generic_icon_type get_device_type(const char *device)
++{
++	if (strstr(device, "/dev/sr"))
++		return ICON_TYPE_OPTICAL;
++	if (strstr(device, "/dev/ps3d"))
++		return ICON_TYPE_DISK;
++	if (strstr(device, "/dev/sd"))
++		return ICON_TYPE_USB;
++	
++	return ICON_TYPE_UNKNOWN;
++}
+ 
+ static int is_removable_device(const char *sysfs_path) 
+ {
+--- petitboot-0.2/devices/yaboot-parser.c-	2009-01-16 12:54:15.000000000 +0600
++++ petitboot-0.2/devices/yaboot-parser.c	2009-01-16 12:58:48.000000000 +0600
+@@ -88,8 +88,12 @@
+ 
+ static int check_and_add_device(struct device *dev)
+ {
+-	if (!dev->icon_file)
+-		dev->icon_file = strdup(generic_icon_file(guess_device_type()));
++	if (!dev->icon_file) {
++		int t = guess_device_type();
++		if (t == ICON_TYPE_UNKNOWN)
++		    t = get_device_type(dev->id);
++		dev->icon_file = strdup(generic_icon_file(t));
++	}
+ 
+ 	return !add_device(dev);
+ }
+@@ -128,6 +132,7 @@
+ 	int fd;
+ 	struct stat st;
+ 	char *label;
++	int t;
+ 
+ 	devpath = strdup(device);
+ 
+@@ -180,7 +185,11 @@
+ 		if (newline)
+ 			*newline = 0;
+ 	}
+-	dev->icon_file = strdup(generic_icon_file(guess_device_type()));
++
++	t = guess_device_type();
++	if (t == ICON_TYPE_UNKNOWN)
++		t = get_device_type(dev->id);
++	dev->icon_file = strdup(generic_icon_file(t));
+ 
+ 	/* If we have a 'partiton=' directive, update the default devpath
+ 	 * to use that instead of the current device */

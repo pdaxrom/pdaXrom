@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+
+. /etc/init.d/functions
+
+NAME=halevt
+DAEMON=halevt
+DAEMON_OPTS="-u root -g root -c /etc/halevt/halevt.conf"
+DESC="HAL events manager"
+
+case "$1" in
+  start)
+	log_begin_msg -n "Starting $DESC"
+	$DAEMON $DAEMON_OPTS
+	log_end_msg $?
+	;;
+  stop)
+	log_begin_msg -n "Stopping $DESC"
+	killall $DAEMON >/dev/null 2>/dev/null
+	log_end_msg $?
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

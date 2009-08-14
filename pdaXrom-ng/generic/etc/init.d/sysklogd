@@ -1,0 +1,33 @@
+#!/bin/sh
+
+. /etc/init.d/functions
+
+NAME=syslogd
+
+case "$1" in
+  start)
+	log_begin_msg -n "Starting syslogd"
+	syslogd -S
+	log_end_msg $?
+	log_begin_msg -n "Starting klogd"
+	klogd
+	log_end_msg $?
+	exit 0
+	;;
+  stop)
+	log_begin_msg -n "Stopping klogd"
+	killall klogd 2>/dev/null >/dev/null
+	log_end_msg $?
+	log_begin_msg -n "Stopping syslogd"
+	killall syslogd 2>/dev/null >/dev/null
+	log_end_msg $?
+	exit 0;
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
