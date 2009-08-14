@@ -14,9 +14,13 @@ fltk::Input *netmaskBox=(fltk::Input *)0;
 
 fltk::Input *gatewayBox=(fltk::Input *)0;
 
-fltk::Input *dnsText=(fltk::Input *)0;
+fltk::Input *dnsBox=(fltk::Input *)0;
 
-fltk::Input *dnsText2=(fltk::Input *)0;
+fltk::Input *dns2Box=(fltk::Input *)0;
+
+static void cb_Cancel(fltk::Button*, void*) {
+  interfaceWindow->hide();
+}
 
 fltk::Window *editInterface=(fltk::Window *)0;
 
@@ -54,15 +58,18 @@ int main (int argc, char **argv) {
        {fltk::Group* o = new fltk::Group(0, 25, 325, 205, "DNS");
         o->hide();
         o->begin();
-        dnsText = new fltk::Input(95, 25, 210, 25, "DNS");
-        dnsText2 = new fltk::Input(95, 55, 210, 25, "DNS 2");
+        dnsBox = new fltk::Input(95, 25, 210, 25, "DNS");
+        dns2Box = new fltk::Input(95, 55, 210, 25, "DNS 2");
         o->end();
       }
       o->end();
     }
-    new fltk::Button(205, 250, 65, 25, "Cancel");
+     {fltk::Button* o = new fltk::Button(205, 250, 65, 25, "Cancel");
+      o->callback((fltk::Callback*)cb_Cancel);
+    }
      {fltk::ReturnButton* o = new fltk::ReturnButton(105, 250, 65, 25, "Ok");
       o->shortcut(0xff0d);
+      o->callback((fltk::Callback*)saveInterface);
     }
     o->end();
     o->resizable(o);

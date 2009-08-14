@@ -12,10 +12,11 @@ extern fltk::Choice* connType;
 extern fltk::Input* ipaddrBox;
 extern fltk::Input* netmaskBox;
 extern fltk::Input* gatewayBox;
-extern fltk::Input* dnsText;
-extern fltk::Input* dnsText2;
+extern fltk::Input* dnsBox;
+extern fltk::Input* dns2Box;
 #include <fltk/Button.h>
 #include <fltk/ReturnButton.h>
+extern void saveInterface(fltk::ReturnButton*, void*);
 extern fltk::Window* editInterface;
 #include <fltk/Browser.h>
 extern fltk::Browser* devList;

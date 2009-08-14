@@ -14,13 +14,13 @@ Function {} {open
 } {
   {fltk::Window} interfaceWindow {
     label interface open
-    xywh {423 456 325 280} resizable visible
+    xywh {413 344 325 280} resizable visible
   } {
     {fltk::TabGroup} {} {open
       xywh {0 0 325 230} box NO_BOX
     } {
       {fltk::Group} {} {
-        label ipv4 open
+        label ipv4 open selected
         xywh {0 25 325 205}
       } {
         {fltk::Choice} connType {
@@ -48,11 +48,11 @@ Function {} {open
         label DNS open
         xywh {0 25 325 205} hide
       } {
-        {fltk::Input} dnsText {
+        {fltk::Input} dnsBox {
           label DNS
           xywh {95 25 210 25}
         }
-        {fltk::Input} dnsText2 {
+        {fltk::Input} dns2Box {
           label {DNS 2}
           xywh {95 55 210 25}
         }
@@ -60,15 +60,17 @@ Function {} {open
     }
     {fltk::Button} {} {
       label Cancel
+      callback {interfaceWindow->hide();}
       xywh {205 250 65 25}
     }
     {fltk::ReturnButton} {} {
       label Ok
+      callback saveInterface
       xywh {105 250 65 25}
     }
   }
-  {fltk::Window} editInterface {open selected
-    xywh {813 332 335 215} resizable visible
+  {fltk::Window} editInterface {open
+    xywh {746 231 335 215} resizable visible
   } {
     {fltk::Browser} devList {
       xywh {5 10 251 196}
