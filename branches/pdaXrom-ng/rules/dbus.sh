@@ -24,6 +24,17 @@ build_dbus() {
     pushd $TOP_DIR
     cd $DBUS_DIR
     (
+    local C_ARGS=
+    if [ -e $TARGET_LIB/libX11.so ]; then
+	C_ARGS=" \
+	    --with-x \
+	    --x-includes=$TARGET_INC \
+	    --x-libraries=$TARGET_LIB \
+		"
+    else
+	C_ARGS="--with-x=no"
+    fi
+
     eval \
 	$CROSS_CONF_ENV \
 	$DBUS_ENV \
@@ -37,9 +48,7 @@ build_dbus() {
 	    --disable-checks \
     	    --disable-xml-docs \
     	    --disable-doxygen-docs \
-	    --with-x \
-	    --x-includes=$TARGET_INC \
-	    --x-libraries=$TARGET_LIB \
+    	    $C_ARGS \
 	    || error
     ) || error "configure"
     
