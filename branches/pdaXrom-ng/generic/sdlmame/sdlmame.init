@@ -1,0 +1,25 @@
+#!/bin/sh
+
+export HOME=/home
+
+mkdir -p $HOME/.mame/roms
+
+(
+while true; do
+    #
+    #clean roms directory
+    #
+    rm -f $HOME/.mame/roms/*
+    #
+    # check local storages and create simlinks to mame rom dir
+    #
+    cd /media
+    find /media -type d -name roms -o -name ROMS | while read d; do
+	find $d -type f | while read f; do
+	    ln -sf $f $HOME/.mame/roms/`basename $f`
+	done
+    done
+
+    sdlmame >/dev/null 2>/dev/null
+done
+) &

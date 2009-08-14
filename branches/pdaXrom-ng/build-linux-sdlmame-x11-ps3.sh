@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISOIMAGE_NAME="sdlmame-ps3"
+ISOIMAGE_NAME="sdlmame-x11-ps3"
 
 TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
