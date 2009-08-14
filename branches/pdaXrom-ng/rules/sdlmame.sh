@@ -37,6 +37,8 @@ build_sdlmame() {
 	;;
     esac
 
+    C_ARGS="$C_ARGS $SDLMAME_MAKE_ARGS"
+
     local ARCHOPTS=
     local OPTIMIZE=
     case $TARGET_ARCH in
