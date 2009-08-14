@@ -1,0 +1,8 @@
+config ELINKS
+	bool
+	prompt "elinks"
+
+config ELINKS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on ELINKS

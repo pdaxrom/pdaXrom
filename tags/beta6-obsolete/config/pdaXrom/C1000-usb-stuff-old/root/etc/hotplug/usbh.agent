@@ -1,0 +1,90 @@
+#!/bin/sh
+
+HOTPLUG_DIR=/etc/hotplug
+
+cd ${HOTPLUG_DIR}
+# ash "." fn does not start with current dir, use absolute path just in case
+. ${HOTPLUG_DIR}/hotplug.functions
+DEBUG=Y
+
+AGENT=usbh
+[ "$DEBUG" != "" ] && mesg "arguments ($*) env (`env`)"
+
+KERNEL_VER=`/bin/uname -r`
+
+[ -z ${AGENT} ] && mesg no AGENT && exit 1
+[ -z ${INTERFACE} ] && mesg no INTERFACE && exit 1
+[ -z ${ACTION} ] && mesg no ACTION && exit 1
+
+# echo ${ACTION} >> /home/usbh-monitor
+
+case ${AGENT} in
+
+usbh) 
+
+	case ${INTERFACE} in
+	monitor)
+		case ${ACTION} in
+
+			# called to load all usb device modules
+		load)	
+			[ "$DEBUG" != "" ] && mesg LOAD ...
+			/etc/usbh start 
+			[ "$DEBUG" != "" ] && mesg LOAD done.
+			;;
+
+			# called to handle power management event
+		suspend) 
+			[ "$DEBUG" != "" ] && mesg SUSPEND ...
+			/etc/usbh stop 
+			[ "$DEBUG" != "" ] && mesg SUSPEND done.
+			;;
+
+			# called to reload after power management event
+		restore-loaded)
+			[ "$DEBUG" != "" ] && mesg RESTORE-LOADED ...
+			/etc/usbh start 
+			[ "$DEBUG" != "" ] && mesg RESTORE-LOADED done.
+			;;
+
+			# called to unload after power management event
+		restore-unloaded)
+			[ "$DEBUG" != "" ] && mesg RESTORE-UNLOADED ...
+			# do nothing
+			[ "$DEBUG" != "" ] && mesg RESTORE-UNLOADED done.
+			;;
+
+			# called to unload all usb device modules
+		unload)
+			[ "$DEBUG" != "" ] && mesg UNLOAD ...
+			/etc/usbh stop 
+			[ "$DEBUG" != "" ] && mesg UNLOAD done.
+			;;
+
+		*)
+        		mesg unknown monitor ACTION \[${ACTION}\]
+			exit 1
+			;;
+		esac
+		# let the usbdmonitor module know we are finished
+		if [ -f /proc/usbh-monitor ]; then
+			echo Done > /proc/usbh-monitor
+		fi
+		;;
+	
+        *)
+        	mesg unknown INTERFACE \[${INTERFACE}\]
+		exit 1
+		;;
+	esac
+	;;
+
+*)
+        mesg unknown AGENT \[${AGENT}\]
+	exit 1
+	;;
+
+esac
+
+exit 0
+

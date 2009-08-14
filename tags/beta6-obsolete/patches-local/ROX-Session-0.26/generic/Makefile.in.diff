@@ -1,0 +1,15 @@
+--- ROX-Session-0.26/ROX-Session/src/Makefile.in~	2006-08-18 10:22:35.000000000 +0000
++++ ROX-Session-0.26/ROX-Session/src/Makefile.in	2006-08-18 10:23:32.000000000 +0000
+@@ -31,9 +31,9 @@
+ 	${CC} -o "${PROG}" ${OBJECTS} ${LDFLAGS}
+ 	mv "${PROG}" "${PLATFORM_DIR}"
+ 	-(cd "${PLATFORM_DIR}" && \
+-	 objcopy --only-keep-debug ROX-Session ROX-Session.dbg && \
+-	 strip ROX-Session && \
+-	 objcopy --add-gnu-debuglink=ROX-Session.dbg ROX-Session)
++	 $(OBJCOPY) --only-keep-debug ROX-Session ROX-Session.dbg && \
++	 $(STRIP) ROX-Session && \
++	 $(OBJCOPY) --add-gnu-debuglink=ROX-Session.dbg ROX-Session)
+ 
+ clean:
+ 	rm -f *.o Makefile.bak

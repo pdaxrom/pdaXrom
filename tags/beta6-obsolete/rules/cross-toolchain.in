@@ -1,0 +1,209 @@
+menu	"Cross Toolchain     "
+
+config BUILD_CROSSCHAIN
+	bool
+	prompt "Build Cross Toolchain"
+	default y
+
+choice
+	prompt "binutils Version"
+		default 2.14
+		depends on BUILD_CROSSCHAIN || NATIVE_BINUTILS
+
+	config BINUTILS_2_9
+		bool
+		prompt "2.9"
+		depends on ARCH_MIPS
+
+	config BINUTILS_2_11
+		bool
+		prompt "2.11"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_PPC || ARCH_MIPS
+
+	config BINUTILS_2_13_2_1
+		bool
+		prompt "2.13.2.1"
+		depends on ARCH_MIPS
+
+	config BINUTILS_2_14
+		bool
+		prompt "2.14"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_PPC || ARCH_MIPS
+
+	config BINUTILS_2_15
+		bool
+		prompt "2.15"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config BINUTILS_2_15_94_0_2
+		bool
+		prompt "2.15.94.0.2"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config BINUTILS_2_16
+		bool
+		prompt "2.16"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+#	config BINUTILS_2_16_1
+#		bool
+#		prompt "2.16.1"
+#		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+endchoice
+
+config BINUTILS_SNAPSHOT
+	bool
+	default y if BINUTILS_2_15_94_0_2
+	
+config BINUTILS_SNAPSHOT_NAME
+	string
+	default "2.15.94.0.2" if BINUTILS_SNAPSHOT && BINUTILS_2_15_94_0_2
+
+choice
+	prompt "GCC (GNU Compiler Collection) Version"
+		default GCC_3_3_2
+		depends on BUILD_CROSSCHAIN || NATIVE_GCC
+
+	config GCC_2_95_2
+		bool
+		prompt "2.95.2"
+		depends on ARCH_MIPS
+
+	config GCC_2_95_3
+		bool
+		prompt "2.95.3"
+		depends on ARCH_X86 || ARCH_ARM || ARCH_ARM_NOMMU || ARCH_SPARC || ARCH_PPC || ARCH_MIPS
+
+	config GCC_3_0_3
+		bool
+		prompt "3.0.3"
+		depends on ARCH_MIPS
+
+	config GCC_3_2_2
+		bool
+		prompt "3.2.2"
+		depends on ARCH_MIPS
+
+	config GCC_3_3_2
+		bool
+		prompt "3.3.2"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_3_3_6
+		bool
+		prompt "3.3.6"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_3_4_3
+		bool
+		prompt "3.4.3"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_3_4_4
+		bool
+		prompt "3.4.4"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_3_4_5
+		bool
+		prompt "3.4.5"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_3_4_6
+		bool
+		prompt "3.4.6"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_4_0_0
+		bool
+		prompt "4.0.0"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+
+	config GCC_4_1_0
+		bool
+		prompt "4.1.0"
+		depends on ARCH_ARM || ARCH_X86 || ARCH_SH || ARCH_H8300 || ARCH_PPC || ARCH_MIPS
+	
+endchoice
+
+config GCC_SNAPSHOT
+	bool
+	default y if GCC_4_1_0
+
+config GCC_SNAPSHOT_NAME
+	string
+	default "4.1-20050424" if GCC_SNAPSHOT && GCC_4_1_0
+
+config GCC_2
+	bool
+	default y if GCC_2_95_3
+
+config GCC_3
+	bool
+	default y if GCC_3_0_3
+	default y if GCC_3_2_2
+	default y if GCC_3_3_2
+	default y if GCC_3_3_6
+	default y if GCC_3_4_3
+	default y if GCC_3_4_4
+	default y if GCC_3_4_5
+	default y if GCC_3_4_6
+	default y if GCC_4_0_0
+	default y if GCC_4_1_0
+
+config GCC_F77
+	bool
+	prompt "  build fortran compiler"
+	default n
+
+config GCC_SHARED
+	bool
+	prompt "  build gcc shared"
+	default y
+#	depends on BUILD_CROSSCHAIN || NATIVE_GCC
+
+config GCC_SOFTFLOAT
+	bool
+	prompt "  build system softfloat"
+	default n
+	depends on ARCH_ARM || ARCH_MIPS
+
+config FPU_TYPE
+	string
+	default "softfloat"		if GCC_SOFTFLOAT
+	default "hardfloat"		if !GCC_SOFTFLOAT
+
+config XCHAIN-DISTCC
+	bool
+	prompt "Build distcc"
+	default n
+
+config NASM
+	bool
+	prompt "x86 NASM"
+	depends on ARCH_X86
+
+config XCHAIN-SCONS
+	bool
+	prompt "Build scons (see help)"
+	help
+		Requires Python-1.6 or later and Python distutils on the Host,
+		these tools are not (yet) part of ptxdist
+
+config XCHAIN-LIBTOOL
+	bool
+	prompt "Build libtool"
+	default n
+
+config AUTOCONF257
+	bool
+	prompt "Build autoconf"
+	default n
+
+config AUTOMAKE176
+	bool
+	prompt "Build automake"
+	default n
+
+endmenu

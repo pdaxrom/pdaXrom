@@ -1,0 +1,37 @@
+#!/bin/sh
+
+ACTION=$1
+SOCKET=0
+STAB_FILE="/var/lib/sdcard/stab"
+
+###### for QPE ######
+
+case "$ACTION" in
+'insert')
+	sdctrl insert $SOCKET
+	;;
+'eject'|'compeject')
+	sdctrl eject $SOCKET
+	count=0
+	while [ $count -lt 3 ]
+	do
+		grep "Socket ${SOCKET}: empty" ${STAB_FILE} > /dev/null
+		if [ $? = 0 ]; then
+			exit 0
+		fi
+		count=`expr $count + 1`
+		sleep 1
+	done
+	exit 1
+	;;
+'change')
+	$0 eject
+	$0 insert
+	;;
+'*')
+	exit 1
+	;;
+esac
+
+exit 0
+

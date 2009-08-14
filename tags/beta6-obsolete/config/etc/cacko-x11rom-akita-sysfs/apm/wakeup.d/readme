@@ -1,0 +1,9 @@
+This directory contains scripts that are all called each time
+the device attempts to suspend. These scripts determine the
+amount of minutes the device is allowed to sleep for.
+
+They must echo a single number, the number of minutes the device
+must sleep for, or not echo anything. Whichever number is the 
+lowest will be used.
+
+

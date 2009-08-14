@@ -1,0 +1,8 @@
+config NET-SNMP
+	bool
+	prompt "net-snmp"
+
+config NET-SNMP_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on NET-SNMP

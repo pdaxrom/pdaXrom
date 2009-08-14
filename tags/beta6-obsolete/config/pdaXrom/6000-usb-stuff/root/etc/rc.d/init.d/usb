@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# rc.usb 1.00 2001/08/10 22:20:17 (Hideki Hayami)
+#
+# Tags for init configuration tools
+#
+# control script: /etc/usbcontrol
+#
+# description:	currently default USB setting is for serial class
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+CONTROL=/etc/usbcontrol
+#USB_DEFAULT=serial
+USB_DEFAULT=net
+
+usage()
+{
+    echo "Usage: $0 {start|stop|status|restart|reload}"
+}
+
+
+if [ $# -lt 1 ] ; then usage ; exit 0 ; fi
+action=$1
+
+case "$action" in
+
+start)
+    if [ -x $CONTROL ] ; then
+        action "Loading USB modules:" $CONTROL $USB_DEFAULT
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/usb
+    fi
+    ;;
+
+stop)
+    if [ -x $CONTROL ] ; then
+        action "Unloading USB modules:" $CONTROL remove
+	rm -f /var/lock/subsys/usb
+    fi
+    ;;
+
+status)
+    ;;
+
+restart|reload)
+    $0 stop
+    $0 start
+    ;;
+
+*)
+    usage
+    ;;
+
+esac
+
+exit 0

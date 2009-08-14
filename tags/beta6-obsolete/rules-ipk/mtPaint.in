@@ -1,0 +1,8 @@
+config MTPAINT
+	bool
+	prompt "mtPaint"
+
+config MTPAINT_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on MTPAINT

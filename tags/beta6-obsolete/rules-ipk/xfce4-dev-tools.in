@@ -1,0 +1,8 @@
+config XFCE4-DEV-TOOLS
+	bool
+	prompt "xfce4-dev-tools"
+
+config XFCE4-DEV-TOOLS_INSTALL
+	bool
+	prompt "Install to filesystem"
+	depends on XFCE4-DEV-TOOLS

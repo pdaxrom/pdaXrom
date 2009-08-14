@@ -1,0 +1,151 @@
+###TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer
+
+CROSS_ENV += \
+	ac_cv_func_getpgrp_void=yes \
+	ac_cv_func_setpgrp_void=yes \
+	ac_cv_sizeof_int=4 \
+	ac_cv_sizeof_long_long=8 \
+	ac_cv_func_memcmp_clean=yes \
+	ac_cv_func_setvbuf_reversed=no \
+	ac_cv_func_getrlimit=yes
+
+# xkbd
+CROSS_ENV += \
+	ac_cv_func_malloc_0_nonnull=yes \
+	ac_cv_func_realloc_0_nonnull=yes \
+	ac_cv_func_strnlen_working=yes
+
+# dbus
+CROSS_ENV += \
+	ac_cv_func_posix_getpwnam_r=yes
+
+# sudo
+CROSS_ENV += \
+	sudo_cv_uid_t_len=10
+
+# Orbit2
+CROSS_ENV += \
+	ac_cv_c_bigendian=yes ac_cv_alignof_CORBA_octet=1 ac_cv_alignof_CORBA_boolean=1 \
+	ac_cv_alignof_CORBA_char=1 ac_cv_alignof_CORBA_wchar=2 ac_cv_alignof_CORBA_short=2 \
+	ac_cv_alignof_CORBA_long=4 ac_cv_alignof_CORBA_long_long=4 ac_cv_alignof_CORBA_float=4 \
+	ac_cv_alignof_CORBA_double=4 ac_cv_alignof_CORBA_long_double=4 ac_cv_alignof_CORBA_struct=4 \
+	ac_cv_alignof_CORBA_pointer=4 
+
+# findutils
+CROSS_ENV += \
+	ac_cv_func_closedir_void=yes
+
+# glib
+CROSS_ENV += \
+	glib_cv_stack_grows=no \
+	glib_cv_use_pid_surrogate=yes \
+	ac_cv_func_posix_getpwuid_r=yes \
+	ac_cv_sizeof_long_long=8 \
+	glib_cv_long_long_format=ll \
+	ac_cv_func_vsnprintf_c99=yes \
+	ac_cv_func_printf_unix98=yes
+
+# mysql
+CROSS_ENV += \
+	mysql_cv_func_atomic_sub=no \
+	mysql_cv_func_atomic_add=no \
+	ac_cv_conv_longlong_to_float=yes \
+	ac_cv_sys_restartable_syscalls=yes
+
+# apache
+CROSS_ENV += \
+	ac_cv_func_pthread_key_delete=yes 	\
+	apr_cv_process_shared_works=no		\
+	ac_cv_sizeof_size_t=4			\
+	ac_cv_sizeof_ssize_t=4			\
+	ac_cv_header_netinet_sctp_h=no		\
+	ac_cv_header_netinet_sctp_uio_h=no	\
+	ac_cv_sctp=no
+
+# php
+CROSS_ENV += \
+	ac_cv_pread=no \
+	ac_cv_pwrite=no \
+	php_cv_lib_cookie_io_functions_use_off64_t=yes \
+	ac_cv_func_fopencookie=no \
+	ac_cv_func_getaddrinfo=yes
+
+# mono
+CROSS_ENV += \
+	cv_mono_sizeof_sunpath=108
+
+# arts
+CROSS_ENV += \
+	glib_cv_sizeof_pth_mutex_t=24 \
+	glib_cv_sizeof_pth_cond_t=12 \
+	glib_cv_sizeof_std_intmax_t=8 \
+	glib_cv_va_copy=no \
+	glib_cv___va_copy=yes
+
+# kdelibs
+CROSS_ENV += \
+	kde_cv_shortsetgroups=no
+
+# kdebase
+CROSS_ENV += \
+	kde_cv_covariant_return=no
+
+# t1libs
+CROSS_ENV += \
+	ac_64bit_type=no
+
+# bash
+CROSS_ENV += \
+	ac_cv_func_mmap_fixed_mapped=yes ac_cv_func_strcoll_works=yes ac_cv_func_working_mktime=yes \
+        ac_cv_lib_curses_tgetent=no ac_cv_lib_ncurses_tgetent=yes ac_cv_lib_termcap_tgetent=no ac_cv_lib_tinfo_tgetent=no \
+        bash_cv_func_sigsetjmp=present bash_cv_getcwd_malloc=yes bash_cv_job_control_missing=present \
+        bash_cv_printf_a_format=yes bash_cv_sys_named_pipes=present bash_cv_termcap_lib=libncurses \
+        bash_cv_ulimit_maxfds=yes bash_cv_under_sys_siglist=yes bash_cv_unusable_rtsigs=no \
+        gt_cv_int_divbyzero_sigfpe=yes 
+
+# camstream
+CROSS_ENV += \
+	ac_cv_flag_mmx=no
+
+#e-uae
+CROSS_ENV += \
+	fu_cv_sys_stat_statfs2_bsize=yes
+
+#BasiliskII
+CROSS_ENV += \
+	ac_cv_file__dev_ptc=no \
+	ac_cv_have_sigcontext_hack=yes \
+	ac_cv_have_extended_signals=no \
+	ac_cv_have_skip_instruction=no \
+	ac_cv_sizeof_long_double=8 \
+	ac_cv_mmap_anon=yes \
+	ac_cv_mmap_anonymous=yes \
+	ac_cv_have_posix_shm=yes \
+	ac_cv_sigaction_need_reinstall=no \
+	ac_cv_signal_need_reinstall=no
+###	sigsegv_recovery=sigcontext
+
+# ed
+CROSS_ENV += \
+	ac_cv_header_stdc=yes
+
+# tor
+CROSS_ENV += \
+	ac_cv_libevent_normal=yes \
+	tor_cv_null_is_zero=yes \
+	tor_cv_time_t_signed=no
+
+# socat
+CROSS_ENV += \
+	sc_cv_sys_crdly_shift=9 \
+	sc_cv_sys_tabdly_shift=11 \
+	sc_cv_sys_csize_shift=4 \
+	ac_cv_ispeed_offset=13
+
+# vim
+CROSS_ENV += \
+	ac_cv_func_tgetent=yes
+
+# fcron
+CROSS_ENV += \
+	ac_cv_func_memcmp_working=yes

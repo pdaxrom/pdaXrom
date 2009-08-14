@@ -1,0 +1,8 @@
+config E-UAE
+	bool
+	prompt "e-uae"
+
+config E-UAE_INSTALL
+	bool
+	prompt "Install in ROM"
+	depends on E-UAE

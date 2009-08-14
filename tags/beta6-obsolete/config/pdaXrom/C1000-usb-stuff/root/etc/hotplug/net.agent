@@ -1,0 +1,142 @@
+#!/bin/bash
+#
+# Network hotplug policy agent for Linux 2.4 kernels
+#
+# Kernel NET hotplug params include:
+#	
+#	ACTION=%s [register or unregister]
+#	INTERFACE=%s
+#
+# HISTORY:
+#
+# 25-Feb-2001	Special case ppp and similar (redhat)
+# 23-Jan-2001	Log invocation of "ifup" if debugging
+# 04-Jan-2001	Initial version of "new" hotplug agent.
+#
+# $Id: net.agent,v 1.1 2004/12/07 02:04:24 namikosi Exp $
+#
+
+HOTPLUG_DIR=/etc/hotplug
+cd ${HOTPLUG_DIR}
+# ash "." fn does not start with current dir, use absolute path to fix
+. ${HOTPLUG_DIR}/hotplug.functions
+# DEBUG=yes export DEBUG
+
+[ "$DEBUG" != "" ] && mesg "arguments ($*) env (`env`)"
+set -x
+
+if [ "$INTERFACE" = "" ]; then
+    mesg Bad NET invocation: \$INTERFACE is not set
+    exit 1
+fi
+
+# crude recursion prevention for when "ifconfig up" triggers another net.agent
+# This should not be needed, but it makes testing new scripts more pleasant.
+NAID=${INTERFACE}-${ACTION}
+NAL=/var/run/net.agent-${NAID}
+if [ -f ${NAL} ]; then
+    [ "${DEBUG}" = "yes" ] && mesg net.agent-${NAID} already running
+    exit 0
+fi
+echo $$ > ${NAL}
+                                                                                
+case ${INTERFACE} in
+usbd*)
+    . ${HOTPLUG_DIR}/usbdnet.conf
+    . ${HOTPLUG_DIR}/usbd.func
+    ;;
+esac
+
+case $ACTION in
+register)
+    # Don't do anything if the network is stopped
+    #if [ ! -f /var/lock/subsys/network ]; then
+    #	rm -f ${NAL}
+    #	exit 0
+    #fi
+
+    case $INTERFACE in
+	# interfaces that are registered after being "up" (?)
+	ppp*|ippp*|isdn*|plip*|lo*|irda*|tunl*)
+	    debug_mesg assuming $INTERFACE is already up
+	    rm -f ${NAL}
+	    exit 0
+	    ;;
+
+	# interfaces that are registered then brought up
+	usbd0)
+	    # set up IP
+	    #usbd_net_if_up
+	    if [ "$NETMASK" = "" ]; then
+		NETMASK=255.255.255.0
+	    fi
+	    
+	    ifconfig usbd0 $IP netmask $NETMASK
+	    
+	    usbd_net_if_up
+	    
+	    if [ "$GATEWAY" != "" ]; then
+		route add default gw $GATEWAY
+	    fi
+	    
+	    if [ "$DNS" != "" ]; then
+		STR="nameserver $DNS"
+		FND=`cat /etc/resolv.conf | grep $DNS`
+		if [ "$FND" = "" ]; then
+		    echo $STR >>/etc/resolv.conf
+		fi
+	    fi
+
+	    rm -f ${NAL}
+	    exit 0
+	    ;;
+
+	# interfaces that are registered then brought up
+	*)
+	    # NOTE:  network configuration relies on administered state,
+	    # we can't do much here without distro-specific knowledge
+	    # such as whether/how to invoke DHCP, set up bridging, etc.
+
+	    # RedHat and similar
+	    export IN_HOTPLUG=1
+	    if [ -x /sbin/ifup ]; then
+		debug_mesg invoke ifup $INTERFACE
+		exec /sbin/ifup $INTERFACE
+	    else
+		mesg "how do I bring interfaces up on this distro?"
+	    fi
+	    ;;
+    esac
+    mesg $1 $ACTION event not handled
+    ;;
+
+unregister)
+    case $INTERFACE in
+	usbd0)
+	    if [ "$DEBUG" != "" ]; then
+		mesg ifconfig $INTERFACE down
+	    fi
+
+	    if [ "$GATEWAY" != "" ]; then
+		route del default gw $GATEWAY
+	    fi
+
+	    usbd_net_if_down
+
+	    rm -f ${NAL}
+	    exit 0
+	    ;;
+	*)
+	    debug_mesg NET $ACTION event not supported
+	    rm -f ${NAL}
+	    exit 1 ;;
+    esac
+    ;;
+
+*)
+    debug_mesg NET $ACTION event not supported
+    rm -f ${NAL}
+    exit 1 ;;
+
+esac
+rm -f ${NAL}

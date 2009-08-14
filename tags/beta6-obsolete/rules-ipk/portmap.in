@@ -1,0 +1,8 @@
+config PORTMAP
+	bool
+	prompt "portmap"
+
+config PORTMAP_INSTALL
+	bool
+	prompt "install in ROM"
+	depends on PORTMAP

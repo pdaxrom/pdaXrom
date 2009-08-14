@@ -1,0 +1,8 @@
+config JPILOT
+	bool
+	prompt "j-pilot"
+
+config JPILOT_INSTALL
+	bool
+	prompt "Install on ROM"
+	depends on JPILOT
