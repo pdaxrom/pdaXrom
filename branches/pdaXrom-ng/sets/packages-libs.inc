@@ -10,12 +10,3 @@
 . $RULES_DIR/host_gettext.sh
 . $RULES_DIR/host_glib2.sh
 . $RULES_DIR/glib2.sh
-
-#
-# cups
-#
-. $RULES_DIR/libtasn1.sh
-. $RULES_DIR/libgpg-error.sh
-. $RULES_DIR/libgcrypt.sh
-. $RULES_DIR/gnutls.sh
-. $RULES_DIR/cups.sh
