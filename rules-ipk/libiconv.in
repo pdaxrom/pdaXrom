@@ -1,8 +1,0 @@
-config LIBICONV
-        bool
-        prompt "Compile libiconv"
-
-config LIBICONV_INSTALL
-	bool
-	prompt "Install in ROM"
-	depends on LIBICONV

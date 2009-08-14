@@ -1,5 +1,0 @@
-KERNELCONFIG=$PWD/sh4.config
-TARGET=sh-elf
-TARGET_CFLAGS="-O2 -ml -m4"
-GLIBC_CONFIGPARMS="no-z-defs=yes"
-#GCC_STAGE2_MAKEVARS=CXXFLAGS_FOR_TARGET="-fno-unit-at-a-time"

@@ -1,8 +1,0 @@
-config HICOLOR-ICON-THEME
-	bool
-	prompt "hicolor-icon-theme"
-
-config HICOLOR-ICON-THEME_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on HICOLOR-ICON-THEME

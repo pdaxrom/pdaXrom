@@ -1,9 +1,0 @@
-#/etc/ppp/options
-#
--detach
-asyncmap 0
-crtscts
-modem
-lock
-115200
-connect-delay 1000

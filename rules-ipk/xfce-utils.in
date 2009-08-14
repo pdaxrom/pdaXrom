@@ -1,8 +1,0 @@
-config XFCE-UTILS
-	bool
-	prompt "xfce-utils"
-
-config XFCE-UTILS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on XFCE-UTILS

@@ -1,8 +1,0 @@
-[Desktop Entry]
-Comment=GPS tracking
-Exec=/usr/lib/qt/bin/qpegps
-Icon=/usr/lib/qt/icons/gps16x16.xpm
-Name=qpeGPS
-Type=Application
-Categories=Application;Office;WordProcessor;
-StartupNotify=True

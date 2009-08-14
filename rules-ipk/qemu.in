@@ -1,8 +1,0 @@
-config QEMU
-	bool
-	prompt "qemu"
-
-config QEMU_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on QEMU

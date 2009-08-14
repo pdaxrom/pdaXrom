@@ -1,8 +1,0 @@
-config GTODO
-	bool
-	prompt "gtodo"
-
-config GTODO_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on GTODO

@@ -1,5 +1,0 @@
-KERNELCONFIG=$PWD/arm.config
-TARGET=arm-cacko-linux-gnu
-#TARGET_CFLAGS="-O"
-GLIBC_TARGET_CFLAGS=-O2 -fno-unit-at-a-time
-TARGET_OPT_CFLAGS=-Os -fomit-frame-pointer

@@ -1,8 +1,0 @@
-config KDEEDU
-	bool
-	prompt "kde edu"
-
-config KDEEDU_INSTALL
-	bool
-	prompt "Install on ROM"
-	depends on KDEEDU

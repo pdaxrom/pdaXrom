@@ -1,9 +1,0 @@
-config WIN32CODECS
-	bool
-	prompt "win32codecs"
-	depends on MPLAYER && ARCH_X86
-
-config WIN32CODECS_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on WIN32CODECS

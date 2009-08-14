@@ -1,8 +1,0 @@
-config GSPCAV1
-	bool
-	prompt "gspcav1"
-
-config GSPCAV1_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on GSPCAV1

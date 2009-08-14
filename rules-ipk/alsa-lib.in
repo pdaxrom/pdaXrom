@@ -1,8 +1,0 @@
-config ALSA-LIB
-	bool
-	prompt "alsa-lib"
-
-config ALSA-LIB_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on ALSA-LIB

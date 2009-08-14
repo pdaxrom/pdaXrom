@@ -1,8 +1,0 @@
-config DBUS-GLIB
-	bool
-	prompt "dbus-glib"
-
-config DBUS-GLIB_INSTALL
-	bool
-	prompt "Install to filesystem"
-	depends on DBUS-GLIB

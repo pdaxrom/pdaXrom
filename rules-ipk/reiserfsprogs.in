@@ -1,8 +1,0 @@
-config REISERFSPROGS
-	bool
-	prompt "reiserfsprogs"
-
-config REISERFSPROGS_INSTALL
-	bool
-	prompt "install in ROM"
-	depends on REISERFSPROGS
