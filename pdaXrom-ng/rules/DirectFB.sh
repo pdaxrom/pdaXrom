@@ -11,7 +11,7 @@
 
 DIRECTFB_VERSION=1.3.0
 DIRECTFB=DirectFB-${DIRECTFB_VERSION}.tar.gz
-DIRECTFB_MIRROR=http://www.directfb.org/downloads/Core
+DIRECTFB_MIRROR=http://www.directfb.org/downloads/Core/DirectFB-1.3
 DIRECTFB_DIR=$BUILD_DIR/DirectFB-${DIRECTFB_VERSION}
 DIRECTFB_ENV="$CROSS_ENV_AC"
 
