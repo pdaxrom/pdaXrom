@@ -11,8 +11,6 @@ TARGET_VENDOR_PATCH=ls2f
 KERNEL_VERSION="2.6.30.2"
 KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
-SQUASHFS_LZMA=no
-
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc
@@ -30,7 +28,7 @@ SQUASHFS_LZMA=no
 
 . $RULES_DIR/tweak-yeelong2f.sh
 
-. ./sets/packages-host-squashfs4.inc
+. ./sets/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_lemote.sh

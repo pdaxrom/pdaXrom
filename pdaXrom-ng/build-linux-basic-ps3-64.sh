@@ -8,14 +8,12 @@ KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=ps3_kernel_2.6.30
 TARGET_VENDOR_PATCH=ps3
 
-SQUASHFS_LZMA=no
-
 . ./sets/packages-basic.inc
 
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
 
-. ./sets/packages-host-squashfs4.inc
+. ./sets/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_ps3cd.sh
