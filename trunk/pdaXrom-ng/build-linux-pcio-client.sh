@@ -22,6 +22,10 @@ KERNEL_CONFIG=i686-kernel-2.6.30
 
 . ./sets/packages-pcio-client.sh
 
+. ./sets/packages-hal.inc
+. $RULES_DIR/boolstuff.sh
+. $RULES_DIR/halevt.sh
+
 . $RULES_DIR/tweak-i686.sh
 
 . ./sets/packages-host-squashfs.inc
