@@ -26,6 +26,10 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.2
 
 . ./sets/packages-pcio-client.sh
 
+. ./sets/packages-hal.inc
+. $RULES_DIR/boolstuff.sh
+. $RULES_DIR/halevt.sh
+
 . $RULES_DIR/tweak-yeelong2f.sh
 
 . ./sets/packages-host-squashfs.inc

@@ -23,6 +23,10 @@ TARGET_VENDOR_PATCH=ps3
 
 . ./sets/packages-pcio-client.sh
 
+. ./sets/packages-hal.inc
+. $RULES_DIR/boolstuff.sh
+. $RULES_DIR/halevt.sh
+
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
