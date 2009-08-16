@@ -39,7 +39,7 @@ create_squashfs() {
     if [ ! "$SQUASHFS_LZMA" = "no" ]; then
 	mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -lzmadic 1M || error
     else
-	mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img -all-root || error
+	mksquashfs $ROOTFS_DIR $IMAGES_DIR/rootfs.img $MKS -all-root -nolzma || error
     fi
     chmod 644 $IMAGES_DIR/rootfs.img
 }
