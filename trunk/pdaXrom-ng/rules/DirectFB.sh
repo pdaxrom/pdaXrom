@@ -2,16 +2,16 @@
 # packet template
 #
 # Copyright (C) 2009 by Alexander Chukov <sash@pdaXrom.org>
-#          
+#
 # See CREDITS for details about who has contributed to this project.
 #
 # For further information about the pdaXrom project and license conditions
 # see the README file.
 #
 
-DIRECTFB_VERSION=1.3.0
+DIRECTFB_VERSION=1.4.1
 DIRECTFB=DirectFB-${DIRECTFB_VERSION}.tar.gz
-DIRECTFB_MIRROR=http://www.directfb.org/downloads/Core/DirectFB-1.3
+DIRECTFB_MIRROR=http://www.directfb.org/downloads/Core/DirectFB-1.4
 DIRECTFB_DIR=$BUILD_DIR/DirectFB-${DIRECTFB_VERSION}
 DIRECTFB_ENV="$CROSS_ENV_AC"
 
@@ -40,11 +40,13 @@ build_DirectFB() {
 	    --with-tests \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
+
+    ln -sf $TARGET_BIN_DIR/bin/directfb-config $HOST_BIN_DIR/bin/directfb-config || error
+
     make $MAKEARGS DESTDIR=$DIRECTFB_DIR/fakeroot install || error
     find fakeroot/ -name "*.la" | xargs rm -f
     find fakeroot/ -executable -a ! -type d -a ! -type l | while read f; do
