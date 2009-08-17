@@ -27,7 +27,26 @@ build_Mupen64Plus() {
     make -C blight_input ttftoh
     make -C glide64 compiletex
 
-    make $MAKEARGS all CPU=PPC NO_ASM=1 GUI=GTK2 PREFIX=/usr \
+    local C_ARGS=
+    case $TARGET_ARCH in
+    powerpc-*|ppc-*)
+	C_ARGS="CPU=PPC NO_ASM=1 ARCH=32BITS"
+	;;
+    powerpc64-*|ppc64-*)
+	C_ARGS="CPU=PPC NO_ASM=1 ARCH=64BITS"
+	;;
+    mipsel-*)
+	C_ARGS="CPU=mipsel NO_ASM=1 ARCH=32BITS"
+	;;
+    mips64el-*)
+	C_ARGS="CPU=mipsel NO_ASM=1 ARCH=64BITS"
+	;;
+    arm*)
+	C_ARGS="CPU=arm NO_ASM=1 ARCH=32BITS"
+	;;
+    esac
+
+    make $MAKEARGS all $C_ARGS GUI=GTK2 PREFIX=/usr \
 	CC=${CROSS}gcc CXX=${CROSS}g++ \
 	AR=${CROSS}ar RANLIB=${CROSS}ranlib \
 	LD=${CROSS}g++ STRIP=${CROSS}strip || error
