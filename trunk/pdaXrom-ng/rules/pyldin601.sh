@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PYLDIN601=pyldin601-3.2.tar.bz2
+PYLDIN601=pyldin601-3.2
 PYLDIN601_MIRROR=http://wiki.pdaXrom.org/files
 PYLDIN601_SVN=https://mail.pdaxrom.org/svn/pyldin/trunk
 PYLDIN601_DIR=$BUILD_DIR/pyldin601-3.2
@@ -18,20 +18,9 @@ PYLDIN601_ENV=
 build_pyldin601() {
     test -e "$STATE_DIR/pyldin601-3.2" && return
     banner "Build $PYLDIN601"
-    #download $PYLDIN601_MIRROR $PYLDIN601
-    #extract $PYLDIN601
-    #apply_patches $PYLDIN601_DIR $PYLDIN601
-    
-    if [ ! -d $PYLDIN601_DIR/pyldin601/.svn ]; then
-	echo "Download sources"
-	svn co $PYLDIN601_SVN $PYLDIN601_DIR
-    else
-	echo "Update sources"
-	pushd $TOP_DIR
-	cd $PYLDIN601_DIR
-	svn update || error
-	popd
-    fi
+    download_svn $PYLDIN601_SVN $PYLDIN601
+    cp -R $SRC_DIR/$PYLDIN601 $PYLDIN601_DIR/
+    apply_patches $PYLDIN601_DIR $PYLDIN601
     
     pushd $TOP_DIR
     cd $PYLDIN601_DIR/pyldin601
