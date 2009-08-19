@@ -44,6 +44,12 @@ build_Mupen64Plus() {
     arm*)
 	C_ARGS="CPU=arm NO_ASM=1 ARCH=32BITS"
 	;;
+    i*86-*)
+	C_ARGS="CPU=X86 ARCH=32BITS"
+	;;
+    x86_64-*|amd64-*)
+	C_ARGS="CPU=X86 ARCH=64BITS"
+	;;
     esac
 
     make $MAKEARGS all $C_ARGS GUI=GTK2 PREFIX=/usr \
