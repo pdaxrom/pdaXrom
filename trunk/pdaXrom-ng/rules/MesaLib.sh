@@ -10,7 +10,7 @@
 #
 
 MESALIB_VERSION_MAJOR=7
-MESALIB_VERSION_MINOR=4
+MESALIB_VERSION_MINOR=5
 MESALIB_VERSION=${MESALIB_VERSION_MAJOR}.${MESALIB_VERSION_MINOR}
 MESALIB=MesaLib-${MESALIB_VERSION}.tar.bz2
 MESALIB_MIRROR=http://downloads.sourceforge.net/mesa3d
@@ -20,13 +20,16 @@ MESALIB_ENV="$CROSS_ENV_AC MKLIB_OPTIONS='-arch Linux'"
 build_MesaLib_thud() {
     case $TARGET_ARCH in
     arm*|xscale*)
-	echo "linux-arm"
+	echo "linux"
 	;;
     mips*)
-	echo "linux-mips"
+	echo "linux"
+	;;
+    ppc*-ps3-*|powerpc*-ps3-*)
+	echo "linux-cell"
 	;;
     ppc*|powerpc*)
-	echo "linux-ppc"
+	echo "linux-dri-ppc"
 	;;
     i*86*)
 	echo "linux-dri-x86"
@@ -48,49 +51,61 @@ build_MesaLib() {
     apply_patches $MESALIB_DIR $MESALIB
     pushd $TOP_DIR
     cd $MESALIB_DIR
-    (
-    eval \
-	$CROSS_CONF_ENV \
-	$MESALIB_ENV \
-	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
-	    --prefix=/usr \
-	    --sysconfdir=/etc \
-	    || error
-    ) || error "configure"
-    
-    make $MAKEARGS CROSS=${CROSS} || error
 
-    install_sysroot_files || error
+    make $MAKEARGS `build_MesaLib_thud` CROSS=${CROSS} \
+	CC=${CROSS}gcc \
+	CXX=${CROSS}g++ \
+	APP_CC=${CROSS}gcc \
+	APP_CXX=${CROSS}g++ \
+	SPU_AR=${CROSS}ar \
+	SPU_EMBED=${CROSS}embedspu \
+	SDK=${TOOLCHAIN_SYSROOT}/usr \
+	MKDEP=true \
+	X11_INCLUDES="-I$TARGET_INC" \
+	EXTRA_LIB_PATH="-L$TARGET_LIB" \
+	INSTALL_DIR="/usr" \
+	|| error
 
-    if [ -e lib/libGL.so.1.2 ]; then
-	# dri enabled glx
-        $INSTALL -D -m 644 lib/libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so.1.2 || error
-        ln -sf libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so.1
-        ln -sf libGL.so.1.2 $ROOTFS_DIR/usr/lib/libGL.so
-	$STRIP $ROOTFS_DIR/usr/lib/libGL.so.1.2
-    else
-	#standalone x11 gl
-	$INSTALL -D -m 644 lib/libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so.1.5.070300 || error
-	ln -sf libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so.1
-	ln -sf libGL.so.1.5.070300 $ROOTFS_DIR/usr/lib/libGL.so
-	$STRIP $ROOTFS_DIR/usr/lib/libGL.so.1.5.070300
+    install_sysroot_files CROSS=${CROSS} \
+	CC=${CROSS}gcc \
+	CXX=${CROSS}g++ \
+	APP_CC=${CROSS}gcc \
+	APP_CXX=${CROSS}g++ \
+	SPU_AR=${CROSS}ar \
+	SPU_EMBED=${CROSS}embedspu \
+	SDK=${TOOLCHAIN_SYSROOT}/usr \
+	MKDEP=true \
+	X11_INCLUDES="-I$TARGET_INC" \
+	EXTRA_LIB_PATH="-L$TARGET_LIB" \
+	INSTALL_DIR="/usr" \
+	|| error
+
+    if [ ! -e src/mesa/gl.pc ]; then
+	make -C src/mesa gl.pc INSTALL_DIR=$TARGET_BIN_DIR || error
+	$INSTALL -D -m 644 src/mesa/gl.pc $TARGET_LIB/pkgconfig/gl.pc || error
     fi
-    
-    $INSTALL -D -m 644 lib/libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070300 || error
-    ln -sf libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so.1
-    ln -sf libGLU.so.1.3.070300 $ROOTFS_DIR/usr/lib/libGLU.so
-    $STRIP $ROOTFS_DIR/usr/lib/libGLU.so.1.3.070300
-    
-    $INSTALL -D -m 644 lib/libGLw.so.1.0.0 $ROOTFS_DIR/usr/lib/libGLw.so.1.0.0 || error
-    ln -sf libGLw.so.1.0.0 $ROOTFS_DIR/usr/lib/libGLw.so.1
-    ln -sf libGLw.so.1.0.0 $ROOTFS_DIR/usr/lib/libGLw.so
-    $STRIP $ROOTFS_DIR/usr/lib/libGLw.so.1.0.0
 
-    cd lib
-    for f in *_dri.so; do
-	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/lib/dri/$f
-	$STRIP $ROOTFS_DIR/usr/lib/dri/$f
-    done
+    make $MAKEARGS CROSS=${CROSS} \
+	CC=${CROSS}gcc \
+	CXX=${CROSS}g++ \
+	APP_CC=${CROSS}gcc \
+	APP_CXX=${CROSS}g++ \
+	SPU_AR=${CROSS}ar \
+	SPU_EMBED=${CROSS}embedspu \
+	SDK=${TOOLCHAIN_SYSROOT}/usr \
+	MKDEP=true \
+	X11_INCLUDES="-I$TARGET_INC" \
+	EXTRA_LIB_PATH="-L$TARGET_LIB" \
+	INSTALL_DIR="/usr" \
+	DESTDIR=$MESALIB_DIR/fakeroot \
+	install \
+	|| error
+
+    rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig
+
+    $STRIP fakeroot/usr/lib/* fakeroot/usr/lib/dri/*
+
+    cp -R fakeroot/usr $ROOTFS_DIR/ || error
 
     popd
     touch "$STATE_DIR/MesaLib.installed"
