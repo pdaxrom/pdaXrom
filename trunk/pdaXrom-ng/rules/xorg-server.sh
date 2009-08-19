@@ -43,6 +43,11 @@ build_xorg_server() {
 	;;
     esac
 
+    if [ ! -e ${TARGET_INC}/GL/internal/dri_interface.h ]; then
+	echo "No GL dri interface detected! Disable dri and glx!"
+	XORG_SERVER_GLXDRI_CONF="--disable-dri --disable-glx"
+    fi
+
     eval \
 	$CROSS_CONF_ENV \
 	$XORG_SERVER_ENV \
