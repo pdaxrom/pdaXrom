@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PIDGIN_VERSION=2.5.8
+PIDGIN_VERSION=2.6.1
 PIDGIN=pidgin-${PIDGIN_VERSION}.tar.bz2
 PIDGIN_MIRROR=http://downloads.sourceforge.net/pidgin
 PIDGIN_DIR=$BUILD_DIR/pidgin-${PIDGIN_VERSION}
@@ -40,6 +40,7 @@ build_pidgin() {
 	    --disable-doxygen \
 	    --disable-meanwhile \
 	    --disable-schemas-install \
+	    --disable-idn \
 	    --disable-avahi \
 	    --disable-perl \
 	    --disable-python \
@@ -60,11 +61,11 @@ build_pidgin() {
     rm -rf fakeroot/usr/share/aclocal fakeroot/usr/share/locale fakeroot/usr/share/man || error "del 2"
     rm -f fakeroot/usr/lib/pidgin/*.la
     rm -f fakeroot/usr/lib/purple-2/*.la
-    
+
     $STRIP fakeroot/usr/bin/pidgin || error
-    $STRIP fakeroot/usr/lib/libpurple.so.0.5.8 || error
-    $STRIP fakeroot/usr/lib/pidgin/*.so || error
-    $STRIP fakeroot/usr/lib/purple-2/*.so || error
+    $STRIP fakeroot/usr/lib/*.so* || error
+    $STRIP fakeroot/usr/lib/pidgin/*.so* || error
+    $STRIP fakeroot/usr/lib/purple-2/*.so* || error
 
     mv fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
 
