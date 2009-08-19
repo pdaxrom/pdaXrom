@@ -31,7 +31,7 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/boolstuff.sh
 . $RULES_DIR/halevt.sh
 
-. ./sets/packages-emulators.inc
+. ./sets/packages-emu-mame.inc
 
 #
 # mame scripts
