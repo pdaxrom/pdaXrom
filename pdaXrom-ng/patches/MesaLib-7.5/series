@@ -1,0 +1,9 @@
+dri.pc.in.diff
+gl.pc.in.diff
+glu.pc.in.diff
+glw.pc.in.diff
+mklib.diff
+Makefile.diff
+default.diff
+Makefile-gallium.diff
+Makefile-egl-xlib.diff
