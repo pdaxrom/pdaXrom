@@ -13,6 +13,8 @@ build_tweak_ps3() {
     test -e "$STATE_DIR/tweak_ps3-1.0" && return
     banner "Tweaking PS3 rootfs"
 
+    install_rootfs_usr_lib ${TOOLCHAIN_SYSROOT}/usr/lib/libspe2.so.2.2.80
+
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/ps3vswap $ROOTFS_DIR/etc/init.d/ps3vswap || error
     install_rc_start ps3vswap 50
     install_rc_stop  ps3vswap 70
