@@ -258,7 +258,7 @@ install_rc_stop() {
 
 install_sysroot_files() {
     local f=
-    make DESTDIR=$TARGET_BIN_DIR install || error "installation in target sysroot"
+    make DESTDIR=$TARGET_BIN_DIR $@ install || error "installation in target sysroot"
 #    for f in `find "$TARGET_BIN_DIR" -name "*.la" -type f`; do
 #	sed -i -e "/^libdir=/s:\(libdir='\)\(/lib\|/usr/lib\):\1${TARGET_LIB}:g" $f
 #    done
