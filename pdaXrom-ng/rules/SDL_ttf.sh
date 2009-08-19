@@ -38,7 +38,7 @@ build_SDL_ttf() {
 
     install_sysroot_files || error
 
-    install_usr_lib .libs/libSDL_ttf-2.0.so.0.6.3
+    install_rootfs_usr_lib .libs/libSDL_ttf-2.0.so.0.6.3
 
     popd
     touch "$STATE_DIR/SDL_ttf.installed"
