@@ -22,6 +22,12 @@ if [ $HOST_SYSTEM = "Darwin" ]; then
     fi
 fi
 
+case ${BUILD_ARCH/-*} in
+ppc64)
+    HOST_GMP_ENV="ABI=32"
+    ;;
+esac
+
 build_host_gmp() {
     test -e "$STATE_DIR/host_gmp-${HOST_GMP_VERSION}" && return
     banner "Build $HOST_GMP"
