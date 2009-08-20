@@ -14,6 +14,3 @@
 #. $RULES_DIR/gst-plugins-gl.sh
 . $RULES_DIR/gst-ffmpeg.sh
 
-. $RULES_DIR/libnice.sh
-. $RULES_DIR/farsight2.sh
-
