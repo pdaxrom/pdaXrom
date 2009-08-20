@@ -53,14 +53,7 @@
 #
 #. $RULES_DIR/skipstone.sh
 
-#
-# pidgin and friends
-#
-. $RULES_DIR/libtasn1.sh
-. $RULES_DIR/libgpg-error.sh
-. $RULES_DIR/libgcrypt.sh
-. $RULES_DIR/gnutls.sh
-. $RULES_DIR/pidgin.sh
+. ./sets/packages-pidgin.inc
 
 #
 # xchat
