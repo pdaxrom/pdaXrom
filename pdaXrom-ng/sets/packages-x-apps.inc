@@ -13,14 +13,7 @@
 . $RULES_DIR/giblib.sh
 . $RULES_DIR/scrot.sh
 
-#
-# firefox and friends
-#
-. $RULES_DIR/host_findutils.sh
-. $RULES_DIR/host_libIDL.sh
-. $RULES_DIR/libIDL.sh
-#. $RULES_DIR/firefox.sh
-. $RULES_DIR/firefox-3.5.sh
+. ./sets/packages-firefox.inc
 
 #
 # skipstone-gecko
