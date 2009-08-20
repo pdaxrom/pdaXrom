@@ -339,6 +339,29 @@ install_fakeroot_init() {
     done
 }
 
+install_fakeroot_usr_lib() {
+    local f=`basename $1`
+    local f1=`echo $f | sed -e "s/.so.*//"`
+    echo "Installing $f1 /$f/"
+    local s=`echo $1 | sed -e "s/^.*so\.//g" | cut -f1 -d'.'`
+    $INSTALL -D -m 644 $1 fakeroot/usr/lib/${f} || error
+    ln -sf ${f} fakeroot/usr/lib/${f1}.so.${s} || error
+    ln -sf ${f} fakeroot/usr/lib/${f1}.so || error
+    $STRIP fakeroot/usr/lib/${f} || error
+}
+
+install_fakeroot_usr_bin() {
+    local f=`basename $1`
+    $INSTALL -D -m 755 $1 fakeroot/usr/bin/$f || error
+    $STRIP fakeroot/usr/bin/$f || error
+}
+
+install_fakeroot_usr_sbin() {
+    local f=`basename $1`
+    $INSTALL -D -m 755 $1 fakeroot/usr/sbin/$f || error
+    $STRIP fakeroot/usr/sbin/$f || error
+}
+
 install_fakeroot_finish() {
     tar c -C fakeroot . | tar x -C ${ROOTFS_DIR} || error
 }
