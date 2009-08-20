@@ -33,15 +33,13 @@ build_libsoup() {
 	    --without-gnome \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 libsoup/.libs/libsoup-2.4.so.1.2.0 $ROOTFS_DIR/usr/lib/libsoup-2.4.so.1.2.0 || error
-    ln -sf libsoup-2.4.so.1.2.0 $ROOTFS_DIR/usr/lib/libsoup-2.4.so.1
-    ln -sf libsoup-2.4.so.1.2.0 $ROOTFS_DIR/usr/lib/libsoup-2.4.so
-    $STRIP $ROOTFS_DIR/usr/lib/libsoup-2.4.so.1.2.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libsoup.installed"
