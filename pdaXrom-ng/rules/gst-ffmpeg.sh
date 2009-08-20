@@ -31,6 +31,7 @@ build_gst_ffmpeg() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --with-pic \
+	    --with-system-ffmpeg \
 	    || error
     ) || error "configure"
 
