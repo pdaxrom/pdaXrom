@@ -7,3 +7,6 @@ Makefile.diff
 default.diff
 Makefile-gallium.diff
 Makefile-egl-xlib.diff
+xlib_brw_context.c.diff
+xlib_brw_screen.c.diff
+no-gallium-i915.patch
