@@ -32,7 +32,6 @@ build_pidgin() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
-	    --disable-gstreamer \
 	    --disable-gtkspell \
 	    --disable-dbus \
 	    --disable-tcl \
