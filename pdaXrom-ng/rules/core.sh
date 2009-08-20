@@ -319,6 +319,28 @@ install_rootfs_usr_sbin() {
     $STRIP ${ROOTFS_DIR}/usr/sbin/$f || error
 }
 
+install_fakeroot_init() {
+    local faked=$PWD/fakeroot
+    make DESTDIR=${faked} $@ install || error
+    rm -rf ${faked}/usr/include ${faked}/usr/lib/pkgconfig
+    rm -rf ${faked}/usr/share/aclocal
+    rm -rf ${faked}/usr/share/doc
+    rm -rf ${faked}/usr/share/doc-base
+    rm -rf ${faked}/usr/share/gtk-doc
+    rm -rf ${faked}/usr/share/locale
+    rm -rf ${faked}/usr/share/man
+    rm -rf ${faked}/usr/share/info
+    find ${faked} -name "*.la" -exec rm -f {} \;
+    find ${faked} -name "*.a"  -exec rm -f {} \;
+    find ${faked} -not -type d | while read f; do
+	file $f | grep -q "ELF " && $STRIP $f
+    done
+}
+
+install_fakeroot_finish() {
+    tar c -C fakeroot . | tar x -C ${ROOTFS_DIR} || error
+}
+
 mkdir -p "$SRC_DIR" || error mkdir
 mkdir -p "$BUILD_DIR" || error mkdir
 mkdir -p "$HOST_BUILD_DIR" || error mkdir
@@ -372,6 +394,8 @@ else
 fi
 
 install_gcc_wrappers
+
+ln -sf `${TOOLCHAIN_PREFIX}/bin/${CROSS}gcc -print-file-name=libstdc++.so` ${TARGET_LIB}/libstdc++.so.6 || error
 
 STRIP="${CROSS}strip -R .note -R .comment"
 DEPMOD=depmod
