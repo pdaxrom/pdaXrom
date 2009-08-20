@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-AUDACIOUS=audacious-1.5.1.tbz2
+AUDACIOUS_VERSION=1.5.1
+AUDACIOUS=audacious-${AUDACIOUS_VERSION}.tgz
 AUDACIOUS_MIRROR=http://distfiles.atheme.org
-AUDACIOUS_DIR=$BUILD_DIR/audacious-1.5.1
+AUDACIOUS_DIR=$BUILD_DIR/audacious-${AUDACIOUS_VERSION}
 AUDACIOUS_ENV="$CROSS_ENV_AC"
 
 build_audacious() {
@@ -26,10 +27,11 @@ build_audacious() {
     local AUDACIOUS_CONF=
     case $TARGET_ARCH in
     i686*)
-	AUDACIOUS_CONF="--enable-sse2"
+	AUDACIOUS_CONF="--enable-sse2 --disable-altivec"
 	;;
     powerpc*|ppc*)
-	AUDACIOUS_CONF="--enable-altivec"
+	AUDACIOUS_CONF="--enable-altivec --disable-sse2"
+	AUDACIOUS_ENV="$AUDACIOUS_ENV CFLAGS='-O3 -pipe -Wall -maltivec'"
 	;;
     *)
 	AUDACIOUS_CONF="--disable-sse2 --disable-altivec"
@@ -52,19 +54,10 @@ build_audacious() {
     
     make $MAKEARGS AR=${CROSS}ar || error
 
-    make $MAKEARGS AR=${CROSS}ar DESTDIR=$AUDACIOUS_DIR/fakeroot install || error
-
     install_sysroot_files || error
-    
-    rm -rf fakeroot/usr/include
-    rm -rf fakeroot/usr/lib/pkgconfig
-    rm -rf fakeroot/usr/share/locale
-    rm -rf fakeroot/usr/share/man
-    
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error
 
-    $STRIP $ROOTFS_DIR/usr/bin/audacious || error
-    $STRIP $ROOTFS_DIR/usr/lib/libaudid3tag.so.1.0.0 || error
+    install_fakeroot_init || error
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/audacious.installed"

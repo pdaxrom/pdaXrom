@@ -330,6 +330,8 @@ install_fakeroot_init() {
     rm -rf ${faked}/usr/share/locale
     rm -rf ${faked}/usr/share/man
     rm -rf ${faked}/usr/share/info
+    rm -rf ${faked}/usr/man
+    rm -rf ${faked}/usr/info
     find ${faked} -name "*.la" -exec rm -f {} \;
     find ${faked} -name "*.a"  -exec rm -f {} \;
     find ${faked} -not -type d | while read f; do
