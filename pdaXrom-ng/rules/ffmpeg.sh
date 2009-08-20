@@ -65,20 +65,16 @@ build_ffmpeg() {
 	    --enable-libspeex \
 	    --enable-libtheora \
 	    --enable-libvorbis \
+	    --enable-postproc \
 	    || error
     ) || error "configure"
     
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    make $MAKEARGS DESTDIR=$FFMPEG_DIR/fakeroot install || error
-    
-    rm -rf fakeroot/usr/bin fakeroot/usr/include fakeroot/usr/lib/pkgconfig fakeroot/usr/lib/*.a
 
-    $STRIP fakeroot/usr/lib/*.so*
-
-    cp -R fakeroot/usr $ROOTFS_DIR || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/ffmpeg.installed"
