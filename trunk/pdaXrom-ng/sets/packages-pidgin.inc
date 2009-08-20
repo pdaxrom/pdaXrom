@@ -2,6 +2,8 @@
 # pidgin and friends
 #
 . ./sets/packages-gstreamer.inc
+. $RULES_DIR/libnice.sh
+. $RULES_DIR/farsight2.sh
 . $RULES_DIR/libtasn1.sh
 . $RULES_DIR/libgpg-error.sh
 . $RULES_DIR/libgcrypt.sh
