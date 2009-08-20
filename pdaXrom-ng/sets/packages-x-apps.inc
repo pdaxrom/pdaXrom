@@ -67,11 +67,6 @@
 . $RULES_DIR/curl.sh
 . $RULES_DIR/transmission.sh
 
-#
-# eina
-#
-. $RULES_DIR/eina.sh
-
 . ./sets/packages-audacious.inc
 
 #
