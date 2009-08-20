@@ -23,3 +23,11 @@
  
  check_deps $ARCH_EXT_LIST
  
+@@ -1894,6 +1894,7 @@
+ enabled ppc && check_asm dcbzl '"dcbzl 0, 1"'
+ enabled ppc && check_asm ppc4xx '"maclhw r10, r11, r12"'
+ enabled ppc && check_asm xform_asm '"lwzx 0, %y0" :: "Z"(*(int*)0)'
++enabled ppc && add_cflags -fPIC
+ 
+ # check for SIMD availability
+ 
