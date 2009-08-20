@@ -30,7 +30,7 @@ build_gst_ffmpeg() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --with-system-ffmpeg \
+	    --with-pic \
 	    || error
     ) || error "configure"
 
