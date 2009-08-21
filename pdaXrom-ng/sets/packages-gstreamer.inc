@@ -1,5 +1,6 @@
 . $RULES_DIR/gstreamer.sh
 
+. $RULES_DIR/SDL.sh
 . $RULES_DIR/liboil.sh
 . $RULES_DIR/libogg.sh
 . $RULES_DIR/libvorbis.sh
