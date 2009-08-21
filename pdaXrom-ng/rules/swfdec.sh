@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-SWFDEC_VERSION=0.9.2
+#SWFDEC_VERSION=0.9.2
+SWFDEC_VERSION=0.8.4
 SWFDEC=swfdec-${SWFDEC_VERSION}.tar.gz
-SWFDEC_MIRROR=http://swfdec.freedesktop.org/download/swfdec/0.9
+SWFDEC_MIRROR=http://swfdec.freedesktop.org/download/swfdec/0.8
 SWFDEC_DIR=$BUILD_DIR/swfdec-${SWFDEC_VERSION}
 SWFDEC_ENV="$CROSS_ENV_AC"
 
