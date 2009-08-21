@@ -8,5 +8,7 @@
 . $RULES_DIR/gettext.sh
 . $RULES_DIR/neon.sh
 #. $RULES_DIR/libmtp.sh
+. $RULES_DIR/libmms.sh
+. $RULES_DIR/flac.sh
 . $RULES_DIR/audacious-plugins.sh
 
