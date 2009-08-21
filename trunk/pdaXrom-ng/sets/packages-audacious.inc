@@ -7,10 +7,6 @@
 . $RULES_DIR/libmad.sh
 . $RULES_DIR/gettext.sh
 . $RULES_DIR/neon.sh
-. $RULES_DIR/libmtp.sh
+#. $RULES_DIR/libmtp.sh
 . $RULES_DIR/audacious-plugins.sh
 
-. $RULES_DIR/libmad.sh
-. $RULES_DIR/libid3tag.sh
-. $RULES_DIR/libao.sh
-. $RULES_DIR/madplay.sh
