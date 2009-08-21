@@ -32,6 +32,7 @@ build_libtheora() {
 	    --sysconfdir=/etc \
 	    --with-ogg=$TARGET_BIN_DIR \
 	    --with-vorbis=$TARGET_BIN_DIR \
+	    --with-sdl-prefix=$TARGET_BIN_DIR \
 	    --disable-examples \
 	    || error
     ) || error "configure"
