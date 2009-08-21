@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-SWFDEC_MOZILLA_VERSION=0.8.2
+SWFDEC_MOZILLA_VERSION=0.9.2
 SWFDEC_MOZILLA=swfdec-mozilla-${SWFDEC_MOZILLA_VERSION}.tar.gz
-SWFDEC_MOZILLA_MIRROR=http://swfdec.freedesktop.org/download/swfdec-mozilla/0.8
+SWFDEC_MOZILLA_MIRROR=http://swfdec.freedesktop.org/download/swfdec-mozilla/0.9
 SWFDEC_MOZILLA_DIR=$BUILD_DIR/swfdec-mozilla-${SWFDEC_MOZILLA_VERSION}
 SWFDEC_MOZILLA_ENV="$CROSS_ENV_AC"
 

@@ -22,6 +22,7 @@ build_mplayer() {
     extract $MPLAYER
     apply_patches $MPLAYER_DIR $MPLAYER
 
+    local C_ARGS=
     local T_ARCH=
     case $TARGET_ARCH in
     mips*)
@@ -29,6 +30,10 @@ build_mplayer() {
 	;;
     arm*)
 	T_ARCH=arm-linux
+	;;
+    ppc*|powerpc*)
+	T_ARCH=$TARGET_ARCH
+	C_ARGS="--enable-altivec --enable-big-endian"
 	;;
     *)
 	T_ARCH=$TARGET_ARCH
@@ -68,6 +73,7 @@ build_mplayer() {
 	    --ranlib=${CROSS}ranlib \
 	    --target=$T_ARCH \
 	    --enable-gui \
+	    $C_ARGS \
 	    || error
     ) || error "configure"
     

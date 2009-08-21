@@ -58,9 +58,7 @@ build_audacious_plugins() {
 	    --disable-libmadtest \
 	    --disable-gnomeshortcuts \
 	    --disable-rootvis \
-	    --disable-flacng \
 	    --disable-musepack \
-	    --disable-wma \
 	    --disable-ape \
 	    --disable-wavpack \
 	    --disable-aac \
