@@ -15,3 +15,5 @@ i*86-*)
     . ./sets/packages-swfdec.inc
     ;;
 esac
+
+. $RULES_DIR/mplayerplug-in.sh
