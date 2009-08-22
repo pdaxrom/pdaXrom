@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-MPLAYER_VERSION=28929
+MPLAYER_VERSION=29544
 MPLAYER=mplayer-${MPLAYER_VERSION}.tar.bz2
 MPLAYER_MIRROR=http://wiki.pdaXrom.org/downloads/src
 MPLAYER_DIR=$BUILD_DIR/mplayer-${MPLAYER_VERSION}
@@ -26,7 +26,12 @@ build_mplayer() {
     local T_ARCH=
     case $TARGET_ARCH in
     mips*)
-	T_ARCH=mips
+	T_ARCH=mips-linux
+	case $TARGET_ARCH in
+	*-ls2f-*)
+	    C_ARGS="--extra-cflags='-DHAVE_LOONGSON -mtune=loongson2f' --enable-godson2-mmi"
+	    ;;
+	esac
 	;;
     arm*)
 	T_ARCH=arm-linux
