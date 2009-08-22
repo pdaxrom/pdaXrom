@@ -44,6 +44,9 @@ build_openssl_thud() {
     i686*-*)
 	echo "linux-i386-i686/cmov"
 	;;
+    x86_64-*|amd64-*)
+	echo "linux-x86_64"
+	;;
     *)
 	error "Unknown arch"
 	;;
