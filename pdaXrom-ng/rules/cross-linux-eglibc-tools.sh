@@ -34,7 +34,7 @@ get_kernel_subarch() {
 	echo i386
 	;;
     x86_64*|amd64*)
-	echo i386
+	echo x86_64
 	;;
     arm*|xscale*)
 	echo arm
