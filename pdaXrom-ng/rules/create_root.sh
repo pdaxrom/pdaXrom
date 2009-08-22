@@ -52,6 +52,8 @@ create_root() {
 	test -f $f && $INSTALL -m 644 $f $ROOTFS_DIR/etc/
     done
 
+    mkdir -p ${ROOTFS_DIR}/lib
+    mkdir -p ${ROOTFS_DIR}/usr/lib
     case $TARGET_ARCH in
     powerpc64-*|ppc64-*|x86_64-*|amd64-*|mips64*-*)
 	local LIBDIR=lib
@@ -60,8 +62,6 @@ create_root() {
 	elif [ -e ${TOOLCHAIN_SYSROOT}/lib32 ]; then
 	    LIBDIR=lib32
 	fi
-	mkdir -p ${ROOTFS_DIR}/lib
-	mkdir -p ${ROOTFS_DIR}/usr/lib
 	if [ ! "$LIBDIR" = "lib" ]; then
 	    ln -sf lib ${ROOTFS_DIR}/${LIBDIR}
 	    ln -sf lib ${ROOTFS_DIR}/usr/${LIBDIR}
