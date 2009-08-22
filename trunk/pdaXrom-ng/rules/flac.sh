@@ -30,6 +30,7 @@ build_flac() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --with-ogg=$TARGET_BIN_DIR \
 	    --disable-xmms-plugin \
 	    --disable-cpplibs \
 	    || error

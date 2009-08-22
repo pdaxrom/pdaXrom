@@ -71,6 +71,7 @@ build_audacious_plugins() {
 	    --disable-amidiplug-dummy \
 	    --disable-paranormal \
 	    --with-libmad=$TARGET_BIN_DIR \
+	    --with-libFLAC=$TARGET_BIN_DIR \
 	    --disable-libmadtest \
 	    --disable-mtp_up \
 	    $AUDACIOUS_CONF \
