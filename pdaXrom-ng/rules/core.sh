@@ -420,7 +420,7 @@ fi
 
 install_gcc_wrappers
 
-ln -sf `${TOOLCHAIN_PREFIX}/bin/${CROSS}gcc -print-file-name=libstdc++.so` ${TARGET_LIB}/libstdc++.so.6 || error
+which ${TOOLCHAIN_PREFIX}/bin/${CROSS}gcc >/dev/null && ln -sf `${TOOLCHAIN_PREFIX}/bin/${CROSS}gcc -print-file-name=libstdc++.so` ${TARGET_LIB}/libstdc++.so.6
 
 STRIP="${CROSS}strip -R .note -R .comment"
 DEPMOD=depmod
