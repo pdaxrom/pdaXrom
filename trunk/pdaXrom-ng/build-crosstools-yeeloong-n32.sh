@@ -14,7 +14,7 @@ export DEFAULT_MABI="n32"
 export CROSS_OPT_ARCH="-march=loongson2f"
 export CROSS_OPT_MABI="-mabi=${DEFAULT_MABI}"
 
-TARGET_ARCH="mips64el-linux"
+TARGET_ARCH="mips64el-ls2f-linux"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}
