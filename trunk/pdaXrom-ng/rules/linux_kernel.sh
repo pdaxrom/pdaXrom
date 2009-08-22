@@ -25,7 +25,7 @@ get_kernel_subarch() {
 	echo i386
 	;;
     x86_64*|amd64*)
-	echo i386
+	echo x86_64
 	;;
     arm*|xscale*)
 	echo arm
@@ -44,7 +44,7 @@ get_kernel_subarch() {
 
 get_kernel_image() {
     case $1 in
-    i386*|i486*|i586*|i686*)
+    i386*|i486*|i586*|i686*|x86_64*|amd64*)
 	echo ${TARGET_KERNEL_IMAGE-bzImage}
 	;;
     arm*|xscale*)
@@ -64,7 +64,7 @@ get_kernel_image() {
 
 get_kernel_image_path() {
     case $1 in
-    i386*|i486*|i586*|i686*)
+    i386*|i486*|i586*|i686*|x86_64*|amd64*)
 	echo ${KERNEL_DIR}/arch/x86/boot/${TARGET_KERNEL_IMAGE-bzImage}
 	;;
     arm*|xscale*)
