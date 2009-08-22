@@ -9,10 +9,10 @@
 # see the README file.
 #
 
-FFMPEG_VERSION=r18639
+FFMPEG_VERSION=19678
 FFMPEG=ffmpeg-${FFMPEG_VERSION}.tar.bz2
 FFMPEG_MIRROR=http://wiki.pdaxrom.org/downloads/src
-FFMPEG_DIR=$BUILD_DIR/ffmpeg
+FFMPEG_DIR=$BUILD_DIR/ffmpeg-${FFMPEG_VERSION}
 FFMPEG_ENV="$CROSS_ENV_AC"
 
 get_ffmpeg_arch() {
@@ -47,6 +47,16 @@ build_ffmpeg() {
     pushd $TOP_DIR
     cd $FFMPEG_DIR
     (
+    local C_ARGS=
+    case $TARGET_ARCH in
+    mips*)
+	case $TARGET_ARCH in
+	*-ls2f-*)
+	    C_ARGS="--extra-cflags='-mtune=loongson2f' --enable-godson2"
+	    ;;
+	esac
+	;;
+    esac
     eval \
 	$CROSS_CONF_ENV \
 	$FFMPEG_ENV \
@@ -66,6 +76,7 @@ build_ffmpeg() {
 	    --enable-libtheora \
 	    --enable-libvorbis \
 	    --enable-postproc \
+	    $C_ARGS \
 	    || error
     ) || error "configure"
     
