@@ -4,9 +4,20 @@ create_initramfs() {
     test -d $INITRAMFS_DIR || mkdir -p $INITRAMFS_DIR
     rm -rf $INITRAMFS_DIR/*
     local d=
-    for d in bin boot dev lib mnt modules sys proc rootfs sbin; do
+    for d in bin boot dev mnt modules sys proc rootfs sbin; do
 	mkdir -p $INITRAMFS_DIR/$d
     done
+
+    local LIBDIR=lib
+    if [ -e ${TOOLCHAIN_SYSROOT}/lib64 ]; then
+	LIBDIR=lib64
+    elif [ -e ${TOOLCHAIN_SYSROOT}/lib32 ]; then
+	LIBDIR=lib32
+    fi
+    mkdir -p ${INITRAMFS_DIR}/lib
+    if [ ! "$LIBDIR" = "lib" ]; then
+	ln -sf lib ${INITRAMFS_DIR}/${LIBDIR}
+    fi
 
     $INSTALL -D -m 755 $GENERICFS_DIR/init.initramfs $INITRAMFS_DIR/init || error
 

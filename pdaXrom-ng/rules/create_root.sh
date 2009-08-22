@@ -11,7 +11,6 @@ etc/network/if-post-down.d
 etc/network/if-pre-up.d
 etc/network/if-up.d
 home
-lib
 media
 mnt
 proc
@@ -21,7 +20,6 @@ sys
 tmp
 usr
 usr/bin
-usr/lib
 usr/sbin
 var
 var/lock
@@ -56,8 +54,18 @@ create_root() {
 
     case $TARGET_ARCH in
     powerpc64-*|ppc64-*|x86_64-*|amd64-*|mips64*-*)
-	ln -sf lib $ROOTFS_DIR/lib64
-	ln -sf lib $ROOTFS_DIR/usr/lib64
+	local LIBDIR=lib
+	if [ -e ${TOOLCHAIN_SYSROOT}/lib64 ]; then
+	    LIBDIR=lib64
+	elif [ -e ${TOOLCHAIN_SYSROOT}/lib32 ]; then
+	    LIBDIR=lib32
+	fi
+	mkdir -p ${ROOTFS_DIR}/lib
+	mkdir -p ${ROOTFS_DIR}/usr/lib
+	if [ ! "$LIBDIR" = "lib" ]; then
+	    ln -sf lib ${ROOTFS_DIR}/${LIBDIR}
+	    ln -sf lib ${ROOTFS_DIR}/usr/${LIBDIR}
+	fi
 	;;
     esac
 
