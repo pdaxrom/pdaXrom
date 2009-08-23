@@ -29,10 +29,18 @@ build_firefox() {
     local HOST_LIBIDL_LIBS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --libs`"
 
     local FF_OPT_ARGS=
-    
+    local FF_OPT_CFLAGS=
     case $TARGET_ARCH in
     powerpc*)
 	FF_OPT_ARGS="--disable-necko-wifi"
+	;;
+    mips64*-ls2f-*)
+	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions -march=loongson2f -mtune=loongson2f"'
+	#FF_OPT_CFLAGS=
+	;;
+    mips*-ls2f-*)
+	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions -mtune=loongson2f"'
+	#FF_OPT_CFLAGS=
 	;;
     esac
     
@@ -68,7 +76,7 @@ build_firefox() {
 	    --enable-default-toolkit=cairo-gtk2 \
 	    --disable-gnomevfs \
 	    --disable-dbus \
-	    --enable-optimize \
+	    --enable-optimize${FF_OPT_CFLAGS} \
 	    --enable-pango \
 	    --enable-postscript \
     	    --enable-svg \
