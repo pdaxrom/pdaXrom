@@ -25,8 +25,19 @@ build_swfdec() {
     pushd $TOP_DIR
     cd $SWFDEC_DIR
     (
+    local C_CFLAGS=
+    case $TARGET_ARCH in
+    mips64*-ls2f-*)
+	C_CFLAGS='CFLAGS="-O4 -ffast-math -march=loongson2f -mtune=loongson2f"'
+	;;
+    mips*-ls2f-*)
+	C_CFLAGS='CFLAGS="-O4 -ffast-math -mtune=loongson2f"'
+	;;
+    esac
+
     eval \
 	$CROSS_CONF_ENV \
+	$C_CFLAGS \
 	$SWFDEC_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
