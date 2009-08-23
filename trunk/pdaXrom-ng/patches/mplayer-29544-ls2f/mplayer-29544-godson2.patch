@@ -5,7 +5,7 @@ diff -Nur mplayer-29544/configure mplayer-29544-godson2/configure
    --enable-armv6t2          enable ARMv6t2 (ARM) [autodetect]
    --enable-armvfp           enable ARM VFP (ARM) [autodetect]
    --enable-iwmmxt           enable iWMMXt (ARM) [autodetect]
-+  --enable-godson2-mmi      disable GODSON2 Multi-Media Instructions usage [disable]
++  --enable-godson2          disable GODSON2 Multi-Media Instructions usage [disable]
    --disable-fastmemcpy      disable 3DNow!/SSE/MMX optimized memcpy [enable]
    --enable-big-endian       force byte order to big-endian [autodetect]
    --enable-debug[=1-3]      compile-in debugging information [disable]
@@ -21,8 +21,8 @@ diff -Nur mplayer-29544/configure mplayer-29544-godson2/configure
    --disable-armvfp) _armvfp=no ;;
    --enable-iwmmxt) _iwmmxt=yes ;;
    --disable-iwmmxt) _iwmmxt=no ;;
-+  --enable-godson2-mmi) _godson2_mmi=yes ;;
-+  --disable-godson2-mmi) _godson2_mmi=no ;;
++  --enable-godson2) _godson2_mmi=yes ;;
++  --disable-godson2) _godson2_mmi=no ;;
    --enable-mmx)	_mmx=yes ;;
    --disable-mmx) # 3Dnow! and MMX2 require MMX
          _3dnow=no _3dnowext=no _mmx=no _mmxext=no ;;
@@ -31,8 +31,8 @@ diff -Nur mplayer-29544/configure mplayer-29544-godson2/configure
  EOF
  
 +if test "$_godson2_mmi" = "yes"; then
-+    echo "HAVE_GODSON2_MMI=yes" >> config.mak
-+    echo "#define HAVE_GODSON2_MMI 1" >> $TMPH
++    echo "HAVE_LOONGSON=yes" >> config.mak
++    echo "#define HAVE_LOONGSON 1" >> $TMPH
 +fi
 +
  # Do not overwrite an unchanged config.h to avoid superfluous rebuilds.
@@ -57,7 +57,7 @@ diff -Nur mplayer-29544/libavcodec/dsputil.c mplayer-29544-godson2/libavcodec/ds
      if (ARCH_PPC)        dsputil_init_ppc   (c, avctx);
      if (HAVE_MMI)        dsputil_init_mmi   (c, avctx);
      if (ARCH_SH4)        dsputil_init_sh4   (c, avctx);
-+    if (HAVE_GODSON2_MMI) dsputil_init_godson2(c, avctx);
++    if (HAVE_LOONGSON) dsputil_init_godson2(c, avctx);
      if (ARCH_BFIN)       dsputil_init_bfin  (c, avctx);
  
      for(i=0; i<64; i++){
@@ -1675,7 +1675,7 @@ diff -Nur mplayer-29544/libavcodec/Makefile mplayer-29544-godson2/libavcodec/Mak
  
  OBJS-$(CONFIG_MLIB)                    += mlib/dsputil_mlib.o           \
  
-+OBJS-$(HAVE_GODSON2_MMI)               += godson2/idct_godson2.o        \
++OBJS-$(HAVE_LOONGSON)               += godson2/idct_godson2.o        \
 +                                          godson2/dsputil_godson2.o     \
 +                                          godson2/idct_godson2_xvid.o   \
 +                                          godson2/mpegvideo_godson2.o   \
@@ -1691,7 +1691,7 @@ diff -Nur mplayer-29544/libavcodec/mpegvideo.c mplayer-29544-godson2/libavcodec/
      MPV_common_init_axp(s);
  #elif CONFIG_MLIB
      MPV_common_init_mlib(s);
-+#elif HAVE_GODSON2_MMI
++#elif HAVE_LOONGSON
 +    MPV_common_init_godson2(s);
  #elif HAVE_MMI
      MPV_common_init_mmi(s);
