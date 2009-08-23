@@ -28,8 +28,11 @@ build_mplayer() {
     mips*)
 	T_ARCH=mips-linux
 	case $TARGET_ARCH in
+	mips64*-ls2f-*)
+	    C_ARGS="--extra-cflags='-march=loongson2f -mtune=loongson2f' --enable-godson2"
+	    ;;
 	*-ls2f-*)
-	    C_ARGS="--extra-cflags='-DHAVE_LOONGSON -mtune=loongson2f' --enable-godson2-mmi"
+	    C_ARGS="--extra-cflags='-mtune=loongson2f' --enable-godson2"
 	    ;;
 	esac
 	;;
