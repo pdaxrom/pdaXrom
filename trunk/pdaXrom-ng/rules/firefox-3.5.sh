@@ -33,17 +33,14 @@ build_firefox() {
     case $TARGET_ARCH in
     powerpc*)
 	FF_OPT_ARGS="--disable-necko-wifi"
+	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions"'
 	;;
-    mips64*-ls2f-*)
-	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions -march=loongson2f -mtune=loongson2f"'
-	#FF_OPT_CFLAGS=
-	;;
-    mips*-ls2f-*)
-	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions -mtune=loongson2f"'
+    mips*)
+	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions"'
 	#FF_OPT_CFLAGS=
 	;;
     esac
-    
+
     (
     eval \
 	$CROSS_CONF_ENV \
