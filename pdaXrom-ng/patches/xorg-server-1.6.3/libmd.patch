@@ -1,0 +1,45 @@
+--- xorg-server-1.6.0/configure-	2009-04-19 19:03:29.000000000 +0700
++++ xorg-server-1.6.0/configure	2009-04-19 19:04:03.000000000 +0700
+@@ -32159,11 +32159,11 @@
+ #ifdef __cplusplus
+ extern "C"
+ #endif
+-char SHA1Init ();
++char SHAInit ();
+ int
+ main ()
+ {
+-return SHA1Init ();
++return SHAInit ();
+   ;
+   return 0;
+ }
+--- xorg-server-1.6.0/render/glyph.c-	2009-04-19 19:04:23.000000000 +0700
++++ xorg-server-1.6.0/render/glyph.c	2009-04-19 19:05:59.000000000 +0700
+@@ -27,7 +27,7 @@
+ #endif
+ 
+ #ifdef HAVE_SHA1_IN_LIBMD /* Use libmd for SHA1 */
+-# include <sha1.h>
++# include <sha.h>
+ #else /* Use OpenSSL's libcrypto */
+ # include <stddef.h>  /* buggy openssl/sha.h wants size_t */
+ # include <openssl/sha.h>
+@@ -199,12 +199,12 @@
+ 	   unsigned char sha1[20])
+ {
+ #ifdef HAVE_SHA1_IN_LIBMD /* Use libmd for SHA1 */
+-    SHA1_CTX ctx;
++    SHA_CTX ctx;
+ 
+-    SHA1Init (&ctx);
+-    SHA1Update (&ctx, gi, sizeof (xGlyphInfo));
+-    SHA1Update (&ctx, bits, size);
+-    SHA1Final (sha1, &ctx);
++    SHAInit (&ctx);
++    SHAUpdate (&ctx, gi, sizeof (xGlyphInfo));
++    SHAUpdate (&ctx, bits, size);
++    SHAFinal (sha1, &ctx);
+ #else /* Use OpenSSL's libcrypto */
+     SHA_CTX ctx;
+     int success;
