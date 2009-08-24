@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XORG_SERVER_VERSION=1.6.2
+XORG_SERVER_VERSION=1.6.3
 XORG_SERVER=xorg-server-${XORG_SERVER_VERSION}.tar.bz2
 XORG_SERVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/xserver
 XORG_SERVER_DIR=$BUILD_DIR/xorg-server-${XORG_SERVER_VERSION}
