@@ -11,7 +11,7 @@ create_ps3kboot() {
     pushd $TOP_DIR
     cd $KERNEL_DIR
 
-    make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $MAKEARGS zImage.initrd || error
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS zImage.initrd || error
 
     cp -f $KERNEL_DIR/arch/powerpc/boot/otheros.bld $IMAGES_DIR/pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.bld || error "copy otheros.bld"
     cd $IMAGES_DIR

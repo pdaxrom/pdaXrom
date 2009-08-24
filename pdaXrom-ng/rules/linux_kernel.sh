@@ -119,14 +119,14 @@ build_linux_kernel() {
     local KERNEL_IMAGE=`get_kernel_image $TARGET_ARCH`
 
     if [ "$KERNEL_OLDCONFIG_ENABLED" != "no" ]; then
-       make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS oldconfig $MAKEARGS || error 
+       make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} oldconfig $MAKEARGS || error 
     fi
 
-    make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $KERNEL_IMAGE $MAKEARGS || error
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $KERNEL_IMAGE $MAKEARGS || error
 
     if [ "$KERNEL_MODULES_ENABLED" != "no" ]; then
-	make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS modules $MAKEARGS || error
-	make SUBARCH=$SUBARCH CROSS_COMPILE=$CROSS $MAKEARGS INSTALL_MOD_PATH=$ROOTFS_DIR modules_install || error
+	make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} modules $MAKEARGS || error
+	make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS INSTALL_MOD_PATH=$ROOTFS_DIR modules_install || error
     fi
 
     popd
