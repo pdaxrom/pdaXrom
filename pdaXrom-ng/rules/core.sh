@@ -291,7 +291,7 @@ install_gcc_wrappers() {
     for f in c++ cc cpp g++ gcc; do
 	test -e $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} || continue
 	echo "#!/bin/sh" > $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
-	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} -isystem ${TARGET_INC} \${1+\"\$@\"}" >> $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
+	echo "exec $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-${f} ${CROSS_OPT_ARCH} -isystem ${TARGET_INC} \${1+\"\$@\"}" >> $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
 	chmod 755 $HOST_BIN_DIR/bin/${TARGET_ARCH}-${f}
     done
 }
@@ -425,20 +425,23 @@ which ${TOOLCHAIN_PREFIX}/bin/${CROSS}gcc >/dev/null && ln -sf `${TOOLCHAIN_PREF
 STRIP="${CROSS}strip -R .note -R .comment"
 DEPMOD=depmod
 
-if [ "x$CROSS_OPT_CFLAGS" = "x" ]; then
-    CROSS_OPT_CFLAGS="-O2"
-fi
-
-if [ "x$CROSS_OPT_CXXFLAGS" = "x" ]; then
-    CROSS_OPT_CXXFLAGS="-O2"
-fi
-
-CROSS_CFLAGS="$CROSS_OPT_CFLAGS -isystem $TARGET_INC"
-CROSS_CXXFLAGS="$CROSS_OPT_CXXFLAGS -isystem $TARGET_INC"
-CROSS_CPPFLAGS="-isystem $TARGET_INC"
+CROSS_CFLAGS="$CROSS_OPT_CFLAGS"
+CROSS_CXXFLAGS="$CROSS_OPT_CXXFLAGS"
+CROSS_CPPFLAGS="$CROSS_OPT_CPPFLAGS"
 CROSS_LDFLAGS="-L$TARGET_LIB  -Wl,-rpath-link -Wl,$TARGET_LIB"
 #CROSS_CONF_ENV='CFLAGS="$CROSS_CFLAGS" CXXFLAGS="$CROSS_CXXFLAGS" LDFLAGS="$CROSS_LDFLAGS" CPPFLAGS="$CROSS_CPPFLAGS"'
 CROSS_CONF_ENV='LDFLAGS="$CROSS_LDFLAGS"'
+
+if [ ! "x$CROSS_CFLAGS" = "x" ]; then
+    CROSS_CONF_ENV="$CROSS_CONF_ENV CFLAGS=\"$CROSS_CFLAGS\""
+fi
+if [ ! "x$CROSS_CXXFLAGS" = "x" ]; then
+    CROSS_CONF_ENV="$CROSS_CONF_ENV CXXFLAGS=\"$CROSS_CXXFLAGS\""
+fi
+if [ ! "x$CROSS_CPPFLAGS" = "x" ]; then
+    CROSS_CONF_ENV="$CROSS_CONF_ENV CPPFLAGS=\"$CROSS_CPPFLAGS\""
+fi
+
 CROSS_ENV_AC=" \
     ac_cv_func_getpgrp_void=yes \
     ac_cv_func_setpgrp_void=yes \
