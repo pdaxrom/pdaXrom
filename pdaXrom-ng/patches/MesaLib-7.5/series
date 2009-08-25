@@ -12,3 +12,4 @@ xlib_brw_screen.c.diff
 no-gallium-i915.patch
 linux-dri-ppc.diff
 linux-ppc.diff
+linux-dri.diff
