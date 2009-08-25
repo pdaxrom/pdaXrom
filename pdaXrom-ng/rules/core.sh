@@ -383,6 +383,12 @@ test -e "$TARGET_BIN_DIR/usr" || ln -sf . "$TARGET_BIN_DIR/usr"
 #ln -sf ../../lib "$TARGET_BIN_DIR/usr/lib"
 #ln -sf ../../include "$TARGET_BIN_DIR/usr/include"
 
+if [ -e ${TOOLCHAIN_SYSROOT}/lib64 ]; then
+    ln -sf lib ${TARGET_BIN_DIR}/lib64
+elif [ -e ${TOOLCHAIN_SYSROOT}/lib32 ]; then
+    ln -sf lib ${TARGET_BIN_DIR}/lib32
+fi
+
 case $1 in
     clean)
 	echo "Cleaning..."
