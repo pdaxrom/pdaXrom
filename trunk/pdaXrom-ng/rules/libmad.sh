@@ -29,7 +29,7 @@ build_libmad() {
 	LIBMAD_CONF="--enable-fpm=intel"
 	;;
     x86_64*|amd64*)
-	LIBMAD_CONF="--enable-fpm=x86_64"
+	LIBMAD_CONF="--enable-fpm=64bit"
 	;;
     arm*)
 	LIBMAD_CONF="--enable-fpm=arm"
