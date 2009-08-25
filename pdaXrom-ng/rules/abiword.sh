@@ -24,6 +24,12 @@ build_abiword() {
     pushd $TOP_DIR
     cd $ABIWORD_DIR
     (
+    case $TARGET_ARCH in
+    powerpc64*|ppc64*)
+	ABIWORD_ENV="$ABIWORD_ENV CFLAGS='-mminimal-toc -O3' CXXFLAGS='-mminimal-toc -O3'"
+	;;
+    esac
+
     eval \
 	$CROSS_CONF_ENV \
 	$ABIWORD_ENV \
