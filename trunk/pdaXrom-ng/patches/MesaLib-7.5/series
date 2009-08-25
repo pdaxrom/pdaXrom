@@ -10,3 +10,5 @@ Makefile-egl-xlib.diff
 xlib_brw_context.c.diff
 xlib_brw_screen.c.diff
 no-gallium-i915.patch
+linux-dri-ppc.diff
+linux-ppc.diff
