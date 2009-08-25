@@ -104,11 +104,13 @@ build_MesaLib() {
 	install \
 	|| error
 
-    rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig
+    rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig fakeroot/usr/lib64/pkgconfig
 
-    $STRIP fakeroot/usr/lib/* fakeroot/usr/lib/dri/*
+    find fakeroot -not -type d | while read f; do
+	file $f | grep -q "ELF " && $STRIP $f
+    done
 
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/MesaLib.installed"
