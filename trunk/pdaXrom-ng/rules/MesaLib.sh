@@ -25,6 +25,9 @@ build_MesaLib_thud() {
     mips*)
 	echo "linux"
 	;;
+    ppc64-ps3-*|powerpc64-ps3-*)
+	echo "linux-ppc"
+	;;
     ppc*-ps3-*|powerpc*-ps3-*)
 	echo "linux-cell"
 	;;
