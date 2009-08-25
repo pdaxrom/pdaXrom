@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET_ARCH="powerpc64-linux"
+TARGET_ARCH="powerpc64-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
