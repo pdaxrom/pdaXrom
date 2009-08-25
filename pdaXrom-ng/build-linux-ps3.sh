@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ISOIMAGE_NAME=pdaXrom-ng-ps3
+
 TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
@@ -7,6 +9,10 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=ps3_kernel_2.6.30
 TARGET_VENDOR_PATCH=ps3
+
+CROSS_OPT_ARCH="-mtune=cell -mcpu=cell -maltivec"
+#CROSS_OPT_CFLAGS="-O3"
+#CROSS_OPT_CXXFLAGS="-O3"
 
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc

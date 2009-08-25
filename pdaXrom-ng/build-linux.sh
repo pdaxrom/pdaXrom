@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ISOIMAGE_NAME=pdaXrom-ng-i686
+
 TARGET_ARCH="i686-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
