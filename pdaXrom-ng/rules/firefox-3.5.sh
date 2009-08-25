@@ -31,7 +31,11 @@ build_firefox() {
     local FF_OPT_ARGS=
     local FF_OPT_CFLAGS=
     case $TARGET_ARCH in
-    powerpc*)
+    powerpc64*|ppc64*)
+	FF_OPT_ARGS="--disable-necko-wifi"
+	FF_OPT_CFLAGS='="-mminimal-toc -O4 -freorder-blocks -fno-reorder-functions"'
+	;;
+    powerpc*|ppc*)
 	FF_OPT_ARGS="--disable-necko-wifi"
 	FF_OPT_CFLAGS='="-O4 -freorder-blocks -fno-reorder-functions"'
 	;;
@@ -137,12 +141,6 @@ build_firefox() {
 	esac
 	sed -i "s|CPU_ARCH =|CPU_ARCH = $T_ARCH|" security/coreconf/Linux.mk
 	#cp -f $CONFIG_DIR/firefox3.5/jsautocfg.h-${T_CONF} js/src/jsautocfg.h || error
-
-	case $TARGET_ARCH in
-	powerpc64-*|ppc64-*)
-	    sed -i "s|MOZ_OPTIMIZE_FLAGS = -Os|MOZ_OPTIMIZE_FLAGS = -mminimal-toc -Os|" config/autoconf.mk
-	    ;;
-	esac
     ) || error "configure"
 
     make $MAKEARGS \
