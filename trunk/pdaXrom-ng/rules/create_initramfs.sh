@@ -24,7 +24,14 @@ create_initramfs() {
     pushd $TOP_DIR
 
     cp -a $ROOTFS_DIR/lib/ld-*.so $INITRAMFS_DIR/lib || error
-    cp -a $ROOTFS_DIR/lib/ld.so* $INITRAMFS_DIR/lib || error
+    case $TARGET_ARCH in
+    powerpc64*|ppc64*)
+	cp -a $ROOTFS_DIR/lib/ld64.so* $INITRAMFS_DIR/lib || error
+	;;
+    *)
+	cp -a $ROOTFS_DIR/lib/ld.so* $INITRAMFS_DIR/lib || error
+	;;
+    esac
     cp -a $ROOTFS_DIR/lib/libc-*.so $INITRAMFS_DIR/lib || error
     cp -a $ROOTFS_DIR/lib/libc.so* $INITRAMFS_DIR/lib || error
     cp -a $ROOTFS_DIR/lib/libm-*.so $INITRAMFS_DIR/lib || error
