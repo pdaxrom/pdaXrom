@@ -80,7 +80,7 @@ build_audacious_plugins() {
 
     make $MAKEARGS || error
 
-    install_fakeroot_init pluginlibdir=/usr/lib/audacious || error
+    install_fakeroot_init pluginlibdir=/usr/lib/audacious
     install_fakeroot_finish || error
 
     popd
