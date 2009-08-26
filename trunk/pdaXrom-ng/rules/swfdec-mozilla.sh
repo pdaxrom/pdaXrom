@@ -38,7 +38,7 @@ build_swfdec_mozilla() {
 
     #install_sysroot_files || error
 
-    install_fakeroot_init || error
+    install_fakeroot_init
     install_fakeroot_finish || error
 
     popd
