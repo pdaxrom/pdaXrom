@@ -29,11 +29,13 @@ build_libpng() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --disable-static \
+	    --enable-static \
+	    --enable-shared \
 	    || error
     )
     make $MAKEARGS || error
 
+    cp -f .libs/*.a $TARGET_LIB/
     $INSTALL -m 644 .libs/libpng12.so.0.33.0 $TARGET_LIB/
     ln -sf libpng12.so.0.33.0 $TARGET_LIB/libpng12.so.0
     ln -sf libpng12.so.0.33.0 $TARGET_LIB/libpng12.so

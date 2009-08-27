@@ -29,7 +29,8 @@ build_libjpeg() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --disable-static \
+	    --enable-static \
+	    --enable-shared \
 	    || error
     )
     make $MAKEARGS || error
