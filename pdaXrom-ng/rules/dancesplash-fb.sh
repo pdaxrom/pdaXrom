@@ -15,25 +15,25 @@ DANCESPLASH_MIRROR=http://wiki.pdaxrom.org/downloads/PS3/bootloader/src
 DANCESPLASH_DIR=$BUILD_DIR/dancesplash-${DANCESPLASH_VERSION}
 DANCESPLASH_ENV="$CROSS_ENV_AC"
 
-build_dancesplash() {
-    test -e "$STATE_DIR/dancesplash.installed" && return
-    banner "Build dancesplash"
+build_dancesplash_fb() {
+    test -e "$STATE_DIR/dancesplash-fb.installed" && return
+    banner "Build dancesplash-fb"
     download $DANCESPLASH_MIRROR $DANCESPLASH
     extract $DANCESPLASH
     apply_patches $DANCESPLASH_DIR $DANCESPLASH
     pushd $TOP_DIR
     cd $DANCESPLASH_DIR
 
-    make clean
+    make SYSTEM=linuxfb clean
 
-    make CC=${CROSS}gcc INSTALL=${INSTALL} OPT_LDFLAGS="-L${TARGET_LIB} -Wl,-rpath,${TARGET_LIB} -Wl,-rpath-link,${TARGET_LIB}" || error
+    make CC=${CROSS}gcc SYSTEM=linuxfb INSTALL=${INSTALL} OPT_LDFLAGS="-L${TARGET_LIB} -Wl,-rpath,${TARGET_LIB} -Wl,-rpath-link,${TARGET_LIB}" || error
 
-    make CC=${CROSS}gcc INSTALL=${INSTALL} DESTDIR=$ROOTFS_DIR install || error
+    make CC=${CROSS}gcc SYSTEM=linuxfb INSTALL=${INSTALL} DESTDIR=$ROOTFS_DIR install || error
 
-    $STRIP $ROOTFS_DIR/usr/bin/dancesplash || error
+    $STRIP $ROOTFS_DIR/usr/bin/dancesplashfb || error
 
     popd
-    touch "$STATE_DIR/dancesplash.installed"
+    touch "$STATE_DIR/dancesplash-fb.installed"
 }
 
-build_dancesplash
+build_dancesplash_fb
