@@ -3,7 +3,7 @@
 #include <syslog.h>
 #include <stdlib.h>
 
-char *db_readconf(char *fname, char *name, char *out)
+int db_readconf(char *fname, char *name, char *out)
 {
     char rbuf[1024];
     FILE *f;
@@ -13,7 +13,7 @@ char *db_readconf(char *fname, char *name, char *out)
     f = fopen(fname, "rb");
     if (!f) {
         fprintf(stderr, "no such config file: '%s'\n", fname);
-	return NULL;
+	return 0;
     }
 
     while (fgets(rbuf, 1024, f)) {
@@ -42,5 +42,5 @@ char *db_readconf(char *fname, char *name, char *out)
     if (!strlen(out)) {
         printf("can't find variable: '%s' in config file: '%s'\n", name, fname);
     }
-    return NULL;
+    return strlen(out);
 }
