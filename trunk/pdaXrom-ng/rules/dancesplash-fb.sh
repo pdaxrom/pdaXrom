@@ -32,6 +32,8 @@ build_dancesplash_fb() {
 
     $STRIP $ROOTFS_DIR/usr/bin/dancesplashfb || error
 
+    $INSTALL -D -m 644 $GENERICFS_DIR/dancesplashfb.conf $ROOTFS_DIR/etc/dancesplashfb.conf || error
+
     popd
     touch "$STATE_DIR/dancesplash-fb.installed"
 }
