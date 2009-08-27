@@ -11,6 +11,7 @@ test -e $DAEMON || exit 0
 case "$1" in
   start)
 	log_begin_msg -n "Starting X11"
+	splash_finish
 	export HOME=/home
 	cd
 	test -e /etc/profile && . /etc/profile
