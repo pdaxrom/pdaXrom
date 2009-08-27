@@ -121,6 +121,9 @@ splash_start() {
 
 splash_finish() {
     if [ "$USE_SPLASH" = "y" ]; then
-	dancesplashfb -u "QUIT"
+	while pidof dancesplashfb > /dev/null; do
+	    dancesplashfb -u "QUIT"
+	    sleep 1
+	done
     fi
 }
