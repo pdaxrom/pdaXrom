@@ -1,8 +1,12 @@
 .PHONY: libdance
 
-TARGET	= dancesplash
 SYSTEM	:=x11
-DATADIR	:=/usr/share/dancesplash
+ifeq (linuxfb, $(SYSTEM))
+TARGET	= dancesplash-fb
+else
+TARGET	= dancesplash
+endif
+DATADIR	:=/usr/share/$(TARGET)
 $DATADIR	:=./
 OPT_CFLAGS:=-O2
 #OPT_CFLAGS:=-g
@@ -20,7 +24,10 @@ CFLAGS	+= -DDATADIR=\"$(DATADIR)\"
 LDFLAGS	+= $(OPT_LDFLAGS) -Llibdance -ldance -ljpeg -lpng `freetype-config --libs` -g
 
 ifneq (linuxfb, $(SYSTEM))
+CFLAGS  += -DUSE_X11
 LDFLAGS	+= -lX11
+else
+CFLAGS  += -DUSE_FB
 endif
 
 OBJS	= main.o
