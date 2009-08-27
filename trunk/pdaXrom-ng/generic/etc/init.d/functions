@@ -112,7 +112,10 @@ go_background() {
 
 splash_start() {
     if [ "$USE_SPLASH" = "y" ]; then
-	dancesplashfb 2>/dev/null &
+	if ! pidof dancesplashfb 2>/dev/null >/dev/null; then
+	    sleep 1
+	    dancesplashfb 2>/dev/null &
+	fi
     fi
 }
 

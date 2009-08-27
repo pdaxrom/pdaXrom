@@ -23,6 +23,8 @@ case "$1" in
 	log_begin_msg -n "Stopping X11"
 	killall X >/dev/null 2>/dev/null
 	log_end_msg $?
+	while pidof X > /dev/null; do sleep 1; done
+	splash_start
 	;;
   *)
 	N=/etc/init.d/$NAME
