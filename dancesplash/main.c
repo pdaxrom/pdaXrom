@@ -17,6 +17,8 @@
 static int shmid;
 static char *shared_buf;
 
+static char str_buf[SHM_BUF_SIZE];
+
 static db_image *img_anim[16];
 
 static int load_animation(char *name)
@@ -112,6 +114,7 @@ int main(int argc, char *argv[])
     if (shared_open(1) == -1) {
 	return -1;
     }
+    str_buf[0] = 0;
 
 #ifdef USE_X11
     db_ui_create_window(480, 480);
@@ -169,13 +172,22 @@ int main(int argc, char *argv[])
 #endif
 	if (*shared_buf) {
 	    fprintf(stderr, ">>> %s\n", shared_buf);
-	    if (!strncmp(shared_buf, "quit", 4))
+	    if (!strncmp(shared_buf, "QUIT", 4))
 		break;
-	    if (!strncmp(shared_buf, "text", 4)) {
+	    if (!strncmp(shared_buf, "TEXT", 4)) {
 		int w = 0, h = 0;
 		db_image_put_image(img_desk, img_wallp, 0, 0);
 		db_font_get_string_box(font, shared_buf + 5, &w, &h);
 		db_image_put_string(img_desk, font, shared_buf + 5, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffff);
+		strcpy(str_buf, shared_buf + 5);
+	    }
+	    if (!strncmp(shared_buf, "SUCCESS", 7)) {
+		int w = 0, h = 0;
+		strcat(str_buf, " ... ");
+		strcat(str_buf, shared_buf + 8);
+		db_image_put_image(img_desk, img_wallp, 0, 0);
+		db_font_get_string_box(font, str_buf, &w, &h);
+		db_image_put_string(img_desk, font, str_buf, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffff);
 	    }
 	    *shared_buf = 0;
 	}
