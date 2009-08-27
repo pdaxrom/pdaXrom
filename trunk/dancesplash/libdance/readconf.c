@@ -12,7 +12,6 @@ int db_readconf(char *fname, char *name, char *out)
 
     f = fopen(fname, "rb");
     if (!f) {
-        fprintf(stderr, "no such config file: '%s'\n", fname);
 	return 0;
     }
 
@@ -39,8 +38,5 @@ int db_readconf(char *fname, char *name, char *out)
 
     fclose(f);
 
-    if (!strlen(out)) {
-        printf("can't find variable: '%s' in config file: '%s'\n", name, fname);
-    }
     return strlen(out);
 }
