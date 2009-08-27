@@ -103,10 +103,18 @@ int main(int argc, char *argv[])
 	    if (shared_open(1) == -1) {
 		return -1;
 	    }
-	
-	    strcpy(shared_buf, argv[2]);
-	    shmdt(shared_buf);
 
+	    strcpy(shared_buf, argv[2]);
+
+	    int cnt = 5;
+	    while (cnt--) {
+		if (! *shared_buf)
+		    break;
+		usleep(100000);
+	    }
+
+	    shmdt(shared_buf);
+	    usleep(100000);
 	    return 0;
 	}
     }
@@ -115,6 +123,7 @@ int main(int argc, char *argv[])
 	return -1;
     }
     str_buf[0] = 0;
+    *shared_buf = 0;
 
 #ifdef USE_X11
     db_ui_create_window(480, 480);
@@ -145,7 +154,7 @@ int main(int argc, char *argv[])
 
     load_animation(DATADIR "/artwork/animation/watch%02i.png");
 
-    char *mesg = "Desktop is starting up. Please wait.";
+    char *mesg = "System is starting up. Please wait.";
     int w, h;
     db_font_get_string_box(font, mesg, &w, &h);
     db_image_put_string(img_desk, font, mesg, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffff);
@@ -176,14 +185,14 @@ int main(int argc, char *argv[])
 		break;
 	    if (!strncmp(shared_buf, "TEXT", 4)) {
 		int w = 0, h = 0;
-		db_image_put_image(img_desk, img_wallp, 0, 0);
-		db_font_get_string_box(font, shared_buf + 5, &w, &h);
-		db_image_put_string(img_desk, font, shared_buf + 5, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffff);
 		strcpy(str_buf, shared_buf + 5);
+		strcat(str_buf, " ... ");
+		db_image_put_image(img_desk, img_wallp, 0, 0);
+		db_font_get_string_box(font, str_buf, &w, &h);
+		db_image_put_string(img_desk, font, str_buf, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffffff);
 	    }
 	    if (!strncmp(shared_buf, "SUCCESS", 7)) {
 		int w = 0, h = 0;
-		strcat(str_buf, " ... ");
 		strcat(str_buf, shared_buf + 8);
 		db_image_put_image(img_desk, img_wallp, 0, 0);
 		db_font_get_string_box(font, str_buf, &w, &h);
@@ -197,8 +206,6 @@ int main(int argc, char *argv[])
 	usleep(100000);
 	i++;
     }
-
-    db_ui_close();
 
     return 0;
 }
