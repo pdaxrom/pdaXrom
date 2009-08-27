@@ -134,3 +134,27 @@ void db_image_put_image_crop(db_image *dst, db_image *src, int x, int y, int xof
 	src_buf += src->width;
     }    
 }
+
+db_image *db_image_resize_image(db_image *src, int width, int height)
+{
+    float w_scale, h_scale;
+    int x, y;
+
+    db_image *dst = db_image_create(width, height, src->has_alpha);
+
+    uint32_t *src_buf = (uint32_t *)src->buf;
+    uint32_t *dst_buf = (uint32_t *)dst->buf;
+
+    w_scale = (float) src->width / width;
+    h_scale = (float) src->height / height;
+
+    for (y = 0; y < height; y++) {
+	uint32_t *ptr = &src_buf[(int)(src->width * (int)((float)y * h_scale))];
+	for (x = 0; x < width; x++) {
+	    dst_buf[x] = ptr[(int)((float)x * w_scale)];
+	}
+	dst_buf += width;
+    }
+
+    return dst;
+}
