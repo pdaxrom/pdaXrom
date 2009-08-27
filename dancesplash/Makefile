@@ -2,7 +2,7 @@
 
 SYSTEM	:=x11
 ifeq (linuxfb, $(SYSTEM))
-TARGET	= dancesplash-fb
+TARGET	= dancesplashfb
 else
 TARGET	= dancesplash
 endif
