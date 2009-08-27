@@ -9,6 +9,8 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=i686-kernel-2.6.30
 
+USE_SPLASH="yes"
+
 . ./sets/packages-basic.inc
 
 . ./sets/packages-acpi.inc
