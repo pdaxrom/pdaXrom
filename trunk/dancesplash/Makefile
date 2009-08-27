@@ -20,7 +20,7 @@ CC	:= gcc
 INSTALL	:= install
 
 CFLAGS	= $(OPT_CFLAGS) -Wall -g `freetype-config --cflags` -fPIC -Ilibdance
-CFLAGS	+= -DDATADIR=\"$(DATADIR)\"
+CFLAGS	+= -DDATADIR=\"$(DATADIR)\" -DCONFIG_FILE=\"/etc/$(TARGET).conf\"
 LDFLAGS	+= $(OPT_LDFLAGS) -Llibdance -ldance -ljpeg -lpng `freetype-config --libs` -g
 
 ifneq (linuxfb, $(SYSTEM))

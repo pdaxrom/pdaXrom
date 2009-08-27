@@ -7,11 +7,13 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <errno.h>
+#include <alloca.h>
 
 #include "ui.h"
 #include "image.h"
 #include "font.h"
 #include "message.h"
+#include "readconf.h"
 
 #define SHM_BUF_SIZE	512
 static int shmid;
@@ -98,8 +100,15 @@ void app_close(void)
 
 int main(int argc, char *argv[])
 {
+    char *wallp_name = (char *) alloca(512 * sizeof(char));
+    char *config_name = (char *) alloca(512 * sizeof(char));
+
+    strcpy(config_name, CONFIG_FILE);
+
     if (argc > 1) {
-	if (!strcmp(argv[1], "-u")) {
+	if (!strcmp(argv[1], "-c")) {
+	    strncpy(config_name, argv[2], 256);
+	} else if (!strcmp(argv[1], "-u")) {
 	    if (shared_open(1) == -1) {
 		return -1;
 	    }
@@ -116,8 +125,15 @@ int main(int argc, char *argv[])
 	    shmdt(shared_buf);
 	    usleep(100000);
 	    return 0;
-	}
+	} else
+	    strncpy(wallp_name, argv[1], 256);
     }
+
+    if (!strlen(wallp_name))
+	db_readconf(config_name, "image", wallp_name);
+
+    if (!strlen(wallp_name))
+	strcpy(wallp_name, DATADIR "/artwork/eye.jpg");
 
     if (shared_open(1) == -1) {
 	return -1;
@@ -142,7 +158,7 @@ int main(int argc, char *argv[])
     
     db_image *img_desk = db_ui_get_screen();
     //db_image *img_wallp = load_wallpaper(img_desk, DATADIR "/artwork/eye.jpg");
-    db_image *img_wallp = db_image_load(DATADIR "/artwork/eye.jpg");
+    db_image *img_wallp = db_image_load(wallp_name);
     if ((img_desk->width != img_wallp->width) ||
 	(img_desk->height != img_wallp->height)) {
 	fprintf(stderr, "resize\n");
