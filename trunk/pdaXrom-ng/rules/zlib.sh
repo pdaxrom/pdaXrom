@@ -35,6 +35,7 @@ build_zlib() {
     $STRIP $ROOTFS_DIR/usr/lib/libz.so.1.2.3
     
     #install headers and library to target sysroot
+    $INSTALL -m 644 .libs/libz.a $TARGET_LIB/
     $INSTALL -m 644 .libs/libz.so.1.2.3 $TARGET_LIB/
     ln -sf libz.so.1.2.3 $TARGET_LIB/libz.so.1
     ln -sf libz.so.1.2.3 $TARGET_LIB/libz.so
