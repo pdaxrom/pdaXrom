@@ -110,7 +110,6 @@ unsigned char *load_png_file (char *file, int *width, int *height, int *has_alph
 
     if (! *has_alpha) {
 	int pixels = *width * *height;
-    fprintf(stderr, "has alpha %d %d %d\n", *has_alpha, rowbytes, pixels);
 	unsigned char *tmp = (unsigned char *) malloc(pixels * 4);
 	unsigned char *dst = tmp;
 	unsigned char *src = data;

@@ -21,13 +21,13 @@ INSTALL	:= install
 
 CFLAGS	= $(OPT_CFLAGS) -Wall -g `freetype-config --cflags` -fPIC -Ilibdance
 CFLAGS	+= -DDATADIR=\"$(DATADIR)\" -DCONFIG_FILE=\"/etc/$(TARGET).conf\"
-LDFLAGS	+= $(OPT_LDFLAGS) -Llibdance -ldance -ljpeg -lpng `freetype-config --libs` -g
 
 ifneq (linuxfb, $(SYSTEM))
 CFLAGS  += -DUSE_X11
-LDFLAGS	+= -lX11
+LDFLAGS	+= $(OPT_LDFLAGS) -Llibdance -ldance -ljpeg -lpng -lfreetype -lz -lm -lX11 -g
 else
 CFLAGS  += -DUSE_FB
+LDFLAGS	+= $(OPT_LDFLAGS) -Llibdance -ldance -Wl,-Bstatic -ljpeg -lpng -lfreetype -lz -Wl,-Bdynamic -lm -g
 endif
 
 OBJS	= main.o
