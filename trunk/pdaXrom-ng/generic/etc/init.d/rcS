@@ -5,9 +5,9 @@
 
 . /etc/init.d/functions
 
-if [ -e /sbin/usplash ]; then
-    USPLASH="y"
-elif [ -e /usr/bin/figlet ]; then
+splash_start
+
+if [ -e /usr/bin/figlet ]; then
     figlet -t -c "pdaXrom-NG"
     figlet -t -c `uname -sm`
     echo -ne "\n\n"
@@ -18,23 +18,15 @@ mount -a 2>/dev/null
 log_end_msg $?
 
 if mount | grep ' / ' | grep -q 'squashfs' ; then
-    for d in /var /etc /home /media ; do
+    for d in /etc /home /media /var ; do
 	log_begin_msg -n "Moving $d to ram"
 	tar c $d 2>/dev/null | tar x -C /tmp && mount -o bind /tmp$d $d
 	log_end_msg $?
-	if [ "$d" = "/var" ]; then
-	    if [ "$USPLASH" = "y" ]; then
-		usplash -c -v &
-	    fi
-	fi
     done
 else
     log_begin_msg -n "Remounting rootfs for read/write"
     mount -o remount,rw /
     log_end_msg $?
-    if [ "$USPLASH" = "y" ]; then
-	usplash -c -v &
-    fi
 fi
 
 # Disable kernel log to console
@@ -47,8 +39,4 @@ for i in /etc/rc.d/S*; do
     $i start
 done
 
-sleep 5
-
-if [ "$USPLASH" = "y" ]; then
-    usplash_write "QUIT"
-fi
+splash_finish

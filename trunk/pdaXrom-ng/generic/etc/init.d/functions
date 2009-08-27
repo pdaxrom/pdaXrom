@@ -2,6 +2,10 @@
 
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin"
 
+if [ -e /usr/bin/dancesplashfb ]; then
+    USE_SPLASH="y"
+fi
+
 [ -z "${COLUMNS:-}" ] && COLUMNS=30 #80
 
 if [ -z "${BOOTUP:-}" ]; then
@@ -66,8 +70,8 @@ log_begin_msg() {
         else
 	    echo $*
         fi
-        if [ "$USPLASH" = "y" ]; then
-	    usplash_write "TEXT $*"
+        if [ "$USE_SPLASH" = "y" ]; then
+	    dancesplashfb -u "TEXT $*"
 	fi
     fi
 }
@@ -76,13 +80,13 @@ log_end_msg() {
     if [ -z "$SILENT" ] ; then
 	if [ "$1" = "0" ]; then
 	    echo_success
-	    if [ "$USPLASH" = "y" ]; then
-		usplash_write "SUCCESS ok"
+	    if [ "$USE_SPLASH" = "y" ]; then
+		dancesplashfb -u "SUCCESS ok"
 	    fi
 	else
 	    echo_failure
-	    if [ "$USPLASH" = "y" ]; then
-		usplash_write "SUCCESS fail"
+	    if [ "$USE_SPLASH" = "y" ]; then
+		dancesplashfb -u "SUCCESS fail"
 	    fi
 	fi
 	echo
@@ -104,4 +108,16 @@ go_background() {
 	esac
     fi
     rm -f /var/run/${NAME}.init
+}
+
+splash_start() {
+    if [ "$USE_SPLASH" = "y" ]; then
+	dancesplashfb 2>/dev/null &
+    fi
+}
+
+splash_finish() {
+    if [ "$USE_SPLASH" = "y" ]; then
+	dancesplashfb -u "QUIT"
+    fi
 }
