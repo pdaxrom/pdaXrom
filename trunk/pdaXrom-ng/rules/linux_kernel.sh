@@ -111,10 +111,14 @@ build_linux_kernel() {
     cp $CONFIG_DIR/kernel/$KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
     pushd $TOP_DIR
     cd $KERNEL_DIR
-    
+
+    if [ "$USE_SPLASH" = "yes" ]; then
+	sed -i "s|CONFIG_LOGO=y|# CONFIG_LOGO is not set|" .config
+    fi
+
     KERNEL_MODULES_ENABLED="yes"
     grep -q "^# CONFIG_MODULES" .config && KERNEL_MODULES_ENABLED="no"
-    
+
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
     local KERNEL_IMAGE=`get_kernel_image $TARGET_ARCH`
 
