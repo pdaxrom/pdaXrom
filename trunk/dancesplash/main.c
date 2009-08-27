@@ -106,6 +106,9 @@ int main(int argc, char *argv[])
     char *conf_val = (char *) alloca(512 * sizeof(char));
     int font_size = 25;
 
+    wallp_name[0] = 0;
+    font_name[0] = 0;
+
     strcpy(config_name, CONFIG_FILE);
 
     if (argc > 1) {
@@ -158,7 +161,7 @@ int main(int argc, char *argv[])
 	    font_size = 25;
     }
 
-    if (db_readconf(config_name, "fontname", font_name)) {
+    if (!db_readconf(config_name, "fontname", font_name)) {
 	strcpy(font_name, DATADIR "/fonts/Vera.ttf");
     }
 
