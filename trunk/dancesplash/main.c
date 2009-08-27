@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     char *config_name = (char *) alloca(512 * sizeof(char));
     char *font_name = (char *) alloca(512 * sizeof(char));
     char *conf_val = (char *) alloca(512 * sizeof(char));
-    int font_size = 25;
+    int font_size = 14;
 
     wallp_name[0] = 0;
     font_name[0] = 0;
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 	font_size = atoi(conf_val);
 	if ((font_size <= 0) ||
 	    (font_size > 100))
-	    font_size = 25;
+	    font_size = 14;
     }
 
     if (!db_readconf(config_name, "fontname", font_name)) {
@@ -166,6 +166,8 @@ int main(int argc, char *argv[])
     }
 
     db_font *font = db_font_open(font_name, font_size, 0);
+    if (!font)
+	font = db_font_open(DATADIR "/fonts/Vera.ttf", font_size, 0);
     if (!font) {
 	fprintf(stderr, "Can't open font!\n");
 	return 1;
@@ -175,6 +177,9 @@ int main(int argc, char *argv[])
     db_image *img_desk = db_ui_get_screen();
     //db_image *img_wallp = load_wallpaper(img_desk, DATADIR "/artwork/eye.jpg");
     db_image *img_wallp = db_image_load(wallp_name);
+    if (!img_wallp)
+	img_wallp = db_image_load(DATADIR "/artwork/eye.jpg");
+
     if ((img_desk->width != img_wallp->width) ||
 	(img_desk->height != img_wallp->height)) {
 	fprintf(stderr, "resize\n");
