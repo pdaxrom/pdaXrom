@@ -102,6 +102,9 @@ int main(int argc, char *argv[])
 {
     char *wallp_name = (char *) alloca(512 * sizeof(char));
     char *config_name = (char *) alloca(512 * sizeof(char));
+    char *font_name = (char *) alloca(512 * sizeof(char));
+    char *conf_val = (char *) alloca(512 * sizeof(char));
+    int font_size = 25;
 
     strcpy(config_name, CONFIG_FILE);
 
@@ -125,8 +128,7 @@ int main(int argc, char *argv[])
 	    shmdt(shared_buf);
 	    usleep(100000);
 	    return 0;
-	} else
-	    strncpy(wallp_name, argv[1], 256);
+	}
     }
 
     if (!strlen(wallp_name))
@@ -149,7 +151,18 @@ int main(int argc, char *argv[])
 
     atexit(app_close);
 
-    db_font *font = db_font_open(DATADIR "/fonts/Vera.ttf", 25, 0);
+    if (db_readconf(config_name, "fontsize", conf_val)) {
+	font_size = atoi(conf_val);
+	if ((font_size <= 0) ||
+	    (font_size > 100))
+	    font_size = 25;
+    }
+
+    if (db_readconf(config_name, "fontname", font_name)) {
+	strcpy(font_name, DATADIR "/fonts/Vera.ttf");
+    }
+
+    db_font *font = db_font_open(font_name, font_size, 0);
     if (!font) {
 	fprintf(stderr, "Can't open font!\n");
 	return 1;
