@@ -108,6 +108,22 @@ unsigned char *load_png_file (char *file, int *width, int *height, int *has_alph
     png_destroy_read_struct( &png_ptr, &info_ptr, NULL);
     fclose(fd);
 
+    if (! *has_alpha) {
+	int pixels = *width * *height;
+    fprintf(stderr, "has alpha %d %d %d\n", *has_alpha, rowbytes, pixels);
+	unsigned char *tmp = (unsigned char *) malloc(pixels * 4);
+	unsigned char *dst = tmp;
+	unsigned char *src = data;
+	while (pixels--) {
+	    *dst++ = *src++;
+	    *dst++ = *src++;
+	    *dst++ = *src++;
+	    *dst++ = 0;
+	}
+	free(data);
+	data = tmp;
+    }
+
     return data;
 }
 
