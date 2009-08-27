@@ -13,7 +13,7 @@ endif
 
 all: lib$(TARGET).a
 
-OBJS	= jpegdec.o pngdec.o image.o font.o message.o util.o $(UI_OBJ)
+OBJS	= jpegdec.o pngdec.o image.o font.o message.o util.o readconf.o $(UI_OBJ)
 
 CC	:= gcc
 AR	:= ar
