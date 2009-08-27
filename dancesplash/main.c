@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
 	    fprintf(stderr, "DB_EVENT_QUIT\n");
 	    break;
 	}
-#if 0
+#if USE_X11
 	if (e.type == DB_EVENT_SPLASH_PROGRESS) {
 	    if (e.splash.data)
 		free(e.splash.data);
