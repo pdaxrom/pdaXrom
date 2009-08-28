@@ -29,7 +29,11 @@ build_MesaLib_thud() {
 	echo "linux-ppc"
 	;;
     ppc*-ps3-*|powerpc*-ps3-*)
-	echo "linux-cell"
+	if [ -e $TOOLCHAIN_SYSROOT/usr/spu/lib/libmisc.a ]; then
+	    echo "linux-cell"
+	else
+	    echo "linux-ppc"
+	fi
 	;;
     ppc*|powerpc*)
 	echo "linux-dri-ppc"
