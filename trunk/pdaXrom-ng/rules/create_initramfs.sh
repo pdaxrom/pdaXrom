@@ -56,6 +56,22 @@ create_initramfs() {
 	find $ROOTFS_DIR/lib/modules -name $f -exec cp -R \{\} $INITRAMFS_DIR/modules \;
     done
 
+    if [ "$USE_SPLASH" = "yes" ] && [ -f $ROOTFS_DIR/usr/bin/dancesplashfb ]; then
+	cp -f $ROOTFS_DIR/usr/bin/dancesplashfb $INITRAMFS_DIR/bin || error "install dancesplashfb"
+	mkdir -p $INITRAMFS_DIR/etc
+	mkdir -p $INITRAMFS_DIR/usr/share
+	cp -a $ROOTFS_DIR/usr/share/dancesplashfb $INITRAMFS_DIR/usr/share || error "install dancesplash share files"
+	if [ -f $ROOTFS_DIR/etc/dancesplashfb.conf ]; then
+	    cp -f $ROOTFS_DIR/etc/dancesplashfb.conf $INITRAMFS_DIR/etc
+	    local IMG=`cat $ROOTFS_DIR/etc/dancesplashfb.conf | grep ^image | cut -d' ' -f2`
+	    if [ -e $ROOTFS_DIR/$IMG ]; then
+		echo "copy wallpaper $IMG"
+		mkdir -p `dirname $INITRAMFS_DIR/$IMG` || error "mkdir wallpaper directory"
+		cp -L $ROOTFS_DIR/$IMG $INITRAMFS_DIR/$IMG || error "install wallpaper"
+	    fi
+	fi
+    fi
+
     uuidgen > $INITRAMFS_DIR/uuid
     cp -f $INITRAMFS_DIR/uuid $IMAGES_DIR/uuid
 
