@@ -1,5 +1,9 @@
 #!/bin/sh
 
+ln -sf /home/.pcio /media/.pcio
+
+export HOME=/media
+
 while true; do
     /home/.pcio/bin/login
 done

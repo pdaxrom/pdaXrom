@@ -197,8 +197,6 @@ pcio_tune()
     test -d $ROOTFS_DIR/usr/lib/dri && rm -f $ROOTFS_DIR/usr/lib/dri/*
     $INSTALL -D -m 644 $PCIO_SVN_DIR/desktop/themes/pcio-splash.png $ROOTFS_DIR/usr/share/dancesplashfb/artwork/pcio-splash.png || error
     echo "image /usr/share/dancesplashfb/artwork/pcio-splash.png" > $ROOTFS_DIR/etc/dancesplashfb.conf
-    rm -rf $ROOTFS_DIR/media
-    ln -sf home $ROOTFS_DIR/media
 }
 
 pcio_tune
