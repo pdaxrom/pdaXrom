@@ -52,14 +52,22 @@ static int js_fd = -1;
 
 static int framebuffer_on(void)
 {
+    int try = 5;
+    
     if ((fbdevice = getenv ("DANCEBOARD_FBDEVICE")) == NULL)
 	fbdevice = defaultfbdevice;
 
-    fb_fd = open(fbdevice, O_RDWR);
-    if (fb_fd == -1) {
-	perror("open fbdevice");
-	return 1;
-    }
+    do {
+	fb_fd = open(fbdevice, O_RDWR);
+	if (fb_fd == -1) {
+	    perror("open fbdevice");
+	    if (try--) {
+		usleep(100000);
+		continue;
+	    }
+	    return 1;
+	}
+    } while (0);
 
     if (ioctl(fb_fd, FBIOGET_FSCREENINFO, &fix) < 0) {
 	perror("ioctl FBIOGET_FSCREENINFO");
