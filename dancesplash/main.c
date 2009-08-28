@@ -125,11 +125,11 @@ int main(int argc, char *argv[])
 	    while (cnt--) {
 		if (! *shared_buf)
 		    break;
-		usleep(100000);
+		usleep(10000);
 	    }
 
 	    shmdt(shared_buf);
-	    usleep(100000);
+	    usleep(10000);
 	    return 0;
 	}
     }
@@ -237,10 +237,10 @@ int main(int argc, char *argv[])
 	    }
 	    *shared_buf = 0;
 	}
-	int n = i % 16;
+	int n = (i / 10) % 16;
 	db_image_put_image(img_desk, img_anim[n], (img_desk->width - img_anim[n]->width) / 2, img_desk->height - 40 - img_anim[n]->height / 2);
 	db_ui_update_screen();
-	usleep(100000);
+	usleep(10000);
 	i++;
     }
 
