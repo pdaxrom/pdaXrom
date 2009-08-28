@@ -1,5 +1,35 @@
 #!/bin/sh
 
+if [ -f /bin/dancesplashfb ]; then
+    USE_SPLASH="y"
+    /bin/mknod /dev/fb0 c 29 0
+    /bin/mknod /dev/tty0 c 4 0
+    /bin/mknod /dev/tty1 c 4 1
+    /bin/mknod /dev/tty2 c 4 2
+    /bin/mknod /dev/tty3 c 4 3
+    /bin/mknod /dev/null c 1 3
+    /bin/dancesplashfb 2>/dev/null &
+fi
+
+splash_text() {
+    if [ "$USE_SPLASH" = "y" ]; then
+	/bin/dancesplashfb -u "TEXT $@"
+    fi
+}
+
+splash_success() {
+    echo -n "$@"
+    if [ "$USE_SPLASH" = "y" ]; then
+	/bin/dancesplashfb -u "SUCCESS $@"
+    fi
+}
+
+splash_finish() {
+    if [ "$USE_SPLASH" = "y" ]; then
+	/bin/dancesplashfb -u "QUIT"
+    fi
+}
+
 /bin/mount -n -t proc none /proc
 /bin/mount -n -t sysfs none /sys
 
@@ -16,12 +46,15 @@ for f in $MODULES; do
     MODULES_REV="$f $MODULES_REV"
 done
 
+splash_text "Waiting for usb devices "
+
 for i in 7 6 5 4 3 2 1 0; do
-    /bin/echo -n "."
+    splash_success "."
     /bin/sleep 1
     mknod /dev/loop$i b 7 $i
 done
 
+splash_success " done"
 echo
 
 cd /sys/block
@@ -56,20 +89,24 @@ check_rootfs() {
     
     if [ -e /mnt/boot/rootfs.img ]; then
 	if cmp -s /uuid /mnt/boot/uuid ; then
-	    echo "Detected root image on /dev/$1 !"
+	    echo "Detected root image on /dev/$1!"
+	    splash_text "Detected root image on /dev/$1!"
 	    if [ -e /dev/ps3vram ]; then
 		/sbin/losetup -o 134217728 /dev/loop0 /dev/ps3vram && /sbin/mkswap /dev/loop0 >/dev/null 2>/dev/null && swapon /dev/loop0
 		echo -n "Copy root image to vram ... "
+		splash_text "Copy root image to vram"
 		dd if=/mnt/boot/rootfs.img of=/dev/ps3vram bs=1M >/dev/null 2>/dev/null && echo "done!" || echo "error!"
 		umount /mnt
 		mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs && boot_rootfs
 	    else
 		echo -n "Copy root image to ram ... "
-		cp /mnt/boot/rootfs.img /boot && echo "done!" || echo "error!"
+		splash_text "Copy root image to ram"
+		cp /mnt/boot/rootfs.img /boot && splash_success "done!" || splash_success "error!"
 		umount /mnt
 		mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs && boot_rootfs
 	    fi
 	    echo "Can't mount root :("
+	    splash_text "Can't mount root :("
 	    echo
 	fi
     fi
@@ -102,5 +139,8 @@ done
 ls -l /dev/
 
 echo "No bootable rootfs found!"
+splash_text "No bootable rootfs found!"
+
+splash_finish
 
 /bin/sh
