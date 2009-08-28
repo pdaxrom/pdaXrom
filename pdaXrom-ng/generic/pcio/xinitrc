@@ -1,11 +1,5 @@
 #!/bin/sh
 
-#(
 while true; do
     /home/.pcio/bin/login
 done
-#) &
-
-#while true; do
-#    pekwm
-#done
