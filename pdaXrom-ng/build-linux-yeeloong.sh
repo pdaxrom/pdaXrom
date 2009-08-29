@@ -51,6 +51,7 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.5
 
 . ./sets/packages-devel.inc
 
+. $RULES_DIR/fnkey-yeeloong2f.sh
 . $RULES_DIR/tweak-yeelong2f.sh
 
 . ./sets/packages-host-squashfs.inc
