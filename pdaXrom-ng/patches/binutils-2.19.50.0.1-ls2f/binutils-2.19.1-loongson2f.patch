@@ -1,7 +1,8 @@
-diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/tc-mips.c
---- binutils-2.19.1.orig/gas/config/tc-mips.c	2009-01-14 16:49:59.000000000 +0800
-+++ binutils-2.19.1/gas/config/tc-mips.c	2009-04-24 15:01:07.562514907 +0800
-@@ -758,6 +758,9 @@
+diff --git a/gas/config/tc-mips.c b/gas/config/tc-mips.c
+index 3cdf97b..ef749ce 100644
+--- a/gas/config/tc-mips.c
++++ b/gas/config/tc-mips.c
+@@ -758,6 +758,9 @@ static int mips_fix_vr4120;
  /* ...likewise -mfix-vr4130.  */
  static int mips_fix_vr4130;
  
@@ -11,7 +12,7 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
  /* We don't relax branches by default, since this causes us to expand
     `la .l2 - .l1' if there's a branch between .l1 and .l2, because we
     fail to compute the offset before expanding the macro to the most
-@@ -3873,6 +3876,27 @@
+@@ -3873,6 +3876,24 @@ normalize_address_expr (expressionS *ex)
  }
  
  /*
@@ -22,24 +23,21 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
 +static void
 +macro_build_jrpatch (expressionS *ex, unsigned int sreg)
 +{
-+  if (mips_fix_ls2f_kernel && sreg != 26 && sreg != 27 && sreg != AT) {
-+    int oldat=mips_opts.at;
-+    mips_opts.at=1;
++  if (mips_fix_ls2f_kernel && AT && sreg != 26 && sreg != 27) {
 +    ex->X_op = O_constant;
 +    ex->X_add_number = 0xcfff0000;
-+    macro_build (ex, "lui", "t,u", AT, BFD_RELOC_HI16);
++    macro_build (ex, "lui", "t,u", ATREG, BFD_RELOC_HI16);
 +    ex->X_add_number = 0xffff;
-+    macro_build (ex, "ori", "t,r,i", AT, AT, BFD_RELOC_LO16);
-+    macro_build (NULL, "and", "d,v,t", sreg, sreg, AT);
-+    mips_opts.at=oldat;
-+  } 
++    macro_build (ex, "ori", "t,r,i", ATREG, ATREG, BFD_RELOC_LO16);
++    macro_build (NULL, "and", "d,v,t", sreg, sreg, ATREG);
++  }
 +}
 +
 +/*
   * Generate a "jalr" instruction with a relocation hint to the called
   * function.  This occurs in NewABI PIC code.
   */
-@@ -3886,6 +3910,7 @@
+@@ -3886,6 +3910,7 @@ macro_build_jalr (expressionS *ep)
        frag_grow (8);
        f = frag_more (0);
      }
@@ -47,7 +45,7 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
    macro_build (NULL, "jalr", "d,s", RA, PIC_CALL_REG);
    if (HAVE_NEWABI)
      fix_new_exp (frag_now, f - frag_now->fr_literal,
-@@ -6031,6 +6056,26 @@
+@@ -6031,6 +6056,26 @@ macro (struct mips_cl_insn *ip)
  	macro_build (NULL, ADDRESS_ADD_INSN, "d,v,t", treg, tempreg, breg);
        break;
  
@@ -74,7 +72,7 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
      case M_J_A:
        /* The j instruction may not be used in PIC code, since it
  	 requires an absolute address.  We convert it to a b
-@@ -6049,12 +6094,16 @@
+@@ -6049,12 +6094,16 @@ macro (struct mips_cl_insn *ip)
        /* Fall through.  */
      case M_JAL_2:
        if (mips_pic == NO_PIC)
@@ -92,7 +90,7 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
  	  macro_build (NULL, "jalr", "d,s", dreg, sreg);
  	  if (mips_pic == SVR4_PIC && !HAVE_NEWABI)
  	    {
-@@ -11178,9 +11227,11 @@
+@@ -11178,9 +11227,11 @@ struct option md_longopts[] =
  #define OPTION_NO_FIX_VR4130 (OPTION_FIX_BASE + 5)
    {"mfix-vr4130",    no_argument, NULL, OPTION_FIX_VR4130},
    {"mno-fix-vr4130", no_argument, NULL, OPTION_NO_FIX_VR4130},
@@ -105,7 +103,7 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
  #define OPTION_TRAP (OPTION_MISC_BASE + 0)
    {"trap", no_argument, NULL, OPTION_TRAP},
    {"no-break", no_argument, NULL, OPTION_TRAP},
-@@ -11478,6 +11529,10 @@
+@@ -11478,6 +11529,10 @@ md_parse_option (int c, char *arg)
        mips_fix_vr4130 = 0;
        break;
  
@@ -116,10 +114,11 @@ diff -Nur binutils-2.19.1.orig/gas/config/tc-mips.c binutils-2.19.1/gas/config/t
      case OPTION_RELAX_BRANCH:
        mips_relax_branch = 1;
        break;
-diff -Nur binutils-2.19.1.orig/include/opcode/mips.h binutils-2.19.1/include/opcode/mips.h
---- binutils-2.19.1.orig/include/opcode/mips.h	2008-06-13 05:44:53.000000000 +0800
-+++ binutils-2.19.1/include/opcode/mips.h	2009-04-24 15:01:07.563518815 +0800
-@@ -758,7 +758,11 @@
+diff --git a/include/opcode/mips.h b/include/opcode/mips.h
+index 8d201f6..d0a61c8 100644
+--- a/include/opcode/mips.h
++++ b/include/opcode/mips.h
+@@ -758,7 +758,11 @@ enum
    M_DSUB_I,
    M_DSUBU_I,
    M_DSUBU_I_2,
@@ -131,19 +130,11 @@ diff -Nur binutils-2.19.1.orig/include/opcode/mips.h binutils-2.19.1/include/opc
    M_JAL_1,
    M_JAL_2,
    M_JAL_A,
-diff -Nur binutils-2.19.1.orig/opcodes/mips-opc.c binutils-2.19.1/opcodes/mips-opc.c
---- binutils-2.19.1.orig/opcodes/mips-opc.c	2008-07-08 03:11:15.000000000 +0800
-+++ binutils-2.19.1/opcodes/mips-opc.c	2009-04-24 15:06:16.460515404 +0800
-@@ -186,7 +186,7 @@
- /* name,    args,	match,	    mask,	pinfo,          	pinfo2,		membership */
- {"pref",    "k,o(b)",   0xcc000000, 0xfc000000, RD_b,           	0,		I4_32|G3	},
- {"prefx",   "h,t(b)",	0x4c00000f, 0xfc0007ff, RD_b|RD_t|FP_S,		0,		I4_33	},
--{"nop",     "",         0x00000000, 0xffffffff, 0,              	INSN2_ALIAS,	I1      }, /* sll */
-+{"nop",     "",         0x00020021, 0xffffffff, 0,              	INSN2_ALIAS,	I1      }, /* sll */
- {"ssnop",   "",         0x00000040, 0xffffffff, 0,              	INSN2_ALIAS,	I32|N55	}, /* sll */
- {"ehb",     "",         0x000000c0, 0xffffffff, 0,              	INSN2_ALIAS,	I33	}, /* sll */
- {"li",      "t,j",      0x24000000, 0xffe00000, WR_t,			INSN2_ALIAS,	I1	}, /* addiu */
-@@ -710,10 +710,12 @@
+diff --git a/opcodes/mips-opc.c b/opcodes/mips-opc.c
+index 82a01f8..51034df 100644
+--- a/opcodes/mips-opc.c
++++ b/opcodes/mips-opc.c
+@@ -710,10 +710,12 @@ const struct mips_opcode mips_builtin_opcodes[] =
  {"floor.w.s", "D,S",	0x4600000f, 0xffff003f, WR_D|RD_S|FP_S,		0,		I2	},
  {"hibernate","",        0x42000023, 0xffffffff,	0, 			0,		V1	},
  {"ins",     "t,r,+A,+B", 0x7c000004, 0xfc00003f, WR_t|RD_s,    		0,		I33	},
@@ -156,7 +147,7 @@ diff -Nur binutils-2.19.1.orig/opcodes/mips-opc.c binutils-2.19.1/opcodes/mips-o
  {"j",       "s",	0x00000008, 0xfc1fffff,	UBD|RD_s,		0,		I1	}, /* jr */
  /* SVR4 PIC code requires special handling for j, so it must be a
     macro.  */
-@@ -722,7 +724,9 @@
+@@ -722,7 +724,9 @@ const struct mips_opcode mips_builtin_opcodes[] =
     assembler, but will never match user input (because the line above
     will match first).  */
  {"j",       "a",	0x08000000, 0xfc000000,	UBD,			0,		I1	},
