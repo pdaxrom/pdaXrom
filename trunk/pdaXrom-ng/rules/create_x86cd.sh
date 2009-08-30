@@ -10,11 +10,11 @@ create_x86cd() {
 
     if [ "$USE_SPLASH" = "yes" ]; then
     printf "DEFAULT /boot/bzImage
-APPEND  initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 console=/dev/tty2 quiet
+APPEND  initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 console=/dev/tty2 quiet splash
 LABEL live
   menu label ^Try pdaXrom in vesa mode
   kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 console=/dev/tty2 quiet
+  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 console=/dev/tty2 quiet splash
 LABEL safe
   menu label ^Try pdaXrom in text mode
   kernel /boot/bzImage

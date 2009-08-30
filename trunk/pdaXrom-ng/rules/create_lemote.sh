@@ -4,13 +4,13 @@ create_lemote() {
 
     if [ -e $IMAGES_DIR/uuid ]; then
 	cp -f $GENERICFS_DIR/yeelong2f/boot.cfg.initrd $T/boot/boot.cfg
-	cp -f $IMAGES_DIR/initrd.img $T/boot/
+	test -f $IMAGES_DIR/initrd.img && cp -f $IMAGES_DIR/initrd.img $T/boot/
 	cp -f $IMAGES_DIR/uuid       $T/boot/
     else
 	cp -f $GENERICFS_DIR/yeelong2f/boot.cfg $T/boot/
     fi
     cp -f $IMAGES_DIR/rootfs.img $T/boot/
-    cp -f $IMAGES_DIR/vmlinux    $T/boot/
+    cp -f $IMAGES_DIR/zImage     $T/boot/
     
     pushd $TOP_DIR
     cd $T

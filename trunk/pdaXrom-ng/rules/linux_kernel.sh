@@ -73,6 +73,9 @@ get_kernel_image_path() {
     powerpc*|ppc*)
 	echo ${KERNEL_DIR}/arch/powerpc/boot/${TARGET_KERNEL_IMAGE-zImage}
 	;;
+    mips*-ls2f-*)
+	echo ${KERNEL_DIR}/arch/mips/loongson/image/${TARGET_KERNEL_IMAGE-zImage}
+	;;
     mips*)
 	echo ${KERNEL_DIR}/${TARGET_KERNEL_IMAGE-vmlinux}
 	;;
@@ -94,7 +97,7 @@ get_kernel_ramdisk_path() {
 	echo ${KERNEL_DIR}/arch/powerpc/boot/ramdisk.image.gz
 	;;
     mips*)
-	echo ${KERNEL_DIR}/arch/mips/boot/ramdisk.image.gz
+	echo ${KERNEL_DIR}/arch/mips/boot/initramfs.cpio
 	;;
     *)
 	echo ${1}-ramdisk.image.gz
