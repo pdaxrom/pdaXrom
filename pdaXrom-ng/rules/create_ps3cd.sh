@@ -13,7 +13,7 @@ create_ps3cd() {
 	else
 	    cp -f $GENERICFS_DIR/kboot/kboot.conf.initramfs $T/etc/kboot.conf
 	fi
-	cp -f $IMAGES_DIR/initrd.img $T/boot/
+	test -f $IMAGES_DIR/initrd.img && cp -f $IMAGES_DIR/initrd.img $T/boot/
 	cp -f $IMAGES_DIR/uuid       $T/boot/
     else
 	if [ "$USE_SPLASH" = "yes" ]; then

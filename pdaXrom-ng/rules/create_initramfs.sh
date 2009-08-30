@@ -46,7 +46,7 @@ create_initramfs() {
 
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     
-    for f in [ test mknod tr cut cmp; do
+    for f in [ test mknod tr cut cmp grep; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
     done
 
@@ -75,9 +75,19 @@ create_initramfs() {
     uuidgen > $INITRAMFS_DIR/uuid
     cp -f $INITRAMFS_DIR/uuid $IMAGES_DIR/uuid
 
-    cd $INITRAMFS_DIR
-    
-    find ./ | $CPIO -H newc -o | gzip -9 > $IMAGES_DIR/initrd.img
+    local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
+
+    cd $KERNEL_DIR
+    bash scripts/gen_initramfs_list.sh $INITRAMFS_DIR > $BUILD_DIR/initramfs.list
+    echo "nod /dev/console 0600 0 0 c 5 1" >> $BUILD_DIR/initramfs.list
+    echo "nod /dev/fb0     0666 0 0 c 29 0" >> $BUILD_DIR/initramfs.list
+    echo "nod /dev/tty0    0640 0 0 c 4 0" >> $BUILD_DIR/initramfs.list
+    echo "nod /dev/tty1    0640 0 0 c 4 1" >> $BUILD_DIR/initramfs.list
+    echo "nod /dev/tty2    0640 0 0 c 4 2" >> $BUILD_DIR/initramfs.list
+    echo "nod /dev/tty3    0640 0 0 c 4 3" >> $BUILD_DIR/initramfs.list
+    echo "nod /dev/null    0666 0 0 c 1 3" >> $BUILD_DIR/initramfs.list
+
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS zImage CONFIG_INITRAMFS_SOURCE=$BUILD_DIR/initramfs.list || error
 
     popd
 }
