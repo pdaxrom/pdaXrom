@@ -131,8 +131,8 @@ int db_ui_create(void)
     rootwin = RootWindow(dpy, scr);
     cmap = DefaultColormap(dpy, scr);
 
-    display_width = 576;//DisplayWidth(dpy, scr);
-    display_height = 384;//DisplayHeight(dpy, scr);
+    display_width = DisplayWidth(dpy, scr);
+    display_height = DisplayHeight(dpy, scr);
     display_depth = DefaultDepth(dpy, scr);
 
     fprintf(stderr, "%dx%d@%d\n", display_width, display_height, display_depth);

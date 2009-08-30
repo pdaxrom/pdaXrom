@@ -105,21 +105,27 @@ int main(int argc, char *argv[])
     char *font_name = (char *) alloca(512 * sizeof(char));
     char *conf_val = (char *) alloca(512 * sizeof(char));
     int font_size = 14;
+    int fullscreen = 0;
 
     wallp_name[0] = 0;
     font_name[0] = 0;
 
     strcpy(config_name, CONFIG_FILE);
 
-    if (argc > 1) {
-	if (!strcmp(argv[1], "-c")) {
-	    strncpy(config_name, argv[2], 256);
-	} else if (!strcmp(argv[1], "-u")) {
+    int i = 1;
+    while (i < argc) {
+	if (!strcmp(argv[i], "-c")) {
+	    i++;
+	    strncpy(config_name, argv[i], 256);
+	} else if (!strcmp(argv[i], "-f")) {
+	    fullscreen = 1;
+	} else if (!strcmp(argv[i], "-u")) {
 	    if (shared_open(1) == -1) {
 		return -1;
 	    }
 
-	    strcpy(shared_buf, argv[2]);
+	    i++;
+	    strcpy(shared_buf, argv[i]);
 
 	    int cnt = 5;
 	    while (cnt--) {
@@ -132,6 +138,7 @@ int main(int argc, char *argv[])
 	    usleep(10000);
 	    return 0;
 	}
+	i++;
     }
 
     if (!strlen(wallp_name))
@@ -147,7 +154,10 @@ int main(int argc, char *argv[])
     *shared_buf = 0;
 
 #ifdef USE_X11
-    db_ui_create_window(480, 480);
+    if (fullscreen)
+	db_ui_create();
+    else
+	db_ui_create_window(480, 480);
 #else
     db_ui_create();
 #endif
@@ -200,7 +210,6 @@ int main(int argc, char *argv[])
         
     db_ui_update_screen();
 
-    int i = 0;
     while(1) {
 	db_ui_event e;
 	db_ui_check_events(&e);
