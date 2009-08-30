@@ -11,6 +11,8 @@ TARGET_VENDOR_PATCH=ls2f
 KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=yeeloong2f_2.6.30.5
 
+USE_SPLASH="yes"
+
 . ./sets/packages-basic.inc
 . ./sets/packages-acpi.inc
 . ./sets/packages-mmlibs.inc

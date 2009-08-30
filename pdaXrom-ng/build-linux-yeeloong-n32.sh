@@ -15,6 +15,8 @@ CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
 #CROSS_OPT_CFLAGS="-O3"
 #CROSS_OPT_CXXFLAGS="-O3"
 
+USE_SPLASH="yes"
+
 . ./sets/packages-basic.inc
 . ./sets/packages-acpi.inc
 . ./sets/packages-mmlibs.inc
