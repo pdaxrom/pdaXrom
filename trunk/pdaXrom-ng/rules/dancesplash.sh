@@ -9,17 +9,16 @@
 # see the README file.
 #
 
-DANCESPLASH_VERSION=0.2
-DANCESPLASH=dancesplash-${DANCESPLASH_VERSION}.tar.bz2
-DANCESPLASH_MIRROR=http://wiki.pdaxrom.org/downloads/PS3/bootloader/src
-DANCESPLASH_DIR=$BUILD_DIR/dancesplash-${DANCESPLASH_VERSION}
+DANCESPLASH=dancesplash-svn
+DANCESPLASH_SVN=http://pdaxrom.svn.sourceforge.net/svnroot/pdaxrom/trunk/dancesplash
+DANCESPLASH_DIR=$BUILD_DIR/$DANCESPLASH
 DANCESPLASH_ENV="$CROSS_ENV_AC"
 
 build_dancesplash() {
     test -e "$STATE_DIR/dancesplash.installed" && return
     banner "Build dancesplash"
-    download $DANCESPLASH_MIRROR $DANCESPLASH
-    extract $DANCESPLASH
+    download_svn $DANCESPLASH_SVN $DANCESPLASH
+    cp -R $SRC_DIR/$DANCESPLASH $DANCESPLASH_DIR
     apply_patches $DANCESPLASH_DIR $DANCESPLASH
     pushd $TOP_DIR
     cd $DANCESPLASH_DIR
@@ -31,6 +30,8 @@ build_dancesplash() {
     make CC=${CROSS}gcc INSTALL=${INSTALL} DESTDIR=$ROOTFS_DIR install || error
 
     $STRIP $ROOTFS_DIR/usr/bin/dancesplash || error
+
+    $INSTALL -D -m 644 $GENERICFS_DIR/dancesplash.conf $ROOTFS_DIR/etc/dancesplash.conf || error
 
     popd
     touch "$STATE_DIR/dancesplash.installed"
