@@ -275,6 +275,7 @@ build_gcc_bootstrap() {
 	if [ ! "x$DEFAULT_FPU" = "x" ]; then
 	    CONF_ARGS="$CONF_ARGS --with-float=$DEFAULT_FPU"
 	fi
+	CONF_ARGS="$CONF_ARGS --with-mips-plt"
 	#CONF_ARGS="$CONF_ARGS --enable-mips-nonpic \
 	#	    --enable-extra-sgxxlite-multilibs"
 	;;
@@ -380,6 +381,7 @@ build_gcc_stage1() {
 	if [ ! "x$DEFAULT_FPU" = "x" ]; then
 	    CONF_ARGS="$CONF_ARGS --with-float=$DEFAULT_FPU"
 	fi
+	CONF_ARGS="$CONF_ARGS --with-mips-plt"
 	#CONF_ARGS="$CONF_ARGS --enable-mips-nonpic \
 	#	    --enable-extra-sgxxlite-multilibs"
 	;;
@@ -487,6 +489,7 @@ build_gcc() {
 	if [ ! "x$DEFAULT_FPU" = "x" ]; then
 	    CONF_ARGS="$CONF_ARGS --with-float=$DEFAULT_FPU"
 	fi
+	CONF_ARGS="$CONF_ARGS --with-mips-plt"
 	#CONF_ARGS="$CONF_ARGS --enable-mips-nonpic \
 	#	    --enable-extra-sgxxlite-multilibs"
 	;;
