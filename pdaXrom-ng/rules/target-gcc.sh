@@ -143,6 +143,10 @@ build_target_gcc() {
     for f in lib lib32 lib64; do
 	test -d fakeroot/usr/$f || continue
 	rm -f fakeroot/usr/$f/*.la
+	rm -f fakeroot/usr/$f/libgcc*
+	rm -f fakeroot/usr/$f/libstdc++*
+	rm -f fakeroot/usr/$f/libsupc++*
+	rm -f fakeroot/usr/$f/libiberty*
 	$STRIP fakeroot/usr/$f/*
     done
 
@@ -152,6 +156,12 @@ build_target_gcc() {
 
     cp -a $TOOLCHAIN_SYSROOT/usr/include/* fakeroot/usr/include/
     cp -a $TOOLCHAIN_SYSROOT/usr/lib/*     fakeroot/usr/lib/
+
+    # install zlib headers
+    cp -f $TARGET_INC/zconf.h fakeroot/usr/include/
+    cp -f $TARGET_INC/zlib.h  fakeroot/usr/include/
+    # install ncurses headers
+    make -C ${NCURSES_DIR}/include DESTDIR=${TARGET_GCC_DIR}/build-target/fakeroot install
 
     install_fakeroot_finish || error
 
