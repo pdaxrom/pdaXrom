@@ -12,8 +12,6 @@ TARGET_VENDOR_PATCH=ps3
 
 . ./sets/packages-bluez3.inc
 
-#. ./sets/packages-devel.inc
-
 . $RULES_DIR/bzip2.sh
 . $RULES_DIR/libjpeg.sh
 . $RULES_DIR/libpng.sh

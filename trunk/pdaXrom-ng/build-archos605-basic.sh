@@ -16,7 +16,5 @@ KERNEL_OLDCONFIG_ENABLED=no
 
 . ./sets/packages-basic.inc
 
-. ./sets/packages-devel.inc
-
 #. $RULES_DIR/create_initramfs.sh
 #. ./sets/packages-host-mtd-utils.inc

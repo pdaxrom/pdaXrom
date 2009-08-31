@@ -33,8 +33,6 @@ TARGET_JFFS2_ARGS="-p -n"
 
 . ./sets/packages-x-office.inc
 
-#. ./sets/packages-devel.inc
-
 . $RULES_DIR/tweak-stb610.sh
 #. $RULES_DIR/create_initramfs.sh
 . ./sets/packages-host-mtd-utils.inc

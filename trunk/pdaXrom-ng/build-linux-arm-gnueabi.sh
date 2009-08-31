@@ -28,7 +28,5 @@ KERNEL_CONFIG=versatile-kernel-2.6.28
 
 . ./sets/packages-x-office.inc
 
-. ./sets/packages-devel.inc
-
 . ./sets/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh

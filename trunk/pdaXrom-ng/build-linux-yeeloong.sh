@@ -51,8 +51,6 @@ USE_SPLASH="yes"
 
 . ./sets/packages-x-voip.inc
 
-. ./sets/packages-devel.inc
-
 . $RULES_DIR/fnkey-yeeloong2f.sh
 . $RULES_DIR/tweak-yeelong2f.sh
 
