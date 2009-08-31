@@ -217,6 +217,12 @@ int main(int argc, char *argv[])
 	    fprintf(stderr, "DB_EVENT_QUIT\n");
 	    break;
 	}
+	if (e.type == DB_EVENT_KEYPRESS) {
+	    if (e.key.key == DB_KEY_ESCAPE) {
+		fprintf(stderr, "Esc pressed\n");
+		break;
+	    }
+	}
 #if USE_X11
 	if (e.type == DB_EVENT_SPLASH_PROGRESS) {
 	    if (e.splash.data)
