@@ -7,6 +7,7 @@
 . $RULES_DIR/target-sed.sh
 . $RULES_DIR/target-bash.sh
 . $RULES_DIR/target-groff.sh
+. $RULES_DIR/target-patch.sh
 . $RULES_DIR/target-distcc.sh
 
 . $RULES_DIR/gdb.sh
