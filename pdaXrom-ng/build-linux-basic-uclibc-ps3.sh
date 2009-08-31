@@ -12,8 +12,6 @@ TARGET_VENDOR_PATCH=ps3
 
 . ./sets/packages-bluez3.inc
 
-#. ./sets/packages-devel.inc
-
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
