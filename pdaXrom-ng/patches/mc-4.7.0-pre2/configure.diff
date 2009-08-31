@@ -1,0 +1,14 @@
+--- s/configure-	2009-08-31 12:24:42.000000000 +0700
++++ s/configure	2009-08-31 12:28:42.000000000 +0700
+@@ -40535,10 +40535,7 @@
+ fi
+ 
+ 
+-	if test x$mc_slang_is_valid_version = xno; then
+-            found_slang=no
+-            error_msg_slang="S-Lang library version 2.0 or newer not found"
+-	fi
++            found_slang=yes
+ 	{ $as_echo "$as_me:$LINENO: result: $mc_slang_is_valid_version" >&5
+ $as_echo "$mc_slang_is_valid_version" >&6; }
+     fi
