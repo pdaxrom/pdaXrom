@@ -18,3 +18,4 @@ lzma/squashfs_fs.h.diff
 lzma/squashfs_fs_sb.h.diff
 lzma/uncomp.c.diff
 lzma/do_mounts_rd.c.diff
+build_nonpreempt.patch
