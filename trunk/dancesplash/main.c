@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
     char *conf_val = (char *) alloca(512 * sizeof(char));
     int font_size = 14;
     int fullscreen = 0;
+    int rundaemon = 0;
 
     wallp_name[0] = 0;
     font_name[0] = 0;
@@ -119,6 +120,8 @@ int main(int argc, char *argv[])
 	    strncpy(config_name, argv[i], 256);
 	} else if (!strcmp(argv[i], "-f")) {
 	    fullscreen = 1;
+	} else if (!strcmp(argv[i], "-b")) {
+	    rundaemon = 1;
 	} else if (!strcmp(argv[i], "-u")) {
 	    if (shared_open(1) == -1) {
 		return -1;
@@ -139,6 +142,14 @@ int main(int argc, char *argv[])
 	    return 0;
 	}
 	i++;
+    }
+
+    if (rundaemon) {
+	int ret = daemon(0, 1);
+	if (ret) {
+	    perror("daemonization failed");
+	    exit(1);
+	}
     }
 
     if (!strlen(wallp_name))
