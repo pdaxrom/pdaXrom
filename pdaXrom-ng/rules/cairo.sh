@@ -12,7 +12,7 @@
 CAIRO=cairo-1.8.6.tar.gz
 CAIRO_MIRROR=http://cairographics.org/releases
 CAIRO_DIR=$BUILD_DIR/cairo-1.8.6
-CAIRO_ENV="$CROSS_ENV_AC"
+CAIRO_ENV="$CROSS_ENV_AC CFLAGS='-O4 -fomit-frame-pointer -ffast-math'"
 
 build_cairo() {
     test -e "$STATE_DIR/cairo.installed" && return
