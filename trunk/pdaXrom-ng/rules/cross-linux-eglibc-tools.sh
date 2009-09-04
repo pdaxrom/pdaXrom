@@ -157,7 +157,16 @@ build_glibc_stage1() {
 
     mkdir -p $GLIBC_DIR/build1
     cd $GLIBC_DIR/build1
-    
+
+    OPT_CFLAGS=
+    OPT_CXXFLAGS=
+    if [ ! "x$CROSS_OPT_CFLAGS" = "x" ]; then
+	OPT_CFLAGS="CFLAGS=$CROSS_OPT_CFLAGS"
+    fi
+    if [ ! "x$CROSS_OPT_CXXFLAGS" = "x" ]; then
+	OPT_CXXFLAGS="CFLAGS=$CROSS_OPT_CXXFLAGS"
+    fi
+
     BUILD_CC=gcc \
     CC="${TARGET_ARCH}-gcc ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
     CXX="${TARGET_ARCH}-g++ ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
@@ -174,8 +183,8 @@ build_glibc_stage1() {
 	--enable-add-ons \
 	--enable-kernel=2.6.27 || error
 
-    make $MAKEARGS || error
-    make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install || error
+    make $MAKEARGS $OPT_CFLAGS $OPT_CXXFLAGS || error
+    make $MAKEARGS $OPT_CFLAGS $OPT_CXXFLAGS install_root=$TOOLCHAIN_SYSROOT install || error
 
     touch "$STATE_DIR/glibc_installed1"
 }
@@ -189,7 +198,16 @@ build_glibc_stage2() {
 
     mkdir -p $GLIBC_DIR/build2
     cd $GLIBC_DIR/build2
-    
+
+    OPT_CFLAGS=
+    OPT_CXXFLAGS=
+    if [ ! "x$CROSS_OPT_CFLAGS" = "x" ]; then
+	OPT_CFLAGS="CFLAGS=$CROSS_OPT_CFLAGS"
+    fi
+    if [ ! "x$CROSS_OPT_CXXFLAGS" = "x" ]; then
+	OPT_CXXFLAGS="CFLAGS=$CROSS_OPT_CXXFLAGS"
+    fi
+
     BUILD_CC=gcc \
     CC="${TARGET_ARCH}-gcc ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
     CXX="${TARGET_ARCH}-g++ ${CROSS_OPT_ARCH} ${CROSS_OPT_MABI}" \
@@ -206,8 +224,8 @@ build_glibc_stage2() {
 	--enable-add-ons \
 	--enable-kernel=2.6.27 || error
 
-    make $MAKEARGS || error
-    make $MAKEARGS install_root=$TOOLCHAIN_SYSROOT install || error
+    make $MAKEARGS $OPT_CFLAGS $OPT_CXXFLAGS || error
+    make $MAKEARGS $OPT_CFLAGS $OPT_CXXFLAGS install_root=$TOOLCHAIN_SYSROOT install || error
 
     touch "$STATE_DIR/glibc_installed2"
 }
