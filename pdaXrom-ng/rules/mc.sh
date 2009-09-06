@@ -11,7 +11,7 @@
 
 MC_VERSION=4.7.0-pre2
 MC=mc-${MC_VERSION}.tar.gz
-MC_MIRROR=http://www.midnight-commander.org/downloads/12
+MC_MIRROR=http://www.midnight-commander.org/downloads
 MC_DIR=$BUILD_DIR/mc-${MC_VERSION}
 MC_ENV="$CROSS_ENV_AC"
 

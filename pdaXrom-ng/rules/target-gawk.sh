@@ -39,7 +39,7 @@ build_target_gawk() {
 
     make $MAKEARGS || error
 
-    install_fakeroot_init || error
+    install_fakeroot_init
 
     ln -sf gawk-${TARGET_GAWK_VERSION} fakeroot/usr/bin/gawk
     ln -sf pgawk-${TARGET_GAWK_VERSION} fakeroot/usr/bin/pgawk

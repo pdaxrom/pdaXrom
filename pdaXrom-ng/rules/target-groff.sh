@@ -37,7 +37,7 @@ build_target_groff() {
 
     #install_sysroot_files || error
 
-    install_fakeroot_init || error
+    install_fakeroot_init
 
     rm -rf fakeroot/usr/X11
 

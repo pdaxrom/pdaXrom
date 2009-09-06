@@ -44,7 +44,7 @@ build_target_binutils() {
 
     make $MAKEARGS MAKEINFO=true || error "make"
 
-    install_fakeroot_init MAKEINFO=true || error "install"
+    install_fakeroot_init MAKEINFO=true
 
     for f in fakeroot/usr/$TARGET_ARCH/bin/*; do
 	test -f $f && ln -sf ../../bin/`basename $f` $f

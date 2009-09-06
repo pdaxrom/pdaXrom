@@ -44,7 +44,7 @@ build_target_bash() {
 
     #install_sysroot_files || error
 
-    install_fakeroot_init || error
+    install_fakeroot_init
     mkdir -p fakeroot/bin
     mv -f fakeroot/usr/bin/bash fakeroot/bin/
     ln -sf bash fakeroot/bin/sh
