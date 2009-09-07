@@ -132,12 +132,15 @@ build_target_gcc() {
     rm -rf fakeroot/info fakeroot/man fakeroot/share
 
     ln -sf g++ fakeroot/usr/bin/c++
-    ln -sf g++ fakeroot/usr/bin/${TARGET_ARCH}-g++
-    ln -sf g++ fakeroot/usr/bin/${TARGET_ARCH}-c++
+    #ln -sf g++ fakeroot/usr/bin/${TARGET_ARCH}-g++
+    #ln -sf g++ fakeroot/usr/bin/${TARGET_ARCH}-c++
     ln -sf gcc fakeroot/usr/bin/cc
-    ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc
-    ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-cc
-    ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc-${TARGET_GCC_VERSION}
+    #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc
+    #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-cc
+    #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc-${TARGET_GCC_VERSION}
+    #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc-${TARGET_GCC_VERSION}
+    ln -sf gcc fakeroot/usr/bin/gcc-${TARGET_GCC_VERSION}
+    ln -sf g++ fakeroot/usr/bin/g++-${TARGET_GCC_VERSION}
 
     $STRIP fakeroot/usr/bin/*
     for f in lib lib32 lib64; do
@@ -156,6 +159,9 @@ build_target_gcc() {
 
     cp -a $TOOLCHAIN_SYSROOT/usr/include/* fakeroot/usr/include/
     cp -a $TOOLCHAIN_SYSROOT/usr/lib/*     fakeroot/usr/lib/
+
+    rm -rf fakeroot/usr/man
+    rm -rf fakeroot/usr/info
 
     # install zlib headers
     cp -f $TARGET_INC/zconf.h fakeroot/usr/include/

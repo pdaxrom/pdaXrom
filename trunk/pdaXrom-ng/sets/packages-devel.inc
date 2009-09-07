@@ -2,6 +2,11 @@
 . $RULES_DIR/target-gmp.sh
 . $RULES_DIR/target-mpfr.sh
 . $RULES_DIR/target-gcc.sh
+case $TARGET_ARCH in
+*-ps3-*)
+    . $RULES_DIR/target-spu.sh
+    ;;
+esac
 . $RULES_DIR/target-make.sh
 . $RULES_DIR/target-gawk.sh
 . $RULES_DIR/target-sed.sh
