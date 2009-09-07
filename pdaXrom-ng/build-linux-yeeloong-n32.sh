@@ -12,8 +12,8 @@ KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=yeeloong2f_2.6.30.5
 
 CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
-#CROSS_OPT_CFLAGS="-O3"
-#CROSS_OPT_CXXFLAGS="-O3"
+CROSS_OPT_CFLAGS="-O3"
+CROSS_OPT_CXXFLAGS="-O3"
 
 USE_SPLASH="yes"
 
@@ -56,7 +56,6 @@ USE_SPLASH="yes"
 . ./sets/packages-x-voip.inc
 
 . ./sets/packages-mc.inc
-. ./sets/packages-devel.inc
 
 . $RULES_DIR/fnkey-yeeloong2f.sh
 . $RULES_DIR/tweak-yeelong2f.sh

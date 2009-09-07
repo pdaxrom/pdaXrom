@@ -55,8 +55,6 @@ USE_SPLASH="yes"
 
 . $RULES_DIR/sixaxisdmouse.sh
 
-. ./sets/packages-devel.inc
-
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
