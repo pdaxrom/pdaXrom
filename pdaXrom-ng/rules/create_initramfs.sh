@@ -73,6 +73,11 @@ create_initramfs() {
 	fi
     fi
 
+    if [ "$USE_UNIONFS" = "yes" ]; then
+	mkdir -p $INITRAMFS_DIR/dynamic
+	mkdir -p $INITRAMFS_DIR/union
+    fi
+
     uuidgen > $INITRAMFS_DIR/uuid
     cp -f $INITRAMFS_DIR/uuid $IMAGES_DIR/uuid
 

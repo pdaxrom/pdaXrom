@@ -2,12 +2,6 @@
 
 if [ -f /bin/dancesplashfb ]; then
     USE_SPLASH="y"
-    /bin/mknod /dev/fb0 c 29 0
-    /bin/mknod /dev/tty0 c 4 0
-    /bin/mknod /dev/tty1 c 4 1
-    /bin/mknod /dev/tty2 c 4 2
-    /bin/mknod /dev/tty3 c 4 3
-    /bin/mknod /dev/null c 1 3
     /bin/dancesplashfb 2>/dev/null &
 fi
 
@@ -67,15 +61,27 @@ create_node() {
 }
 
 remove_modules() {
-	for f in $MODULES_REV; do
-	    /sbin/rmmod $f
-	done
+    for f in $MODULES_REV; do
+	/sbin/rmmod $f
+    done
+}
+
+boot_unionfs() {
+    if [ -d /union ]; then
+	mount -t tmpfs none /dynamic
+	mount -t unionfs -o dirs=/dynamic=rw:/rootfs=ro unionfs /union
+	mkdir -p /union/mnt/dynamic
+	mkdir -p /union/mnt/rootfs
+	mount -o move /dynamic /union/mnt/dynamic
+	mount -o move /rootfs /union/mnt/rootfs
+	cd /union
+    fi
 }
 
 boot_rootfs() {
-#    mount -o bind /boot /rootfs/boot
     echo "Boooooting!!!"
     cd /rootfs
+    boot_unionfs
     remove_modules
     #/sbin/pivot_root /rootfs /rootfs/boot/initrd
     umount /sys
