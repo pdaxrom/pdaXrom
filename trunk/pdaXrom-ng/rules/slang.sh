@@ -33,9 +33,9 @@ build_slang() {
 	    || error
     ) || error "configure"
 
-    make $MAKEARGS || error
+    make $MAKEARGS || error "make"
 
-    install_sysroot_files || error
+    install_sysroot_files || error "install sysroot files"
 
     install_fakeroot_init
     install_fakeroot_finish || error
