@@ -48,7 +48,6 @@ USE_SPLASH="yes"
 . ./sets/packages-x-rdp.inc
 
 . ./sets/packages-mc.inc
-#. ./sets/packages-devel.inc
 
 . $RULES_DIR/tweak-i686.sh
 
