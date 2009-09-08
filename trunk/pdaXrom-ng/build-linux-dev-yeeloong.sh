@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISOIMAGE_NAME=pdaXrom-ng-yeelong-8089
+ISOIMAGE_NAME=pdaXrom-ng-dev-yeelong-8089
 
 TARGET_ARCH="mipsel-ls2f-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
