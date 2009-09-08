@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-PCMANFM=pcmanfm-0.5.tar.gz
+PCMANFM_VERSION=0.5.1
+PCMANFM=pcmanfm-${PCMANFM_VERSION}.tar.bz2
 PCMANFM_MIRROR=http://downloads.sourceforge.net/pcmanfm
-PCMANFM_DIR=$BUILD_DIR/pcmanfm-0.5
+PCMANFM_DIR=$BUILD_DIR/pcmanfm-${PCMANFM_VERSION}
 PCMANFM_ENV="$CROSS_ENV_AC"
 
 build_pcmanfm() {
@@ -34,12 +35,11 @@ build_pcmanfm() {
 	    --enable-hal \
 	    --disable-superuser-checks
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    $INSTALL -D -m 755 src/pcmanfm $ROOTFS_DIR/usr/bin/pcmanfm || error
-    $STRIP $ROOTFS_DIR/usr/bin/pcmanfm
-    
+    install_rootfs_usr_bin src/pcmanfm
+
     make DESTDIR=$ROOTFS_DIR install-data-am || error
 
     update-mime-database $ROOTFS_DIR/usr/share/mime
