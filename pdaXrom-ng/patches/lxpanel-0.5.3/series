@@ -1,3 +1,4 @@
 configure.ac.diff
 launchbar.c.diff
 menu.c.diff
+netstatus.patch

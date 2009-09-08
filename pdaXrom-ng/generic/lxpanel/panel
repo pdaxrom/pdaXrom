@@ -10,13 +10,16 @@ Global {
     height=26
     transparent=0
     tintcolor=#000000
-    alpha=0
+    alpha=202
+    autohide=0
+    heightwhenhidden=2
     setdocktype=1
     setpartialstrut=1
     usefontcolor=1
     fontcolor=#ffffff
     background=1
     backgroundfile=/usr/share/lxpanel/images/background.png
+    iconsize=24
 }
 
 Plugin {
@@ -71,8 +74,10 @@ Plugin {
 Plugin {
     type = wincmd
     Config {
+        image=window-manager
         Button1=iconify
         Button2=shade
+        Toggle=0
     }
 }
 
@@ -100,20 +105,22 @@ Plugin {
     Config {
         tooltips=1
         IconsOnly=0
-        AcceptSkipPager=1
-        ShowIconified=1
-        ShowMapped=1
         ShowAllDesks=0
         UseMouseWheel=1
         UseUrgencyHint=1
-        FlatButton=0
+        FlatButton=1
         MaxTaskWidth=150
         spacing=1
+        GroupedTasks=1
     }
 }
 
 Plugin {
     type = tray
+}
+
+Plugin {
+    type = cpu
 }
 
 Plugin {
@@ -128,5 +135,7 @@ Plugin {
     type = dclock
     Config {
         BoldFont=1
+        IconOnly=0
     }
 }
+
