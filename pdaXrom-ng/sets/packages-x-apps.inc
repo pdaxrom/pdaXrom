@@ -60,8 +60,6 @@
 . $RULES_DIR/curl.sh
 . $RULES_DIR/transmission.sh
 
-. ./sets/packages-audacious.inc
-
 #
 # mplayer
 #
