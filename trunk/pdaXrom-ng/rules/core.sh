@@ -74,7 +74,7 @@ TARGET_LIB="$TARGET_BIN_DIR/lib"
 
 IMAGES_DIR="$TOP_DIR/images"
 
-DOWNLOAD_MIRROR="http://wiki.pdaXrom.org/downloads/src"
+DOWNLOAD_MIRROR="http://mail.pdaXrom.org/downloads/src"
 
 download2() {
     echo "Downloading $1 from mirror $DOWNLOAD_MIRROR"

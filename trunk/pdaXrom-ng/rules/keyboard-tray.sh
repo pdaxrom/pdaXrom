@@ -11,7 +11,7 @@
 
 KEYBOARD_TRAY_VERSION=0.1
 KEYBOARD_TRAY=keyboard-tray-${KEYBOARD_TRAY_VERSION}.tar.bz2
-KEYBOARD_TRAY_MIRROR=http://wiki.pdaxrom.org/downloads/keyboard-tray
+KEYBOARD_TRAY_MIRROR=http://mail.pdaxrom.org/downloads/keyboard-tray
 KEYBOARD_TRAY_DIR=$BUILD_DIR/keyboard-tray-${KEYBOARD_TRAY_VERSION}
 KEYBOARD_TRAY_ENV="$CROSS_ENV_AC"
 

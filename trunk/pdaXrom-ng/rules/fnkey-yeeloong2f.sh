@@ -11,7 +11,7 @@
 
 FNKEY_YEELOONG2F_VERSION=2.6.30.5
 FNKEY_YEELOONG2F=fnkey-yeeloong2f-${FNKEY_YEELOONG2F_VERSION}.tar.bz2
-FNKEY_YEELOONG2F_MIRROR=http://wiki.pdaxrom.org/downloads/lemote/src
+FNKEY_YEELOONG2F_MIRROR=http://mail.pdaxrom.org/downloads/lemote/src
 FNKEY_YEELOONG2F_DIR=$BUILD_DIR/fnkey-yeeloong2f-${FNKEY_YEELOONG2F_VERSION}
 FNKEY_YEELOONG2F_ENV="$CROSS_ENV_AC"
 

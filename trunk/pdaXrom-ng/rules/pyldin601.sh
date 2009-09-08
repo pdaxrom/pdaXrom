@@ -10,7 +10,7 @@
 #
 
 PYLDIN601=pyldin601-3.2
-PYLDIN601_MIRROR=http://wiki.pdaXrom.org/files
+PYLDIN601_MIRROR=http://mail.pdaXrom.org/files
 PYLDIN601_SVN=https://mail.pdaxrom.org/svn/pyldin/trunk
 PYLDIN601_DIR=$BUILD_DIR/pyldin601-3.2
 PYLDIN601_ENV=

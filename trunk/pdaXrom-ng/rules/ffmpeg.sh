@@ -11,7 +11,7 @@
 
 FFMPEG_VERSION=19678
 FFMPEG=ffmpeg-${FFMPEG_VERSION}.tar.bz2
-FFMPEG_MIRROR=http://wiki.pdaxrom.org/downloads/src
+FFMPEG_MIRROR=http://mail.pdaxrom.org/downloads/src
 FFMPEG_DIR=$BUILD_DIR/ffmpeg-${FFMPEG_VERSION}
 FFMPEG_ENV="$CROSS_ENV_AC"
 
