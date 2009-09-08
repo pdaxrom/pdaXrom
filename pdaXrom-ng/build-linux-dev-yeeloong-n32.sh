@@ -12,8 +12,8 @@ KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=yeeloong2f_2.6.30.5
 
 CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
-CROSS_OPT_CFLAGS="-O3"
-CROSS_OPT_CXXFLAGS="-O3"
+#CROSS_OPT_CFLAGS="-O3"
+#CROSS_OPT_CXXFLAGS="-O3"
 
 . ./sets/packages-basic.inc
 . ./sets/packages-acpi.inc
