@@ -31,11 +31,11 @@ pcio_login() {
     make $MAKEARGS || error "make"
 
 
-    $INSTALL -D -m 755 login $ROOTFS_DIR/home/.pcio/bin/login || error
-    cp -R *.qm $ROOTFS_DIR/home/.pcio/bin/ || error
-    $STRIP $ROOTFS_DIR/home/.pcio/bin/login || error
+    $INSTALL -D -m 755 login $ROOTFS_DIR/usr/pcio/bin/login || error
+    cp -R *.qm $ROOTFS_DIR/usr/pcio/bin/ || error
+    $STRIP $ROOTFS_DIR/usr/pcio/bin/login || error
 
-    make clean
+    make distclean
 
     popd
     touch "$STATE_DIR/pcio_login.installed"
@@ -60,10 +60,10 @@ pcio_nxcomp() {
     ln -sf libXcomp.so.3.3.0 $TARGET_LIB/libXcomp.so.3
     ln -sf libXcomp.so.3.3.0 $TARGET_LIB/libXcomp.so
 
-    $INSTALL -D -m 644 libXcomp.so.3.3.0-mipc $ROOTFS_DIR/home/.pcio/lib/libXcomp.so.3.3.0 || error
-    ln -sf libXcomp.so.3.3.0 $ROOTFS_DIR/home/.pcio/lib/libXcomp.so.3
-    ln -sf libXcomp.so.3.3.0 $ROOTFS_DIR/home/.pcio/lib/libXcomp.so
-    $STRIP $ROOTFS_DIR/home/.pcio/lib/libXcomp.so.3.3.0 || error
+    $INSTALL -D -m 644 libXcomp.so.3.3.0-mipc $ROOTFS_DIR/usr/pcio/lib/libXcomp.so.3.3.0 || error
+    ln -sf libXcomp.so.3.3.0 $ROOTFS_DIR/usr/pcio/lib/libXcomp.so.3
+    ln -sf libXcomp.so.3.3.0 $ROOTFS_DIR/usr/pcio/lib/libXcomp.so
+    $STRIP $ROOTFS_DIR/usr/pcio/lib/libXcomp.so.3.3.0 || error
 
     make distclean
     popd
@@ -86,8 +86,8 @@ pcio_nxproxy() {
 
     make $MAKEARGS LDFLAGS="-L$TARGET_LIB -L,-rpath,$TARGET_LIB -lpng -ljpeg -lz" || error
 
-    $INSTALL -D -m 755 nxproxy $ROOTFS_DIR/home/.pcio/bin/rmproxy || error
-    $STRIP $ROOTFS_DIR/home/.pcio/bin/rmproxy
+    $INSTALL -D -m 755 nxproxy $ROOTFS_DIR/usr/pcio/bin/rmproxy || error
+    $STRIP $ROOTFS_DIR/usr/pcio/bin/rmproxy
 
     make distclean
     popd
@@ -106,8 +106,8 @@ pcio_rmdialog() {
 
     make CC=${CROSS}gcc CXX=${CROSS}g++ $MAKEARGS || error
 
-    $INSTALL -D -m 755 rmdialog $ROOTFS_DIR/home/.pcio/bin/rmdialog || error
-    $STRIP $ROOTFS_DIR/home/.pcio/bin/rmdialog
+    $INSTALL -D -m 755 rmdialog $ROOTFS_DIR/usr/pcio/bin/rmdialog || error
+    $STRIP $ROOTFS_DIR/usr/pcio/bin/rmdialog
 
     popd
     touch "$STATE_DIR/pcio_rmdialog.installed"
@@ -129,8 +129,8 @@ pcio_rmsystem() {
     make $MAKEARGS || error
     #LDFLAGS="-L$TARGET_LIB -L,-rpath,$TARGET_LIB -lpng -ljpeg -lz" || error
 
-    $INSTALL -D -m 755 src/rmsystem $ROOTFS_DIR/home/.pcio/bin/rmsystem || error
-    $STRIP $ROOTFS_DIR/home/.pcio/bin/rmsystem
+    $INSTALL -D -m 755 src/rmsystem $ROOTFS_DIR/usr/pcio/bin/rmsystem || error
+    $STRIP $ROOTFS_DIR/usr/pcio/bin/rmsystem
 
     make distclean
     popd
@@ -154,8 +154,8 @@ pcio_rmftpd() {
     make $MAKEARGS || error
     #LDFLAGS="-L$TARGET_LIB -L,-rpath,$TARGET_LIB -lpng -ljpeg -lz" || error
 
-    $INSTALL -D -m 755 src/rmftpd $ROOTFS_DIR/home/.pcio/bin/rmftpd || error
-    $STRIP $ROOTFS_DIR/home/.pcio/bin/rmftpd
+    $INSTALL -D -m 755 src/rmftpd $ROOTFS_DIR/usr/pcio/bin/rmftpd || error
+    $STRIP $ROOTFS_DIR/usr/pcio/bin/rmftpd
 
     make distclean
     popd
@@ -176,8 +176,8 @@ pcio_rmprintd() {
 
     make $MAKEARGS || error "make"
 
-    $INSTALL -D -m 755 rmprintd $ROOTFS_DIR/home/.pcio/bin/rmprintd || error
-    $STRIP $ROOTFS_DIR/home/.pcio/bin/rmprintd || error
+    $INSTALL -D -m 755 rmprintd $ROOTFS_DIR/usr/pcio/bin/rmprintd || error
+    $STRIP $ROOTFS_DIR/usr/pcio/bin/rmprintd || error
 
     make clean
     popd
@@ -189,11 +189,11 @@ pcio_rmprintd
 
 pcio_tune()
 {
-    ln -sf /usr/bin/stunnel $ROOTFS_DIR/home/.pcio/bin/stunnel || error
+    ln -sf /usr/bin/stunnel $ROOTFS_DIR/usr/pcio/bin/stunnel || error
     rm -rf $ROOTFS_DIR/usr/share/pekwm/
     cp -R $GENERICFS_DIR/simplenx/pekwm $ROOTFS_DIR/usr/share || error
     cp -f $GENERICFS_DIR/pcio/xinitrc $ROOTFS_DIR/etc/X11/xinit/xinitrc || error
-    cp -f $GENERICFS_DIR/pcio/hosts $ROOTFS_DIR/home/.pcio/bin/hosts || error
+    cp -f $GENERICFS_DIR/pcio/hosts $ROOTFS_DIR/usr/pcio/bin/hosts || error
     test -d $ROOTFS_DIR/usr/lib/dri && rm -f $ROOTFS_DIR/usr/lib/dri/*
     $INSTALL -D -m 644 $PCIO_SVN_DIR/desktop/themes/pcio-splash.png $ROOTFS_DIR/usr/share/dancesplashfb/artwork/pcio-splash.png || error
     echo "image /usr/share/dancesplashfb/artwork/pcio-splash.png" > $ROOTFS_DIR/etc/dancesplashfb.conf
