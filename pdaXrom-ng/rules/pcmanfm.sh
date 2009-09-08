@@ -9,8 +9,8 @@
 # see the README file.
 #
 
-PCMANFM_VERSION=0.5.1
-PCMANFM=pcmanfm-${PCMANFM_VERSION}.tar.bz2
+PCMANFM_VERSION=0.5
+PCMANFM=pcmanfm-${PCMANFM_VERSION}.tar.gz
 PCMANFM_MIRROR=http://downloads.sourceforge.net/pcmanfm
 PCMANFM_DIR=$BUILD_DIR/pcmanfm-${PCMANFM_VERSION}
 PCMANFM_ENV="$CROSS_ENV_AC"
