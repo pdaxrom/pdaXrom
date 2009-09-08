@@ -139,6 +139,10 @@ build_target_gcc() {
     #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-cc
     #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc-${TARGET_GCC_VERSION}
     #ln -sf gcc fakeroot/usr/bin/${TARGET_ARCH}-gcc-${TARGET_GCC_VERSION}
+    rm -rf fakeroot/usr/bin/${TARGET_ARCH}-c++
+    rm -rf fakeroot/usr/bin/${TARGET_ARCH}-g++
+    rm -rf fakeroot/usr/bin/${TARGET_ARCH}-gcc
+    rm -rf fakeroot/usr/bin/${TARGET_ARCH}-gcc-${TARGET_GCC_VERSION}
     ln -sf gcc fakeroot/usr/bin/gcc-${TARGET_GCC_VERSION}
     ln -sf g++ fakeroot/usr/bin/g++-${TARGET_GCC_VERSION}
 

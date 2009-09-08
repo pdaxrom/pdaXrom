@@ -11,7 +11,7 @@
 
 PS3BOOT_VERSION=0.1.2
 PS3BOOT=ps3boot-${PS3BOOT_VERSION}.tar.bz2
-PS3BOOT_MIRROR=http://wiki.pdaxrom.org/downloads/PS3/bootloader/src
+PS3BOOT_MIRROR=http://mail.pdaxrom.org/downloads/PS3/bootloader/src
 PS3BOOT_DIR=$BUILD_DIR/ps3boot-${PS3BOOT_VERSION}
 PS3BOOT_ENV="$CROSS_ENV_AC"
 

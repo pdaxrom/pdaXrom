@@ -11,7 +11,7 @@
 
 MPLAYER_VERSION=29544
 MPLAYER=mplayer-${MPLAYER_VERSION}.tar.bz2
-MPLAYER_MIRROR=http://wiki.pdaXrom.org/downloads/src
+MPLAYER_MIRROR=http://mail.pdaXrom.org/downloads/src
 MPLAYER_DIR=$BUILD_DIR/mplayer-${MPLAYER_VERSION}
 MPLAYER_ENV="$CROSS_ENV_AC"
 
