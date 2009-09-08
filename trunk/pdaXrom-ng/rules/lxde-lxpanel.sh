@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LXDE_LXPANEL=lxpanel-0.3.99.tar.gz
+LXDE_LXPANEL_VERSION=0.5.3
+LXDE_LXPANEL=lxpanel-${LXDE_LXPANEL_VERSION}.tar.gz
 LXDE_LXPANEL_MIRROR=http://downloads.sourceforge.net/lxde
-LXDE_LXPANEL_DIR=$BUILD_DIR/lxpanel-0.3.99
+LXDE_LXPANEL_DIR=$BUILD_DIR/lxpanel-${LXDE_LXPANEL_VERSION}
 LXDE_LXPANEL_ENV="$CROSS_ENV_AC"
 
 build_lxde_lxpanel() {
