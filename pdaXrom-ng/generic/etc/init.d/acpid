@@ -2,6 +2,8 @@
 
 . /etc/init.d/functions
 
+test -e /proc/acpi || exit 0
+
 case "${1}" in
         start)
                 log_begin_msg -n "Starting acpid"
