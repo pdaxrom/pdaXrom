@@ -15,4 +15,3 @@ xarchiver broken
 cell uclibc - no tls support, libspe2 has unresolved symbols
 
 PPC64 PS3 linux - firefox segfaulting
-X86_64 - lxpanel segfaulting
