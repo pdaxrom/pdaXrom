@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.30
-# Sun Aug  9 13:34:21 2009
+# Wed Sep  9 15:03:56 2009
 #
 CONFIG_PPC64=y
 
@@ -954,6 +954,7 @@ CONFIG_TMPFS=y
 CONFIG_MISC_FILESYSTEMS=y
 # CONFIG_ADFS_FS is not set
 # CONFIG_AFFS_FS is not set
+# CONFIG_UNION_FS is not set
 # CONFIG_HFS_FS is not set
 # CONFIG_HFSPLUS_FS is not set
 # CONFIG_BEFS_FS is not set
