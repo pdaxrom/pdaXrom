@@ -17,7 +17,7 @@ create_ps3cd() {
 	cp -f $IMAGES_DIR/uuid       $T/boot/
     else
 	if [ "$USE_SPLASH" = "yes" ]; then
-	    cp -f $GENERICFS_DIR/kboot/kboot.conf.splash $T/etc/
+	    cp -f $GENERICFS_DIR/kboot/kboot.conf.splash $T/etc/kboot.conf
 	else
 	    cp -f $GENERICFS_DIR/kboot/kboot.conf $T/etc/
 	fi
