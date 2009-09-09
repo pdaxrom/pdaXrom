@@ -31,7 +31,8 @@ fi
 # x86 specific drivers
 #
 
-if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" ]; then
+if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" -o \
+     "`get_kernel_subarch $TARGET_ARCH`" = "x86_64" ]; then
 
 . $RULES_DIR/xf86-video-intel.sh
 . $RULES_DIR/xf86-video-vesa.sh
