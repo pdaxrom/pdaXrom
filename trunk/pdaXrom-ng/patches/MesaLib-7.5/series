@@ -13,3 +13,5 @@ no-gallium-i915.patch
 linux-dri-ppc.diff
 linux-ppc.diff
 linux-dri.diff
+no_host_includes.patch
+linux-dri-x86.diff
