@@ -15,3 +15,5 @@ sudo ./build-crosstools-ps3.sh clean
 
 Compile pdaXrom-ng-ps3 distro:
 ./build-linux-ps3.sh
+
+To add bootloader to distro image, it must be in ../ps3-ps3boot-distro/images/ directory.
