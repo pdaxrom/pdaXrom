@@ -14,6 +14,8 @@ esac
 . $RULES_DIR/target-groff.sh
 . $RULES_DIR/target-patch.sh
 . $RULES_DIR/target-distcc.sh
+. $RULES_DIR/host_file.sh
+. $RULES_DIR/file.sh
 
 . $RULES_DIR/gdb.sh
 . $RULES_DIR/target-dev-tweaks.sh
