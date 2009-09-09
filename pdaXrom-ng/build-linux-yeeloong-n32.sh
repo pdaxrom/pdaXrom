@@ -53,8 +53,6 @@ CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
 
 . ./sets/packages-x-voip.inc
 
-. ./sets/packages-mc.inc
-
 . $RULES_DIR/fnkey-yeeloong2f.sh
 . $RULES_DIR/tweak-yeelong2f.sh
 
