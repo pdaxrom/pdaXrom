@@ -106,7 +106,7 @@ download_svn() {
 	echo "Update sources"
 	pushd $TOP_DIR
 	cd $SRC_DIR/$2
-	svn update || error
+	svn update || echo "update problem"
 	popd
     fi
 }
