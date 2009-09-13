@@ -51,7 +51,14 @@ build_sdlmame() {
     mkdir -p obj/sdl/mame/build
     cp -f $HOST_SDLMAME_DIR/obj/sdl/mame/build/* obj/sdl/mame/build/ || error
 
-    make $MAKEARGS CROSS_BUILD=1 TARGETOS=unix $C_ARGS AR=@${CROSS}ar CC=@${CROSS}gcc LD=@${CROSS}gcc NO_X11=1 \
+    make $MAKEARGS CROSS_BUILD=1 \
+	TARGETOS=unix \
+	$C_ARGS \
+	AR=@${CROSS}ar \
+	CC=@${CROSS}gcc \
+	LD=@${CROSS}gcc \
+	RANLIB=@{CROSS}ranlib \
+	NO_X11=1 \
 	FILE2STR=obj/sdl/mame/build/file2str \
 	PNG2BDC=obj/sdl/mame/build/png2bdc \
 	VERINFO=obj/sdl/mame/build/verinfo \
