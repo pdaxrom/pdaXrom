@@ -34,6 +34,8 @@ build_host_sdlmame() {
 	;;
     esac
 
+    C_ARGS="$C_ARGS SDL_INSTALL_ROOT=/usr"
+
     mkdir -p obj/sdl/mame/build
     mkdir -p obj/sdl/mame/osd/sdl
     mkdir -p obj/sdl/mame/lib/util
