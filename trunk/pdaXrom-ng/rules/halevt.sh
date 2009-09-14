@@ -31,6 +31,7 @@ build_halevt() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --localstatedir=/var \
+	    --with-libintl-prefix=$TARGET_BIN_DIR \
 	    || error
     ) || error "configure"
 
