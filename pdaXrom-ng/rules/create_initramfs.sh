@@ -23,19 +23,43 @@ create_initramfs() {
 
     pushd $TOP_DIR
 
-    cp -a $ROOTFS_DIR/lib/ld-*.so $INITRAMFS_DIR/lib || error
-    case $TARGET_ARCH in
-    powerpc64*|ppc64*)
-	cp -a $ROOTFS_DIR/lib/ld64.so* $INITRAMFS_DIR/lib || error
-	;;
-    *)
-	cp -a $ROOTFS_DIR/lib/ld.so* $INITRAMFS_DIR/lib || error
-	;;
-    esac
-    cp -a $ROOTFS_DIR/lib/libc-*.so $INITRAMFS_DIR/lib || error
-    cp -a $ROOTFS_DIR/lib/libc.so* $INITRAMFS_DIR/lib || error
-    cp -a $ROOTFS_DIR/lib/libm-*.so $INITRAMFS_DIR/lib || error
-    cp -a $ROOTFS_DIR/lib/libm.so* $INITRAMFS_DIR/lib || error
+    if [ -e $ROOTFS_DIR/lib/ld-uClibc.so.0 ]; then
+	cp -a $ROOTFS_DIR/lib/ld-*.so* $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libuClibc-*.so $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libc.so* $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libm-*.so $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libm.so* $INITRAMFS_DIR/lib || error
+
+    for f in libgcc_s.so; do
+	local L=`${TARGET_ARCH}-gcc -print-file-name=$f`
+	L=`readlink $L`
+	L=`${TARGET_ARCH}-gcc -print-file-name=${L/*\//}`
+	local ff=
+	find `dirname $L` -name "$f*" | while read ff; do
+	    if [ "$L" = "$ff" ]; then
+		$INSTALL -m 644 $ff $INITRAMFS_DIR/lib/ || error "install $ff"
+		$STRIP $INITRAMFS_DIR/lib/${ff/*\//}
+	    else
+		ln -sf ${L/*\//} $INITRAMFS_DIR/lib/${ff/*\//}
+	    fi
+	done
+    done
+
+    else
+	cp -a $ROOTFS_DIR/lib/ld-*.so $INITRAMFS_DIR/lib || error
+	case $TARGET_ARCH in
+	powerpc64*|ppc64*)
+	    cp -a $ROOTFS_DIR/lib/ld64.so* $INITRAMFS_DIR/lib || error
+	    ;;
+	*)
+	    cp -a $ROOTFS_DIR/lib/ld.so* $INITRAMFS_DIR/lib || error
+	    ;;
+	esac
+	cp -a $ROOTFS_DIR/lib/libc-*.so $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libc.so* $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libm-*.so $INITRAMFS_DIR/lib || error
+	cp -a $ROOTFS_DIR/lib/libm.so* $INITRAMFS_DIR/lib || error
+    fi
 
     for f in bin/busybox bin/ash bin/ls bin/cat bin/cp bin/dd bin/echo \
 	    sbin/mkfs.minix bin/mount bin/umount bin/mkdir sbin/insmod \
