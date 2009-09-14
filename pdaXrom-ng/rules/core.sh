@@ -117,18 +117,18 @@ download_svn() {
 download_git() {
     if [ ! -d $SRC_DIR/$2/.git ]; then
 	echo "Download sources"
-	git-clone $1 $SRC_DIR/$2 || error "Download sources"
+	git clone $1 $SRC_DIR/$2 || error "Download sources"
 	if [ ! "x$3" = "x" ]; then
 	    pushd $TOP_DIR
 	    cd $SRC_DIR/$2
-	    git-checkout $3 || error "Checkout revision"
+	    git checkout $3 || error "Checkout revision"
 	    popd
 	fi
     elif [ "x$3" = "x" ]; then
 	echo "Update sources"
 	pushd $TOP_DIR
 	cd $SRC_DIR/$2
-	git-pull || echo "update problem"
+	git pull || echo "update problem"
 	popd
     fi
 }
