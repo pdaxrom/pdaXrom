@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBICONV_VERSION=1.13.1
+LIBICONV_VERSION=1.12
 LIBICONV=libiconv-${LIBICONV_VERSION}.tar.gz
 LIBICONV_MIRROR=http://ftp.gnu.org/pub/gnu/libiconv
 LIBICONV_DIR=$BUILD_DIR/libiconv-${LIBICONV_VERSION}
