@@ -2,12 +2,11 @@
 
 #export BINUTILS_VERSION=2.19.1
 export GCC_VERSION=4.4.1
-export KERNEL_VERSION=2.6.30
-
+#export KERNEL_VERSION=2.6.30
 #export KERNEL_CONFIG=i686-kernel-2.6.30
 
-#export DEFAULT_CPU="i686"
-#export CROSS_OPT_ARCH="-march=loongson2f"
+export DEFAULT_CPU="armv5te"
+export CROSS_OPT_ARCH="-march=armv5te"
 #export CROSS_OPT_MABI="-mabi=${DEFAULT_MABI}"
 
 TARGET_ARCH="armel-linux-gnueabi"
