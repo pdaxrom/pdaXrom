@@ -1,0 +1,57 @@
+--- s/bogl/Makefile-	2009-08-05 16:20:42.000000000 +0700
++++ s/bogl/Makefile	2009-08-12 04:18:00.000000000 +0700
+@@ -4,6 +4,9 @@
+ SONAME = libbogl.so.0
+ SHARED_LIB = libbogl.so.0.1
+ 
++BDFTOBOGL:=./bdftobogl
++PNGTOBOGL:=./pngtobogl
++
+ CFLAGS = -O2 -g -D_GNU_SOURCE -fPIC -I../
+ WARNCFLAGS += -Wall -D_GNU_SOURCE
+ ALLCFLAGS = $(CFLAGS) $(WARNCFLAGS) $(FBCFLAGS)
+@@ -17,10 +20,10 @@
+ LIBBOWLOBJECTS = bowl.o symbol.o
+ LIBRSRCOBJECTS = helvB10.o helvB12.o helvR10.o timBI18.o tux75.o
+ 
+-SOURCES_DEP = arrow.c bdftobogl.c bogl-cfb.c bogl-cfb.h bogl-cfb8.c	\
++SOURCES_DEP = arrow.c bogl-cfb.c bogl-cfb.h bogl-cfb8.c	\
+ bogl-cfb8.h bogl-font.c bogl-font.h bogl-pcfb.c bogl-pcfb.h		\
+ bogl-tcfb.c bogl-tcfb.h bogl-test.c bogl.c bogl.h boglP.h boml.c	\
+-boml.h bowl-boxes.c bowl.c bowl.h pngtobogl.c
++boml.h bowl-boxes.c bowl.c bowl.h
+ 
+ ifeq (,)
+ 	FBCFLAGS += -DBOGL_CFB_FB=1
+@@ -38,7 +41,7 @@
+ GENERATED = helvB10.c helvB12.c helvR10.c timBI18.c tux75.c
+ 
+ #		 libutf8/libutf8_plug.so unifont-reduced.bgf
+-all:    depend $(SHARED_LIB) $(LIB) bterm bdftobogl reduce-font
++all:    depend $(SHARED_LIB) $(LIB) bterm reduce-font
+ 
+ %.lo: %.c
+ 	$(CC) $(ALLCFLAGS) -o $@ -fPIC -c $<
+@@ -81,14 +84,17 @@
+ bterm: $(LIB) bterm.o bogl-term.o bogl-bgf.o
+ 	$(CC) $+ $(LIB) -o bterm
+ 
++ifneq (1,$(CROSS))
+ bdftobogl: $(LIBBOGLOBJECTS)
+-%.c: %.bdf bdftobogl
+-	./bdftobogl $< > $@
+-
+ pngtobogl: pngtobogl.o
+ 	$(CC) $(ALLCFLAGS) -o pngtobogl pngtobogl.o -lgd -lpng -lm
+-%.c: %.png pngtobogl
+-	./pngtobogl $< > $@
++endif
++
++%.c: %.bdf
++	$(BDFTOBOGL) $< > $@
++
++%.c: %.png
++	$(PNGTOBOGL) $< > $@
+ 
+ depend: .depend
+ .depend: $(SOURCES_DEP)

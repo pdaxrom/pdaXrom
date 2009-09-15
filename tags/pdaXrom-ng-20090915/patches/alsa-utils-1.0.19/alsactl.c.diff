@@ -1,0 +1,11 @@
+--- alsa-utils-1.0.18/alsactl/alsactl.c-	2008-12-10 18:17:27.000000000 +0600
++++ alsa-utils-1.0.18/alsactl/alsactl.c	2008-12-10 18:17:41.000000000 +0600
+@@ -30,7 +30,7 @@
+ #include <alsa/asoundlib.h>
+ #include "alsactl.h"
+ 
+-#define SYS_ASOUNDRC "/etc/asound.state"
++#define SYS_ASOUNDRC "/var/lib/alsa/asound.state"
+ 
+ int debugflag = 0;
+ int force_restore = 1;

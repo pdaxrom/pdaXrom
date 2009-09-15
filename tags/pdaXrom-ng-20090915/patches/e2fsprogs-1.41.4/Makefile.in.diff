@@ -1,0 +1,42 @@
+--- e2fsprogs-1.41.4/misc/Makefile.in-	2009-08-12 11:21:01.000000000 +0700
++++ e2fsprogs-1.41.4/misc/Makefile.in	2009-08-12 11:27:02.000000000 +0700
+@@ -128,7 +128,7 @@
+ e2initrd_helper: e2initrd_helper.o $(DEPLIBS) $(DEPLIBBLKID) $(LIBEXT2FS)
+ 	@echo "	LD $@"
+ 	@$(CC) $(ALL_LDFLAGS) -o e2initrd_helper e2initrd_helper.o $(LIBS) \
+-		$(LIBBLKID) $(LIBEXT2FS) $(LIBINTL)
++		$(LIBBLKID) $(LIBEXT2FS) $(LIBINTL) $(LIBUUID)
+ 
+ tune2fs: $(TUNE2FS_OBJS) $(DEPLIBS) $(DEPLIBS_E2P) $(DEPLIBBLKID) \
+ 		$(DEPLIBUUID) $(LIBEXT2FS) 
+@@ -153,13 +153,13 @@
+ blkid: $(BLKID_OBJS) $(DEPLIBBLKID) $(LIBEXT2FS)
+ 	@echo "	LD $@"
+ 	@$(CC) $(ALL_LDFLAGS) -o blkid $(BLKID_OBJS) $(LIBBLKID) $(LIBINTL) \
+-		$(LIBEXT2FS)
++		$(LIBEXT2FS) $(LIBUUID)
+ 
+ blkid.profiled: $(PROFILED_BLKID_OBJS) $(DEPPROFILED_LIBBLKID) \
+ 		$(PROFILED_LIBEXT2FS)
+ 	@echo "	LD $@"
+ 	@$(CC) $(ALL_LDFLAGS) -g -pg -o blkid.profiled $(PROFILED_BLKID_OBJS) \
+-		$(PROFILED_LIBBLKID) $(LIBINTL) $(PROFILED_LIBEXT2FS)
++		$(PROFILED_LIBBLKID) $(LIBINTL) $(PROFILED_LIBEXT2FS) $(PROFILED_LIBUUID)
+ 
+ e2image: $(E2IMAGE_OBJS) $(DEPLIBS)
+ 	@echo "	LD $@"
+@@ -252,12 +252,12 @@
+ 
+ fsck: $(FSCK_OBJS) $(DEPLIBBLKID)
+ 	@echo "	LD $@"
+-	@$(CC) $(ALL_LDFLAGS) -o fsck $(FSCK_OBJS) $(LIBBLKID) $(LIBINTL)
++	@$(CC) $(ALL_LDFLAGS) -o fsck $(FSCK_OBJS) $(LIBBLKID) $(LIBINTL) $(LIBUUID)
+ 
+ fsck.profiled: $(PROFILED_FSCK_OBJS) $(PROFILED_DEPLIBBLKID)
+ 	@echo "	LD $@"
+ 	@$(CC) $(ALL_LDFLAGS) -g -pg -o fsck.profiled $(PROFILED_FSCK_OBJS) \
+-		$(PROFILED_LIBBLKID) $(LIBINTL)
++		$(PROFILED_LIBBLKID) $(LIBINTL) $(PROFILED_LIBUUID)
+ 
+ badblocks: $(BADBLOCKS_OBJS) $(DEPLIBS)
+ 	@echo "	LD $@"

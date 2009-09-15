@@ -1,0 +1,10 @@
+--- fltk-2.0.x-r6525/fluid/Makefile-	2009-03-03 22:09:21.000000000 +0600
++++ fltk-2.0.x-r6525/fluid/Makefile	2009-03-03 22:09:45.000000000 +0600
+@@ -134,7 +134,6 @@
+ 	-$(MKDIR) $(DESTDIR)$(bindir)
+ 	$(CP) $(FLUID) $(DESTDIR)$(bindir)/fluid2$(EXEEXT)
+ 	$(STRIP) $(DESTDIR)$(bindir)/fluid2$(EXEEXT)
+-	$(bindir)/fltk2-config --post $(DESTDIR)$(bindir)/fluid2$(EXEEXT)
+ 	$(CHMOD) 755 $(DESTDIR)$(bindir)/fluid2$(EXEEXT)
+ 
+ 

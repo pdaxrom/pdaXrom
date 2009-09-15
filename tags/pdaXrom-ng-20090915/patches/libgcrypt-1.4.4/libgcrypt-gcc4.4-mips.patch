@@ -1,0 +1,77 @@
+diff --git a/mpi/longlong.h b/mpi/longlong.h
+index 34bd50c..af97203 100644
+--- a/mpi/longlong.h
++++ b/mpi/longlong.h
+@@ -714,23 +714,12 @@ extern USItype __udiv_qrnnd ();
+  **************  MIPS  *****************
+  ***************************************/
+ #if defined (__mips__) && W_TYPE_SIZE == 32
+-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 7
+ #define umul_ppmm(w1, w0, u, v) \
+-  __asm__ ("multu %2,%3"                                                \
+-	   : "=l" ((USItype)(w0)),                                      \
+-	     "=h" ((USItype)(w1))                                       \
+-	   : "d" ((USItype)(u)),                                        \
+-	     "d" ((USItype)(v)))
+-#else
+-#define umul_ppmm(w1, w0, u, v) \
+-  __asm__ ("multu %2,%3 \n" \
+-	   "mflo %0 \n"     \
+-	   "mfhi %1"                                                        \
+-	   : "=d" ((USItype)(w0)),                                      \
+-	     "=d" ((USItype)(w1))                                       \
+-	   : "d" ((USItype)(u)),                                        \
+-	     "d" ((USItype)(v)))
+-#endif
++  do {									\
++    UDItype __x = (UDItype) (USItype) (u) * (USItype) (v);		\
++    (w1) = (USItype) (__x >> 32);					\
++    (w0) = (USItype) (__x);						\
++  } while (0)
+ #define UMUL_TIME 10
+ #define UDIV_TIME 100
+ #endif /* __mips__ */
+@@ -739,23 +728,12 @@ extern USItype __udiv_qrnnd ();
+  **************  MIPS/64  **************
+  ***************************************/
+ #if (defined (__mips) && __mips >= 3) && W_TYPE_SIZE == 64
+-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 7
+-#define umul_ppmm(w1, w0, u, v) \
+-  __asm__ ("dmultu %2,%3"                                               \
+-	   : "=l" ((UDItype)(w0)),                                      \
+-	     "=h" ((UDItype)(w1))                                       \
+-	   : "d" ((UDItype)(u)),                                        \
+-	     "d" ((UDItype)(v)))
+-#else
+ #define umul_ppmm(w1, w0, u, v) \
+-  __asm__ ("dmultu %2,%3 \n"    \
+-	   "mflo %0 \n"         \
+-	   "mfhi %1"                                                        \
+-	   : "=d" ((UDItype)(w0)),                                      \
+-	     "=d" ((UDItype)(w1))                                       \
+-	   : "d" ((UDItype)(u)),                                        \
+-	     "d" ((UDItype)(v)))
+-#endif
++  do {									\
++    UTItype __x = (UTItype) (UDItype) (u) * (UDItype) (v);		\
++    (w1) = (UDItype) (__x >> 64);					\
++    (w0) = (UDItype) (__x);						\
++  } while (0)
+ #define UMUL_TIME 20
+ #define UDIV_TIME 140
+ #endif /* __mips__ */
+diff --git a/mpi/mpi-internal.h b/mpi/mpi-internal.h
+index f9c1f9d..fb0575a 100644
+--- a/mpi/mpi-internal.h
++++ b/mpi/mpi-internal.h
+@@ -264,6 +264,10 @@ mpi_limb_t _gcry_mpih_rshift( mpi_ptr_t wp, mpi_ptr_t up, mpi_size_t usize,
+   typedef unsigned int USItype	  __attribute__ ((mode (SI)));
+   typedef	   int DItype	  __attribute__ ((mode (DI)));
+   typedef unsigned int UDItype	  __attribute__ ((mode (DI)));
++#if BITS_PER_MP_LIMB == 64
++  typedef          int TItype	  __attribute__ ((mode (TI)));
++  typedef unsigned int UTItype	  __attribute__ ((mode (TI)));
++#endif
+ #else
+   typedef unsigned char UQItype;
+   typedef	   long SItype;

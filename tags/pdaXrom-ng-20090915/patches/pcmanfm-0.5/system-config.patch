@@ -1,0 +1,17 @@
+--- pcmanfm-0.5/src/settings.c-	2008-12-19 12:54:33.000000000 +0600
++++ pcmanfm-0.5/src/settings.c	2008-12-19 12:56:45.000000000 +0600
+@@ -261,6 +261,14 @@
+ 
+     file = fopen( path, "r" );
+     g_free( path );
++    
++    if ( !file )
++    {
++	path = g_build_filename( *g_get_system_config_dirs(), "pcmanfm/main", NULL );
++	file = fopen( path, "r" );
++	g_free( path );
++    }
++    
+     if ( file )
+     {
+         while ( fgets( line, sizeof( line ), file ) )

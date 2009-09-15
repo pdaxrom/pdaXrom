@@ -1,0 +1,35 @@
+--- qt-x11-opensource-src-4.4.3/mkspecs/common-cross/g++.conf-	2009-01-22 13:07:19.000000000 +0600
++++ qt-x11-opensource-src-4.4.3/mkspecs/common-cross/g++.conf	2009-01-22 13:09:48.000000000 +0600
+@@ -2,8 +2,8 @@
+ # qmake configuration for common gcc
+ #
+ 
+-QMAKE_CC		= gcc
+-QMAKE_CFLAGS		+= -pipe
++QMAKE_CC		= @CROSS@gcc
++QMAKE_CFLAGS		+= -pipe -I@TARGET_DIR@/include/freetype2 -I@TARGET_DIR@/include/glib-2.0
+ QMAKE_CFLAGS_DEPS	+= -M
+ QMAKE_CFLAGS_WARN_ON	+= -Wall -W
+ QMAKE_CFLAGS_WARN_OFF	+= -w
+@@ -16,7 +16,7 @@
+ QMAKE_CFLAGS_PRECOMPILE += -x c-header -c ${QMAKE_PCH_INPUT} -o ${QMAKE_PCH_OUTPUT}
+ QMAKE_CFLAGS_USE_PRECOMPILE += -include ${QMAKE_PCH_OUTPUT_BASE}
+ 
+-QMAKE_CXX		= g++
++QMAKE_CXX		= @CROSS@g++
+ QMAKE_CXXFLAGS		+= $$QMAKE_CFLAGS
+ QMAKE_CXXFLAGS_DEPS	+= $$QMAKE_CFLAGS_DEPS
+ QMAKE_CXXFLAGS_WARN_ON	+= $$QMAKE_CFLAGS_WARN_ON
+@@ -30,9 +30,9 @@
+ QMAKE_CXXFLAGS_PRECOMPILE += -x c++-header -c ${QMAKE_PCH_INPUT} -o ${QMAKE_PCH_OUTPUT}
+ QMAKE_CXXFLAGS_USE_PRECOMPILE = $$QMAKE_CFLAGS_USE_PRECOMPILE
+ 
+-QMAKE_LINK		= g++
+-QMAKE_LINK_SHLIB	= g++
+-QMAKE_LFLAGS		+=
++QMAKE_LINK		= @CROSS@g++
++QMAKE_LINK_SHLIB	= @CROSS@g++
++QMAKE_LFLAGS		+= -L@TARGET_DIR@/lib -Wl,-rpath -Wl,@TARGET_DIR@/lib
+ QMAKE_LFLAGS_RELEASE	+=
+ QMAKE_LFLAGS_DEBUG	+=
+ QMAKE_LFLAGS_APP	+=

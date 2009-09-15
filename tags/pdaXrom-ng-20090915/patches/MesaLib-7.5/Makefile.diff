@@ -1,0 +1,8 @@
+--- Mesa-7.5/src/gallium/drivers/cell/Makefile-	2009-08-19 15:09:16.000000000 +0700
++++ Mesa-7.5/src/gallium/drivers/cell/Makefile	2009-08-19 15:09:21.000000000 +0700
+@@ -10,3 +10,5 @@
+ clean:
+ 	( cd spu ; make clean )
+ 	( cd ppu ; make clean )
++
++install:

@@ -1,0 +1,15 @@
+--- s/gui/interface.c-	2009-09-03 10:57:20.000000000 +0700
++++ s/gui/interface.c	2009-09-03 10:59:54.000000000 +0700
+@@ -647,7 +647,11 @@
+ 	       mplEventHandling( evFullScreen,0 );
+ 	       break;
+           default:
+-	       mplEventHandling( guiCMDArray[ (int)arg - MP_CMD_GUI_EVENTS - 1 ],0 );
++	       {
++	        int tmp = (int)arg - MP_CMD_GUI_EVENTS - 1;
++	        if (tmp >= 0)
++	          mplEventHandling( guiCMDArray[ tmp ],0 );
++	       }
+ 	 }
+ 	break;
+    case guiReDraw:

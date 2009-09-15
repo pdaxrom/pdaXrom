@@ -1,0 +1,33 @@
+--- s/Makefile.in-	2009-04-19 18:48:12.000000000 +0700
++++ s/Makefile.in	2009-04-19 18:50:58.000000000 +0700
+@@ -32,21 +32,18 @@
+ 	./mddriver
+ 
+ install:	libmd.so.1.0 libmd.so.1 libmd.so
+-	mkdir -p $(BUILDROOT)/usr/include
+-	mkdir -p $(BUILDROOT)/usr/lib
+-	mkdir -p $(BUILDROOT)/usr/man/man3
+-	$(INSTALL) -g root -o root -m 644 md2.h md4.h md5.h sha.h rmd160.h \
+-		   $(BUILDROOT)/usr/include
+-	$(INSTALL) -g root -o root -m 644 md2.3 md4.3 md5.3 \
+-		   $(BUILDROOT)/usr/man/man3
+-	$(INSTALL) -g root -o root -m 755 libmd.so.1.0 $(BUILDROOT)/usr/lib
+-	$(INSTALL) -g root -o root -m 755 libmd.so.1 $(BUILDROOT)/usr/lib
+-	$(INSTALL) -g root -o root -m 755 libmd.so $(BUILDROOT)/usr/lib
+-	$(INSTALL) -g root -o root -m 755 libmd.a $(BUILDROOT)/usr/lib
++	mkdir -p $(DESTDIR)/usr/include
++	mkdir -p $(DESTDIR)/usr/lib
++	$(INSTALL) -m 644 md2.h md4.h md5.h sha.h rmd160.h \
++		   $(DESTDIR)/usr/include
++	$(INSTALL) -m 644 libmd.so.1.0 $(DESTDIR)/usr/lib
++	$(INSTALL) -m 644 libmd.so.1 $(DESTDIR)/usr/lib
++	$(INSTALL) -m 644 libmd.so $(DESTDIR)/usr/lib
++	$(INSTALL) -m 644 libmd.a $(DESTDIR)/usr/lib
+ 
+ binary:	install
+ 	@echo Creating binary .tar.bz2 in directory $(OUTDIR)/
+-	cd $(BUILDROOT)/ && tar cf $(OUTDIR)/libmd-$(VERS)-$(OSTYPE).tar `cat $(SRCDIR)/binfiles` --owner=root --group=root
++	cd $(DESTDIR)/ && tar cf $(OUTDIR)/libmd-$(VERS)-$(OSTYPE).tar `cat $(SRCDIR)/binfiles` --owner=root --group=root
+ 	bzip2 -9f $(OUTDIR)/libmd-$(VERS)-$(OSTYPE).tar
+ 
+ tarball: mrproper

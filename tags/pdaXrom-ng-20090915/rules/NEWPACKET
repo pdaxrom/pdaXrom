@@ -1,0 +1,41 @@
+#!/usr/bin/perl -w 
+
+print "\nCreate new rules file from template:\n";
+print "------------------------------------\n\n";
+
+print "Name of new packet..........: "; $name = <STDIN>;
+print "Version number..............: "; $version = <STDIN>;
+print "Archive file suffix.........: "; $suffix = <STDIN>;
+print "URL of download directory...: "; $url = <STDIN>;
+print "Packet Author...............: "; $author = <STDIN>;
+
+chop ($name, $version, $url, $author, $suffix);
+
+$_=$name;
+
+$n=tr/-/_/;
+
+$packet=$_;
+
+$PACKET = uc($packet);
+$LPACKET = lc($packet);
+
+open(INFILE,  "template") || die "Can't open template";
+open(OUTFILE, ">$name\.sh") || die "Can't open new file";
+
+while (<INFILE>) {
+	s,\@LPACKET@,$LPACKET,g;
+	s,\@PACKET@,$PACKET,g;
+	s,\@packet@,$packet,g;
+	s,\@name@,$name,g;
+	s,\@VERSION@,$version,g;
+	s,\@URL@,$url,g;
+	s,\@AUTHOR@,$author,g;
+	s,\@SUFFIX@,$suffix,g;
+	print OUTFILE $_;
+}
+
+close(OUTFILE);
+close(INFILE);
+
+print "\n";

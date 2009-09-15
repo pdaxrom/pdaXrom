@@ -1,0 +1,30 @@
+Subject: powerpc/ps3: Print memory hotplug errors
+
+To help users diagnose hotpug memory problems, change the
+printing of memory hotplug errors from DBG() to pr_err().
+
+Signed-off-by: Geoff Levand <geoffrey.levand@am.sony.com>
+---
+ arch/powerpc/platforms/ps3/mm.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/arch/powerpc/platforms/ps3/mm.c
++++ b/arch/powerpc/platforms/ps3/mm.c
+@@ -311,7 +311,7 @@ static int __init ps3_mm_add_memory(void
+ 	result = add_memory(0, start_addr, map.r1.size);
+ 
+ 	if (result) {
+-		DBG("%s:%d: add_memory failed: (%d)\n",
++		pr_err("%s:%d: add_memory failed: (%d)\n",
+ 			__func__, __LINE__, result);
+ 		return result;
+ 	}
+@@ -322,7 +322,7 @@ static int __init ps3_mm_add_memory(void
+ 	result = online_pages(start_pfn, nr_pages);
+ 
+ 	if (result)
+-		DBG("%s:%d: online_pages failed: (%d)\n",
++		pr_err("%s:%d: online_pages failed: (%d)\n",
+ 			__func__, __LINE__, result);
+ 
+ 	return result;

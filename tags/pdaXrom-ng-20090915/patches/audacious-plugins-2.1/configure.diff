@@ -1,0 +1,11 @@
+--- s/configure-	2009-08-20 21:30:38.000000000 +0700
++++ s/configure	2009-08-20 21:31:04.000000000 +0700
+@@ -9301,7 +9301,7 @@
+ See \`config.log' for more details." >&5
+ $as_echo "$as_me: error: cannot run test program while cross compiling
+ See \`config.log' for more details." >&2;}
+-   { (exit 1); exit 1; }; }; }
++   }; }
+ else
+   cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */

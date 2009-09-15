@@ -1,0 +1,29 @@
+--- s/src/Makefile.am.orig	2001-08-30 01:55:04.000000000 +0700
++++ s/src/Makefile.am	2009-01-13 22:26:25.000000000 +0600
+@@ -1,10 +1,8 @@
+ # A list of all the files in the current directory which can be regenerated
+ MAINTAINERCLEANFILES = Makefile.in				
+ 
+-LDFLAGS           = -L/usr/X11R6/lib
+-INCLUDES          = -g -O3 -Wall -I/usr/X11R6/include \
+-$(X_CFLAGS) -I$(prefix)/include -I$(includedir) -I. \
+--DPREFIX=\""$(prefix)"\" @GIBLIB_CFLAGS@
++LDFLAGS           = 
++INCLUDES          = -g -O3 -Wall $(X_CFLAGS) -I. -DPREFIX=\""$(prefix)"\" @GIBLIB_CFLAGS@
+ LIBOBJS = @LIBOBJS@
+ 
+ bin_PROGRAMS      = scrot
+--- s/Makefile.am-	2009-01-13 22:18:54.000000000 +0600
++++ s/Makefile.am	2009-01-13 22:22:14.000000000 +0600
+@@ -5,9 +5,8 @@
+ # A list of all the files in the current directory which can be regenerated
+ MAINTAINERCLEANFILES = Makefile.in scrot.spec
+ 
+-LDFLAGS           = -L/usr/X11R6/lib -L/usr/lib -L/usr/local/lib
+-INCLUDES          = -I/usr/X11R6/include \
+-$(X_CFLAGS) -I$(prefix)/include -I$(includedir) -I.
++LDFLAGS           = 
++INCLUDES          =  $(X_CFLAGS) -I.
+ 
+ man_MANS = scrot.1
+ 

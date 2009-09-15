@@ -1,0 +1,11 @@
+--- s/install.sh-	2009-08-17 16:46:04.000000000 +0700
++++ s/install.sh	2009-08-17 16:46:36.000000000 +0700
+@@ -84,8 +84,6 @@
+ $INSTALL -d -v "${SHAREDIR}/lang"
+ $INSTALL -m 0644 lang/* "${SHAREDIR}/lang"
+ $INSTALL $GINSTALLFLAG -m 0755 mupen64plus "${BINDIR}/mupen64plus"
+-$INSTALL -d -v "${MANDIR}"
+-$INSTALL -m 0644 doc/mupen64plus.1.gz "${MANDIR}"
+ $INSTALL -d -v "${LIBDIR}"
+ if [ -f mupen64plus.desktop ]
+ then

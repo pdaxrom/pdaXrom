@@ -1,0 +1,23 @@
+Temporary hack to investigate unexpected CD eject during playback.
+
+Hacked-by: Geoff Levand <geoffrey.levand@am.sony.com>
+---
+ drivers/block/ps3_storage.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
+
+--- ps3-linux-dev.orig/drivers/block/ps3_storage.c
++++ ps3-linux-dev/drivers/block/ps3_storage.c
+@@ -156,6 +156,13 @@ static void ps3_stor_process_srb(struct 
+ 	command_handler = dev_info->handler_info[srb->cmnd[0]].cmnd_handler;
+ 
+ 	if (command_handler) {
++		if (srb->cmnd[0] == TEST_UNIT_READY)
++			printk("%s: (%d) TEST_UNIT_READY\n", __func__,
++				current->pid);
++		if (srb->cmnd[0] == START_STOP)
++			//&& cmnd[4] == 0x02) /* eject */
++			printk("%s: (%d) START_STOP: %xh\n", __func__,
++				current->pid, srb->cmnd[4]);
+ 		(*command_handler)(dev_info, srb);
+ 	} else {
+ 		srb->result = (DID_ERROR << 16);

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+while /bin/true;
+do
+    mkdir -p /media/dev
+    /usr/sbin/petitboot -u
+
+    mount | grep '/media/dev' | awk '{ print $3 }' | while read f; do
+	umount $f && rm -rf $f
+    done
+done &

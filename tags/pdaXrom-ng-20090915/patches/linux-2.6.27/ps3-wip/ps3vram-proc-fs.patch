@@ -1,0 +1,106 @@
+Add ps3vram cache info to proc-fs.
+
+---
+ drivers/mtd/devices/ps3vram.c |   49 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+--- a/drivers/mtd/devices/ps3vram.c
++++ b/drivers/mtd/devices/ps3vram.c
+@@ -16,6 +16,7 @@
+ #include <linux/gfp.h>
+ #include <linux/delay.h>
+ #include <linux/mtd/mtd.h>
++#include <linux/proc_fs.h>
+ 
+ #include <asm/lv1call.h>
+ #include <asm/ps3.h>
+@@ -65,6 +66,8 @@ struct ps3vram_cache {
+ 	unsigned int page_count;
+ 	unsigned int page_size;
+ 	struct ps3vram_tag *tags;
++	unsigned int hit;
++	unsigned int miss;
+ };
+ 
+ struct ps3vram_priv {
+@@ -394,6 +397,7 @@ static unsigned int ps3vram_cache_match(
+ 		    cache->tags[i].address == base) {
+ 			dbg("found entry %d : 0x%08x",
+ 			    i, cache->tags[i].address);
++			cache->hit++;
+ 			return i;
+ 		}
+ 	}
+@@ -405,6 +409,7 @@ static unsigned int ps3vram_cache_match(
+ 	ps3vram_cache_evict(mtd, i);
+ 	ps3vram_cache_load(mtd, i, base);
+ 
++	cache->miss++;
+ 	return i;
+ }
+ 
+@@ -550,6 +555,48 @@ static int ps3vram_write(struct mtd_info
+ 	return 0;
+ }
+ 
++static int ps3vram_proc_read(char *buf, char **start, off_t offset,
++			     int count, int *eof, void *data)
++{
++	struct ps3vram_priv *priv = (struct ps3vram_priv *) data;
++	int len;
++	off_t end;
++	char tmp[256];
++
++	len = sprintf(tmp, "hit:%u\nmiss:%u\n",
++		      priv->cache.hit, priv->cache.miss);
++
++	*start = buf;
++
++	end = (off_t)count + offset;
++
++	if (end >= (off_t)len) {
++		*eof = 1;
++		count = ((off_t)len > offset) ?
++			(int)((off_t)len - offset) : 0;
++	}
++
++	memcpy(buf, tmp + offset, count);
++
++	return count;
++}
++
++static void __devinit init_proc(void)
++{
++	struct proc_dir_entry *proc_file;
++
++	proc_file = create_proc_entry("ps3vram", 0644, NULL);
++
++	if (!proc_file) {
++		pr_warning("failed to create /proc entry\n");
++		return;
++	}
++
++	proc_file->owner = THIS_MODULE;
++	proc_file->data = ps3vram_mtd.priv;
++	proc_file->read_proc = ps3vram_proc_read;
++}
++
+ static int __devinit ps3vram_probe(struct ps3_system_bus_device *dev)
+ {
+ 	struct ps3vram_priv *priv;
+@@ -685,6 +732,7 @@ static int __devinit ps3vram_probe(struc
+ 	}
+ 
+ 	ps3vram_cache_init(&ps3vram_mtd);
++	init_proc();
+ 
+ 	if (add_mtd_device(&ps3vram_mtd)) {
+ 		pr_err("ps3vram: failed to register device\n");
+@@ -724,6 +772,7 @@ static int ps3vram_shutdown(struct ps3_s
+ 
+ 	priv = ps3vram_mtd.priv;
+ 
++	remove_proc_entry("ps3vram", NULL);
+ 	del_mtd_device(&ps3vram_mtd);
+ 	ps3vram_cache_cleanup(&ps3vram_mtd);
+ 	iounmap(priv->reports);
