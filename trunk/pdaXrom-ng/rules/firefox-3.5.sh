@@ -14,7 +14,15 @@ FIREFOX_VERSION=3.5.2
 FIREFOX=firefox-${FIREFOX_VERSION}-source.tar.bz2
 FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${FIREFOX_VERSION}/source
 FIREFOX_DIR=$BUILD_DIR/mozilla-${XUL_VERSION}
-FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv_va_copy=yes ac_cv_va_val_copy=no"
+
+case $TARGET_ARCH in
+arm*)
+    FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv_va_copy=yes ac_cv_va_val_copy=yes"
+    ;;
+*)
+    FIREFOX_ENV="$CROSS_ENV_AC MOZ_CO_PROJECT=browser CROSS_COMPILE=1 ac_cv_va_copy=C99 ac_cv_va_copy=yes ac_cv_va_val_copy=no"
+    ;;
+esac
 
 build_firefox() {
     test -e "$STATE_DIR/firefox-${FIREFOX_VERSION}.installed" && return
