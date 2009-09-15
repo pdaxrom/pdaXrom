@@ -1,0 +1,11 @@
+--- s/libavcodec/Makefile-	2009-09-15 12:26:43.000000000 +0700
++++ s/libavcodec/Makefile	2009-09-15 12:35:46.000000000 +0700
+@@ -1,5 +1,8 @@
+ include $(SUBDIR)../config.mak
+ 
++%.o: %.S
++	$(CC) $(CFLAGS) -I. -c -o $@ $<
++
+ NAME = avcodec
+ FFLIBS = avutil
+ 
