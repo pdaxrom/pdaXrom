@@ -11,6 +11,8 @@ export TARGET_VENDOR_PATCH=ps3
 #export CROSS_OPT_ARCH="-mtune=cell"
 #export CROSS_OPT_MABI="-mabi=${DEFAULT_MABI}"
 
+export UCLIBC_CONFIG=powerpc-config-wchar-locale
+
 TARGET_ARCH="powerpc-ps3-linux-uclibc"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
