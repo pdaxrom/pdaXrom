@@ -193,7 +193,11 @@ pcio_tune()
     rm -rf $ROOTFS_DIR/usr/share/pekwm/
     cp -R $GENERICFS_DIR/simplenx/pekwm $ROOTFS_DIR/usr/share || error
     cp -f $GENERICFS_DIR/pcio/xinitrc $ROOTFS_DIR/etc/X11/xinit/xinitrc || error
-    cp -f $GENERICFS_DIR/pcio/hosts $ROOTFS_DIR/usr/pcio/bin/hosts || error
+    if [ "$PCIO_HOSTS" = "" ]; then
+	cp -f $GENERICFS_DIR/pcio/hosts $ROOTFS_DIR/usr/pcio/bin/hosts || error
+    else
+	echo "$PCIO_HOSTS" > $ROOTFS_DIR/usr/pcio/bin/hosts
+    fi
     test -d $ROOTFS_DIR/usr/lib/dri && rm -f $ROOTFS_DIR/usr/lib/dri/*
     $INSTALL -D -m 644 $PCIO_SVN_DIR/desktop/themes/pcio-splash.png $ROOTFS_DIR/usr/share/dancesplashfb/artwork/pcio-splash.png || error
     echo "image /usr/share/dancesplashfb/artwork/pcio-splash.png" > $ROOTFS_DIR/etc/dancesplashfb.conf
