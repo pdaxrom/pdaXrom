@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PIDGIN_VERSION=2.6.1
+PIDGIN_VERSION=2.6.2
 PIDGIN=pidgin-${PIDGIN_VERSION}.tar.bz2
 PIDGIN_MIRROR=http://downloads.sourceforge.net/pidgin
 PIDGIN_DIR=$BUILD_DIR/pidgin-${PIDGIN_VERSION}
@@ -48,27 +48,14 @@ build_pidgin() {
 	    --with-gnutls-libs=$TARGET_LIB \
 	    --enable-nss=no \
 	    --disable-consoleui \
-	    --disable-schemas-install \
-	    --with-static-prpls=gg,irc,jabber,msn,oscar,yahoo,simple
+	    --disable-schemas-install
     ) || error "configure"
     
     make $MAKEARGS || error "make"
 
-    make DESTDIR=$PIDGIN_DIR/fakeroot install || error "install"
-    
-    rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig fakeroot/usr/lib/*.la || error "del 1"
-    rm -rf fakeroot/usr/share/aclocal fakeroot/usr/share/locale fakeroot/usr/share/man || error "del 2"
-    rm -f fakeroot/usr/lib/pidgin/*.la
-    rm -f fakeroot/usr/lib/purple-2/*.la
-
-    $STRIP fakeroot/usr/bin/pidgin || error
-    $STRIP fakeroot/usr/lib/*.so* || error
-    $STRIP fakeroot/usr/lib/pidgin/*.so* || error
-    $STRIP fakeroot/usr/lib/purple-2/*.so* || error
-
-    mv fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
-
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error
+    install_fakeroot_init
+#    mv fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/pidgin-${PIDGIN_VERSION}.installed"
