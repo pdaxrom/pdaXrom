@@ -19,4 +19,5 @@ lzma/squashfs_fs_sb.h.diff
 lzma/uncomp.c.diff
 lzma/do_mounts_rd.c.diff
 build_nonpreempt.patch
-unionfs-2.5.2_for_2.6.30.diff
+aufs2_2.6.30.patch
+aufs2_squashfs_lzma.patch

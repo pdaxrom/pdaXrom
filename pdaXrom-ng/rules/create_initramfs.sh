@@ -102,6 +102,11 @@ create_initramfs() {
 	mkdir -p $INITRAMFS_DIR/union
     fi
 
+    if [ "$USE_AUFS2" = "yes" ]; then
+	mkdir -p $INITRAMFS_DIR/dynamic
+	mkdir -p $INITRAMFS_DIR/aufs2
+    fi
+
     uuidgen > $INITRAMFS_DIR/uuid
     cp -f $INITRAMFS_DIR/uuid $IMAGES_DIR/uuid
 
