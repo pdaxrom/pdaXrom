@@ -78,10 +78,22 @@ boot_unionfs() {
     fi
 }
 
+boot_aufs2() {
+    if [ -d /aufs2 ]; then
+	mount -t tmpfs none /dynamic
+	mount -t aufs -o br=/dynamic=rw:/rootfs=ro none /aufs2
+	mkdir -p /aufs2/mnt/dynamic
+	mkdir -p /aufs2/mnt/rootfs
+	mount -o move /dynamic /aufs2/mnt/dynamic
+	mount -o move /rootfs /aufs2/mnt/rootfs
+	cd /aufs2
+    fi
+}
+
 boot_rootfs() {
     echo "Boooooting!!!"
     cd /rootfs
-    boot_unionfs
+    boot_aufs2
     remove_modules
     #/sbin/pivot_root /rootfs /rootfs/boot/initrd
     umount /sys

@@ -15,6 +15,7 @@ CROSS_OPT_ARCH="-mtune=cell -mcpu=cell -maltivec"
 #CROSS_OPT_CXXFLAGS="-O3"
 
 USE_SPLASH="yes"
+USE_AUFS2="yes"
 
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
