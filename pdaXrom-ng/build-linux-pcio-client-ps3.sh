@@ -12,6 +12,17 @@ TARGET_VENDOR_PATCH=ps3
 
 USE_SPLASH="yes"
 
+case $1 in
+prod*)
+    echo "Production client"
+    PCIO_HOSTS="200.170.196.227"
+    ;;
+dev*)
+    echo "Devnode client"
+    ISOIMAGE_NAME="pcio-client-dev-ps3"
+    ;;
+esac
+
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc

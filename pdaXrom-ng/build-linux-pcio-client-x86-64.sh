@@ -11,6 +11,17 @@ KERNEL_CONFIG=x86_64-kernel-2.6.30
 
 USE_SPLASH="yes"
 
+case $1 in
+prod*)
+    echo "Production client"
+    PCIO_HOSTS="200.170.196.227"
+    ;;
+dev*)
+    echo "Devnode client"
+    ISOIMAGE_NAME="pcio-client-dev-x86-64"
+    ;;
+esac
+
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
 . ./sets/packages-libs.inc

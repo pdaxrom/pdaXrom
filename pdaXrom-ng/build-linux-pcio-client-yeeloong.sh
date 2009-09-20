@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISOIMAGE_NAME="pcio-client-yeelong2f"
+ISOIMAGE_NAME="pcio-client-yeeloong2f"
 
 TARGET_ARCH="mipsel-ls2f-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
@@ -12,6 +12,17 @@ KERNEL_VERSION="2.6.30"
 KERNEL_CONFIG=yeeloong2f_2.6.30.5
 
 USE_SPLASH="yes"
+
+case $1 in
+prod*)
+    echo "Production client"
+    PCIO_HOSTS="200.170.196.227"
+    ;;
+dev*)
+    echo "Devnode client"
+    ISOIMAGE_NAME="pcio-client-dev-yeeloong2f"
+    ;;
+esac
 
 . ./sets/packages-basic.inc
 . ./sets/packages-mmlibs.inc
