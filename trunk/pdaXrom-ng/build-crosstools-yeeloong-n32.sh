@@ -2,9 +2,8 @@
 
 #export BINUTILS_VERSION=2.19.1
 export GCC_VERSION=4.4.1
-export KERNEL_VERSION=2.6.29.2
+export KERNEL_VERSION=2.6.30
 
-export KERNEL_CONFIG=yeeloong_2.6.29.2
 export TARGET_VENDOR_PATCH=ls2f
 
 export DEFAULT_CPU=loongson2f

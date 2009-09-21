@@ -4,8 +4,6 @@
 export GCC_VERSION=4.4.1
 export KERNEL_VERSION=2.6.30
 
-export KERNEL_CONFIG=i686-kernel-2.6.30
-
 #export DEFAULT_CPU="i686"
 #export CROSS_OPT_ARCH="-march=loongson2f"
 #export CROSS_OPT_MABI="-mabi=${DEFAULT_MABI}"
