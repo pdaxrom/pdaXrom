@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.30
-# Wed Sep  9 16:07:09 2009
+# Mon Sep 21 22:54:19 2009
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -3044,6 +3044,7 @@ CONFIG_CONFIGFS_FS=m
 CONFIG_MISC_FILESYSTEMS=y
 # CONFIG_ADFS_FS is not set
 # CONFIG_AFFS_FS is not set
+# CONFIG_ECRYPT_FS is not set
 CONFIG_HFS_FS=m
 CONFIG_HFSPLUS_FS=m
 # CONFIG_BEFS_FS is not set
@@ -3065,6 +3066,7 @@ CONFIG_ROMFS_BACKED_BY_BLOCK=y
 CONFIG_ROMFS_ON_BLOCK=y
 # CONFIG_SYSV_FS is not set
 # CONFIG_UFS_FS is not set
+# CONFIG_EXOFS_FS is not set
 CONFIG_AUFS_FS=y
 CONFIG_AUFS_BRANCH_MAX_127=y
 # CONFIG_AUFS_BRANCH_MAX_511 is not set
@@ -3074,9 +3076,9 @@ CONFIG_AUFS_BRANCH_MAX_127=y
 # CONFIG_AUFS_RDU is not set
 # CONFIG_AUFS_SHWH is not set
 # CONFIG_AUFS_BR_RAMFS is not set
+# CONFIG_AUFS_BR_FUSE is not set
 # CONFIG_AUFS_DEBUG is not set
 CONFIG_AUFS_BDEV_LOOP=y
-# CONFIG_EXOFS_FS is not set
 # CONFIG_NILFS2_FS is not set
 CONFIG_NETWORK_FILESYSTEMS=y
 CONFIG_NFS_FS=m
