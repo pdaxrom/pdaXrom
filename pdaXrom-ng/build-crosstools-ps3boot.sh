@@ -3,8 +3,7 @@
 #export BINUTILS_VERSION=2.19.1
 #export GCC_VERSION=4.4.1
 
-export KERNEL_VERSION="2.6.29"
-export KERNEL_CONFIG=ps3_kernel_2.6.29
+export KERNEL_VERSION="2.6.30"
 export TARGET_VENDOR_PATCH=ps3
 
 #export DEFAULT_CPU="cell"
