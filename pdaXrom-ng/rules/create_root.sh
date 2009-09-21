@@ -3,6 +3,7 @@ bin
 boot
 dev
 etc
+etc/default
 etc/init.d
 etc/rc.d
 etc/network
@@ -10,6 +11,7 @@ etc/network/if-down.d
 etc/network/if-post-down.d
 etc/network/if-pre-up.d
 etc/network/if-up.d
+etc/profile.d
 home
 media
 mnt

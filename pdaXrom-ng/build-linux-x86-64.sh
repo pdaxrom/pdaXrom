@@ -45,6 +45,8 @@ KERNEL_CONFIG=x86_64-kernel-2.6.30
 
 . ./sets/packages-x-rdp.inc
 
+. $RULES_DIR/install_locale.sh
+
 . $RULES_DIR/tweak-i686.sh
 
 . ./sets/packages-host-squashfs.inc

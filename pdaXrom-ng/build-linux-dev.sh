@@ -50,6 +50,8 @@ USE_SPLASH="yes"
 . ./sets/packages-mc.inc
 . ./sets/packages-devel.inc
 
+. $RULES_DIR/install_locale.sh
+
 . $RULES_DIR/tweak-i686.sh
 
 . ./sets/packages-host-squashfs.inc
