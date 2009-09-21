@@ -58,6 +58,8 @@ USE_SPLASH="yes"
 . ./sets/packages-mc.inc
 . ./sets/packages-devel.inc
 
+. $RULES_DIR/install_locale.sh
+
 . $RULES_DIR/ps3-utils.sh
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh

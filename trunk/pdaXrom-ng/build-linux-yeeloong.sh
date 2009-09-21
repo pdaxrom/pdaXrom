@@ -49,6 +49,8 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.5
 
 . ./sets/packages-x-voip.inc
 
+. $RULES_DIR/install_locale.sh
+
 . $RULES_DIR/fnkey-yeeloong2f.sh
 . $RULES_DIR/tweak-yeelong2f.sh
 
