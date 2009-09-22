@@ -4,8 +4,8 @@ TARGET_ARCH="x86_64-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
-KERNEL_VERSION="2.6.30"
-KERNEL_CONFIG=x86_64-kernel-2.6.30
+KERNEL_VERSION="2.6.31"
+KERNEL_CONFIG=x86_64-kernel-2.6.31
 
 . ./sets/packages-basic.inc
 
