@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-SDLMAME_VERSION=0.133
+SDLMAME_VERSION=0.134
 SDLMAME=sdlmame_${SDLMAME_VERSION}.orig.tar.gz
 SDLMAME_MIRROR=http://sdlmame4ubuntu.org/cur/major/pool/unofficial/s/sdlmame
 SDLMAME_DIR=$BUILD_DIR/sdlmame-${SDLMAME_VERSION}
@@ -43,7 +43,7 @@ build_sdlmame() {
     local OPTIMIZE=
     case $TARGET_ARCH in
     ppc*|powerpc*)
-	ARCHOPTS='-mcpu=G4'
+	ARCHOPTS='-mcpu=G4 -Upowerpc'
 	OPTIMIZE=2
 	;;
     esac
@@ -70,7 +70,7 @@ build_sdlmame() {
 	SUBTARGET=mame \
 	OSD=sdl \
 	OPTIMIZE=${OPTIMIZE-3} \
-	ARCHOPTS=$ARCHOPTS \
+	ARCHOPTS="$ARCHOPTS" \
 	|| error
 
     $INSTALL -D -m 755 sdlmame $ROOTFS_DIR/usr/bin/sdlmame || error
