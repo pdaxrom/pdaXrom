@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-HOST_SDLMAME_VERSION=0.133
+HOST_SDLMAME_VERSION=0.134
 HOST_SDLMAME=sdlmame_${HOST_SDLMAME_VERSION}.orig.tar.gz
 HOST_SDLMAME_MIRROR=http://sdlmame4ubuntu.org/cur/major/pool/unofficial/s/sdlmame
 HOST_SDLMAME_DIR=$HOST_BUILD_DIR/sdlmame-${HOST_SDLMAME_VERSION}
