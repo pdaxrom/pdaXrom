@@ -9,11 +9,11 @@
 # see the README file.
 #
 
-PANGO_VERSION=1.24.0
+PANGO_VERSION=1.26.0
 PANGO=pango-${PANGO_VERSION}.tar.bz2
-PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24
+PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.26
 PANGO_DIR=$BUILD_DIR/pango-${PANGO_VERSION}
-PANGO_ENV="$CROSS_ENV_AC"
+PANGO_ENV="$CROSS_ENV_AC CC=${CROSS}gcc CXX=${CROSS}g++ AS=${CROSS}as LD=${CROSS}ld AR=${CROSS}ar RANLIB=${CROSS}ranlib"
 PANGO_MODULES="basic-x,basic-fc"
 
 build_pango() {
@@ -42,23 +42,9 @@ build_pango() {
 
     install_sysroot_files || error
 
-    for f in pango pangocairo pangoft2 pangox pangoxft; do
-	$INSTALL -D -m 644 pango/.libs/lib${f}-1.0.so.0.2400.0 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2400.0 || error
-	ln -sf lib${f}-1.0.so.0.2400.0 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0
-	ln -sf lib${f}-1.0.so.0.2400.0 $ROOTFS_DIR/usr/lib/lib${f}-1.0.so
-	$STRIP $ROOTFS_DIR/usr/lib/lib${f}-1.0.so.0.2400.0
-    done
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
-    $INSTALL -D -m 755 pango/.libs/pango-querymodules $ROOTFS_DIR/usr/bin/pango-querymodules || error
-    $STRIP $ROOTFS_DIR/usr/bin/pango-querymodules
-
-    mkdir -p $ROOTFS_DIR/usr/lib/pango/1.6.0/modules || error "mkdir"
-    find modules/ -name "*.so" | while read f; do
-	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/lib/pango/1.6.0/modules/${f/*\/} || error "install $f"
-	$STRIP $ROOTFS_DIR/usr/lib/pango/1.6.0/modules/${f/*\/} || error "strip ${f/*\/}"
-    done
-
-    $INSTALL -D -m 644 pango/pangox.aliases $ROOTFS_DIR/etc/pango/pangox.aliases || error
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/pango $ROOTFS_DIR/etc/init.d/pango || error
     if [ "$USE_FASTBOOT" = "yes" ]; then
 	install_rc_start pango 01

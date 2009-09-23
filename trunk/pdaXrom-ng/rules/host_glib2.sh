@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-HOST_GLIB2=glib-2.19.3.tar.bz2
-HOST_GLIB2_MIRROR=http://ftp.gtk.org/pub/glib/2.19
-HOST_GLIB2_DIR=$HOST_BUILD_DIR/glib-2.19.3
+HOST_GLIB2=glib-2.22.0.tar.bz2
+HOST_GLIB2_MIRROR=http://ftp.gtk.org/pub/glib/2.22
+HOST_GLIB2_DIR=$HOST_BUILD_DIR/glib-2.22.0
 HOST_GLIB2_ENV=
 
 build_host_glib2() {

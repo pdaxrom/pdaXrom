@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-ATK_VERSION=1.26.0
+ATK_VERSION=1.28.0
 ATK=atk-${ATK_VERSION}.tar.bz2
-ATK_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.26
+ATK_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.28
 ATK_DIR=$BUILD_DIR/atk-${ATK_VERSION}
 ATK_ENV="$CROSS_ENV_AC"
 
@@ -38,11 +38,9 @@ build_atk() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 atk/.libs/libatk-1.0.so.0.2609.1 $ROOTFS_DIR/usr/lib/libatk-1.0.so.0.2609.1 || error
-    ln -sf libatk-1.0.so.0.2609.1 $ROOTFS_DIR/usr/lib/libatk-1.0.so.0
-    ln -sf libatk-1.0.so.0.2609.1 $ROOTFS_DIR/usr/lib/libatk-1.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libatk-1.0.so.0.2609.1
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/atk.installed"
