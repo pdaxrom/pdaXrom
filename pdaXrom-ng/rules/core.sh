@@ -258,7 +258,7 @@ install_rc_stop() {
 
 install_sysroot_files() {
     local f=
-    make DESTDIR=$TARGET_BIN_DIR $@ install || error "installation in target sysroot"
+    fakeroot make DESTDIR=$TARGET_BIN_DIR $@ install || error "installation in target sysroot"
 #    for f in `find "$TARGET_BIN_DIR" -name "*.la" -type f`; do
 #	sed -i -e "/^libdir=/s:\(libdir='\)\(/lib\|/usr/lib\):\1${TARGET_LIB}:g" $f
 #    done
@@ -321,7 +321,7 @@ install_rootfs_usr_sbin() {
 
 install_fakeroot_init() {
     local faked=$PWD/fakeroot
-    make DESTDIR=${faked} $@ install || error
+    fakeroot make DESTDIR=${faked} $@ install || error
     rm -rf ${faked}/usr/include ${faked}/usr/lib/pkgconfig
     rm -rf ${faked}/usr/share/aclocal
     rm -rf ${faked}/usr/share/doc
