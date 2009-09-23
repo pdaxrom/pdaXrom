@@ -9,7 +9,7 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 TARGET_VENDOR_PATCH=ls2f
 
 KERNEL_VERSION="2.6.30"
-KERNEL_CONFIG=yeeloong2f_2.6.30.5
+KERNEL_CONFIG=yeeloong2f_2.6.30.6
 
 . ./sets/packages-basic.inc
 . ./sets/packages-acpi.inc
