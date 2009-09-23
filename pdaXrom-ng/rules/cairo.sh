@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-CAIRO=cairo-1.8.6.tar.gz
+CAIRO_VERSION=1.8.8
+CAIRO=cairo-${CAIRO_VERSION}.tar.gz
 CAIRO_MIRROR=http://cairographics.org/releases
-CAIRO_DIR=$BUILD_DIR/cairo-1.8.6
+CAIRO_DIR=$BUILD_DIR/cairo-${CAIRO_VERSION}
 CAIRO_ENV="$CROSS_ENV_AC CFLAGS='-O4 -fomit-frame-pointer -ffast-math'"
 
 build_cairo() {
@@ -44,15 +45,13 @@ build_cairo() {
 	    --enable-png \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 src/.libs/libcairo.so.2.10800.6 $ROOTFS_DIR/usr/lib/libcairo.so.2.10800.6 || error
-    ln -sf libcairo.so.2.10800.6 $ROOTFS_DIR/usr/lib/libcairo.so.2
-    ln -sf libcairo.so.2.10800.6 $ROOTFS_DIR/usr/lib/libcairo.so
-    $STRIP $ROOTFS_DIR/usr/lib/libcairo.so.2.10800.6
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/cairo.installed"

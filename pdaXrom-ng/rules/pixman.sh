@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PIXMAN_VERSION=0.14.0
+PIXMAN_VERSION=0.16.0
 PIXMAN=pixman-${PIXMAN_VERSION}.tar.bz2
 PIXMAN_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 PIXMAN_DIR=$BUILD_DIR/pixman-${PIXMAN_VERSION}
@@ -35,11 +35,9 @@ build_pixman() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 pixman/.libs/libpixman-1.so.${PIXMAN_VERSION} $ROOTFS_DIR/usr/lib/libpixman-1.so.${PIXMAN_VERSION} || error
-    ln -sf libpixman-1.so.${PIXMAN_VERSION} $ROOTFS_DIR/usr/lib/libpixman-1.so.0
-    ln -sf libpixman-1.so.${PIXMAN_VERSION} $ROOTFS_DIR/usr/lib/libpixman-1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libpixman-1.so.${PIXMAN_VERSION}
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/pixman-${PIXMAN_VERSION}"
