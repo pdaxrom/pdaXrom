@@ -38,11 +38,18 @@ build_e2fsprogs() {
 
     make -C lib/uuid $MAKEARGS DESTDIR=$TARGET_BIN_DIR install || error
     make -C lib/blkid $MAKEARGS DESTDIR=$TARGET_BIN_DIR install || error
+
     install_sysroot_files || error
 
-    make $MAKEARGS DESTDIR=$E2FSPROGS_DIR/fakeroot install || error
+    ln -sf libblkid.so.1	$TARGET_LIB/libblkid.so
+    ln -sf libcom_err.so.2	$TARGET_LIB/libcom_err.so
+    ln -sf libe2p.so.2		$TARGET_LIB/libe2p.so
+    ln -sf libext2fs.so.2	$TARGET_LIB/libext2fs.so
+    ln -sf libss.so.2		$TARGET_LIB/libss.so
+    ln -sf libuuid.so.1		$TARGET_LIB/libuuid.so
 
-    rm -rf fakeroot/usr/share fakeroot/usr/lib
+    install_fakeroot_init
+
     ln -sf e2fsck fakeroot/sbin/fsck.ext2
     ln -sf e2fsck fakeroot/sbin/fsck.ext3
     ln -sf e2fsck fakeroot/sbin/fsck.ext4
@@ -53,14 +60,7 @@ build_e2fsprogs() {
     ln -sf mke2fs fakeroot/sbin/mkfs.ext4
     ln -sf mke2fs fakeroot/sbin/mkfs.ext4dev
 
-    $STRIP fakeroot/lib/*
-    $STRIP fakeroot/sbin/*
-    $STRIP fakeroot/usr/bin/*
-    $STRIP fakeroot/usr/sbin/*
-    
-    cd fakeroot
-    
-    find . -not -type d -exec rm -f ${ROOTFS_DIR}/{} \; -exec cp -a {} ${ROOTFS_DIR}/{} \; || error
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/e2fsprogs.installed"
