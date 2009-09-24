@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-E2FSPROGS_VERSION=1.41.4
+E2FSPROGS_VERSION=1.41.9
 E2FSPROGS=e2fsprogs-${E2FSPROGS_VERSION}.tar.gz
 E2FSPROGS_MIRROR=http://prdownloads.sourceforge.net/e2fsprogs
 E2FSPROGS_DIR=$BUILD_DIR/e2fsprogs-${E2FSPROGS_VERSION}
