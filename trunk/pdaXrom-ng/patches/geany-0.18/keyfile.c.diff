@@ -1,0 +1,20 @@
+--- s/src/keyfile.c-	2009-07-20 19:25:24.000000000 +0700
++++ s/src/keyfile.c	2009-09-24 11:32:11.000000000 +0700
+@@ -72,7 +72,7 @@
+ #ifdef G_OS_WIN32
+ #define GEANY_DEFAULT_TOOLS_TERMINAL	"cmd.exe"
+ #else
+-#define GEANY_DEFAULT_TOOLS_TERMINAL	"xterm"
++#define GEANY_DEFAULT_TOOLS_TERMINAL	"lxterminal"
+ #endif
+ #define GEANY_DEFAULT_TOOLS_BROWSER		"firefox"
+ #define GEANY_DEFAULT_TOOLS_PRINTCMD	"lpr"
+@@ -725,7 +725,7 @@
+ 
+ 		vc->emulation = utils_get_setting_string(config, "VTE", "emulation", "xterm");
+ 		vc->shell = utils_get_setting_string(config, "VTE", "shell", shell);
+-		vc->font = utils_get_setting_string(config, "VTE", "font", "Monospace 10");
++		vc->font = utils_get_setting_string(config, "VTE", "font", "Fixed 10");
+ 		vc->scroll_on_key = utils_get_setting_boolean(config, "VTE", "scroll_on_key", TRUE);
+ 		vc->scroll_on_out = utils_get_setting_boolean(config, "VTE", "scroll_on_out", TRUE);
+ 		vc->enable_bash_keys = utils_get_setting_boolean(config, "VTE", "enable_bash_keys", FALSE);
