@@ -319,6 +319,12 @@ install_rootfs_usr_sbin() {
     $STRIP ${ROOTFS_DIR}/usr/sbin/$f || error
 }
 
+install_rootfs_exec() {
+    local f=`basename $2`
+    $INSTALL -D -m 755 $2 ${ROOTFS_DIR}$1/$f || error
+    $STRIP ${ROOTFS_DIR}$1/$f || error
+}
+
 install_fakeroot_init() {
     local faked=$PWD/fakeroot
     fakeroot make DESTDIR=${faked} $@ install || error
