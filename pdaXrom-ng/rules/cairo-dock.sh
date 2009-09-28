@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-CAIRO_DOCK_VERSION=2.0.0-rc4
+CAIRO_DOCK_VERSION=2.0.8.2
 CAIRO_DOCK=cairo-dock-${CAIRO_DOCK_VERSION}.tar.bz2
 CAIRO_DOCK_MIRROR=http://download.berlios.de/cairo-dock
 CAIRO_DOCK_DIR=$BUILD_DIR/cairo-dock-${CAIRO_DOCK_VERSION}
@@ -32,15 +32,19 @@ build_cairo_dock() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make $MAKEARGS DESTDIR=$CAIRO_DOCK_DIR/fakeroot install || error
+    sed -i -e 's|pluginsdir=\${exec_prefix}|pluginsdir=/usr|' cairo-dock.pc
+    sed -i -e 's|pluginsdatadir=\${prefix}|pluginsdatadir=/usr|' cairo-dock.pc
+    sed -i -e 's|themesdir=\${prefix}|themesdir=/usr|' cairo-dock.pc
 
+    install_sysroot_files || error
+
+    install_fakeroot_init
     rm -f fakeroot/usr/bin/cairo-dock-update.sh fakeroot/usr/bin/launch-cairo-dock-after-beryl.sh
     rm -rf fakeroot/usr/include fakeroot/usr/lib fakeroot/usr/share/locale
-
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/cairo_dock.installed"
