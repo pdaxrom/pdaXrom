@@ -271,6 +271,11 @@ install_sysroot_files() {
 	    -e "/^libdir=/s:\(libdir=\)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
 	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
 
+    sed -i -e  "/^exec_prefix = /s:\(exec_prefix = \)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
+	    -e "/^prefix = /s:\(prefix = \)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
+	    -e "/^libdir = /s:\(libdir = \)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
+	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
+
     sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
 	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
 	    `find ${TARGET_BIN_DIR} -name "*-config"` || true
