@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-RESOURCEPROTO=resourceproto-1.0.2.tar.bz2
+RESOURCEPROTO_VERSION=1.1.0
+RESOURCEPROTO=resourceproto-${RESOURCEPROTO_VERSION}.tar.bz2
 RESOURCEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-RESOURCEPROTO_DIR=$BUILD_DIR/resourceproto-1.0.2
+RESOURCEPROTO_DIR=$BUILD_DIR/resourceproto-${RESOURCEPROTO_VERSION}
 RESOURCEPROTO_ENV=
 
 build_resourceproto() {
-    test -e "$STATE_DIR/resourceproto-1.0.2" && return
+    test -e "$STATE_DIR/resourceproto-${RESOURCEPROTO_VERSION}" && return
     banner "Build $RESOURCEPROTO"
     download $RESOURCEPROTO_MIRROR $RESOURCEPROTO
     extract $RESOURCEPROTO
@@ -36,7 +37,7 @@ build_resourceproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/resourceproto-1.0.2"
+    touch "$STATE_DIR/resourceproto-${RESOURCEPROTO_VERSION}"
 }
 
 build_resourceproto

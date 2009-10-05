@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-FIXESPROTO=fixesproto-4.0.tar.bz2
+FIXESPROTO_VERSION=4.0
+FIXESPROTO=fixesproto-${FIXESPROTO_VERSION}.tar.bz2
 FIXESPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-FIXESPROTO_DIR=$BUILD_DIR/fixesproto-4.0
+FIXESPROTO_DIR=$BUILD_DIR/fixesproto-${FIXESPROTO_VERSION}
 FIXESPROTO_ENV=
 
 build_fixesproto() {
-    test -e "$STATE_DIR/fixesproto-4.0" && return
+    test -e "$STATE_DIR/fixesproto-${FIXESPROTO_VERSION}" && return
     banner "Build $FIXESPROTO"
     download $FIXESPROTO_MIRROR $FIXESPROTO
     extract $FIXESPROTO
@@ -35,7 +36,7 @@ build_fixesproto() {
     install_sysroot_files
 
     popd
-    touch "$STATE_DIR/fixesproto-4.0"
+    touch "$STATE_DIR/fixesproto-${FIXESPROTO_VERSION}"
 }
 
 build_fixesproto

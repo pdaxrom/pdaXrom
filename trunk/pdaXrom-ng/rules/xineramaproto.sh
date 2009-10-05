@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XINERAMAPROTO=xineramaproto-1.1.2.tar.bz2
+XINERAMAPROTO_VERSION=1.1.2
+XINERAMAPROTO=xineramaproto-${XINERAMAPROTO_VERSION}.tar.bz2
 XINERAMAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XINERAMAPROTO_DIR=$BUILD_DIR/xineramaproto-1.1.2
+XINERAMAPROTO_DIR=$BUILD_DIR/xineramaproto-${XINERAMAPROTO_VERSION}
 XINERAMAPROTO_ENV=
 
 build_xineramaproto() {
-    test -e "$STATE_DIR/xineramaproto-1.1.2" && return
+    test -e "$STATE_DIR/xineramaproto-${XINERAMAPROTO_VERSION}" && return
     banner "Build $XINERAMAPROTO"
     download $XINERAMAPROTO_MIRROR $XINERAMAPROTO
     extract $XINERAMAPROTO
@@ -36,7 +37,7 @@ build_xineramaproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xineramaproto-1.1.2"
+    touch "$STATE_DIR/xineramaproto-${XINERAMAPROTO_VERSION}"
 }
 
 build_xineramaproto

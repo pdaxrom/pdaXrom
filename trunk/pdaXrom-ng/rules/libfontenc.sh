@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBFONTENC=libfontenc-1.0.4.tar.bz2
+LIBFONTENC_VERSION=1.0.5
+LIBFONTENC=libfontenc-${LIBFONTENC_VERSION}.tar.bz2
 LIBFONTENC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBFONTENC_DIR=$BUILD_DIR/libfontenc-1.0.4
+LIBFONTENC_DIR=$BUILD_DIR/libfontenc-${LIBFONTENC_VERSION}
 LIBFONTENC_ENV=
 
 build_libfontenc() {
-    test -e "$STATE_DIR/libfontenc-1.0.4" && return
+    test -e "$STATE_DIR/libfontenc-${LIBFONTENC_VERSION}" && return
     banner "Build $LIBFONTENC"
     download $LIBFONTENC_MIRROR $LIBFONTENC
     extract $LIBFONTENC
@@ -33,14 +34,12 @@ build_libfontenc() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libfontenc.so.1.0.0 $ROOTFS_DIR/usr/lib/libfontenc.so.1.0.0 || error
-    ln -sf libfontenc.so.1.0.0 $ROOTFS_DIR/usr/lib/libfontenc.so.1
-    ln -sf libfontenc.so.1.0.0 $ROOTFS_DIR/usr/lib/libfontenc.so
-    $STRIP $ROOTFS_DIR/usr/lib/libfontenc.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libfontenc-1.0.4"
+    touch "$STATE_DIR/libfontenc-${LIBFONTENC_VERSION}"
 }
 
 build_libfontenc

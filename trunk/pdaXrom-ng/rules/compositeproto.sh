@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-COMPOSITEPROTO=compositeproto-0.4.tar.bz2
+COMPOSITEPROTO_VERSION=0.4.1
+COMPOSITEPROTO=compositeproto-${COMPOSITEPROTO_VERSION}.tar.bz2
 COMPOSITEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-COMPOSITEPROTO_DIR=$BUILD_DIR/compositeproto-0.4
+COMPOSITEPROTO_DIR=$BUILD_DIR/compositeproto-${COMPOSITEPROTO_VERSION}
 COMPOSITEPROTO_ENV=
 
 build_compositeproto() {
-    test -e "$STATE_DIR/compositeproto-0.4" && return
+    test -e "$STATE_DIR/compositeproto-${COMPOSITEPROTO_VERSION}" && return
     banner "Build $COMPOSITEPROTO"
     download $COMPOSITEPROTO_MIRROR $COMPOSITEPROTO
     extract $COMPOSITEPROTO
@@ -36,7 +37,7 @@ build_compositeproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/compositeproto-0.4"
+    touch "$STATE_DIR/compositeproto-${COMPOSITEPROTO_VERSION}"
 }
 
 build_compositeproto

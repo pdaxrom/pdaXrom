@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXPM=libXpm-3.5.7.tar.bz2
+LIBXPM_VERSION=3.5.7
+LIBXPM=libXpm-${LIBXPM_VERSION}.tar.bz2
 LIBXPM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXPM_DIR=$BUILD_DIR/libXpm-3.5.7
+LIBXPM_DIR=$BUILD_DIR/libXpm-${LIBXPM_VERSION}
 LIBXPM_ENV=
 
 build_libXpm() {
-    test -e "$STATE_DIR/libXpm-3.5.7" && return
+    test -e "$STATE_DIR/libXpm-${LIBXPM_VERSION}" && return
     banner "Build $LIBXPM"
     download $LIBXPM_MIRROR $LIBXPM
     extract $LIBXPM
@@ -33,14 +34,12 @@ build_libXpm() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXpm.so.4.11.0 $ROOTFS_DIR/usr/lib/libXpm.so.4.11.0 || error
-    ln -sf libXpm.so.4.11.0 $ROOTFS_DIR/usr/lib/libXpm.so.4
-    ln -sf libXpm.so.4.11.0 $ROOTFS_DIR/usr/lib/libXpm.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXpm.so.4.11.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXpm-3.5.7"
+    touch "$STATE_DIR/libXpm-${LIBXPM_VERSION}"
 }
 
 build_libXpm

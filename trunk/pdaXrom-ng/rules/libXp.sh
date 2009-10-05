@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXP=libXp-1.0.0.tar.bz2
+LIBXP_VERSION=1.0.0
+LIBXP=libXp-${LIBXP_VERSION}.tar.bz2
 LIBXP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXP_DIR=$BUILD_DIR/libXp-1.0.0
+LIBXP_DIR=$BUILD_DIR/libXp-${LIBXP_VERSION}
 LIBXP_ENV=
 
 build_libXp() {
-    test -e "$STATE_DIR/libXp-1.0.0" && return
+    test -e "$STATE_DIR/libXp-${LIBXP_VERSION}" && return
     banner "Build $LIBXP"
     download $LIBXP_MIRROR $LIBXP
     extract $LIBXP
@@ -35,14 +36,12 @@ build_libXp() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXp.so.6.2.0 $ROOTFS_DIR/usr/lib/libXp.so.6.2.0 || error
-    ln -sf libXp.so.6.2.0 $ROOTFS_DIR/usr/lib/libXp.so.6
-    ln -sf libXp.so.6.2.0 $ROOTFS_DIR/usr/lib/libXp.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXp.so.6.2.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXp-1.0.0"
+    touch "$STATE_DIR/libXp-${LIBXP_VERSION}"
 }
 
 build_libXp

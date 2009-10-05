@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXAU=libXau-1.0.4.tar.bz2
+LIBXAU_VERSION=1.0.5
+LIBXAU=libXau-${LIBXAU_VERSION}.tar.bz2
 LIBXAU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXAU_DIR=$BUILD_DIR/libXau-1.0.4
+LIBXAU_DIR=$BUILD_DIR/libXau-${LIBXAU_VERSION}
 LIBXAU_ENV=
 
 build_libXau() {
-    test -e "$STATE_DIR/libXau-1.0.3" && return
+    test -e "$STATE_DIR/libXau-${LIBXAU_VERSION}" && return
     banner "Build $LIBXAU"
     download $LIBXAU_MIRROR $LIBXAU
     extract $LIBXAU
@@ -34,13 +35,11 @@ build_libXau() {
 
     install_sysroot_files
 
-    $INSTALL -D -m 644 .libs/libXau.so.6.0.0 $ROOTFS_DIR/usr/lib/libXau.so.6.0.0
-    ln -s libXau.so.6.0.0 $ROOTFS_DIR/usr/lib/libXau.so.6
-    ln -s libXau.so.6.0.0 $ROOTFS_DIR/usr/lib/libXau.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXau.so.6.0.0
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXau-1.0.3"
+    touch "$STATE_DIR/libXau-${LIBXAU_VERSION}"
 }
 
 build_libXau

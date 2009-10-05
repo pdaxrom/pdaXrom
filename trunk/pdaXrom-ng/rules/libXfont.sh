@@ -45,11 +45,9 @@ build_libXfont() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXfont.so.1.4.1 $ROOTFS_DIR/usr/lib/libXfont.so.1.4.1 || error
-    ln -sf libXfont.so.1.4.1 $ROOTFS_DIR/usr/lib/libXfont.so.1
-    ln -sf libXfont.so.1.4.1 $ROOTFS_DIR/usr/lib/libXfont.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXfont.so.1.4.1
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libXfont-${LIBXFONT_VERSION}"

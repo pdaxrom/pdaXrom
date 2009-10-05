@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBDRM_VERSION=2.4.5
+LIBDRM_VERSION=2.4.14
 LIBDRM=libdrm-${LIBDRM_VERSION}.tar.bz2
 LIBDRM_MIRROR=http://dri.freedesktop.org/libdrm
 LIBDRM_DIR=$BUILD_DIR/libdrm-${LIBDRM_VERSION}
@@ -35,16 +35,9 @@ build_libdrm() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 libdrm/.libs/libdrm.so.2.4.0 $ROOTFS_DIR/usr/lib/libdrm.so.2.4.0 || error
-    ln -sf libdrm.so.2.4.0 $ROOTFS_DIR/usr/lib/libdrm.so.2
-    ln -sf libdrm.so.2.4.0 $ROOTFS_DIR/usr/lib/libdrm.so
-    $STRIP $ROOTFS_DIR/usr/lib/libdrm.so.2.4.0
-    
-    $INSTALL -D -m 644 libdrm/intel/.libs/libdrm_intel.so.1.0.0 $ROOTFS_DIR/usr/lib/libdrm_intel.so.1.0.0 || error
-    ln -sf libdrm_intel.so.1.0.0 $ROOTFS_DIR/usr/lib/libdrm_intel.so.1
-    ln -sf libdrm_intel.so.1.0.0 $ROOTFS_DIR/usr/lib/libdrm_intel.so
-    $STRIP $ROOTFS_DIR/usr/lib/libdrm_intel.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libdrm-${LIBDRM_VERSION}"

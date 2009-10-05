@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXRENDER=libXrender-0.9.4.tar.bz2
+LIBXRENDER_VERSION=0.9.5
+LIBXRENDER=libXrender-${LIBXRENDER_VERSION}.tar.bz2
 LIBXRENDER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXRENDER_DIR=$BUILD_DIR/libXrender-0.9.4
+LIBXRENDER_DIR=$BUILD_DIR/libXrender-${LIBXRENDER_VERSION}
 LIBXRENDER_ENV=
 
 build_libXrender() {
-    test -e "$STATE_DIR/libXrender-0.9.4" && return
+    test -e "$STATE_DIR/libXrender-${LIBXRENDER_VERSION}" && return
     banner "Build $LIBXRENDER"
     download $LIBXRENDER_MIRROR $LIBXRENDER
     extract $LIBXRENDER
@@ -35,14 +36,12 @@ build_libXrender() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXrender.so.1.3.0 $ROOTFS_DIR/usr/lib/libXrender.so.1.3.0 || error
-    ln -sf libXrender.so.1.3.0 $ROOTFS_DIR/usr/lib/libXrender.so.1
-    ln -sf libXrender.so.1.3.0 $ROOTFS_DIR/usr/lib/libXrender.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXrender.so.1.3.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXrender-0.9.4"
+    touch "$STATE_DIR/libXrender-${LIBXRENDER_VERSION}"
 }
 
 build_libXrender

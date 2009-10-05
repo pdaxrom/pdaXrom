@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXFT=libXft-2.1.13.tar.bz2
+LIBXFT_VERSION=2.1.13
+LIBXFT=libXft-${LIBXFT_VERSION}.tar.bz2
 LIBXFT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXFT_DIR=$BUILD_DIR/libXft-2.1.13
+LIBXFT_DIR=$BUILD_DIR/libXft-${LIBXFT_VERSION}
 LIBXFT_ENV=
 
 build_libXft() {
-    test -e "$STATE_DIR/libXft-2.1.12" && return
+    test -e "$STATE_DIR/libXft-${LIBXFT_VERSION}" && return
     banner "Build $LIBXFT"
     download $LIBXFT_MIRROR $LIBXFT
     extract $LIBXFT
@@ -33,16 +34,14 @@ build_libXft() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXft.so.2.1.13 $ROOTFS_DIR/usr/lib/libXft.so.2.1.13 || error
-    ln -sf libXft.so.2.1.13 $ROOTFS_DIR/usr/lib/libXft.so.2
-    ln -sf libXft.so.2.1.13 $ROOTFS_DIR/usr/lib/libXft.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXft.so.2.1.13
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     ln -sf $TARGET_BIN_DIR/bin/xft-config $HOST_BIN_DIR/bin/ || error
 
     popd
-    touch "$STATE_DIR/libXft-2.1.12"
+    touch "$STATE_DIR/libXft-${LIBXFT_VERSION}"
 }
 
 build_libXft

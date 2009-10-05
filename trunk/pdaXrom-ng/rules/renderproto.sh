@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-RENDERPROTO=renderproto-0.9.3.tar.bz2
+RENDERPROTO_VERSION=0.11
+RENDERPROTO=renderproto-${RENDERPROTO_VERSION}.tar.bz2
 RENDERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-RENDERPROTO_DIR=$BUILD_DIR/renderproto-0.9.3
+RENDERPROTO_DIR=$BUILD_DIR/renderproto-${RENDERPROTO_VERSION}
 RENDERPROTO_ENV=
 
 build_renderproto() {
-    test -e "$STATE_DIR/renderproto-0.9.3" && return
+    test -e "$STATE_DIR/renderproto-${RENDERPROTO_VERSION}" && return
     banner "Build $RENDERPROTO"
     download $RENDERPROTO_MIRROR $RENDERPROTO
     extract $RENDERPROTO
@@ -35,7 +36,7 @@ build_renderproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/renderproto-0.9.3"
+    touch "$STATE_DIR/renderproto-${RENDERPROTO_VERSION}"
 }
 
 build_renderproto

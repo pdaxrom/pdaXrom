@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXT=libXt-1.0.5.tar.bz2
+LIBXT_VERSION=1.0.6
+LIBXT=libXt-${LIBXT_VERSION}.tar.bz2
 LIBXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXT_DIR=$BUILD_DIR/libXt-1.0.5
+LIBXT_DIR=$BUILD_DIR/libXt-${LIBXT_VERSION}
 LIBXT_ENV=
 
 build_libXt() {
-    test -e "$STATE_DIR/libXt-1.0.4" && return
+    test -e "$STATE_DIR/libXt-${LIBXT_VERSION}" && return
     banner "Build $LIBXT"
     download $LIBXT_MIRROR $LIBXT
     extract $LIBXT
@@ -41,14 +42,12 @@ build_libXt() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXt.so.6.0.0 $ROOTFS_DIR/usr/lib/libXt.so.6.0.0 || error
-    ln -sf libXt.so.6.0.0 $ROOTFS_DIR/usr/lib/libXt.so.6
-    ln -sf libXt.so.6.0.0 $ROOTFS_DIR/usr/lib/libXt.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXt.so.6.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXt-1.0.4"
+    touch "$STATE_DIR/libXt-${LIBXT_VERSION}"
 }
 
 build_libXt

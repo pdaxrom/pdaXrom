@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXVMC=libXvMC-1.0.4.tar.bz2
+LIBXVMC_VERSION=1.0.4
+LIBXVMC=libXvMC-${LIBXVMC_VERSION}.tar.bz2
 LIBXVMC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXVMC_DIR=$BUILD_DIR/libXvMC-1.0.4
+LIBXVMC_DIR=$BUILD_DIR/libXvMC-${LIBXVMC_VERSION}
 LIBXVMC_ENV=
 
 build_libXvMC() {
-    test -e "$STATE_DIR/libXvMC-1.0.4" && return
+    test -e "$STATE_DIR/libXvMC-${LIBXVMC_VERSION}" && return
     banner "Build $LIBXVMC"
     download $LIBXVMC_MIRROR $LIBXVMC
     extract $LIBXVMC
@@ -35,19 +36,12 @@ build_libXvMC() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libXvMC.so.1.0.0 || error
-    ln -sf libXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libXvMC.so.1
-    ln -sf libXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libXvMC.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXvMC.so.1.0.0
-    
-    $INSTALL -D -m 644 src/.libs/libXvMCW.so.1.0.0 $ROOTFS_DIR/usr/lib/libXvMCW.so.1.0.0 || error
-    ln -sf libXvMCW.so.1.0.0 $ROOTFS_DIR/usr/lib/libXvMCW.so.1
-    ln -sf libXvMCW.so.1.0.0 $ROOTFS_DIR/usr/lib/libXvMCW.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXvMCW.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXvMC-1.0.4"
+    touch "$STATE_DIR/libXvMC-${LIBXVMC_VERSION}"
 }
 
 build_libXvMC

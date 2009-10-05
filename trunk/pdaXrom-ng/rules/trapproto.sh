@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-TRAPPROTO=trapproto-3.4.3.tar.bz2
+TRAPPROTO_VERSION=3.4.3
+TRAPPROTO=trapproto-${TRAPPROTO_VERSION}.tar.bz2
 TRAPPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-TRAPPROTO_DIR=$BUILD_DIR/trapproto-3.4.3
+TRAPPROTO_DIR=$BUILD_DIR/trapproto-${TRAPPROTO_VERSION}
 TRAPPROTO_ENV=
 
 build_trapproto() {
-    test -e "$STATE_DIR/trapproto-3.4.3" && return
+    test -e "$STATE_DIR/trapproto-${TRAPPROTO_VERSION}" && return
     banner "Build $TRAPPROTO"
     download $TRAPPROTO_MIRROR $TRAPPROTO
     extract $TRAPPROTO
@@ -36,7 +37,7 @@ build_trapproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/trapproto-3.4.3"
+    touch "$STATE_DIR/trapproto-${TRAPPROTO_VERSION}"
 }
 
 build_trapproto

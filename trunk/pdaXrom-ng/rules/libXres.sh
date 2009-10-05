@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXRES=libXres-1.0.3.tar.bz2
+LIBXRES_VERSION=1.0.3
+LIBXRES=libXres-${LIBXRES_VERSION}.tar.bz2
 LIBXRES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXRES_DIR=$BUILD_DIR/libXres-1.0.3
+LIBXRES_DIR=$BUILD_DIR/libXres-${LIBXRES_VERSION}
 LIBXRES_ENV=
 
 build_libXres() {
-    test -e "$STATE_DIR/libXres-1.0.3" && return
+    test -e "$STATE_DIR/libXres-${LIBXRES_VERSION}" && return
     banner "Build $LIBXRES"
     download $LIBXRES_MIRROR $LIBXRES
     extract $LIBXRES
@@ -35,14 +36,12 @@ build_libXres() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXRes.so.1.0.0 $ROOTFS_DIR/usr/lib/libXRes.so.1.0.0 || error
-    ln -sf libXRes.so.1.0.0 $ROOTFS_DIR/usr/lib/libXRes.so.1
-    ln -sf libXRes.so.1.0.0 $ROOTFS_DIR/usr/lib/libXRes.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXRes.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXres-1.0.3"
+    touch "$STATE_DIR/libXres-${LIBXRES_VERSION}"
 }
 
 build_libXres

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXTRAP=libXTrap-1.0.0.tar.bz2
+LIBXTRAP_VERSION=1.0.0
+LIBXTRAP=libXTrap-${LIBXTRAP_VERSION}.tar.bz2
 LIBXTRAP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXTRAP_DIR=$BUILD_DIR/libXTrap-1.0.0
+LIBXTRAP_DIR=$BUILD_DIR/libXTrap-${LIBXTRAP_VERSION}
 LIBXTRAP_ENV=
 
 build_libXTrap() {
-    test -e "$STATE_DIR/libXTrap-1.0.0" && return
+    test -e "$STATE_DIR/libXTrap-${LIBXTRAP_VERSION}" && return
     banner "Build $LIBXTRAP"
     download $LIBXTRAP_MIRROR $LIBXTRAP
     extract $LIBXTRAP
@@ -34,14 +35,12 @@ build_libXTrap() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXTrap.so.6.4.0 $ROOTFS_DIR/usr/lib/libXTrap.so.6.4.0 || error
-    ln -sf libXTrap.so.6.4.0 $ROOTFS_DIR/usr/lib/libXTrap.so.6
-    ln -sf libXTrap.so.6.4.0 $ROOTFS_DIR/usr/lib/libXTrap.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXTrap.so.6.4.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXTrap-1.0.0"
+    touch "$STATE_DIR/libXTrap-${LIBXTRAP_VERSION}"
 }
 
 build_libXTrap

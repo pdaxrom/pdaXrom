@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBSM=libSM-1.0.3.tar.bz2
+LIBSM_VERSION=1.1.1
+LIBSM=libSM-${LIBSM_VERSION}.tar.bz2
 LIBSM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBSM_DIR=$BUILD_DIR/libSM-1.0.3
+LIBSM_DIR=$BUILD_DIR/libSM-${LIBSM_VERSION}
 LIBSM_ENV=
 
 build_libSM() {
-    test -e "$STATE_DIR/libSM-1.0.3" && return
+    test -e "$STATE_DIR/libSM-${LIBSM_VERSION}" && return
     banner "Build $LIBSM"
     download $LIBSM_MIRROR $LIBSM
     extract $LIBSM
@@ -33,14 +34,12 @@ build_libSM() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libSM.so.6.0.0 $ROOTFS_DIR/usr/lib/libSM.so.6.0.0 || error
-    ln -sf libSM.so.6.0.0 $ROOTFS_DIR/usr/lib/libSM.so.6
-    ln -sf libSM.so.6.0.0 $ROOTFS_DIR/usr/lib/libSM.so
-    $STRIP $ROOTFS_DIR/usr/lib/libSM.so.6.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libSM-1.0.3"
+    touch "$STATE_DIR/libSM-${LIBSM_VERSION}"
 }
 
 build_libSM

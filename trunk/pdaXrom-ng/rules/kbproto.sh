@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-KBPROTO=kbproto-1.0.3.tar.bz2
+KBPROTO_VERSION=1.0.3
+KBPROTO=kbproto-${KBPROTO_VERSION}.tar.bz2
 KBPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-KBPROTO_DIR=$BUILD_DIR/kbproto-1.0.3
+KBPROTO_DIR=$BUILD_DIR/kbproto-${KBPROTO_VERSION}
 KBPROTO_ENV=
 
 build_kbproto() {
-    test -e "$STATE_DIR/kbproto-1.0.3" && return
+    test -e "$STATE_DIR/kbproto-${KBPROTO_VERSION}" && return
     banner "Build $KBPROTO"
     download $KBPROTO_MIRROR $KBPROTO
     extract $KBPROTO
@@ -35,7 +36,7 @@ build_kbproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/kbproto-1.0.3"
+    touch "$STATE_DIR/kbproto-${KBPROTO_VERSION}"
 }
 
 build_kbproto

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXXF86VM=libXxf86vm-1.0.2.tar.bz2
+LIBXXF86VM_VERSION=1.0.2
+LIBXXF86VM=libXxf86vm-${LIBXXF86VM_VERSION}.tar.bz2
 LIBXXF86VM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXXF86VM_DIR=$BUILD_DIR/libXxf86vm-1.0.2
+LIBXXF86VM_DIR=$BUILD_DIR/libXxf86vm-${LIBXXF86VM_VERSION}
 LIBXXF86VM_ENV=
 
 build_libXxf86vm() {
-    test -e "$STATE_DIR/libXxf86vm-1.0.1" && return
+    test -e "$STATE_DIR/libXxf86vm-${LIBXXF86VM_VERSION}" && return
     banner "Build $LIBXXF86VM"
     download $LIBXXF86VM_MIRROR $LIBXXF86VM
     extract $LIBXXF86VM
@@ -35,14 +36,12 @@ build_libXxf86vm() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXxf86vm.so.1.0.0 $ROOTFS_DIR/usr/lib/libXxf86vm.so.1.0.0 || error
-    ln -sf libXxf86vm.so.1.0.0 $ROOTFS_DIR/usr/lib/libXxf86vm.so.1
-    ln -sf libXxf86vm.so.1.0.0 $ROOTFS_DIR/usr/lib/libXxf86vm.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXxf86vm.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXxf86vm-1.0.1"
+    touch "$STATE_DIR/libXxf86vm-${LIBXXF86VM_VERSION}"
 }
 
 build_libXxf86vm

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXCURSOR=libXcursor-1.1.9.tar.bz2
+LIBXCURSOR_VERSION=1.1.10
+LIBXCURSOR=libXcursor-${LIBXCURSOR_VERSION}.tar.bz2
 LIBXCURSOR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXCURSOR_DIR=$BUILD_DIR/libXcursor-1.1.9
+LIBXCURSOR_DIR=$BUILD_DIR/libXcursor-${LIBXCURSOR_VERSION}
 LIBXCURSOR_ENV=
 
 build_libXcursor() {
-    test -e "$STATE_DIR/libXcursor-1.1.9" && return
+    test -e "$STATE_DIR/libXcursor-${LIBXCURSOR_VERSION}" && return
     banner "Build $LIBXCURSOR"
     download $LIBXCURSOR_MIRROR $LIBXCURSOR
     extract $LIBXCURSOR
@@ -34,13 +35,11 @@ build_libXcursor() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 src/.libs/libXcursor.so.1.0.2 $ROOTFS_DIR/usr/lib/libXcursor.so.1.0.2 || error
-    ln -sf libXcursor.so.1.0.2 $ROOTFS_DIR/usr/lib/libXcursor.so.1
-    ln -sf libXcursor.so.1.0.2 $ROOTFS_DIR/usr/lib/libXcursor.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXcursor.so.1.0.2
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXcursor-1.1.9"
+    touch "$STATE_DIR/libXcursor-${LIBXCURSOR_VERSION}"
 }
 
 build_libXcursor

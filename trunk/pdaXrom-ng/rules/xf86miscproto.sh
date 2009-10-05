@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86MISCPROTO=xf86miscproto-0.9.2.tar.bz2
+XF86MISCPROTO_VERSION=0.9.2
+XF86MISCPROTO=xf86miscproto-${XF86MISCPROTO_VERSION}.tar.bz2
 XF86MISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XF86MISCPROTO_DIR=$BUILD_DIR/xf86miscproto-0.9.2
+XF86MISCPROTO_DIR=$BUILD_DIR/xf86miscproto-${XF86MISCPROTO_VERSION}
 XF86MISCPROTO_ENV=
 
 build_xf86miscproto() {
-    test -e "$STATE_DIR/xf86miscproto-0.9.2" && return
+    test -e "$STATE_DIR/xf86miscproto-${XF86MISCPROTO_VERSION}" && return
     banner "Build $XF86MISCPROTO"
     download $XF86MISCPROTO_MIRROR $XF86MISCPROTO
     extract $XF86MISCPROTO
@@ -36,7 +37,7 @@ build_xf86miscproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xf86miscproto-0.9.2"
+    touch "$STATE_DIR/xf86miscproto-${XF86MISCPROTO_VERSION}"
 }
 
 build_xf86miscproto

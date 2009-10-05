@@ -36,11 +36,9 @@ build_libXext() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXext.so.6.4.0 $ROOTFS_DIR/usr/lib/libXext.so.6.4.0 || error
-    ln -sf libXext.so.6.4.0 $ROOTFS_DIR/usr/lib/libXext.so.6
-    ln -sf libXext.so.6.4.0 $ROOTFS_DIR/usr/lib/libXext.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXext.so.6.4.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libXext-${LIBXEXT_VERSION}"

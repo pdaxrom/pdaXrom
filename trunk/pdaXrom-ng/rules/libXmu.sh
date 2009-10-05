@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXMU=libXmu-1.0.4.tar.bz2
+LIBXMU_VERSION=1.0.5
+LIBXMU=libXmu-${LIBXMU_VERSION}.tar.bz2
 LIBXMU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXMU_DIR=$BUILD_DIR/libXmu-1.0.4
+LIBXMU_DIR=$BUILD_DIR/libXmu-${LIBXMU_VERSION}
 LIBXMU_ENV=
 
 build_libXmu() {
-    test -e "$STATE_DIR/libXmu-1.0.3" && return
+    test -e "$STATE_DIR/libXmu-${LIBXMU_VERSION}" && return
     banner "Build $LIBXMU"
     download $LIBXMU_MIRROR $LIBXMU
     extract $LIBXMU
@@ -33,19 +34,12 @@ build_libXmu() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXmu.so.6.2.0 $ROOTFS_DIR/usr/lib/libXmu.so.6.2.0 || error
-    ln -sf libXmu.so.6.2.0 $ROOTFS_DIR/usr/lib/libXmu.so.6
-    ln -sf libXmu.so.6.2.0 $ROOTFS_DIR/usr/lib/libXmu.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXmu.so.6.2.0
 
-    $INSTALL -D -m 644 src/.libs/libXmuu.so.1.0.0 $ROOTFS_DIR/usr/lib/libXmuu.so.1.0.0 || error
-    ln -sf libXmuu.so.1.0.0 $ROOTFS_DIR/usr/lib/libXmuu.so.1
-    ln -sf libXmuu.so.1.0.0 $ROOTFS_DIR/usr/lib/libXmuu.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXmuu.so.1.0.0
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXmu-1.0.3"
+    touch "$STATE_DIR/libXmu-${LIBXMU_VERSION}"
 }
 
 build_libXmu

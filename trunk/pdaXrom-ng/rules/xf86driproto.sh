@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86DRIPROTO=xf86driproto-2.0.4.tar.bz2
+XF86DRIPROTO_VERSION=2.1.0
+XF86DRIPROTO=xf86driproto-${XF86DRIPROTO_VERSION}.tar.bz2
 XF86DRIPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XF86DRIPROTO_DIR=$BUILD_DIR/xf86driproto-2.0.4
+XF86DRIPROTO_DIR=$BUILD_DIR/xf86driproto-${XF86DRIPROTO_VERSION}
 XF86DRIPROTO_ENV=
 
 build_xf86driproto() {
-    test -e "$STATE_DIR/xf86driproto-2.0.3" && return
+    test -e "$STATE_DIR/xf86driproto-${XF86DRIPROTO_VERSION}" && return
     banner "Build $XF86DRIPROTO"
     download $XF86DRIPROTO_MIRROR $XF86DRIPROTO
     extract $XF86DRIPROTO
@@ -36,7 +37,7 @@ build_xf86driproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xf86driproto-2.0.3"
+    touch "$STATE_DIR/xf86driproto-${XF86DRIPROTO_VERSION}"
 }
 
 build_xf86driproto

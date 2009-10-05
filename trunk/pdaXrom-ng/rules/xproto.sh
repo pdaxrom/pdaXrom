@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XPROTO=xproto-7.0.14.tar.bz2
+XPROTO_VERSION=7.0.16
+XPROTO=xproto-${XPROTO_VERSION}.tar.bz2
 XPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XPROTO_DIR=$BUILD_DIR/xproto-7.0.14
+XPROTO_DIR=$BUILD_DIR/xproto-${XPROTO_VERSION}
 XPROTO_ENV=
 
 build_xproto() {
-    test -e "$STATE_DIR/xproto-7.0.10" && return
+    test -e "$STATE_DIR/xproto-${XPROTO_VERSION}" && return
     banner "Build $XPROTO"
     download $XPROTO_MIRROR $XPROTO
     extract $XPROTO
@@ -35,7 +36,7 @@ build_xproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xproto-7.0.10"
+    touch "$STATE_DIR/xproto-${XPROTO_VERSION}"
 }
 
 build_xproto

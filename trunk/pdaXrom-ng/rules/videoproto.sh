@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-VIDEOPROTO=videoproto-2.2.2.tar.bz2
+VIDEOPROTO_VERSION=2.3.0
+VIDEOPROTO=videoproto-${VIDEOPROTO_VERSION}.tar.bz2
 VIDEOPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-VIDEOPROTO_DIR=$BUILD_DIR/videoproto-2.2.2
+VIDEOPROTO_DIR=$BUILD_DIR/videoproto-${VIDEOPROTO_VERSION}
 VIDEOPROTO_ENV=
 
 build_videoproto() {
-    test -e "$STATE_DIR/videoproto-2.2.2" && return
+    test -e "$STATE_DIR/videoproto-${VIDEOPROTO_VERSION}" && return
     banner "Build $VIDEOPROTO"
     download $VIDEOPROTO_MIRROR $VIDEOPROTO
     extract $VIDEOPROTO
@@ -36,7 +37,7 @@ build_videoproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/videoproto-2.2.2"
+    touch "$STATE_DIR/videoproto-${VIDEOPROTO_VERSION}"
 }
 
 build_videoproto

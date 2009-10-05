@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-SCRNSAVERPROTO=scrnsaverproto-1.1.0.tar.bz2
+SCRNSAVERPROTO_VERSION=1.2.0
+SCRNSAVERPROTO=scrnsaverproto-${SCRNSAVERPROTO_VERSION}.tar.bz2
 SCRNSAVERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-SCRNSAVERPROTO_DIR=$BUILD_DIR/scrnsaverproto-1.1.0
+SCRNSAVERPROTO_DIR=$BUILD_DIR/scrnsaverproto-${SCRNSAVERPROTO_VERSION}
 SCRNSAVERPROTO_ENV=
 
 build_scrnsaverproto() {
-    test -e "$STATE_DIR/scrnsaverproto-1.1.0" && return
+    test -e "$STATE_DIR/scrnsaverproto-${SCRNSAVERPROTO_VERSION}" && return
     banner "Build $SCRNSAVERPROTO"
     download $SCRNSAVERPROTO_MIRROR $SCRNSAVERPROTO
     extract $SCRNSAVERPROTO
@@ -36,7 +37,7 @@ build_scrnsaverproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/scrnsaverproto-1.1.0"
+    touch "$STATE_DIR/scrnsaverproto-${SCRNSAVERPROTO_VERSION}"
 }
 
 build_scrnsaverproto

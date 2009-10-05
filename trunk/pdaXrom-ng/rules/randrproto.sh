@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-RANDRPROTO_VERSION=1.2.99.4
+RANDRPROTO_VERSION=1.3.0
 RANDRPROTO=randrproto-${RANDRPROTO_VERSION}.tar.bz2
 RANDRPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RANDRPROTO_DIR=$BUILD_DIR/randrproto-${RANDRPROTO_VERSION}

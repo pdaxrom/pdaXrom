@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBICE_VERSION=1.0.5
+LIBICE_VERSION=1.0.6
 LIBICE=libICE-${LIBICE_VERSION}.tar.bz2
 LIBICE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBICE_DIR=$BUILD_DIR/libICE-${LIBICE_VERSION}
@@ -34,11 +34,9 @@ build_libICE() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libICE.so.6.3.0 $ROOTFS_DIR/usr/lib/libICE.so.6.3.0 || error
-    ln -sf libICE.so.6.3.0 $ROOTFS_DIR/usr/lib/libICE.so.6
-    ln -sf libICE.so.6.3.0 $ROOTFS_DIR/usr/lib/libICE.so
-    $STRIP $ROOTFS_DIR/usr/lib/libICE.so.6.3.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libICE-${LIBICE_VERSION}"

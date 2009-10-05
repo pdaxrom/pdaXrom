@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXTST=libXtst-1.0.3.tar.bz2
+LIBXTST_VERSION=1.0.3
+LIBXTST=libXtst-${LIBXTST_VERSION}.tar.bz2
 LIBXTST_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXTST_DIR=$BUILD_DIR/libXtst-1.0.3
+LIBXTST_DIR=$BUILD_DIR/libXtst-${LIBXTST_VERSION}
 LIBXTST_ENV=
 
 build_libXtst() {
-    test -e "$STATE_DIR/libXtst-1.0.3" && return
+    test -e "$STATE_DIR/libXtst-${LIBXTST_VERSION}" && return
     banner "Build $LIBXTST"
     download $LIBXTST_MIRROR $LIBXTST
     extract $LIBXTST
@@ -34,14 +35,12 @@ build_libXtst() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXtst.so.6.1.0 $ROOTFS_DIR/usr/lib/libXtst.so.6.1.0 || error
-    ln -sf libXtst.so.6.1.0 $ROOTFS_DIR/usr/lib/libXtst.so.6
-    ln -sf libXtst.so.6.1.0 $ROOTFS_DIR/usr/lib/libXtst.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXtst.so.6.1.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXtst-1.0.3"
+    touch "$STATE_DIR/libXtst-${LIBXTST_VERSION}"
 }
 
 build_libXtst

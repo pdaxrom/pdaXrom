@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBPTHREAD_STUBS=libpthread-stubs-0.1.tar.bz2
+LIBPTHREAD_STUBS_VERSION=0.1
+LIBPTHREAD_STUBS=libpthread-stubs-${LIBPTHREAD_STUBS_VERSION}.tar.bz2
 LIBPTHREAD_STUBS_MIRROR=http://xcb.freedesktop.org/dist
-LIBPTHREAD_STUBS_DIR=$BUILD_DIR/libpthread-stubs-0.1
+LIBPTHREAD_STUBS_DIR=$BUILD_DIR/libpthread-stubs-${LIBPTHREAD_STUBS_VERSION}
 LIBPTHREAD_STUBS_ENV=
 
 build_libpthread_stubs() {
-    test -e "$STATE_DIR/libpthread_stubs-0.1" && return
+    test -e "$STATE_DIR/libpthread_stubs-${LIBPTHREAD_STUBS_VERSION}" && return
     banner "Build $LIBPTHREAD_STUBS"
     download $LIBPTHREAD_STUBS_MIRROR $LIBPTHREAD_STUBS
     extract $LIBPTHREAD_STUBS
@@ -35,7 +36,7 @@ build_libpthread_stubs() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/libpthread_stubs-0.1"
+    touch "$STATE_DIR/libpthread_stubs-${LIBPTHREAD_STUBS_VERSION}"
 }
 
 build_libpthread_stubs

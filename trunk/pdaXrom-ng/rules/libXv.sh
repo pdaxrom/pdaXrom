@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXV=libXv-1.0.4.tar.bz2
+LIBXV_VERSION=1.0.5
+LIBXV=libXv-${LIBXV_VERSION}.tar.bz2
 LIBXV_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXV_DIR=$BUILD_DIR/libXv-1.0.4
+LIBXV_DIR=$BUILD_DIR/libXv-${LIBXV_VERSION}
 LIBXV_ENV=
 
 build_libXv() {
-    test -e "$STATE_DIR/libXv-1.0.3" && return
+    test -e "$STATE_DIR/libXv-${LIBXV_VERSION}" && return
     banner "Build $LIBXV"
     download $LIBXV_MIRROR $LIBXV
     extract $LIBXV
@@ -35,14 +36,12 @@ build_libXv() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXv.so.1.0.0 $ROOTFS_DIR/usr/lib/libXv.so.1.0.0 || error
-    ln -sf libXv.so.1.0.0 $ROOTFS_DIR/usr/lib/libXv.so.1
-    ln -sf libXv.so.1.0.0 $ROOTFS_DIR/usr/lib/libXv.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXv.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXv-1.0.3"
+    touch "$STATE_DIR/libXv-${LIBXV_VERSION}"
 }
 
 build_libXv

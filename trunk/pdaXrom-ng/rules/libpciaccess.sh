@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBPCIACCESS=libpciaccess-0.10.5.tar.bz2
+LIBPCIACCESS_VERSION=0.10.9
+LIBPCIACCESS=libpciaccess-${LIBPCIACCESS_VERSION}.tar.bz2
 LIBPCIACCESS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBPCIACCESS_DIR=$BUILD_DIR/libpciaccess-0.10.5
+LIBPCIACCESS_DIR=$BUILD_DIR/libpciaccess-${LIBPCIACCESS_VERSION}
 LIBPCIACCESS_ENV=
 
 build_libpciaccess() {
-    test -e "$STATE_DIR/libpciaccess-0.10.5" && return
+    test -e "$STATE_DIR/libpciaccess-${LIBPCIACCESS_VERSION}" && return
     banner "Build $LIBPCIACCESS"
     download $LIBPCIACCESS_MIRROR $LIBPCIACCESS
     extract $LIBPCIACCESS
@@ -34,14 +35,12 @@ build_libpciaccess() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libpciaccess.so.0.10.2 $ROOTFS_DIR/usr/lib/libpciaccess.so.0.10.2 || error
-    ln -sf libpciaccess.so.0.10.2 $ROOTFS_DIR/usr/lib/libpciaccess.so.0
-    ln -sf libpciaccess.so.0.10.2 $ROOTFS_DIR/usr/lib/libpciaccess.so
-    $STRIP $ROOTFS_DIR/usr/lib/libpciaccess.so.0.10.2
-    
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
+
     popd
-    touch "$STATE_DIR/libpciaccess-0.10.5"
+    touch "$STATE_DIR/libpciaccess-${LIBPCIACCESS_VERSION}"
 }
 
 build_libpciaccess
