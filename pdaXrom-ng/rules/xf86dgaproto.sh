@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86DGAPROTO=xf86dgaproto-2.0.3.tar.bz2
+XF86DGAPROTO_VERSION=2.1
+XF86DGAPROTO=xf86dgaproto-${XF86DGAPROTO_VERSION}.tar.bz2
 XF86DGAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XF86DGAPROTO_DIR=$BUILD_DIR/xf86dgaproto-2.0.3
+XF86DGAPROTO_DIR=$BUILD_DIR/xf86dgaproto-${XF86DGAPROTO_VERSION}
 XF86DGAPROTO_ENV=
 
 build_xf86dgaproto() {
-    test -e "$STATE_DIR/xf86dgaproto-2.0.3" && return
+    test -e "$STATE_DIR/xf86dgaproto-${XF86DGAPROTO_VERSION}" && return
     banner "Build $XF86DGAPROTO"
     download $XF86DGAPROTO_MIRROR $XF86DGAPROTO
     extract $XF86DGAPROTO
@@ -36,7 +37,7 @@ build_xf86dgaproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xf86dgaproto-2.0.3"
+    touch "$STATE_DIR/xf86dgaproto-${XF86DGAPROTO_VERSION}"
 }
 
 build_xf86dgaproto

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXKBUI=libxkbui-1.0.2.tar.bz2
+LIBXKBUI_VERSION=1.0.2
+LIBXKBUI=libxkbui-${LIBXKBUI_VERSION}.tar.bz2
 LIBXKBUI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXKBUI_DIR=$BUILD_DIR/libxkbui-1.0.2
+LIBXKBUI_DIR=$BUILD_DIR/libxkbui-${LIBXKBUI_VERSION}
 LIBXKBUI_ENV=
 
 build_libxkbui() {
-    test -e "$STATE_DIR/libxkbui-1.0.2" && return
+    test -e "$STATE_DIR/libxkbui-${LIBXKBUI_VERSION}" && return
     banner "Build $LIBXKBUI"
     download $LIBXKBUI_MIRROR $LIBXKBUI
     extract $LIBXKBUI
@@ -34,14 +35,12 @@ build_libxkbui() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libxkbui.so.1.0.0 $ROOTFS_DIR/usr/lib/libxkbui.so.1.0.0 || error
-    ln -sf libxkbui.so.1.0.0 $ROOTFS_DIR/usr/lib/libxkbui.so.1
-    ln -sf libxkbui.so.1.0.0 $ROOTFS_DIR/usr/lib/libxkbui.so
-    $STRIP $ROOTFS_DIR/usr/lib/libxkbui.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libxkbui-1.0.2"
+    touch "$STATE_DIR/libxkbui-${LIBXKBUI_VERSION}"
 }
 
 build_libxkbui

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-DAMAGEPROTO=damageproto-1.1.0.tar.bz2
+DAMAGEPROTO_VERSION=1.2.0
+DAMAGEPROTO=damageproto-${DAMAGEPROTO_VERSION}.tar.bz2
 DAMAGEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-DAMAGEPROTO_DIR=$BUILD_DIR/damageproto-1.1.0
+DAMAGEPROTO_DIR=$BUILD_DIR/damageproto-${DAMAGEPROTO_VERSION}
 DAMAGEPROTO_ENV=
 
 build_damageproto() {
-    test -e "$STATE_DIR/damageproto-1.1.0" && return
+    test -e "$STATE_DIR/damageproto-${DAMAGEPROTO_VERSION}" && return
     banner "Build $DAMAGEPROTO"
     download $DAMAGEPROTO_MIRROR $DAMAGEPROTO
     extract $DAMAGEPROTO
@@ -36,7 +37,7 @@ build_damageproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/damageproto-1.1.0"
+    touch "$STATE_DIR/damageproto-${DAMAGEPROTO_VERSION}"
 }
 
 build_damageproto

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXDAMAGE=libXdamage-1.1.1.tar.bz2
+LIBXDAMAGE_VERSION=1.1.1
+LIBXDAMAGE=libXdamage-${LIBXDAMAGE_VERSION}.tar.bz2
 LIBXDAMAGE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXDAMAGE_DIR=$BUILD_DIR/libXdamage-1.1.1
+LIBXDAMAGE_DIR=$BUILD_DIR/libXdamage-${LIBXDAMAGE_VERSION}
 LIBXDAMAGE_ENV=
 
 build_libXdamage() {
-    test -e "$STATE_DIR/libXdamage-1.0.4" && return
+    test -e "$STATE_DIR/libXdamage-${LIBXDAMAGE_VERSION}" && return
     banner "Build $LIBXDAMAGE"
     download $LIBXDAMAGE_MIRROR $LIBXDAMAGE
     extract $LIBXDAMAGE
@@ -34,14 +35,12 @@ build_libXdamage() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXdamage.so.1.1.0 $ROOTFS_DIR/usr/lib/libXdamage.so.1.1.0 || error
-    ln -sf libXdamage.so.1.1.0 $ROOTFS_DIR/usr/lib/libXdamage.so.1
-    ln -sf libXdamage.so.1.1.0 $ROOTFS_DIR/usr/lib/libXdamage.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXdamage.so.1.1.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXdamage-1.0.4"
+    touch "$STATE_DIR/libXdamage-${LIBXDAMAGE_VERSION}"
 }
 
 build_libXdamage

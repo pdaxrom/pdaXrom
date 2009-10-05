@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXKBFILE=libxkbfile-1.0.5.tar.bz2
+LIBXKBFILE_VERSION=1.0.5
+LIBXKBFILE=libxkbfile-${LIBXKBFILE_VERSION}.tar.bz2
 LIBXKBFILE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXKBFILE_DIR=$BUILD_DIR/libxkbfile-1.0.5
+LIBXKBFILE_DIR=$BUILD_DIR/libxkbfile-${LIBXKBFILE_VERSION}
 LIBXKBFILE_ENV=
 
 build_libxkbfile() {
-    test -e "$STATE_DIR/libxkbfile-1.0.4" && return
+    test -e "$STATE_DIR/libxkbfile-${LIBXKBFILE_VERSION}" && return
     banner "Build $LIBXKBFILE"
     download $LIBXKBFILE_MIRROR $LIBXKBFILE
     extract $LIBXKBFILE
@@ -34,14 +35,12 @@ build_libxkbfile() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libxkbfile.so.1.0.2 $ROOTFS_DIR/usr/lib/libxkbfile.so.1.0.2 || error
-    ln -sf libxkbfile.so.1.0.2 $ROOTFS_DIR/usr/lib/libxkbfile.so.1
-    ln -sf libxkbfile.so.1.0.2 $ROOTFS_DIR/usr/lib/libxkbfile.so
-    $STRIP $ROOTFS_DIR/usr/lib/libxkbfile.so.1.0.2
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libxkbfile-1.0.4"
+    touch "$STATE_DIR/libxkbfile-${LIBXKBFILE_VERSION}"
 }
 
 build_libxkbfile

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXINERAMA=libXinerama-1.0.3.tar.bz2
+LIBXINERAMA_VERSION=1.0.3
+LIBXINERAMA=libXinerama-${LIBXINERAMA_VERSION}.tar.bz2
 LIBXINERAMA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXINERAMA_DIR=$BUILD_DIR/libXinerama-1.0.3
+LIBXINERAMA_DIR=$BUILD_DIR/libXinerama-${LIBXINERAMA_VERSION}
 LIBXINERAMA_ENV=
 
 build_libXinerama() {
-    test -e "$STATE_DIR/libXinerama-1.0.2" && return
+    test -e "$STATE_DIR/libXinerama-${LIBXINERAMA_VERSION}" && return
     banner "Build $LIBXINERAMA"
     download $LIBXINERAMA_MIRROR $LIBXINERAMA
     extract $LIBXINERAMA
@@ -35,14 +36,12 @@ build_libXinerama() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXinerama.so.1.0.0 $ROOTFS_DIR/usr/lib/libXinerama.so.1.0.0 || error
-    ln -sf libXinerama.so.1.0.0 $ROOTFS_DIR/usr/lib/libXinerama.so.1
-    ln -sf libXinerama.so.1.0.0 $ROOTFS_DIR/usr/lib/libXinerama.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXinerama.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXinerama-1.0.2"
+    touch "$STATE_DIR/libXinerama-${LIBXINERAMA_VERSION}"
 }
 
 build_libXinerama

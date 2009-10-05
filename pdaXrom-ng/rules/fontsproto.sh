@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-FONTSPROTO=fontsproto-2.0.2.tar.bz2
+FONTSPROTO_VERSION=2.1.0
+FONTSPROTO=fontsproto-${FONTSPROTO_VERSION}.tar.bz2
 FONTSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-FONTSPROTO_DIR=$BUILD_DIR/fontsproto-2.0.2
+FONTSPROTO_DIR=$BUILD_DIR/fontsproto-${FONTSPROTO_VERSION}
 FONTSPROTO_ENV=
 
 build_fontsproto() {
-    test -e "$STATE_DIR/fontsproto-2.0.2" && return
+    test -e "$STATE_DIR/fontsproto-${FONTSPROTO_VERSION}" && return
     banner "Build $FONTSPROTO"
     download $FONTSPROTO_MIRROR $FONTSPROTO
     extract $FONTSPROTO
@@ -35,7 +36,7 @@ build_fontsproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/fontsproto-2.0.2"
+    touch "$STATE_DIR/fontsproto-${FONTSPROTO_VERSION}"
 }
 
 build_fontsproto

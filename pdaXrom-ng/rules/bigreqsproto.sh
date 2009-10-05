@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-BIGREQSPROTO=bigreqsproto-1.0.2.tar.bz2
+BIGREQSPROTO_VERSION=1.1.0
+BIGREQSPROTO=bigreqsproto-${BIGREQSPROTO_VERSION}.tar.bz2
 BIGREQSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-BIGREQSPROTO_DIR=$BUILD_DIR/bigreqsproto-1.0.2
+BIGREQSPROTO_DIR=$BUILD_DIR/bigreqsproto-${BIGREQSPROTO_VERSION}
 BIGREQSPROTO_ENV=
 
 build_bigreqsproto() {
-    test -e "$STATE_DIR/bigreqsproto-1.0.2" && return
+    test -e "$STATE_DIR/bigreqsproto-${BIGREQSPROTO_VERSION}" && return
     banner "Build $BIGREQSPROTO"
     download $BIGREQSPROTO_MIRROR $BIGREQSPROTO
     extract $BIGREQSPROTO
@@ -36,7 +37,7 @@ build_bigreqsproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/bigreqsproto-1.0.2"
+    touch "$STATE_DIR/bigreqsproto-${BIGREQSPROTO_VERSION}"
 }
 
 build_bigreqsproto

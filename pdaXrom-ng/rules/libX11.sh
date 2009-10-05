@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBX11_VERSION=1.2
+LIBX11_VERSION=1.3
 LIBX11=libX11-${LIBX11_VERSION}.tar.bz2
 LIBX11_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBX11_DIR=$BUILD_DIR/libX11-${LIBX11_VERSION}
@@ -43,10 +43,10 @@ build_libX11() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 src/.libs/libX11.so.6.2.0 $ROOTFS_DIR/usr/lib/libX11.so.6.2.0
-    ln -sf libX11.so.6.2.0 $ROOTFS_DIR/usr/lib/libX11.so.6
-    ln -sf libX11.so.6.2.0 $ROOTFS_DIR/usr/lib/libX11.so
-    $STRIP $ROOTFS_DIR/usr/lib/libX11.so.6.2.0
+    $INSTALL -D -m 644 src/.libs/libX11.so.6.3.0 $ROOTFS_DIR/usr/lib/libX11.so.6.3.0
+    ln -sf libX11.so.6.3.0 $ROOTFS_DIR/usr/lib/libX11.so.6
+    ln -sf libX11.so.6.3.0 $ROOTFS_DIR/usr/lib/libX11.so
+    $STRIP $ROOTFS_DIR/usr/lib/libX11.so.6.3.0
     
     $INSTALL -D -m 644 src/.libs/libX11-xcb.so.1.0.0 $ROOTFS_DIR/usr/lib/libX11-xcb.so.1.0.0
     ln -sf libX11-xcb.so.1.0.0 $ROOTFS_DIR/usr/lib/libX11-xcb.so.1

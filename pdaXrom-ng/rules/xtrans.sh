@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XTRANS_VERSION=1.2.3
+XTRANS_VERSION=1.2.4
 XTRANS=xtrans-${XTRANS_VERSION}.tar.bz2
 XTRANS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 XTRANS_DIR=$BUILD_DIR/xtrans-${XTRANS_VERSION}

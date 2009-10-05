@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXCOMPOSITE=libXcomposite-0.4.0.tar.bz2
+LIBXCOMPOSITE_VERSION=0.4.0
+LIBXCOMPOSITE=libXcomposite-${LIBXCOMPOSITE_VERSION}.tar.bz2
 LIBXCOMPOSITE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXCOMPOSITE_DIR=$BUILD_DIR/libXcomposite-0.4.0
+LIBXCOMPOSITE_DIR=$BUILD_DIR/libXcomposite-${LIBXCOMPOSITE_VERSION}
 LIBXCOMPOSITE_ENV=
 
 build_libXcomposite() {
-    test -e "$STATE_DIR/libXcomposite-0.4.0" && return
+    test -e "$STATE_DIR/libXcomposite-${LIBXCOMPOSITE_VERSION}" && return
     banner "Build $LIBXCOMPOSITE"
     download $LIBXCOMPOSITE_MIRROR $LIBXCOMPOSITE
     extract $LIBXCOMPOSITE
@@ -34,14 +35,12 @@ build_libXcomposite() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXcomposite.so.1.0.0 $ROOTFS_DIR/usr/lib/libXcomposite.so.1.0.0 || error
-    ln -sf libXcomposite.so.1.0.0 $ROOTFS_DIR/usr/lib/libXcomposite.so.1
-    ln -sf libXcomposite.so.1.0.0 $ROOTFS_DIR/usr/lib/libXcomposite.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXcomposite.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXcomposite-0.4.0"
+    touch "$STATE_DIR/libXcomposite-${LIBXCOMPOSITE_VERSION}"
 }
 
 build_libXcomposite

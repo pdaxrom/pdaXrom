@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-INPUTPROTO=inputproto-1.5.0.tar.bz2
+INPUTPROTO_VERSION=1.5.0
+INPUTPROTO=inputproto-${INPUTPROTO_VERSION}.tar.bz2
 INPUTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-INPUTPROTO_DIR=$BUILD_DIR/inputproto-1.5.0
+INPUTPROTO_DIR=$BUILD_DIR/inputproto-${INPUTPROTO_VERSION}
 INPUTPROTO_ENV=
 
 build_inputproto() {
-    test -e "$STATE_DIR/inputproto-1.4.2.1" && return
+    test -e "$STATE_DIR/inputproto-${INPUTPROTO_VERSION}" && return
     banner "Build $INPUTPROTO"
     download $INPUTPROTO_MIRROR $INPUTPROTO
     extract $INPUTPROTO
@@ -35,7 +36,7 @@ build_inputproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/inputproto-1.4.2.1"
+    touch "$STATE_DIR/inputproto-${INPUTPROTO_VERSION}"
 }
 
 build_inputproto

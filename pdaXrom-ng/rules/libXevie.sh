@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXEVIE=libXevie-1.0.2.tar.bz2
+LIBXEVIE_VERSION=1.0.2
+LIBXEVIE=libXevie-${LIBXEVIE_VERSION}.tar.bz2
 LIBXEVIE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXEVIE_DIR=$BUILD_DIR/libXevie-1.0.2
+LIBXEVIE_DIR=$BUILD_DIR/libXevie-${LIBXEVIE_VERSION}
 LIBXEVIE_ENV=
 
 build_libXevie() {
-    test -e "$STATE_DIR/libXevie-1.0.2" && return
+    test -e "$STATE_DIR/libXevie-${LIBXEVIE_VERSION}" && return
     banner "Build $LIBXEVIE"
     download $LIBXEVIE_MIRROR $LIBXEVIE
     extract $LIBXEVIE
@@ -35,14 +36,12 @@ build_libXevie() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXevie.so.1.0.0 $ROOTFS_DIR/usr/lib/libXevie.so.1.0.0 || error
-    ln -sf libXevie.so.1.0.0 $ROOTFS_DIR/usr/lib/libXevie.so.1
-    ln -sf libXevie.so.1.0.0 $ROOTFS_DIR/usr/lib/libXevie.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXevie.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXevie-1.0.2"
+    touch "$STATE_DIR/libXevie-${LIBXEVIE_VERSION}"
 }
 
 build_libXevie

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_INTEL_VERSION=2.6.3
+XF86_VIDEO_INTEL_VERSION=2.9.0
 XF86_VIDEO_INTEL=xf86-video-intel-${XF86_VIDEO_INTEL_VERSION}.tar.bz2
 XF86_VIDEO_INTEL_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_INTEL_DIR=$BUILD_DIR/xf86-video-intel-${XF86_VIDEO_INTEL_VERSION}

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-FONTCACHEPROTO=fontcacheproto-0.1.2.tar.bz2
+FONTCACHEPROTO_VERSION=0.1.3
+FONTCACHEPROTO=fontcacheproto-${FONTCACHEPROTO_VERSION}.tar.bz2
 FONTCACHEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-FONTCACHEPROTO_DIR=$BUILD_DIR/fontcacheproto-0.1.2
+FONTCACHEPROTO_DIR=$BUILD_DIR/fontcacheproto-${FONTCACHEPROTO_VERSION}
 FONTCACHEPROTO_ENV=
 
 build_fontcacheproto() {
-    test -e "$STATE_DIR/fontcacheproto-0.1.2" && return
+    test -e "$STATE_DIR/fontcacheproto-${FONTCACHEPROTO_VERSION}" && return
     banner "Build $FONTCACHEPROTO"
     download $FONTCACHEPROTO_MIRROR $FONTCACHEPROTO
     extract $FONTCACHEPROTO
@@ -35,7 +36,7 @@ build_fontcacheproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/fontcacheproto-0.1.2"
+    touch "$STATE_DIR/fontcacheproto-${FONTCACHEPROTO_VERSION}"
 }
 
 build_fontcacheproto

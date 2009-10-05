@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-RECORDPROTO=recordproto-1.13.2.tar.bz2
+RECORDPROTO_VERSION=1.13.2
+RECORDPROTO=recordproto-${RECORDPROTO_VERSION}.tar.bz2
 RECORDPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-RECORDPROTO_DIR=$BUILD_DIR/recordproto-1.13.2
+RECORDPROTO_DIR=$BUILD_DIR/recordproto-${RECORDPROTO_VERSION}
 RECORDPROTO_ENV=
 
 build_recordproto() {
-    test -e "$STATE_DIR/recordproto-1.13.2" && return
+    test -e "$STATE_DIR/recordproto-${RECORDPROTO_VERSION}" && return
     banner "Build $RECORDPROTO"
     download $RECORDPROTO_MIRROR $RECORDPROTO
     extract $RECORDPROTO
@@ -36,7 +37,7 @@ build_recordproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/recordproto-1.13.2"
+    touch "$STATE_DIR/recordproto-${RECORDPROTO_VERSION}"
 }
 
 build_recordproto

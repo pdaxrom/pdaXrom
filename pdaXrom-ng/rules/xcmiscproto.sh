@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XCMISCPROTO=xcmiscproto-1.1.2.tar.bz2
+XCMISCPROTO_VERSION=1.2.0
+XCMISCPROTO=xcmiscproto-${XCMISCPROTO_VERSION}.tar.bz2
 XCMISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XCMISCPROTO_DIR=$BUILD_DIR/xcmiscproto-1.1.2
+XCMISCPROTO_DIR=$BUILD_DIR/xcmiscproto-${XCMISCPROTO_VERSION}
 XCMISCPROTO_ENV=
 
 build_xcmiscproto() {
-    test -e "$STATE_DIR/xcmiscproto-1.1.2" && return
+    test -e "$STATE_DIR/xcmiscproto-${XCMISCPROTO_VERSION}" && return
     banner "Build $XCMISCPROTO"
     download $XCMISCPROTO_MIRROR $XCMISCPROTO
     extract $XCMISCPROTO
@@ -36,7 +37,7 @@ build_xcmiscproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xcmiscproto-1.1.2"
+    touch "$STATE_DIR/xcmiscproto-${XCMISCPROTO_VERSION}"
 }
 
 build_xcmiscproto

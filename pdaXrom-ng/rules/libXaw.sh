@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXAW=libXaw-1.0.4.tar.bz2
+LIBXAW_VERSION=1.0.6
+LIBXAW=libXaw-${LIBXAW_VERSION}.tar.bz2
 LIBXAW_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXAW_DIR=$BUILD_DIR/libXaw-1.0.4
+LIBXAW_DIR=$BUILD_DIR/libXaw-${LIBXAW_VERSION}
 LIBXAW_ENV=
 
 build_libXaw() {
-    test -e "$STATE_DIR/libXaw-1.0.4" && return
+    test -e "$STATE_DIR/libXaw-${LIBXAW_VERSION}" && return
     banner "Build $LIBXAW"
     download $LIBXAW_MIRROR $LIBXAW
     extract $LIBXAW
@@ -37,22 +38,12 @@ build_libXaw() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-#    $INSTALL -D -m 644 src/.libs/libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so.8.0.0 || error
-#    ln -sf libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so.8
-#    ln -sf libXaw8.so.8.0.0 $ROOTFS_DIR/usr/lib/libXaw8.so
-#    $STRIP $ROOTFS_DIR/usr/lib/libXaw8.so.8.0.0
 
-    $INSTALL -D -m 644 src/.libs/libXaw7.so.7.0.0 $ROOTFS_DIR/usr/lib/libXaw7.so.7.0.0 || error
-    ln -sf libXaw7.so.7.0.0 $ROOTFS_DIR/usr/lib/libXaw7.so.7
-    ln -sf libXaw7.so.7.0.0 $ROOTFS_DIR/usr/lib/libXaw7.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXaw7.so.7.0.0
-
-    ln -sf libXaw7.so.7 $ROOTFS_DIR/usr/lib/libXaw.so.7
-    ln -sf libXaw7.so   $ROOTFS_DIR/usr/lib/libXaw.so
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXaw-1.0.4"
+    touch "$STATE_DIR/libXaw-${LIBXAW_VERSION}"
 }
 
 build_libXaw

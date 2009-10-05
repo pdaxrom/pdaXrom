@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXSCRNSAVER=libXScrnSaver-1.1.3.tar.bz2
+LIBXSCRNSAVER_VERSION=1.2.0
+LIBXSCRNSAVER=libXScrnSaver-${LIBXSCRNSAVER_VERSION}.tar.bz2
 LIBXSCRNSAVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXSCRNSAVER_DIR=$BUILD_DIR/libXScrnSaver-1.1.3
+LIBXSCRNSAVER_DIR=$BUILD_DIR/libXScrnSaver-${LIBXSCRNSAVER_VERSION}
 LIBXSCRNSAVER_ENV=
 
 build_libXScrnSaver() {
-    test -e "$STATE_DIR/libXScrnSaver-1.1.2" && return
+    test -e "$STATE_DIR/libXScrnSaver-${LIBXSCRNSAVER_VERSION}" && return
     banner "Build $LIBXSCRNSAVER"
     download $LIBXSCRNSAVER_MIRROR $LIBXSCRNSAVER
     extract $LIBXSCRNSAVER
@@ -35,14 +36,12 @@ build_libXScrnSaver() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXss.so.1.0.0 $ROOTFS_DIR/usr/lib/libXss.so.1.0.0 || error
-    ln -sf libXss.so.1.0.0 $ROOTFS_DIR/usr/lib/libXss.so.1
-    ln -sf libXss.so.1.0.0 $ROOTFS_DIR/usr/lib/libXss.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXss.so.1.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXScrnSaver-1.1.2"
+    touch "$STATE_DIR/libXScrnSaver-${LIBXSCRNSAVER_VERSION}"
 }
 
 build_libXScrnSaver

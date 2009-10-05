@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXXF86DGA=libXxf86dga-1.0.2.tar.bz2
+LIBXXF86DGA_VERSION=1.1
+LIBXXF86DGA=libXxf86dga-${LIBXXF86DGA_VERSION}.tar.bz2
 LIBXXF86DGA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXXF86DGA_DIR=$BUILD_DIR/libXxf86dga-1.0.2
+LIBXXF86DGA_DIR=$BUILD_DIR/libXxf86dga-${LIBXXF86DGA_VERSION}
 LIBXXF86DGA_ENV=
 
 build_libXxf86dga() {
-    test -e "$STATE_DIR/libXxf86dga-1.0.2" && return
+    test -e "$STATE_DIR/libXxf86dga-${LIBXXF86DGA_VERSION}" && return
     banner "Build $LIBXXF86DGA"
     download $LIBXXF86DGA_MIRROR $LIBXXF86DGA
     extract $LIBXXF86DGA
@@ -36,13 +37,11 @@ build_libXxf86dga() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 src/.libs/libXxf86dga.so.1.0.0 $ROOTFS_DIR/usr/lib/libXxf86dga.so.1.0.0 || error
-    ln -sf libXxf86dga.so.1.0.0 $ROOTFS_DIR/usr/lib/libXxf86dga.so.1
-    ln -sf libXxf86dga.so.1.0.0 $ROOTFS_DIR/usr/lib/libXxf86dga.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXxf86dga.so.1.0.0
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXxf86dga-1.0.2"
+    touch "$STATE_DIR/libXxf86dga-${LIBXXF86DGA_VERSION}"
 }
 
 build_libXxf86dga

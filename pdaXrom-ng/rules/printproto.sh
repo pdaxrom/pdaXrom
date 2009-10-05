@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-PRINTPROTO=printproto-1.0.4.tar.bz2
+PRINTPROTO_VERSION=1.0.4
+PRINTPROTO=printproto-${PRINTPROTO_VERSION}.tar.bz2
 PRINTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-PRINTPROTO_DIR=$BUILD_DIR/printproto-1.0.4
+PRINTPROTO_DIR=$BUILD_DIR/printproto-${PRINTPROTO_VERSION}
 PRINTPROTO_ENV=
 
 build_printproto() {
-    test -e "$STATE_DIR/printproto-1.0.3" && return
+    test -e "$STATE_DIR/printproto-${PRINTPROTO_VERSION}" && return
     banner "Build $PRINTPROTO"
     download $PRINTPROTO_MIRROR $PRINTPROTO
     extract $PRINTPROTO
@@ -35,7 +36,7 @@ build_printproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/printproto-1.0.3"
+    touch "$STATE_DIR/printproto-${PRINTPROTO_VERSION}"
 }
 
 build_printproto

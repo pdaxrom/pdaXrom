@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXXF86MISC=libXxf86misc-1.0.1.tar.bz2
+LIBXXF86MISC_VERSION=1.0.1
+LIBXXF86MISC=libXxf86misc-${LIBXXF86MISC_VERSION}.tar.bz2
 LIBXXF86MISC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXXF86MISC_DIR=$BUILD_DIR/libXxf86misc-1.0.1
+LIBXXF86MISC_DIR=$BUILD_DIR/libXxf86misc-${LIBXXF86MISC_VERSION}
 LIBXXF86MISC_ENV=
 
 build_libXxf86misc() {
-    test -e "$STATE_DIR/libXxf86misc-1.0.1" && return
+    test -e "$STATE_DIR/libXxf86misc-${LIBXXF86MISC_VERSION}" && return
     banner "Build $LIBXXF86MISC"
     download $LIBXXF86MISC_MIRROR $LIBXXF86MISC
     extract $LIBXXF86MISC
@@ -35,14 +36,12 @@ build_libXxf86misc() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 src/.libs/libXxf86misc.so.1.1.0 $ROOTFS_DIR/usr/lib/libXxf86misc.so.1.1.0 || error
-    ln -sf libXxf86misc.so.1.1.0 $ROOTFS_DIR/usr/lib/libXxf86misc.so.1
-    ln -sf libXxf86misc.so.1.1.0 $ROOTFS_DIR/usr/lib/libXxf86misc.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXxf86misc.so.1.1.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXxf86misc-1.0.1"
+    touch "$STATE_DIR/libXxf86misc-${LIBXXF86MISC_VERSION}"
 }
 
 build_libXxf86misc

@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXDMCP=libXdmcp-1.0.2.tar.bz2
+LIBXDMCP_VERSION=1.0.3
+LIBXDMCP=libXdmcp-${LIBXDMCP_VERSION}.tar.bz2
 LIBXDMCP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXDMCP_DIR=$BUILD_DIR/libXdmcp-1.0.2
+LIBXDMCP_DIR=$BUILD_DIR/libXdmcp-${LIBXDMCP_VERSION}
 LIBXDMCP_ENV=
 
 build_libXdmcp() {
-    test -e "$STATE_DIR/libXdmcp-1.0.2" && return
+    test -e "$STATE_DIR/libXdmcp-${LIBXDMCP_VERSION}" && return
     banner "Build $LIBXDMCP"
     download $LIBXDMCP_MIRROR $LIBXDMCP
     extract $LIBXDMCP
@@ -34,13 +35,11 @@ build_libXdmcp() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 .libs/libXdmcp.so.6.0.0 $ROOTFS_DIR/usr/lib/libXdmcp.so.6.0.0 || error
-    ln -sf libXdmcp.so.6.0.0 $ROOTFS_DIR/usr/lib/libXdmcp.so.6
-    ln -sf libXdmcp.so.6.0.0 $ROOTFS_DIR/usr/lib/libXdmcp.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXdmcp.so.6.0.0
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXdmcp-1.0.2"
+    touch "$STATE_DIR/libXdmcp-${LIBXDMCP_VERSION}"
 }
 
 build_libXdmcp

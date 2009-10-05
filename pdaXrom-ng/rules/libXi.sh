@@ -37,11 +37,9 @@ build_libXi() {
     make $MAKEARGS || error "build"
 
     install_sysroot_files || error "install"
-    
-    $INSTALL -D -m 644 src/.libs/libXi.so.6.0.0 $ROOTFS_DIR/usr/lib/libXi.so.6.0.0 || error "rootfs"
-    ln -sf libXi.so.6.0.0 $ROOTFS_DIR/usr/lib/libXi.so.6
-    ln -sf libXi.so.6.0.0 $ROOTFS_DIR/usr/lib/libXi.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXi.so.6.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libXi-${LIBXI_VERSION}"

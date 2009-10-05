@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-GLPROTO=glproto-1.4.9.tar.bz2
+GLPROTO_VERSION=1.4.9
+GLPROTO=glproto-${GLPROTO_VERSION}.tar.bz2
 GLPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-GLPROTO_DIR=$BUILD_DIR/glproto-1.4.9
+GLPROTO_DIR=$BUILD_DIR/glproto-${GLPROTO_VERSION}
 GLPROTO_ENV=
 
 build_glproto() {
-    test -e "$STATE_DIR/glproto-1.4.8" && return
+    test -e "$STATE_DIR/glproto-${GLPROTO_VERSION}" && return
     banner "Build $GLPROTO"
     download $GLPROTO_MIRROR $GLPROTO
     extract $GLPROTO
@@ -36,7 +37,7 @@ build_glproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/glproto-1.4.8"
+    touch "$STATE_DIR/glproto-${GLPROTO_VERSION}"
 }
 
 build_glproto

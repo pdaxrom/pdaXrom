@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86VIDMODEPROTO=xf86vidmodeproto-2.2.2.tar.bz2
+XF86VIDMODEPROTO_VERSION=2.2.2
+XF86VIDMODEPROTO=xf86vidmodeproto-${XF86VIDMODEPROTO_VERSION}.tar.bz2
 XF86VIDMODEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
-XF86VIDMODEPROTO_DIR=$BUILD_DIR/xf86vidmodeproto-2.2.2
+XF86VIDMODEPROTO_DIR=$BUILD_DIR/xf86vidmodeproto-${XF86VIDMODEPROTO_VERSION}
 XF86VIDMODEPROTO_ENV=
 
 build_xf86vidmodeproto() {
-    test -e "$STATE_DIR/xf86vidmodeproto-2.2.2" && return
+    test -e "$STATE_DIR/xf86vidmodeproto-${XF86VIDMODEPROTO_VERSION}" && return
     banner "Build $XF86VIDMODEPROTO"
     download $XF86VIDMODEPROTO_MIRROR $XF86VIDMODEPROTO
     extract $XF86VIDMODEPROTO
@@ -36,7 +37,7 @@ build_xf86vidmodeproto() {
     install_sysroot_files || error
 
     popd
-    touch "$STATE_DIR/xf86vidmodeproto-2.2.2"
+    touch "$STATE_DIR/xf86vidmodeproto-${XF86VIDMODEPROTO_VERSION}"
 }
 
 build_xf86vidmodeproto

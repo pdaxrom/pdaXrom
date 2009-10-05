@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-LIBXFONTCACHE=libXfontcache-1.0.4.tar.bz2
+LIBXFONTCACHE_VERSION=1.0.4
+LIBXFONTCACHE=libXfontcache-${LIBXFONTCACHE_VERSION}.tar.bz2
 LIBXFONTCACHE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
-LIBXFONTCACHE_DIR=$BUILD_DIR/libXfontcache-1.0.4
+LIBXFONTCACHE_DIR=$BUILD_DIR/libXfontcache-${LIBXFONTCACHE_VERSION}
 LIBXFONTCACHE_ENV=
 
 build_libXfontcache() {
-    test -e "$STATE_DIR/libXfontcache-1.0.4" && return
+    test -e "$STATE_DIR/libXfontcache-${LIBXFONTCACHE_VERSION}" && return
     banner "Build $LIBXFONTCACHE"
     download $LIBXFONTCACHE_MIRROR $LIBXFONTCACHE
     extract $LIBXFONTCACHE
@@ -37,13 +38,11 @@ build_libXfontcache() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 src/.libs/libXfontcache.so.1.0.0 $ROOTFS_DIR/usr/lib/libXfontcache.so.1.0.0 || error
-    ln -sf libXfontcache.so.1.0.0 $ROOTFS_DIR/usr/lib/libXfontcache.so.1
-    ln -sf libXfontcache.so.1.0.0 $ROOTFS_DIR/usr/lib/libXfontcache.so
-    $STRIP $ROOTFS_DIR/usr/lib/libXfontcache.so.1.0.0
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/libXfontcache-1.0.4"
+    touch "$STATE_DIR/libXfontcache-${LIBXFONTCACHE_VERSION}"
 }
 
 build_libXfontcache
