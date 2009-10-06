@@ -21,3 +21,5 @@ lzma/do_mounts_rd.c.diff
 build_nonpreempt.patch
 aufs2_2.6.30.patch
 aufs2_squashfs_lzma.patch
+
+patch-2.6.31.2.patch
