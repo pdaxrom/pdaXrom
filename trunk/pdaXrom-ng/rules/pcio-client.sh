@@ -23,11 +23,15 @@ pcio_login() {
     test -e "$STATE_DIR/pcio_login.installed" && return
     pushd $TOP_DIR
     cd $PCIO_SVN_DIR/client/login
-    
+
     test -f Makefile && make distclean
 
+    local VERSION=`cd $PCIO_SVN_DIR && LANG=en_US svn info 2>&1 | grep Revision | awk '{print $2}'`
+    cp -f revision.h.in revision.h
+    sed -i -e "s|@REVISION@|${VERSION}|" revision.h
+
     qmake || error "qmake"
-    
+
     make $MAKEARGS || error "make"
 
 
