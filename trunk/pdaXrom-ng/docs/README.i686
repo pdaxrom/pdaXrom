@@ -1,11 +1,13 @@
 Compile i686 crosscompiler:
-sudo ./build-crosstools-i686.sh
+sudo ./build.sh i686/build-crosstools-i686.sh
 
 Clean working directory:
-sudo ./build-crosstools-i686.sh clean
+sudo ./build.sh i686/build-crosstools-i686.sh clean
 
 Compile mini system:
-./build-linux-basic.sh
+./build.sh i686/build-linux-basic.sh clean
+./build.sh i686/build-linux-basic.sh
 
 Compile full distro:
-./build-linux.sh
+./build.sh i686/build-linux.sh clean
+./build.sh i686/build-linux.sh

@@ -2,17 +2,19 @@
 
 TOP_DIR="$PWD"
 
-SRC_DIR=`dirname "${TOP_DIR}/$0"`
+SRC_DIR=`dirname "$0"`
+SRC_DIR=`readlink -m "$SRC_DIR"`
+
 DST_DIR=$1
 
 if [ "x$DST_DIR" = "x" ]; then
-    echo "$0 <build dir path>"
+    echo "$0 <new working directory>"
     exit 1
 fi
 
-mkdir -p $DST_DIR || exit 1
-
 echo "$SRC_DIR -> $DST_DIR"
+
+mkdir -p $DST_DIR || exit 1
 
 for f in $SRC_DIR/*; do
     t=`basename $f`

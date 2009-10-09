@@ -1,0 +1,13 @@
+Compile loongson2f mips64el N32 crosscompiler:
+sudo ./build.sh yeeloong/build-crosstools-yeeloong-n32.sh
+
+Clean working directory:
+sudo ./build.sh yeeloong/build-crosstools-yeeloong-n32.sh clean
+
+Compile mini system:
+./build.sh yeeloong/build-linux-basic-yeeloong-n32.sh clean
+./build.sh yeeloong/build-linux-basic-yeeloong-n32.sh
+
+Compile full distro:
+./build.sh yeeloong/build-linux-yeeloong-n32.sh clean
+./build.sh yeeloong/build-linux-yeeloong-n32.sh
