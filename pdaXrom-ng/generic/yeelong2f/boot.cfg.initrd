@@ -3,11 +3,9 @@ default 0
 showmenu 1
 
 title pdaXrom NG HD
-        kernel /dev/fs/ext2@wd0/boot/vmlinux
-        initrd /dev/fs/ext2@wd0/boot/initrd.img
+        kernel /dev/fs/ext2@wd0/boot/zImage
         args console=tty root=/dev/ram0 no_auto_cmd
 
 title pdaXrom NG USB
-        kernel /dev/fs/ext2@usb0/boot/vmlinux
-        initrd /dev/fs/ext2@usb0/boot/initrd.img
+        kernel /dev/fs/ext2@usb0/boot/zImage
         args console=tty root=/dev/ram0 no_auto_cmd
