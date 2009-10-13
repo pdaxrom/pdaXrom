@@ -18,7 +18,7 @@ prod*)
     echo "Production client"
     PCIO_HOSTS="200.170.196.227"
     ;;
-dev*)
+*)
     echo "Devnode client"
     ISOIMAGE_NAME="pcio-client-dev-yeeloong2f"
     ;;
