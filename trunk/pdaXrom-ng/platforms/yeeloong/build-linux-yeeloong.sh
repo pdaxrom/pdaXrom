@@ -8,8 +8,8 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 TARGET_VENDOR_PATCH=ls2f
 
-KERNEL_VERSION="2.6.30"
-KERNEL_CONFIG=yeeloong2f_2.6.30.6
+KERNEL_VERSION="2.6.31"
+KERNEL_CONFIG=yeeloong2f_2.6.31
 
 . ./sets/packages-basic.inc
 . ./sets/packages-acpi.inc
@@ -51,7 +51,8 @@ KERNEL_CONFIG=yeeloong2f_2.6.30.6
 
 . $RULES_DIR/install_locale.sh
 
-. $RULES_DIR/fnkey-yeeloong2f.sh
+#. $RULES_DIR/fnkey-yeeloong2f.sh
+
 . $RULES_DIR/tweak-yeelong2f.sh
 
 . ./sets/packages-host-squashfs.inc
