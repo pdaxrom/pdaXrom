@@ -3,9 +3,9 @@ default 0
 showmenu 1
 
 title pdaXrom NG HD
-        kernel /dev/fs/ext2@wd0/boot/zImage
+        kernel /dev/fs/ext2@wd0/boot/vmlinuz
         args console=tty root=/dev/ram0 no_auto_cmd
 
 title pdaXrom NG USB
-        kernel /dev/fs/ext2@usb0/boot/zImage
+        kernel /dev/fs/ext2@usb0/boot/vmlinuz
         args console=tty root=/dev/ram0 no_auto_cmd

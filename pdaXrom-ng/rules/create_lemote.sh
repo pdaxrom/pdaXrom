@@ -10,7 +10,7 @@ create_lemote() {
 	cp -f $GENERICFS_DIR/yeelong2f/boot.cfg $T/boot/
     fi
     cp -f $IMAGES_DIR/rootfs.img $T/boot/
-    cp -f $IMAGES_DIR/zImage     $T/boot/
+    cp -f $IMAGES_DIR/${TARGET_KERNEL_IMAGE-vmlinuz} $T/boot/
     
     pushd $TOP_DIR
     cd $T
