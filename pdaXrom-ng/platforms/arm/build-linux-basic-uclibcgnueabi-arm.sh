@@ -7,7 +7,12 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 KERNEL_VERSION="2.6.28"
 KERNEL_CONFIG=versatile-kernel-2.6.28
 
+U_BOOT_VERSION=2009.08
+U_BOOT_CONFIG=versatilepb
+
 . ./sets/packages-basic.inc
+
+. $RULES_DIR/u-boot.sh
 
 . ./sets/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh
