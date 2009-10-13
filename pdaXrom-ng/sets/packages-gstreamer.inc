@@ -1,6 +1,8 @@
 . $RULES_DIR/gstreamer.sh
 
 . $RULES_DIR/SDL.sh
+. $RULES_DIR/libmad.sh
+. $RULES_DIR/libid3tag.sh
 . $RULES_DIR/liboil.sh
 . $RULES_DIR/libogg.sh
 . $RULES_DIR/libvorbis.sh
@@ -14,4 +16,4 @@
 . $RULES_DIR/gst-plugins-bad.sh
 #. $RULES_DIR/gst-plugins-gl.sh
 . $RULES_DIR/gst-ffmpeg.sh
-
+. $RULES_DIR/gst-player.sh
