@@ -55,6 +55,8 @@ USE_AUFS2="yes"
 
 . ./sets/packages-x-voip.inc
 
+. ./sets/packages-gparted.inc
+
 . ./sets/packages-mc.inc
 . ./sets/packages-devel.inc
 
