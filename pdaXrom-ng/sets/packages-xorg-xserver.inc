@@ -19,4 +19,4 @@
 #
 # Xorg autoconfiguring at startup
 #
-. $RULES_DIR/xorg-init.sh
+#. $RULES_DIR/xorg-init.sh

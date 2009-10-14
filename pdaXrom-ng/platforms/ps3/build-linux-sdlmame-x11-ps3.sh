@@ -15,6 +15,9 @@ TARGET_VENDOR_PATCH=ps3
 . ./sets/packages-libs.inc
 
 . ./sets/packages-xorg-xlib.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
 . ./sets/packages-xorg-drivers.inc
 . ./sets/packages-xorg-apps.inc
@@ -26,8 +29,6 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/unrar.sh
 
 . $RULES_DIR/nano.sh
-
-. ./sets/packages-hal.inc
 . $RULES_DIR/boolstuff.sh
 . $RULES_DIR/halevt.sh
 

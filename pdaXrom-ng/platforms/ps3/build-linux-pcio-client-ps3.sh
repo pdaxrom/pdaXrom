@@ -28,6 +28,9 @@ esac
 . ./sets/packages-libs.inc
 
 . ./sets/packages-xorg-xlib.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
@@ -41,8 +44,6 @@ esac
 . ./sets/packages-xorg-msttcorefonts.inc
 
 . ./sets/packages-pcio-client.sh
-
-. ./sets/packages-hal.inc
 . $RULES_DIR/boolstuff.sh
 . $RULES_DIR/halevt.sh
 
