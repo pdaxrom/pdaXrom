@@ -20,8 +20,10 @@ KERNEL_CONFIG=yeeloong2f_2.6.31
 
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
-#. ./sets/packages-xorg-drivers.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
 . $RULES_DIR/xf86-input-joystick.sh
@@ -40,8 +42,6 @@ KERNEL_CONFIG=yeeloong2f_2.6.31
 #. ./sets/packages-emulators.inc
 
 . ./sets/packages-x-apps.inc
-
-. ./sets/packages-hal.inc
 
 . ./sets/packages-x-lxde.inc
 
