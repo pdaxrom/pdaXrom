@@ -54,7 +54,7 @@ get_kernel_image() {
 	echo ${TARGET_KERNEL_IMAGE-zImage}
 	;;
     mips*-ls2f-*)
-	echo ${TARGET_KERNEL_IMAGE-vmlinuz}
+	echo ${TARGET_KERNEL_IMAGE-zImage}
 	;;
     mips*)
 	echo ${TARGET_KERNEL_IMAGE-vmlinux}
