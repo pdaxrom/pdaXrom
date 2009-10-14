@@ -20,6 +20,9 @@ USE_FASTBOOT=yes
 
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
@@ -36,8 +39,6 @@ USE_FASTBOOT=yes
 #. ./sets/packages-emulators.inc
 
 . ./sets/packages-x-apps.inc
-
-. ./sets/packages-hal.inc
 
 . ./sets/packages-x-lxde.inc
 

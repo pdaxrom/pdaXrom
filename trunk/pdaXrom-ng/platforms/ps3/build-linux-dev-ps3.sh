@@ -25,6 +25,9 @@ USE_AUFS2="yes"
 
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
@@ -42,8 +45,6 @@ USE_AUFS2="yes"
 
 . ./sets/packages-x-apps.inc
 
-. ./sets/packages-hal.inc
-
 . ./sets/packages-x-lxde.inc
 
 . ./sets/packages-x-office.inc
@@ -55,6 +56,8 @@ USE_AUFS2="yes"
 . ./sets/packages-x-vkeyboard.inc
 
 . $RULES_DIR/sixaxisdmouse.sh
+
+. ./sets/packages-gparted.inc
 
 . ./sets/packages-mc.inc
 . ./sets/packages-devel.inc
