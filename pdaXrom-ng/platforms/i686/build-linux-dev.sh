@@ -22,6 +22,9 @@ USE_SPLASH="yes"
 
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
 . ./sets/packages-xorg-drivers.inc
 . ./sets/packages-xorg-apps.inc
@@ -32,8 +35,6 @@ USE_SPLASH="yes"
 #. ./sets/packages-emulators.inc
 
 . ./sets/packages-x-apps.inc
-
-. ./sets/packages-hal.inc
 
 . ./sets/packages-x-lxde.inc
 

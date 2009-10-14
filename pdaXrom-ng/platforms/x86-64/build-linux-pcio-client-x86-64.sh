@@ -27,6 +27,9 @@ esac
 . ./sets/packages-libs.inc
 
 . ./sets/packages-xorg-xlib.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
 . ./sets/packages-xorg-drivers.inc
 . ./sets/packages-xorg-apps.inc
@@ -34,8 +37,6 @@ esac
 . ./sets/packages-xorg-msttcorefonts.inc
 
 . ./sets/packages-pcio-client.sh
-
-. ./sets/packages-hal.inc
 . $RULES_DIR/boolstuff.sh
 . $RULES_DIR/halevt.sh
 
