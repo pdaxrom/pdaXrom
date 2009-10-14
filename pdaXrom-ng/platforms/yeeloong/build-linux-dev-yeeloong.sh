@@ -22,8 +22,10 @@ USE_AUFS2="yes"
 
 . ./sets/packages-xorg-xlib.inc
 . ./sets/packages-x-gtk2.inc
+
+. ./sets/packages-hal.inc
+
 . ./sets/packages-xorg-xserver.inc
-#. ./sets/packages-xorg-drivers.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
 . $RULES_DIR/xf86-input-joystick.sh
@@ -42,8 +44,6 @@ USE_AUFS2="yes"
 #. ./sets/packages-emulators.inc
 
 . ./sets/packages-x-apps.inc
-
-. ./sets/packages-hal.inc
 
 . ./sets/packages-x-lxde.inc
 
