@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-GDB=gdb-6.8.tar.bz2
+GDB_VERSION=7.0
+GDB=gdb-${GDB_VERSION}.tar.bz2
 GDB_MIRROR=http://ftp.gnu.org/gnu/gdb
-GDB_DIR=$BUILD_DIR/gdb-6.8
+GDB_DIR=$BUILD_DIR/gdb-${GDB_VERSION}
 GDB_ENV="$CROSS_ENV_AC \
 	gdb_cv_func_sigsetjmp=yes \
 	bash_cv_func_strcoll_broken=no \
