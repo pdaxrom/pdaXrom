@@ -79,6 +79,9 @@ get_kernel_image_path() {
     mips*-ls2f-*)
 	echo ${KERNEL_DIR}/arch/mips/boot/compressed/${TARGET_KERNEL_IMAGE-vmlinuz}
 	;;
+    mips*-jz-*)
+	echo ${KERNEL_DIR}/arch/mips/boot/${TARGET_KERNEL_IMAGE-vmlinux}
+	;;
     mips*)
 	echo ${KERNEL_DIR}/${TARGET_KERNEL_IMAGE-vmlinux}
 	;;
