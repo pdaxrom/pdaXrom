@@ -12,12 +12,19 @@ TARGET_KERNEL_IMAGE=uImage
 
 #TARGET_JFFS2_ERASEBLOCK=16384
 #TARGET_JFFS2_PAGESIZE=4096
-TARGET_JFFS2_ARGS="-p -n"
+#TARGET_JFFS2_ARGS="-p -n"
 
 . ./sets/packages-basic.inc
 
 #. $RULES_DIR/tweak-stb610.sh
-#. $RULES_DIR/create_initramfs.sh
+. $RULES_DIR/create_initramfs.sh
 
-. ./sets/packages-host-mtd-utils.inc
-. $RULES_DIR/create_jffs2.sh
+#. ./sets/packages-host-mtd-utils.inc
+#. $RULES_DIR/create_jffs2.sh
+
+SQUASHFS_LZMA=no
+
+. ./sets/packages-host-squashfs.inc
+. $RULES_DIR/create_squashfs.sh
+
+. $RULES_DIR/create_epc700.sh
