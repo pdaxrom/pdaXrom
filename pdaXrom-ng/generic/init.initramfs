@@ -104,11 +104,14 @@ boot_rootfs() {
 
 check_rootfs() {
     mount -n /dev/$1 /mnt 2>/dev/null || return
-    
+
     if [ -e /mnt/boot/rootfs.img ]; then
 	if cmp -s /uuid /mnt/boot/uuid ; then
 	    echo "Detected root image on /dev/$1!"
 	    splash_text "Detected root image on /dev/$1!"
+	    IMAGE_SIZE=`ls -l /mnt/boot/rootfs.img | awk '{ print $5 }'`
+	    echo "Image size: $((IMAGE_SIZE / 1048576))MB"
+	    
 	    if [ -e /dev/ps3vram ]; then
 		/sbin/losetup -o 134217728 /dev/loop0 /dev/ps3vram && /sbin/mkswap /dev/loop0 >/dev/null 2>/dev/null && swapon /dev/loop0
 		echo -n "Copy root image to vram ... "
@@ -116,6 +119,9 @@ check_rootfs() {
 		dd if=/mnt/boot/rootfs.img of=/dev/ps3vram bs=1M >/dev/null 2>/dev/null && echo "done!" || echo "error!"
 		umount /mnt
 		mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs && boot_rootfs
+	    elif [ $(( IMAGE_SIZE * 2)) -gt $TOTAL_MEMORY ]; then
+		echo "Mount root image locally"
+		mount -n -o loop,ro -t squashfs /mnt/boot/rootfs.img /rootfs && boot_rootfs
 	    else
 		echo -n "Copy root image to ram ... "
 		splash_text "Copy root image to ram"
@@ -131,6 +137,10 @@ check_rootfs() {
     
     umount /mnt
 }
+
+TOTAL_MEMORY=`grep "MemTotal:" /proc/meminfo | awk '{ print $2 }'`
+echo "Total Memory: $((TOTAL_MEMORY / 1024))MB"
+TOTAL_MEMORY=$((TOTAL_MEMORY * 1024))
 
 for d in *; do
     case $d in

@@ -71,7 +71,7 @@ create_initramfs() {
     ln -sf ../bin/busybox $INITRAMFS_DIR/bin/sh || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     
-    for f in [ test mknod tr cut cmp grep; do
+    for f in [ test mknod tr cut cmp grep awk wc; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
     done
 
@@ -122,7 +122,7 @@ create_initramfs() {
     echo "nod /dev/tty3    0640 0 0 c 4 3" >> $BUILD_DIR/initramfs.list
     echo "nod /dev/null    0666 0 0 c 1 3" >> $BUILD_DIR/initramfs.list
 
-    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS zImage CONFIG_INITRAMFS_SOURCE=$BUILD_DIR/initramfs.list || error
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS ${TARGET_KERNEL_IMAGE-zImage} CONFIG_INITRAMFS_SOURCE=$BUILD_DIR/initramfs.list || error
 
     popd
 }

@@ -141,6 +141,29 @@ diff -Nur linux-2.6.24.3-orig/arch/mips/Kconfig linux-2.6.24.3/arch/mips/Kconfig
  config JZ4730_PMP
  	bool "Ingenic JZ4730 PMP board"
  	select DMA_NONCOHERENT
+diff -Nur linux-2.6.24.3-orig/drivers/mmc/host/jz_mmc.c linux-2.6.24.3/drivers/mmc/host/jz_mmc.c
+--- linux-2.6.24.3-orig/drivers/mmc/host/jz_mmc.c	2009-10-16 01:06:28.000000000 +0700
++++ linux-2.6.24.3/drivers/mmc/host/jz_mmc.c	2009-10-16 16:53:53.000000000 +0700
+@@ -867,7 +867,7 @@
+ 	printk("JZ SD/MMC card driver registered\n");
+ 
+ 	/* Detect card during initialization */
+-#ifdef CONFIG_SOC_JZ4740
++#if defined(CONFIG_SOC_JZ4740) || defined(CONFIG_SOC_JZ4730)
+ 	if (!jz_mmc_slot_is_empty(0)) {
+ 		mmc_slot_enable = 1;
+ 		mmc_detect_change(host->mmc, 0);
+diff -Nur linux-2.6.24.3-orig/drivers/mtd/nand/jz4730_nand.c linux-2.6.24.3/drivers/mtd/nand/jz4730_nand.c
+--- linux-2.6.24.3-orig/drivers/mtd/nand/jz4730_nand.c	2009-10-16 01:06:30.000000000 +0700
++++ linux-2.6.24.3/drivers/mtd/nand/jz4730_nand.c	2009-10-16 11:32:56.000000000 +0700
+@@ -395,6 +395,7 @@
+ #endif
+ 	/* MINIPC workaround: */
+ 	this->ecc.mode       = NAND_ECC_NONE;
++	//this->ecc.mode       = NAND_ECC_SOFT;
+ 
+ 	//this_1->ecc.mode     = NAND_ECC_NONE;
+ 
 diff -Nur linux-2.6.24.3-orig/drivers/video/jzlcd.h linux-2.6.24.3/drivers/video/jzlcd.h
 --- linux-2.6.24.3-orig/drivers/video/jzlcd.h	2009-10-16 01:06:30.000000000 +0700
 +++ linux-2.6.24.3/drivers/video/jzlcd.h	2009-10-16 02:44:27.000000000 +0700
