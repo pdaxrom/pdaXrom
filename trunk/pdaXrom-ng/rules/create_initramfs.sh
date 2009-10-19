@@ -70,7 +70,8 @@ create_initramfs() {
 
     ln -sf ../bin/busybox $INITRAMFS_DIR/bin/sh || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
-    
+    ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/mkswap || error
+
     for f in [ test mknod tr cut cmp grep awk wc; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
     done
