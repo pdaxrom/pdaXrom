@@ -87,10 +87,12 @@ int uinput_open(int mode)
 	    }
 	}
     } else {
-	ioctl (fd, UI_SET_ABSBIT, REL_X);
-	ioctl (fd, UI_SET_ABSBIT, REL_Y);
-	ioctl (fd, UI_SET_ABSBIT, REL_Z);
-	ioctl (fd, UI_SET_ABSBIT, REL_RZ);
+	ioctl (fd, UI_SET_ABSBIT, ABS_X);	// LX
+	ioctl (fd, UI_SET_ABSBIT, ABS_Y);	// LY
+	ioctl (fd, UI_SET_ABSBIT, ABS_Z);	// RX
+	ioctl (fd, UI_SET_ABSBIT, ABS_RX);	// RY
+	ioctl (fd, UI_SET_ABSBIT, 12);		// L2
+	ioctl (fd, UI_SET_ABSBIT, 13);		// R2
 	for (i = 40; i < 64; i++) {
 	    if (ioctl (fd, UI_SET_ABSBIT, i) < 0) {
 		fprintf(stderr, "error on uinput ioctl (UI_SET_ABSBIT)\n");
