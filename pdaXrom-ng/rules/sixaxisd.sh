@@ -9,21 +9,20 @@
 # see the README file.
 #
 
-SIXAXISD_VERSION=0.2.1
-SIXAXISD=sixaxisd-${SIXAXISD_VERSION}.tar.bz2
-SIXAXISD_MIRROR=http://mail.pdaxrom.org/downloads/PS3/bootloader/src
-SIXAXISD_DIR=$BUILD_DIR/sixaxisd-${SIXAXISD_VERSION}
+SIXAXISD=sixaxisd-svn
+SIXAXISD_SVN=http://pdaxrom.svn.sourceforge.net/svnroot/pdaxrom/trunk/sixaxisd
+SIXAXISD_DIR=$BUILD_DIR/${SIXAXISD}
 SIXAXISD_ENV="$CROSS_ENV_AC"
 
 build_sixaxisd() {
     test -e "$STATE_DIR/sixaxisd.installed" && return
     banner "Build sixaxisd"
-    download $SIXAXISD_MIRROR $SIXAXISD
-    extract $SIXAXISD
+    download_svn $SIXAXISD_SVN $SIXAXISD
+    cp -R $SRC_DIR/$SIXAXISD $SIXAXISD_DIR
     apply_patches $SIXAXISD_DIR $SIXAXISD
     pushd $TOP_DIR
     cd $SIXAXISD_DIR
-    
+
     make $MAKEARGS CC=${CROSS}gcc || error
 
     $INSTALL -D -m 755 sixaxisd $ROOTFS_DIR/usr/bin/sixaxisd || error
