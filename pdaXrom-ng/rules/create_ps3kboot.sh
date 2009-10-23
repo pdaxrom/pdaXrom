@@ -13,9 +13,9 @@ create_ps3kboot() {
 
     make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS zImage.initrd || error
 
-    cp -f $KERNEL_DIR/arch/powerpc/boot/otheros.bld $IMAGES_DIR/pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.bld || error "copy otheros.bld"
+    cp -f $KERNEL_DIR/arch/powerpc/boot/otheros.bld $IMAGES_DIR/pdaXrom-ng-otheros-`date +%Y%m%d`.bld || error "copy otheros.bld"
     cd $IMAGES_DIR
-    md5sum pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.bld > pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.bld.md5sum
+    md5sum pdaXrom-ng-otheros-`date +%Y%m%d`.bld > pdaXrom-ng-otheros-`date +%Y%m%d`.bld.md5sum
 
     local T=`echo /tmp/ps3boot.$$`
 
@@ -25,9 +25,9 @@ create_ps3kboot() {
 
     cd $T
     
-    zip -9r $IMAGES_DIR/pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.zip .
+    zip -9r $IMAGES_DIR/pdaXrom-ng-otheros-`date +%Y%m%d`.zip .
     cd $IMAGES_DIR
-    md5sum pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.zip > pdaXrom-ng-otheros-${PS3BOOT_VERSION}-`date +%Y%m%d`.zip.md5sum
+    md5sum pdaXrom-ng-otheros-`date +%Y%m%d`.zip > pdaXrom-ng-otheros-`date +%Y%m%d`.zip.md5sum
 
     popd
     
