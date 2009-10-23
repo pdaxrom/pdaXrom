@@ -363,6 +363,8 @@ void bootdevice_boot(void)
 			ps3boot_quit();
 			return;
 		    }
+		    system("killall -9 sixaxisd");
+		    sleep(1);
 		    snprintf(buf, 1024, KEXEC_BIN " -f ");
 		    if (conf->initrd) {
 			strcat(buf, "--initrd=");
@@ -389,6 +391,7 @@ void bootdevice_boot(void)
 			rc = system(buf);
 			sprintf(buf, MOUNT_DIR "%s", dev->device);
 			rc = rmdir(buf);
+			exit(0);
 			return;
 		    } else
 			return;
