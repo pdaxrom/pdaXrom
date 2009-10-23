@@ -363,8 +363,7 @@ void bootdevice_boot(void)
 			ps3boot_quit();
 			return;
 		    }
-		    system("killall -9 sixaxisd");
-		    sleep(1);
+		    system("hciconfig hci0 down");
 		    snprintf(buf, 1024, KEXEC_BIN " -f ");
 		    if (conf->initrd) {
 			strcat(buf, "--initrd=");
