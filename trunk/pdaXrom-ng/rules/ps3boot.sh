@@ -9,29 +9,29 @@
 # see the README file.
 #
 
-PS3BOOT_VERSION=0.1.2
-PS3BOOT=ps3boot-${PS3BOOT_VERSION}.tar.bz2
-PS3BOOT_MIRROR=http://mail.pdaxrom.org/downloads/PS3/bootloader/src
-PS3BOOT_DIR=$BUILD_DIR/ps3boot-${PS3BOOT_VERSION}
+PS3BOOT=ps3boot-svn
+PS3BOOT_SVN=http://pdaxrom.svn.sourceforge.net/svnroot/pdaxrom/trunk/ps3boot
+PS3BOOT_DIR=$BUILD_DIR/${PS3BOOT}
 PS3BOOT_ENV="$CROSS_ENV_AC"
+PS3BOOT_VERSION=r`cd $PS3BOOT_DIR && LANG=en_US svn info 2>&1 | grep Revision | awk '{print $2}'`
 
 build_ps3boot() {
-    test -e "$STATE_DIR/ps3boot-${PS3BOOT_VERSION}.installed" && return
+    test -e "$STATE_DIR/${PS3BOOT}.installed" && return
     banner "Build ps3boot"
-    download $PS3BOOT_MIRROR $PS3BOOT
-    extract $PS3BOOT
+    download_svn $PS3BOOT_SVN $PS3BOOT
+    cp -R $SRC_DIR/$PS3BOOT $PS3BOOT_DIR
     apply_patches $PS3BOOT_DIR $PS3BOOT
     pushd $TOP_DIR
     cd $PS3BOOT_DIR
-    
+
     make $MAKEARGS CC=${CROSS}gcc SYSTEM=linuxfb DATADIR=/usr/share/ps3boot || error
-    
+
     $INSTALL -D -m 755 ps3boot $ROOTFS_DIR/usr/sbin/ps3boot || error
     $STRIP $ROOTFS_DIR/usr/sbin/ps3boot
 
     $INSTALL -D -m 755 ps3boot-udev $ROOTFS_DIR/usr/sbin/ps3boot-udev || error
     $STRIP $ROOTFS_DIR/usr/sbin/ps3boot-udev
-    
+
     for f in artwork/*.* fonts/Vera.ttf; do
 	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/share/ps3boot/$f || error
     done
@@ -41,7 +41,7 @@ build_ps3boot() {
     install_rc_start ps3boot 50
 
     popd
-    touch "$STATE_DIR/ps3boot-${PS3BOOT_VERSION}.installed"
+    touch "$STATE_DIR/${PS3BOOT}.installed"
 }
 
 build_ps3boot
