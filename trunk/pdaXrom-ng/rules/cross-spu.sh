@@ -148,9 +148,20 @@ build_libspe2() {
 	;;
     esac
 
-    make ARCH=$SPE2_CPU CROSS_COMPILE=1 CROSS=${CROSS} || error
+    local ELFSPE_ALL=""
+    local ELFSPE_INSTALL=""
+    case $TARGET_ARCH in
+    *uclibc*)
+	;;
+    *)
+	ELFSPE_ALL=elfspe-all
+	ELFSPE_INSTALL=elfspe-install
+	;;
+    esac
 
-    make ARCH=$SPE2_CPU CROSS_COMPILE=1 CROSS=${CROSS} SYSROOT=$TOOLCHAIN_SYSROOT install || error
+    make ARCH=$SPE2_CPU CROSS_COMPILE=1 CROSS=${CROSS} all $ELFSPE_ALL || error
+
+    make ARCH=$SPE2_CPU CROSS_COMPILE=1 CROSS=${CROSS} SYSROOT=$TOOLCHAIN_SYSROOT install $ELFSPE_INSTALL || error
 
     for f in as cpp embedspu g++ gcc ld; do
 	case $TARGET_ARCH in
