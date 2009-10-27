@@ -21,6 +21,8 @@ case "$1" in
   stop)
 	log_begin_msg -n "Stopping sixaxis bluetooth mouse emulator"
 	killall sixaxisd 2>/dev/null >/dev/null
+	/usr/sbin/hciconfig hci0 down 2>/dev/null >/dev/null
+	true
 	log_end_msg $?
 	;;
   *)
