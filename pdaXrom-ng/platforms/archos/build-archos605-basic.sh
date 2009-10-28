@@ -14,7 +14,7 @@ KERNEL_OLDCONFIG_ENABLED=no
 
 ./generic/cpio-archos605/archos605.sh
 
-. ./sets/packages-basic.inc
+. $SETS_DIR/packages-basic.inc
 
 #. $RULES_DIR/create_initramfs.sh
-#. ./sets/packages-host-mtd-utils.inc
+#. $SETS_DIR/packages-host-mtd-utils.inc

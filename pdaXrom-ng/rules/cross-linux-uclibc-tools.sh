@@ -108,8 +108,12 @@ install_uclibc_headers() {
 	    fi
 	    ;;
 	esac
-    else
+    elif [ -e $BSP_CONFIG_DIR/uClibc/$UCLIBC_CONFIG ]; then
+	cp $BSP_CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
+    elif [ -e $CONFIG_DIR/uClibc/$UCLIBC_CONFIG ]; then
 	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
+    else
+	cp $UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
     fi
     
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include oldconfig || error

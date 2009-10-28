@@ -14,26 +14,26 @@ TARGET_KERNEL_IMAGE=uImage
 #TARGET_JFFS2_PAGESIZE=4096
 TARGET_JFFS2_ARGS="-p -n"
 
-. ./sets/packages-basic.inc
-. ./sets/packages-mmlibs.inc
-. ./sets/packages-libs.inc
+. $SETS_DIR/packages-basic.inc
+. $SETS_DIR/packages-mmlibs.inc
+. $SETS_DIR/packages-libs.inc
 
-. ./sets/packages-xorg-xlib.inc
-. ./sets/packages-x-gtk2.inc
-. ./sets/packages-xorg-xserver.inc
-. ./sets/packages-xorg-drivers.inc
-. ./sets/packages-xorg-apps.inc
-. ./sets/packages-xorg-fonts.inc
+. $SETS_DIR/packages-xorg-xlib.inc
+. $SETS_DIR/packages-x-gtk2.inc
+. $SETS_DIR/packages-xorg-xserver.inc
+. $SETS_DIR/packages-xorg-drivers.inc
+. $SETS_DIR/packages-xorg-apps.inc
+. $SETS_DIR/packages-xorg-fonts.inc
 
-#. ./sets/packages-emulators.inc
+#. $SETS_DIR/packages-emulators.inc
 
-. ./sets/packages-x-apps.inc
-. ./sets/packages-hal.inc
-. ./sets/packages-x-lxde.inc
+. $SETS_DIR/packages-x-apps.inc
+. $SETS_DIR/packages-hal.inc
+. $SETS_DIR/packages-x-lxde.inc
 
-. ./sets/packages-x-office.inc
+. $SETS_DIR/packages-x-office.inc
 
 . $RULES_DIR/tweak-stb610.sh
 #. $RULES_DIR/create_initramfs.sh
-. ./sets/packages-host-mtd-utils.inc
+. $SETS_DIR/packages-host-mtd-utils.inc
 . $RULES_DIR/create_jffs2.sh

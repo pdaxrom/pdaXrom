@@ -13,10 +13,10 @@ CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
 #CROSS_OPT_CFLAGS="-O3"
 #CROSS_OPT_CXXFLAGS="-O3"
 
-. ./sets/packages-basic.inc
-. ./sets/packages-mmlibs.inc
+. $SETS_DIR/packages-basic.inc
+. $SETS_DIR/packages-mmlibs.inc
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 

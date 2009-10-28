@@ -13,19 +13,19 @@ KERNEL_CONFIG=yeeloong2f_2.6.31
 
 USE_AUFS2="yes"
 
-. ./sets/packages-basic.inc
-. ./sets/packages-acpi.inc
-. ./sets/packages-mmlibs.inc
-. ./sets/packages-libs.inc
+. $SETS_DIR/packages-basic.inc
+. $SETS_DIR/packages-acpi.inc
+. $SETS_DIR/packages-mmlibs.inc
+. $SETS_DIR/packages-libs.inc
 
 . $RULES_DIR/wpa_supplicant.sh
 
-. ./sets/packages-xorg-xlib.inc
-. ./sets/packages-x-gtk2.inc
+. $SETS_DIR/packages-xorg-xlib.inc
+. $SETS_DIR/packages-x-gtk2.inc
 
-. ./sets/packages-hal.inc
+. $SETS_DIR/packages-hal.inc
 
-. ./sets/packages-xorg-xserver.inc
+. $SETS_DIR/packages-xorg-xserver.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
 . $RULES_DIR/xf86-input-joystick.sh
@@ -36,25 +36,25 @@ USE_AUFS2="yes"
 . $RULES_DIR/xf86-video-siliconmotion.sh
 . $RULES_DIR/xf86-video-v4l.sh
 
-. ./sets/packages-xorg-apps.inc
-. ./sets/packages-xorg-fonts.inc
+. $SETS_DIR/packages-xorg-apps.inc
+. $SETS_DIR/packages-xorg-fonts.inc
 
-. ./sets/packages-xorg-msttcorefonts.inc
+. $SETS_DIR/packages-xorg-msttcorefonts.inc
 
-#. ./sets/packages-emulators.inc
+#. $SETS_DIR/packages-emulators.inc
 
-. ./sets/packages-x-apps.inc
+. $SETS_DIR/packages-x-apps.inc
 
-. ./sets/packages-x-lxde.inc
+. $SETS_DIR/packages-x-lxde.inc
 
-. ./sets/packages-x-office.inc
+. $SETS_DIR/packages-x-office.inc
 
-. ./sets/packages-x-voip.inc
+. $SETS_DIR/packages-x-voip.inc
 
-. ./sets/packages-gparted.inc
+. $SETS_DIR/packages-gparted.inc
 
-. ./sets/packages-mc.inc
-. ./sets/packages-devel.inc
+. $SETS_DIR/packages-mc.inc
+. $SETS_DIR/packages-devel.inc
 
 . $RULES_DIR/install_locale.sh
 
@@ -62,7 +62,7 @@ USE_AUFS2="yes"
 
 . $RULES_DIR/tweak-yeelong2f.sh
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 

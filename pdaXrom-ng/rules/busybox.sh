@@ -12,7 +12,13 @@ build_busybox() {
     download $BUSYBOX_MIRROR $BUSYBOX
     extract $BUSYBOX
     apply_patches $BUSYBOX_DIR $BUSYBOX
-    cp $CONFIG_DIR/busybox/$BUSYBOX_CONFIG $BUSYBOX_DIR/.config || error "check busybox config file"
+    if [ -e $BSP_CONFIG_DIR/busybox/$BUSYBOX_CONFIG ]; then
+	cp $BSP_CONFIG_DIR/busybox/$BUSYBOX_CONFIG $BUSYBOX_DIR/.config || error "check busybox config file"
+    elif [ -e $CONFIG_DIR/busybox/$BUSYBOX_CONFIG ]; then
+	cp $CONFIG_DIR/busybox/$BUSYBOX_CONFIG $BUSYBOX_DIR/.config || error "check busybox config file"
+    else
+	cp $BUSYBOX_CONFIG $BUSYBOX_DIR/.config || error "check busybox config file"
+    fi
     pushd $TOP_DIR
     cd $BUSYBOX_DIR
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`

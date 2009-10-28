@@ -9,10 +9,10 @@ TARGET_VENDOR_PATCH=ls2f
 KERNEL_VERSION="2.6.31"
 KERNEL_CONFIG=yeeloong2f_2.6.31
 
-. ./sets/packages-basic.inc
-. ./sets/packages-mmlibs.inc
+. $SETS_DIR/packages-basic.inc
+. $SETS_DIR/packages-mmlibs.inc
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 

@@ -1,4 +1,4 @@
-. ./sets/packages-emu-mame-qmc2.inc
-. ./sets/packages-emu-n64.inc
-. ./sets/packages-emu-pyldin601.inc
-. ./sets/packages-emu-qemu.inc
+. $SETS_DIR/packages-emu-mame-qmc2.inc
+. $SETS_DIR/packages-emu-n64.inc
+. $SETS_DIR/packages-emu-pyldin601.inc
+. $SETS_DIR/packages-emu-qemu.inc

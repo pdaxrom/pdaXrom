@@ -56,9 +56,12 @@ CYGWIN*)
     ;;
 esac
 
+unset SETS_DIR
+
 TOP_DIR="$PWD"
 SRC_DIR="$TOP_DIR/src"
 RULES_DIR="$TOP_DIR/rules"
+SETS_DIR="$TOP_DIR/sets"
 BUILD_DIR="$TOP_DIR/build"
 HOST_BUILD_DIR="$BUILD_DIR/host"
 PATCH_DIR="$TOP_DIR/patches"
@@ -71,6 +74,14 @@ HOST_BIN_DIR="$TOP_DIR/host"
 TARGET_BIN_DIR="$TOP_DIR/target"
 TARGET_INC="$TARGET_BIN_DIR/include"
 TARGET_LIB="$TARGET_BIN_DIR/lib"
+
+BSP_DIR=`dirname $0`
+BSP_SRC_DIR="BSP_DIR/src"
+BSP_RULES_DIR="$BSP_DIR/rules"
+BSP_SETS_DIR="$BSP_DIR/sets"
+BSP_PATCH_DIR="$BSP_DIR/patches"
+BSP_GENERICFS_DIR="$BSP_DIR/generic"
+BSP_CONFIG_DIR="$BSP_DIR/configs"
 
 IMAGES_DIR="$TOP_DIR/images"
 
@@ -134,47 +145,69 @@ download_git() {
 }
 
 extract() {
-    local src_d=${1/.*}
-    test -e "$STATE_DIR/$src_d.extracted" && return
+    local src=${1/.*}
+    test -e "$STATE_DIR/$src.extracted" && return
+
+    local src_d=""
+
+    if [ -e $BSP_SRC_DIR/$1 ]; then
+	src_d=$BSP_SRC_DIR
+    elif [ -e $SRC_DIR/$1 ]; then
+	src_d=$SRC_DIR
+    else
+	error "Source $1 doesn't exist!"
+    fi
+
     echo "Extracting $1"
     case $1 in
     *.tar.gz|*.tgz)
-	tar -zxf "$SRC_DIR/$1" -C "$BUILD_DIR" || error "Extract $1"
+	tar -zxf "$src_d/$1" -C "$BUILD_DIR" || error "Extract $1"
 	;;
     *.tar.bz2|*.tbz2)
-	tar -jxf "$SRC_DIR/$1" -C "$BUILD_DIR" || error "Extract $1"
+	tar -jxf "$src_d/$1" -C "$BUILD_DIR" || error "Extract $1"
 	;;
     *)
-	if [ -e $SRC_DIR/$1 ]; then
-	    cp -R $SRC_DIR/$1 $BUILD_DIR/ || error "Copy sources $1"
+	if [ -e $src_d/$1 ]; then
+	    cp -R $src_d/$1 $BUILD_DIR/ || error "Copy sources $1"
 	else
 	    error "Unknown archive $1"
 	fi
 	;;
     esac
-    touch "$STATE_DIR/$src_d.extracted" && return
+    touch "$STATE_DIR/$src.extracted" && return
 }
 
 extract_host() {
-    local src_d=${1/.*}
-    test -e "$STATE_DIR/host-${src_d}.extracted" && return
+    local src=${1/.*}
+    test -e "$STATE_DIR/host-${src}.extracted" && return
+
+    local src_d=""
+
+    if [ -e $BSP_SRC_DIR/$1 ]; then
+	src_d=$BSP_SRC_DIR
+    elif [ -e $SRC_DIR/$1 ]; then
+	src_d=$SRC_DIR
+    else
+	error "Source $1 doesn't exist!"
+    fi
+
     echo "Extracting $1"
     case $1 in
     *.tar.gz|*.tgz)
-	tar -zxf "$SRC_DIR/$1" -C "$HOST_BUILD_DIR" || error "Extract $1"
+	tar -zxf "$src_d/$1" -C "$HOST_BUILD_DIR" || error "Extract $1"
 	;;
     *.tar.bz2|*.tbz2)
-	tar -jxf "$SRC_DIR/$1" -C "$HOST_BUILD_DIR" || error "Extract $1"
+	tar -jxf "$src_d/$1" -C "$HOST_BUILD_DIR" || error "Extract $1"
 	;;
     *)
-	if [ -e $SRC_DIR/$1 ]; then
-	    cp -R $SRC_DIR/$1 $HOST_BUILD_DIR/ || error "Copy sources $1"
+	if [ -e $src_d/$1 ]; then
+	    cp -R $src_d/$1 $HOST_BUILD_DIR/ || error "Copy sources $1"
 	else
 	    error "Unknown archive $1"
 	fi
 	;;
     esac
-    touch "$STATE_DIR/host-${src_d}.extracted" && return
+    touch "$STATE_DIR/host-${src}.extracted" && return
 }
 
 getfilename() {
@@ -200,30 +233,31 @@ getfilename() {
 apply_patches1()
 {
     local src_d=$2
-    
-    test -e "$PATCH_DIR/$src_d/series" || return
+    local patch_d=$3
+
+    test -e "$patch_d/$src_d/series" || return
     echo "Patching $2"
     local f=
     local o=
     pushd .
     cd "$1"
-    cat $PATCH_DIR/$src_d/series | while read f ; do
+    cat $patch_d/$src_d/series | while read f ; do
 	o=${f/* /}
 	f=${f/ */}
 	if [ "$f" = "$o" ]; then
 	    o="-p1"
 	fi
-	test -e $PATCH_DIR/$src_d/$f -a ! -d $PATCH_DIR/$src_d/$f || continue
-	echo "*** $PATCH_DIR/$src_d/$f  patch $o"
+	test -e $patch_d/$src_d/$f -a ! -d $patch_d/$src_d/$f || continue
+	echo "*** $patch_d/$src_d/$f  patch $o"
 	case $f in
 	*.gz)
-	    zcat "$PATCH_DIR/$src_d/$f" | patch $o || error "patching $2"
+	    zcat "$patch_d/$src_d/$f" | patch $o || error "patching $2"
 	    ;;
 	*.bz2)
-	    bzcat "$PATCH_DIR/$src_d/$f" | patch $o || error "patching $2"
+	    bzcat "$patch_d/$src_d/$f" | patch $o || error "patching $2"
 	    ;;
 	*)
-	    cat "$PATCH_DIR/$src_d/$f" | patch $o || error "patching $2"
+	    cat "$patch_d/$src_d/$f" | patch $o || error "patching $2"
 	    ;;
 	esac
     done
@@ -238,12 +272,14 @@ apply_patches() {
 
     local src_d=`getfilename $2`
 
-    apply_patches1 $1 $src_d
-    
+    apply_patches1 $1 $src_d $PATCH_DIR
+
     if [ ! "x$TARGET_VENDOR_PATCH" = "x" ]; then
 	src_d="${src_d}-${TARGET_VENDOR_PATCH}"
-	apply_patches1 $1 $src_d
+	apply_patches1 $1 $src_d $PATCH_DIR
     fi
+
+    apply_patches1 $1 $src_d $BSP_PATCH_DIR
 
     touch "$1/.pdaXrom-ng-patched"
 }

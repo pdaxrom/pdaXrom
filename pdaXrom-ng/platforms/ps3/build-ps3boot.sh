@@ -34,7 +34,7 @@ BLUEZ_UTILS3_BIN_FILES="tools/hciconfig"
 . $RULES_DIR/freetype.sh
 . $RULES_DIR/ps3boot.sh
 
-. ./sets/packages-bluez3.inc
+. $SETS_DIR/packages-bluez3.inc
 . $RULES_DIR/sixaxisd.sh
 
 # we don't use c++ here :)

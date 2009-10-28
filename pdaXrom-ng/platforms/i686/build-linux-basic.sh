@@ -9,11 +9,11 @@ KERNEL_CONFIG=i686-kernel-2.6.31
 
 USE_SPLASH="yes"
 
-. ./sets/packages-basic.inc
+. $SETS_DIR/packages-basic.inc
 
 . $RULES_DIR/tweak-i686.sh
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/host_syslinux.sh
 . $RULES_DIR/create_x86cd.sh
