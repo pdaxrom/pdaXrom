@@ -1,7 +1,7 @@
 #
 # pidgin and friends
 #
-. ./sets/packages-gstreamer.inc
+. $SETS_DIR/packages-gstreamer.inc
 . $RULES_DIR/libnice.sh
 . $RULES_DIR/farsight2.sh
 . $RULES_DIR/libtasn1.sh

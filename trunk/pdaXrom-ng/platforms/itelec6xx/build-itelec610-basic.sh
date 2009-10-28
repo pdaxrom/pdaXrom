@@ -14,9 +14,9 @@ TARGET_KERNEL_IMAGE=uImage
 #TARGET_JFFS2_PAGESIZE=4096
 TARGET_JFFS2_ARGS="-p -n"
 
-. ./sets/packages-basic.inc
+. $SETS_DIR/packages-basic.inc
 
 . $RULES_DIR/tweak-stb610.sh
 #. $RULES_DIR/create_initramfs.sh
-. ./sets/packages-host-mtd-utils.inc
+. $SETS_DIR/packages-host-mtd-utils.inc
 . $RULES_DIR/create_jffs2.sh

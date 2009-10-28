@@ -55,7 +55,7 @@ if [ "$1" = "" ]; then
     exit 0
 fi
 
-if [ ! -f "platforms/$1" ]; then
+if [ ! -f "platforms/$1" -a ! -f $1 ]; then
     configs "$1"
     exit 0
 fi
@@ -65,4 +65,11 @@ c=$1
 shift
 
 echo "Selecated config $c"
-bash "platforms/$c" $@
+
+TOP_DIR="$PWD"
+
+if [ -f "platforms/$c" ]; then
+    SETS_DIR="$TOP_DIR/sets" bash "platforms/$c" $@
+else
+    SETS_DIR="$TOP_DIR/sets" bash "$c" $@
+fi

@@ -117,7 +117,13 @@ build_linux_kernel() {
     download $KERNEL_MIRROR $KERNEL
     extract $KERNEL
     apply_patches $KERNEL_DIR $KERNEL
-    cp $CONFIG_DIR/kernel/$KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
+    if [ -e $BSP_CONFIG_DIR/kernel/$KERNEL_CONFIG ]; then
+	cp $BSP_CONFIG_DIR/kernel/$KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
+    elif [ -e $CONFIG_DIR/kernel/$KERNEL_CONFIG ]; then
+	cp $CONFIG_DIR/kernel/$KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
+    else
+	cp $KERNEL_CONFIG $KERNEL_DIR/.config || error "check kernel config file"
+    fi
     pushd $TOP_DIR
     cd $KERNEL_DIR
 

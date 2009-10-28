@@ -19,7 +19,7 @@
 #. $RULES_DIR/lxde-lxmusic.sh
 #. $RULES_DIR/lxde-lxlauncher.sh
 
-. ./sets/packages-audacious.inc
+. $SETS_DIR/packages-audacious.inc
 
 . $RULES_DIR/dancesplash.sh
 

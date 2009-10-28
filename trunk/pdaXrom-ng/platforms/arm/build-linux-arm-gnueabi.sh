@@ -7,26 +7,26 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 KERNEL_VERSION="2.6.28"
 KERNEL_CONFIG=versatile-kernel-2.6.28
 
-. ./sets/packages-basic.inc
-. ./sets/packages-mmlibs.inc
-. ./sets/packages-libs.inc
+. $SETS_DIR/packages-basic.inc
+. $SETS_DIR/packages-mmlibs.inc
+. $SETS_DIR/packages-libs.inc
 
-. ./sets/packages-xorg-xlib.inc
-. ./sets/packages-x-gtk2.inc
-. ./sets/packages-xorg-xserver.inc
-. ./sets/packages-xorg-drivers.inc
-. ./sets/packages-xorg-apps.inc
-. ./sets/packages-xorg-fonts.inc
+. $SETS_DIR/packages-xorg-xlib.inc
+. $SETS_DIR/packages-x-gtk2.inc
+. $SETS_DIR/packages-xorg-xserver.inc
+. $SETS_DIR/packages-xorg-drivers.inc
+. $SETS_DIR/packages-xorg-apps.inc
+. $SETS_DIR/packages-xorg-fonts.inc
 
-#. ./sets/packages-emulators.inc
+#. $SETS_DIR/packages-emulators.inc
 
-. ./sets/packages-x-apps.inc
+. $SETS_DIR/packages-x-apps.inc
 
-. ./sets/packages-hal.inc
+. $SETS_DIR/packages-hal.inc
 
-. ./sets/packages-x-lxde.inc
+. $SETS_DIR/packages-x-lxde.inc
 
-. ./sets/packages-x-office.inc
+. $SETS_DIR/packages-x-office.inc
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh

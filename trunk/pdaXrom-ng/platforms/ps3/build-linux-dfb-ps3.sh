@@ -8,9 +8,9 @@ KERNEL_VERSION="2.6.31"
 KERNEL_CONFIG=ps3_kernel_2.6.31
 TARGET_VENDOR_PATCH=ps3
 
-. ./sets/packages-basic.inc
+. $SETS_DIR/packages-basic.inc
 
-. ./sets/packages-bluez3.inc
+. $SETS_DIR/packages-bluez3.inc
 
 . $RULES_DIR/bzip2.sh
 . $RULES_DIR/libjpeg.sh
@@ -41,7 +41,7 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/host_shared-mime-info.sh
 . $RULES_DIR/shared-mime-info.sh
 
-#. ./sets/packages-xorg-msttcorefonts.inc
+#. $SETS_DIR/packages-xorg-msttcorefonts.inc
 
 #
 # firefox
@@ -75,7 +75,7 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_ps3cd.sh

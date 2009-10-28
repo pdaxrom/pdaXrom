@@ -1,7 +1,0 @@
-#!/bin/sh
-
-export HOME=/media
-
-while true; do
-    /usr/pcio/bin/login
-done

@@ -1,9 +1,0 @@
-. $RULES_DIR/libtasn1.sh
-. $RULES_DIR/libgpg-error.sh
-. $RULES_DIR/libgcrypt.sh
-. $RULES_DIR/gnutls.sh
-. $RULES_DIR/cups.sh
-. $RULES_DIR/stunnel.sh
-. $RULES_DIR/qt-all-opensource-src.sh
-. $RULES_DIR/fltk-2.0.x.sh
-. $RULES_DIR/pcio-client.sh

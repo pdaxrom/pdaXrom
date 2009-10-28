@@ -17,18 +17,18 @@ CROSS_OPT_ARCH="-mtune=cell -mcpu=cell -maltivec"
 USE_SPLASH="yes"
 USE_AUFS2="yes"
 
-. ./sets/packages-basic.inc
-. ./sets/packages-mmlibs.inc
-. ./sets/packages-libs.inc
+. $SETS_DIR/packages-basic.inc
+. $SETS_DIR/packages-mmlibs.inc
+. $SETS_DIR/packages-libs.inc
 
 . $RULES_DIR/wpa_supplicant.sh
 
-. ./sets/packages-xorg-xlib.inc
-. ./sets/packages-x-gtk2.inc
+. $SETS_DIR/packages-xorg-xlib.inc
+. $SETS_DIR/packages-x-gtk2.inc
 
-. ./sets/packages-hal.inc
+. $SETS_DIR/packages-hal.inc
 
-. ./sets/packages-xorg-xserver.inc
+. $SETS_DIR/packages-xorg-xserver.inc
 
 . $RULES_DIR/xf86-input-evdev.sh
 . $RULES_DIR/xf86-input-joystick.sh
@@ -36,31 +36,31 @@ USE_AUFS2="yes"
 . $RULES_DIR/xf86-input-mouse.sh
 . $RULES_DIR/xf86-video-fbdev.sh
 
-. ./sets/packages-xorg-apps.inc
-. ./sets/packages-xorg-fonts.inc
+. $SETS_DIR/packages-xorg-apps.inc
+. $SETS_DIR/packages-xorg-fonts.inc
 
-. ./sets/packages-xorg-msttcorefonts.inc
+. $SETS_DIR/packages-xorg-msttcorefonts.inc
 
-#. ./sets/packages-emulators.inc
+#. $SETS_DIR/packages-emulators.inc
 
-. ./sets/packages-x-apps.inc
+. $SETS_DIR/packages-x-apps.inc
 
-. ./sets/packages-x-lxde.inc
+. $SETS_DIR/packages-x-lxde.inc
 
-. ./sets/packages-x-office.inc
+. $SETS_DIR/packages-x-office.inc
 
-. ./sets/packages-x-voip.inc
+. $SETS_DIR/packages-x-voip.inc
 
-. ./sets/packages-bluetooth.inc
+. $SETS_DIR/packages-bluetooth.inc
 
-. ./sets/packages-x-vkeyboard.inc
+. $SETS_DIR/packages-x-vkeyboard.inc
 
 . $RULES_DIR/sixaxisdmouse.sh
 
-. ./sets/packages-gparted.inc
+. $SETS_DIR/packages-gparted.inc
 
-. ./sets/packages-mc.inc
-. ./sets/packages-devel.inc
+. $SETS_DIR/packages-mc.inc
+. $SETS_DIR/packages-devel.inc
 
 . $RULES_DIR/install_locale.sh
 
@@ -68,7 +68,7 @@ USE_AUFS2="yes"
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_ps3cd.sh

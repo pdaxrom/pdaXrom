@@ -11,8 +11,8 @@ i*86-*)
     . $RULES_DIR/flashplayer-adobe-x86.sh
     ;;
 *)
-    #. ./sets/packages-gnash.inc
-    . ./sets/packages-swfdec.inc
+    #. $SETS_DIR/packages-gnash.inc
+    . $SETS_DIR/packages-swfdec.inc
     ;;
 esac
 

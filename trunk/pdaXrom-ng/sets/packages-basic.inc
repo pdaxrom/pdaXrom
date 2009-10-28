@@ -25,7 +25,7 @@
 . $RULES_DIR/figlet.sh
 
 if [ "$USE_SPLASH" = "yes" ]; then
-    . ./sets/packages-dancesplash-fb.inc
+    . $SETS_DIR/packages-dancesplash-fb.inc
 fi
 
 if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" ]; then

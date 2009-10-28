@@ -58,7 +58,7 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/unrar.sh
 . $RULES_DIR/nano.sh
 
-. ./sets/packages-hal.inc
+. $SETS_DIR/packages-hal.inc
 . $RULES_DIR/boolstuff.sh
 . $RULES_DIR/halevt.sh
 
@@ -67,7 +67,7 @@ SDLMAME_MAKE_ARGS="NO_OPENGL=1"
 . $RULES_DIR/host_sdlmame.sh
 . $RULES_DIR/sdlmame.sh
 
-. ./sets/packages-bluez3.inc
+. $SETS_DIR/packages-bluez3.inc
 . $RULES_DIR/sixaxisd.sh
 
 $INSTALL -D -m 644 $GENERICFS_DIR/sdlmame/default.cfg $ROOTFS_DIR/var/games/sdlmame/cfg/default.cfg || error
@@ -78,7 +78,7 @@ install_rc_start sdlmame 95
 . $RULES_DIR/spufs.sh
 . $RULES_DIR/tweak-ps3.sh
 
-. ./sets/packages-host-squashfs.inc
+. $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_ps3cd.sh

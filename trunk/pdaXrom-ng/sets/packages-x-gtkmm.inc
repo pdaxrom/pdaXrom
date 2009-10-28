@@ -1,4 +1,4 @@
-. ./sets/packages-x-gtk2.inc
+. $SETS_DIR/packages-x-gtk2.inc
 . $RULES_DIR/libsigc++.sh
 . $RULES_DIR/glibmm.sh
 . $RULES_DIR/cairomm.sh

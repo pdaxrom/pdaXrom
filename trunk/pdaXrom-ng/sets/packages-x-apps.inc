@@ -13,7 +13,7 @@
 . $RULES_DIR/giblib.sh
 . $RULES_DIR/scrot.sh
 
-. ./sets/packages-firefox.inc
+. $SETS_DIR/packages-firefox.inc
 
 #
 # skipstone-gecko
@@ -46,7 +46,7 @@
 #
 #. $RULES_DIR/skipstone.sh
 
-. ./sets/packages-pidgin.inc
+. $SETS_DIR/packages-pidgin.inc
 
 #
 # xchat
