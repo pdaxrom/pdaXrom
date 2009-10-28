@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-ABIWORD_VERSION=2.6.8
+ABIWORD_VERSION=2.8.0
 ABIWORD=abiword-${ABIWORD_VERSION}.tar.gz
 ABIWORD_MIRROR=http://www.abisource.com/downloads/abiword/${ABIWORD_VERSION}/source
 ABIWORD_DIR=$BUILD_DIR/abiword-${ABIWORD_VERSION}
@@ -46,16 +46,11 @@ build_abiword() {
 	    --x-libraries=$TARGET_LIB \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make $MAKEARGS DESTDIR=$ABIWORD_DIR/fakeroot install || error
-
-    rm -rf fakeroot/usr/include fakeroot/usr/lib
-
-    $STRIP fakeroot/usr/bin/abiword || error
-
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/abiword.installed"
