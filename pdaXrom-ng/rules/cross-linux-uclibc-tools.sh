@@ -99,13 +99,19 @@ install_uclibc_headers() {
     cd $UCLIBC_DIR
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
-	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	case $TARGET_ARCH in
 	arm*-*eabi*)
+	    cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
 		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
 		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
 	    fi
+	    ;;
+	i*86-*)
+	    cp $CONFIG_DIR/uClibc/x86-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	    ;;
+	*)
+	    cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	    ;;
 	esac
     elif [ -e $BSP_CONFIG_DIR/uClibc/$UCLIBC_CONFIG ]; then
@@ -115,7 +121,7 @@ install_uclibc_headers() {
     else
 	cp $UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
     fi
-    
+
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include oldconfig || error
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include PREFIX=$TOOLCHAIN_SYSROOT DEVEL_PREFIX=/usr/ RUNTIME_PREFIX=/ install_headers || error
 
@@ -133,19 +139,29 @@ build_uClibc() {
     make distclean
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
-	cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	case $TARGET_ARCH in
 	arm*-*eabi*)
+	    cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
 		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
 		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
 	    fi
 	    ;;
+	i*86-*)
+	    cp $CONFIG_DIR/uClibc/x86-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	    ;;
+	*)
+	    cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	    ;;
 	esac
-    else
+    elif [ -e $BSP_CONFIG_DIR/uClibc/$UCLIBC_CONFIG ]; then
+	cp $BSP_CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
+    elif [ -e $CONFIG_DIR/uClibc/$UCLIBC_CONFIG ]; then
 	cp $CONFIG_DIR/uClibc/$UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
+    else
+	cp $UCLIBC_CONFIG .config || error "can't copy config, check config name in UCLIBC_CONFIG"
     fi
-    
+
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} oldconfig || error
     make $MAKEARGS KERNEL_HEADERS=$TOOLCHAIN_SYSROOT/usr/include CROSS=${CROSS} PREFIX=$TOOLCHAIN_SYSROOT DEVEL_PREFIX=/usr/ RUNTIME_PREFIX=/ install_headers || error
 
