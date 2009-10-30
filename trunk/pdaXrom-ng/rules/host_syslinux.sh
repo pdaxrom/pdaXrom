@@ -30,6 +30,7 @@ build_host_syslinux() {
 	|| error
 
     $INSTALL -D -m 644 core/isolinux.bin $HOST_BIN_DIR/share/syslinux/isolinux.bin || error
+    $INSTALL -D -m 755 utils/isohybrid $HOST_BIN_DIR/bin/isohybrid || error
 
     popd
     touch "$STATE_DIR/host_syslinux-${HOST_SYSLINUX_VERSION}"

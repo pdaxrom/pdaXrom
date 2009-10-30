@@ -48,13 +48,17 @@ PROMPT 1
     if [ "x$CDNAME" = "x" ]; then
 	CDNAME="pdaXrom-ng-x86"
     fi
-    
-    genisoimage -r -V "$X86CD_TITLE" -cache-inodes -J -l -o ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso \
+
+    local OUT_FILE="${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso"
+
+    genisoimage -r -V "$X86CD_TITLE" -cache-inodes -J -l -o ${OUT_FILE} \
 	-b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table . \
 	|| error "create x86 cd image"
 
+    isohybrid ${OUT_FILE}
+
     cd ${IMAGES_DIR}
-    md5sum ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso > ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso.md5sum
+    md5sum ${IMAGES_DIR}/${CDNAME}-`date +%Y%m%d`.iso > ${OUT_FILE}.md5sum
 
     popd
 }
