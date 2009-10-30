@@ -1,4 +1,4 @@
-X86CD_TITLE="pdaXrom-ng x86 CD"
+X86CD_TITLE=${CDROM_TITLE-"pdaXrom-ng x86 CD"}
 
 create_x86cd() {
     local T=`echo /tmp/x86cd.$$`
