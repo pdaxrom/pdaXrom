@@ -1,4 +1,4 @@
-PS3CD_TITLE="pdaXrom-ng for Sony PS3"
+PS3CD_TITLE=${CDROM_TITLE-"pdaXrom-ng for Sony PS3"}
 
 PS3_OTHEROS_PATH="../ps3-ps3boot-distro/images"
 
