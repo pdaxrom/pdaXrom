@@ -75,6 +75,8 @@ build_hal() {
     fi
     install_rc_stop  hal 70
 
+    cp -a $GENERICFS_DIR/hal/20thirdparty/*.fdi $ROOTFS_DIR/usr/share/hal/fdi/policy/20thirdparty/ || error "can't install hal rules"
+
     popd
     touch "$STATE_DIR/hal.installed"
 }
