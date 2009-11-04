@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_SISUSB_VERSION=0.9.1
+XF86_VIDEO_SISUSB_VERSION=0.9.3
 XF86_VIDEO_SISUSB=xf86-video-sisusb-${XF86_VIDEO_SISUSB_VERSION}.tar.bz2
 XF86_VIDEO_SISUSB_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_SISUSB_DIR=$BUILD_DIR/xf86-video-sisusb-${XF86_VIDEO_SISUSB_VERSION}
