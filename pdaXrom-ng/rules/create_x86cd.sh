@@ -8,39 +8,22 @@ create_x86cd() {
     cp -f $IMAGES_DIR/bzImage    $T/boot/
     cp -f $HOST_BIN_DIR/share/syslinux/isolinux.bin $T/isolinux/
 
-    if [ "$USE_SPLASH" = "yes" ]; then
-    printf "DEFAULT /boot/bzImage
-APPEND  initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 console=/dev/tty2 quiet splash
-LABEL live
-  menu label ^Try pdaXrom in vesa mode
-  kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 console=/dev/tty2 quiet splash
-LABEL safe
-  menu label ^Try pdaXrom in text mode
-  kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000
-DISPLAY isolinux.txt
-TIMEOUT 50
-PROMPT 1
-" > $T/isolinux/isolinux.cfg
+    if [ "$USE_INITRAMFS" = "yes" ]; then
+	if [ "$USE_SPLASH" = "yes" ]; then
+	    cp -f $GENERICFS_DIR/isolinux/initramfs/isolinux.cfg.splash $T/isolinux/isolinux.cfg
+	else
+	    cp -f $GENERICFS_DIR/isolinux/initramfs/isolinux.cfg $T/isolinux/isolinux.cfg
+	fi
+	cp -f $IMAGES_DIR/uuid       $T/boot/
     else
-    printf "DEFAULT /boot/bzImage
-APPEND  initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 quiet
-LABEL live
-  menu label ^Try pdaXrom in vesa mode
-  kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000 vga=0x314 quiet
-LABEL safe
-  menu label ^Try pdaXrom in text mode
-  kernel /boot/bzImage
-  append initrd=/boot/rootfs.img root=/dev/ram0 ramdisk_size=128000
-DISPLAY isolinux.txt
-TIMEOUT 50
-PROMPT 1
-" > $T/isolinux/isolinux.cfg
+	if [ "$USE_SPLASH" = "yes" ]; then
+	    cp -f $GENERICFS_DIR/isolinux/isolinux.cfg.splash $T/isolinux/isolinux.cfg
+	else
+	    cp -f $GENERICFS_DIR/isolinux/isolinux.cfg $T/isolinux/isolinux.cfg
+	fi
     fi
     printf "pdaXrom NG x86\n" > $T/isolinux/isolinux.txt
-    
+
     pushd $TOP_DIR
     cd $T
 

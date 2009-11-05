@@ -8,8 +8,11 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 KERNEL_VERSION="2.6.31"
 KERNEL_CONFIG=i686-kernel-2.6.31
+TARGET_KERNEL_IMAGE=bzImage
 
 USE_SPLASH="yes"
+USE_INITRAMFS="yes"
+USE_AUFS2="yes"
 
 . $SETS_DIR/packages-basic.inc
 
@@ -48,12 +51,21 @@ USE_SPLASH="yes"
 
 . $SETS_DIR/packages-x-rdp.inc
 
+. $SETS_DIR/packages-gparted.inc
+
 . $SETS_DIR/packages-mc.inc
 . $SETS_DIR/packages-devel.inc
 
 . $RULES_DIR/install_locale.sh
 
 . $RULES_DIR/tweak-i686.sh
+
+if [ "$USE_INITRAMFS" = "yes" ]; then
+    INITRAMFS_MODULES=`cat $ROOTFS_DIR/lib/modules/*/modules.dep | grep '/scsi/\|/pata/\|/block/' | sed 's/\://' | cut -f1 -d' ' | while read f; do echo ${f/*\/}; done | sed 's/\.ko//' | sort | uniq`
+    INITRAMFS_MODULES="$INITRAMFS_MODULES usb-storage ohci-hcd ehci-hcd sg vfat isofs udf"
+    echo ">>>$INITRAMFS_MODULES"
+    . $RULES_DIR/create_initramfs.sh
+fi
 
 . $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh

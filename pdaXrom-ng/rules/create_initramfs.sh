@@ -4,7 +4,7 @@ create_initramfs() {
     test -d $INITRAMFS_DIR || mkdir -p $INITRAMFS_DIR
     rm -rf $INITRAMFS_DIR/*
     local d=
-    for d in bin boot dev mnt modules sys proc rootfs sbin; do
+    for d in bin boot dev mnt sys proc rootfs sbin; do
 	mkdir -p $INITRAMFS_DIR/$d
     done
 
@@ -18,6 +18,8 @@ create_initramfs() {
     if [ ! "$LIBDIR" = "lib" ]; then
 	ln -sf lib ${INITRAMFS_DIR}/${LIBDIR}
     fi
+
+    mkdir -p ${INITRAMFS_DIR}/lib/modules
 
     $INSTALL -D -m 755 $GENERICFS_DIR/init.initramfs $INITRAMFS_DIR/init || error
 
@@ -51,6 +53,9 @@ create_initramfs() {
 	powerpc64*|ppc64*)
 	    cp -a $ROOTFS_DIR/lib/ld64.so* $INITRAMFS_DIR/lib || error
 	    ;;
+	i*86-*|x86_64-*|amd64-*)
+	    cp -a $ROOTFS_DIR/lib/ld-linux* $INITRAMFS_DIR/lib || error
+	    ;;
 	*)
 	    cp -a $ROOTFS_DIR/lib/ld.so* $INITRAMFS_DIR/lib || error
 	    ;;
@@ -62,7 +67,7 @@ create_initramfs() {
     fi
 
     for f in bin/busybox bin/ash bin/ls bin/cat bin/cp bin/dd bin/echo \
-	    sbin/mkfs.minix bin/mount bin/umount bin/mkdir sbin/insmod \
+	    sbin/mkfs.minix bin/mount bin/umount bin/mkdir sbin/insmod sbin/modprobe sbin/depmod \
 	    sbin/init sbin/pivot_root sbin/rmmod bin/sleep bin/dmesg sbin/switch_root \
 	    sbin/lsmod sbin/swapon sbin/swapoff sbin/mkswap sbin/losetup ; do
 	cp -a $ROOTFS_DIR/$f $INITRAMFS_DIR/$f || error
@@ -72,15 +77,31 @@ create_initramfs() {
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/mkswap || error
 
-    for f in [ test mknod tr cut cmp grep awk wc; do
+    for f in [ test mknod tr cut cmp grep awk wc sort uname; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
     done
 
-    local MODULES="usb-storage.ko ohci-hcd.ko ehci-hcd.ko usbcore.ko sg.ko ps3vram.ko fat.ko vfat.ko isofs.ko udf.ko crc-itu-t.ko ps3vram.ko"
+    if [ "x$INITRAMFS_MODULES" = "x" ]; then
+	local MODULES="ps3vram usb-storage ohci-hcd ehci-hcd sg vfat isofs udf"
+    else
+	local MODULES="$INITRAMFS_MODULES"
+    fi
 
+    local K_V=`ls ${ROOTFS_DIR}/lib/modules`
+    local MOD_DIR=${ROOTFS_DIR}/lib/modules/${K_V}
     for f in $MODULES; do
-	find $ROOTFS_DIR/lib/modules -name $f -exec cp -R \{\} $INITRAMFS_DIR/modules \;
+	local S=`grep "${f}.ko:" ${MOD_DIR}/modules.dep | sed 's/://'`
+	if [ ! "x$S" = "x" ]; then
+	    local ff=""
+	    for ff in $S; do
+		echo "Installing module $ff"
+		mkdir -p ${INITRAMFS_DIR}/`dirname ${ff}` && $INSTALL -D -m 755 ${ROOTFS_DIR}/${ff} ${INITRAMFS_DIR}/${ff}
+	    done
+	fi
     done
+    $DEPMOD -a -b $INITRAMFS_DIR $K_V
+    MODULES="ps3vram usb-storage ohci-hcd ehci-hcd sg vfat isofs udf sr_mod sd_mod scsi_mod"
+    sed -i -e "s|@MODULES_LIST@|${MODULES}|" ${INITRAMFS_DIR}/init
 
     if [ "$USE_SPLASH" = "yes" ] && [ -f $ROOTFS_DIR/usr/bin/dancesplashfb ]; then
 	cp -f $ROOTFS_DIR/usr/bin/dancesplashfb $INITRAMFS_DIR/bin || error "install dancesplashfb"
