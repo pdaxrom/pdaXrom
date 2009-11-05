@@ -51,6 +51,8 @@ USE_AUFS2="yes"
 
 . $SETS_DIR/packages-x-rdp.inc
 
+. $SETS_DIR/packages-gparted.inc
+
 . $SETS_DIR/packages-mc.inc
 . $SETS_DIR/packages-devel.inc
 
