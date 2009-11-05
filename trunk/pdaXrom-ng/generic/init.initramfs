@@ -24,20 +24,32 @@ splash_finish() {
     fi
 }
 
+get_pci_modules () {
+    while read IGNORE ID IGNORE ;do
+	VENDOR=`echo $ID | cut -b1-4`
+	DEVICE=`echo $ID | cut -b5-8`
+	DEVENTRY=`echo 0x0000${VENDOR} 0x0000${DEVICE}`
+	cat /lib/modules/`uname -r`/*.pcimap | grep "$DEVENTRY" | cut -d ' ' -f1
+    done
+}
+
 /bin/mount -n -t proc none /proc
 /bin/mount -n -t sysfs none /sys
 
 echo "0 0 0 0" >/proc/sys/kernel/printk
 
-/sbin/insmod /modules/ps3vram.ko
-
-MODULES="usbcore.ko ehci-hcd.ko ohci-hcd.ko sg.ko usb-storage.ko fat.ko vfat.ko isofs.ko crc-itu-t.ko udf.ko"
+MODULES="@MODULES_LIST@"
 MODULES_REV=""
 
 for f in $MODULES; do
-    /bin/test -e /modules/$f || continue
-    /sbin/insmod -f /modules/$f
-    MODULES_REV="$f $MODULES_REV"
+    /sbin/modprobe -q -s $f && MODULES_REV="$f $MODULES_REV"
+done
+
+for f in `get_pci_modules < /proc/bus/pci/devices | sort -u`
+do 
+    echo "Loading module $f"
+    modprobe -q -s $f && MODULES_REV="$f $MODULES_REV"
+    #sleep 5
 done
 
 splash_text "Waiting for usb devices "
@@ -62,7 +74,7 @@ create_node() {
 
 remove_modules() {
     for f in $MODULES_REV; do
-	/sbin/rmmod $f
+	/sbin/modprobe -q -r $f
     done
 }
 

@@ -148,6 +148,9 @@ build_linux_kernel() {
 	make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS INSTALL_MOD_PATH=$ROOTFS_DIR modules_install || error
     fi
 
+    local K_V=`ls $ROOTFS_DIR/lib/modules`
+    $DEPMOD -a -b $ROOTFS_DIR $K_V
+
     popd
     touch "$STATE_DIR/linux_kernel"
 }
