@@ -59,7 +59,7 @@ USE_AUFS2="yes"
 
 if [ "$USE_INITRAMFS" = "yes" ]; then
     INITRAMFS_MODULES=`cat $ROOTFS_DIR/lib/modules/*/modules.dep | grep '/scsi/\|/pata/\|/block/' | sed 's/\://' | cut -f1 -d' ' | while read f; do echo ${f/*\/}; done | sed 's/\.ko//' | sort | uniq`
-    INITRAMFS_MODULES="$INITRAMFS_MODULES usb-storage ohci-hcd ehci-hcd sg vfat isofs udf"
+    INITRAMFS_MODULES="$INITRAMFS_MODULES usb-storage ohci-hcd ehci-hcd sg vfat isofs udf nls_cp437 nls_utf8 nls_iso8859-1"
     echo ">>>$INITRAMFS_MODULES"
     . $RULES_DIR/create_initramfs.sh
 fi
@@ -68,3 +68,4 @@ fi
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/host_syslinux.sh
 . $RULES_DIR/create_x86cd.sh
+#. $RULES_DIR/create_bootfat.sh
