@@ -31,7 +31,10 @@ create_x86bootfat() {
 
     local OUT_FILE="${IMAGES_DIR}/${FATNAME}-`date +%Y%m%d`.img"
 
-    local IMG_SIZE=`du -sh $T | awk '{ sub(/M$/,"",$1); print $1+65 }'`
+    dd if=/dev/zero of=$T/boot/writable.img bs=1M count=64 || error "Can't create writable.img file image!"
+    mkfs.ext3 -F $T/boot/writable.img
+
+    local IMG_SIZE=`du -sh $T | awk '{ sub(/M$/,"",$1); print $1+2 }'`
     dd if=/dev/zero of=${OUT_FILE} bs=1M count=${IMG_SIZE} || error "Can't create empty image file!"
 
     makebootfat -v -o ${OUT_FILE} -Y \

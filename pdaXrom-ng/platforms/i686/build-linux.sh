@@ -68,4 +68,4 @@ fi
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/host_syslinux.sh
 . $RULES_DIR/create_x86cd.sh
-#. $RULES_DIR/create_bootfat.sh
+. $RULES_DIR/create_bootfat.sh
