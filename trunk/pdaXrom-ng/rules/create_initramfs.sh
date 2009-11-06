@@ -77,7 +77,7 @@ create_initramfs() {
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/mkswap || error
 
-    for f in [ test mknod tr cut cmp grep awk wc sort uname; do
+    for f in [ test mknod tr cut cmp grep awk wc sort uname mountpoint; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
     done
 

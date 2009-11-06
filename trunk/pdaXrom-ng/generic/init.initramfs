@@ -60,6 +60,8 @@ for i in 7 6 5 4 3 2 1 0; do
     mknod /dev/loop$i b 7 $i
 done
 
+ENABLE_UNMOUNT="yes"
+
 splash_success " done"
 echo
 
@@ -74,25 +76,23 @@ create_node() {
 
 remove_modules() {
     for f in $MODULES_REV; do
+	if [ "$f" = "ohci-hcd" -o \
+	     "$f" = "ehci-hcd" ]; then
+	     continue
+	fi
 	/sbin/modprobe -q -r $f
     done
 }
 
-boot_unionfs() {
-    if [ -d /union ]; then
-	mount -t tmpfs none /dynamic
-	mount -t unionfs -o dirs=/dynamic=rw:/rootfs=ro unionfs /union
-	mkdir -p /union/mnt/dynamic
-	mkdir -p /union/mnt/rootfs
-	mount -o move /dynamic /union/mnt/dynamic
-	mount -o move /rootfs /union/mnt/rootfs
-	cd /union
-    fi
-}
-
 boot_aufs2() {
     if [ -d /aufs2 ]; then
-	mount -t tmpfs none /dynamic
+	if [ -f /mnt/boot/writable.img ]; then
+	    echo "Mount local writable image"
+	    mount /mnt/boot/writable.img /dynamic -o loop
+	    ENABLE_UNMOUNT="no"
+	else
+	    mount -t tmpfs none /dynamic
+	fi
 	mount -t aufs -o br=/dynamic=rw:/rootfs=ro none /aufs2
 	mkdir -p /aufs2/mnt/dynamic
 	mkdir -p /aufs2/mnt/rootfs
@@ -106,6 +106,9 @@ boot_rootfs() {
     echo "Boooooting!!!"
     cd /rootfs
     boot_aufs2
+    if [ "$ENABLE_UNMOUNT" = "yes" ]; then
+	umount /mnt
+    fi
     remove_modules
     #/sbin/pivot_root /rootfs /rootfs/boot/initrd
     umount /sys
@@ -129,16 +132,15 @@ check_rootfs() {
 		echo -n "Copy root image to vram ... "
 		splash_text "Copy root image to vram"
 		dd if=/mnt/boot/rootfs.img of=/dev/ps3vram bs=1M >/dev/null 2>/dev/null && echo "done!" || echo "error!"
-		umount /mnt
 		mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs && boot_rootfs
 	    elif [ $(( IMAGE_SIZE * 2)) -gt $TOTAL_MEMORY ]; then
 		echo "Mount root image locally"
 		mount -n -o loop,ro -t squashfs /mnt/boot/rootfs.img /rootfs && boot_rootfs
+		ENABLE_UNMOUNT="no"
 	    else
 		echo -n "Copy root image to ram ... "
 		splash_text "Copy root image to ram"
 		cp /mnt/boot/rootfs.img /boot && splash_success "done!" || splash_success "error!"
-		umount /mnt
 		mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs && boot_rootfs
 	    fi
 	    echo "Can't mount root :("
@@ -146,7 +148,7 @@ check_rootfs() {
 	    echo
 	fi
     fi
-    
+
     umount /mnt
 }
 
