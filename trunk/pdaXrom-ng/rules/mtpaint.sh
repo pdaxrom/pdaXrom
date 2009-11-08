@@ -30,6 +30,7 @@ build_mtpaint() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    notiff \
 	    || error
     ) || error "configure"
 
