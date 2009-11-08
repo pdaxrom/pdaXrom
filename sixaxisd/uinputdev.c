@@ -79,14 +79,7 @@ int uinput_open(int mode)
 	ioctl (fd, UI_SET_RELBIT, REL_Y);
     }
 
-    if (mode) {
-	for (i = 0; i < 28; i++) {
-	    if (ioctl (fd, UI_SET_ABSBIT, i) < 0) {
-		fprintf(stderr, "error on uinput ioctl (UI_SET_ABSBIT)\n");
-		return -1;
-	    }
-	}
-    } else {
+    if (!mode) {
 	ioctl (fd, UI_SET_ABSBIT, ABS_X);	// LX
 	ioctl (fd, UI_SET_ABSBIT, ABS_Y);	// LY
 	ioctl (fd, UI_SET_ABSBIT, ABS_Z);	// RX
