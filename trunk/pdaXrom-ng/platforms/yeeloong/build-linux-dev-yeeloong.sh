@@ -55,6 +55,7 @@ USE_AUFS2="yes"
 
 . $SETS_DIR/packages-mc.inc
 . $SETS_DIR/packages-devel.inc
+. $RULES_DIR/geany.sh
 
 . $RULES_DIR/install_locale.sh
 

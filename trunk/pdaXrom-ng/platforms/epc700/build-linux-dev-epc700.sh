@@ -55,6 +55,7 @@ TARGET_GCC_VERSION=4.3.2
 
 . $SETS_DIR/packages-mc.inc
 . $SETS_DIR/packages-devel.inc
+. $RULES_DIR/geany.sh
 
 . $RULES_DIR/install_locale.sh
 
