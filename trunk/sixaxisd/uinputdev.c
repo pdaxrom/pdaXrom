@@ -115,7 +115,6 @@ int uinput_open(int mode)
         ioctl (fd, UI_SET_KEYBIT, BTN_RIGHT); 
         ioctl (fd, UI_SET_KEYBIT, BTN_FORWARD); 
         ioctl (fd, UI_SET_KEYBIT, BTN_BACK);
-	ioctl (fd, UI_SET_KEYBIT, BTN_TOUCH); 
     }
 
     if (write(fd, &dev, sizeof(dev)) != sizeof(dev)) {
