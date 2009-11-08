@@ -2,6 +2,10 @@
 
 #. $RULES_DIR/pekwm.sh
 
+#. $RULES_DIR/libtool.sh
+#. $RULES_DIR/libcanberra.sh
+#. $RULES_DIR/metacity.sh
+
 #. $RULES_DIR/Xdialog.sh
 
 #. $RULES_DIR/idesk.sh
