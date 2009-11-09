@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-EKIGA_VERSION=3.2.5
-EKIGA=ekiga-${EKIGA_VERSION}.tar.bz2
-EKIGA_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.5
+EKIGA_VERSION=3.2.6
+EKIGA=ekiga-${EKIGA_VERSION}.tar.gz
+EKIGA_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.6
 EKIGA_DIR=$BUILD_DIR/ekiga-${EKIGA_VERSION}
 EKIGA_ENV="$CROSS_ENV_AC"
 
@@ -31,27 +31,18 @@ build_ekiga() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --enable-gnome=no \
-	    --enable-gconf=no \
+	    --enable-gconf \
 	    --enable-eds=no \
 	    --enable-ldap=no \
 	    --enable-avahi=no \
 	    --enable-gdu=no \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make $MAKEARGS DESTDIR=$EKIGA_DIR/fakeroot install || error
-
-    rm -rf fakeroot/usr/share/locale fakeroot/usr/share/man
-    rm -f fakeroot/usr/bin/ekiga-config-tool
-
-    $STRIP fakeroot/usr/bin/* || error
-
-    mv -f fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
-
-    #cp -a fakeroot/etc $ROOTFS_DIR/ || error
-    cp -a fakeroot/usr $ROOTFS_DIR/ || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/ekiga.installed"

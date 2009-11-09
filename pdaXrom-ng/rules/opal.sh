@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-OPAL_VERSION=3.6.4
-OPAL=opal-${OPAL_VERSION}.tar.bz2
-OPAL_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.5
+OPAL_VERSION=3.6.6
+OPAL=opal-${OPAL_VERSION}.tar.gz
+OPAL_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.6
 OPAL_DIR=$BUILD_DIR/opal-${OPAL_VERSION}
 OPAL_ENV="$CROSS_ENV_AC"
 
@@ -37,12 +37,8 @@ build_opal() {
 
     install_sysroot_files || error
 
-    make $MAKEARGS DESTDIR=$OPAL_DIR/fakeroot install || error
-
-    rm -rf fakeroot/usr/lib/pkgconfig fakeroot/usr/lib/*.*a
-
-    find fakeroot/usr/lib ! -type d -a ! -type l | xargs $STRIP
-    cp -a fakeroot/usr/lib $ROOTFS_DIR/usr || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/opal.installed"
