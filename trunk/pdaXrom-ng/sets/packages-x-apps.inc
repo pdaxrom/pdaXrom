@@ -1,3 +1,5 @@
+. $SETS_DIR/packages-gconf.inc
+
 . $RULES_DIR/openbox.sh
 
 #. $RULES_DIR/pekwm.sh

@@ -30,7 +30,8 @@ build_libIDL() {
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --enable-foo \
-	    --disable-shared
+	    --disable-shared \
+	    --with-pic \
     ) || error "configure"
     
     make $MAKEARGS || error
