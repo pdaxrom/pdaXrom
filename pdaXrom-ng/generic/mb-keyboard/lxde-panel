@@ -42,6 +42,11 @@ Plugin {
         }
         separator {
         }
+	item {
+	    image=system-lock-screen
+	    name=Lock computer
+	    action=xtrlock
+	}
         item {
             image=gnome-logout
             command=logout
