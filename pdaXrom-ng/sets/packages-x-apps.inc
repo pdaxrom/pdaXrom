@@ -12,6 +12,9 @@ fi
 #. $RULES_DIR/libcanberra.sh
 #. $RULES_DIR/metacity.sh
 
+# Minimal X display lock program
+. $RULES_DIR/xtrlock.sh
+
 #. $RULES_DIR/Xdialog.sh
 
 #. $RULES_DIR/idesk.sh
