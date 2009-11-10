@@ -1,5 +1,9 @@
 . $SETS_DIR/packages-gconf.inc
 
+if [ "$USE_LOGINMANAGER" = "yes" ]; then
+    . $RULES_DIR/slim.sh
+fi
+
 . $RULES_DIR/openbox.sh
 
 #. $RULES_DIR/pekwm.sh

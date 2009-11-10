@@ -36,6 +36,7 @@ build_ekiga() {
 	    --enable-ldap=no \
 	    --enable-avahi=no \
 	    --enable-gdu=no \
+	    --enable-gstreamer \
 	    || error
     ) || error "configure"
 
