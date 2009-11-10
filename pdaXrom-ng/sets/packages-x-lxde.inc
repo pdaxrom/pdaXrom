@@ -21,6 +21,8 @@
 
 . $SETS_DIR/packages-audacious.inc
 
+. $SETS_DIR/packages-gtkdialog.inc
+
 . $RULES_DIR/dancesplash.sh
 
 . $RULES_DIR/lxde-tweaks.sh
