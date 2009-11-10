@@ -98,6 +98,10 @@ boot_aufs2() {
 	mkdir -p /aufs2/mnt/rootfs
 	mount -o move /dynamic /aufs2/mnt/dynamic
 	mount -o move /rootfs /aufs2/mnt/rootfs
+	if [ "$ENABLE_UNMOUNT" = "no" ]; then
+	    mkdir -p /aufs2/media/bootdisk
+	    mount -o move /mnt /aufs2/media/bootdisk
+	fi
 	cd /aufs2
     fi
 }

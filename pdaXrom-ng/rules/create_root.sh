@@ -12,7 +12,7 @@ etc/network/if-post-down.d
 etc/network/if-pre-up.d
 etc/network/if-up.d
 etc/profile.d
-home
+home/root
 media
 mnt
 proc
@@ -72,7 +72,9 @@ create_root() {
     esac
 
     $INSTALL -m 644 $GENERICFS_DIR/etc/network/interfaces $ROOTFS_DIR/etc/network/
-    
+
+    chmod 777 $ROOTFS_DIR/tmp $ROOTFS_DIR/var/tmp
+
     touch "$STATE_DIR/root_tree"
 }
 

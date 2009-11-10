@@ -1,0 +1,10 @@
+--- s/switchuser.cpp-	2009-11-10 19:43:51.000000000 +0600
++++ s/switchuser.cpp	2009-11-10 19:46:14.000000000 +0600
+@@ -10,6 +10,7 @@
+ */
+ 
+ #include "switchuser.h"
++#include <cstdio>
+ 
+ using namespace std;
+ 

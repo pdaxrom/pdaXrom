@@ -20,7 +20,7 @@ build_xorg_init() {
     if [ "$USE_FASTBOOT" = "yes" ]; then
 	install_rc_start xorg 00
     else
-	install_rc_start xorg 99
+	install_rc_start xorg 98
     fi
 
     touch "$STATE_DIR/xorg_init-1.0.0"
