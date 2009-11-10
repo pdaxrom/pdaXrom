@@ -22,7 +22,7 @@ case "$1" in
   start)
 	log_begin_msg -n "Starting X11"
 	splash_finish
-	export HOME=/home
+	export HOME=/home/root
 	cd
 	test -e /etc/profile && . /etc/profile
 	start-stop-daemon -S -x "$DAEMON" -q -b >/dev/null 2>/dev/null
