@@ -40,6 +40,9 @@ build_wireless_tools() {
     ln -sf libiw.so.29 $ROOTFS_DIR/usr/lib/libiw.so
     $STRIP $ROOTFS_DIR/usr/lib/libiw.so.29
 
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/network/if-pre-up.d/wireless-tools $ROOTFS_DIR/etc/network/if-pre-up.d/wireless-tools || error
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/network/if-post-down.d/wireless-tools $ROOTFS_DIR/etc/network/if-post-down.d/wireless-tools || error
+
     popd
     touch "$STATE_DIR/wireless_tools-29"
 }
