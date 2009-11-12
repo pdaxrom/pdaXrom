@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. $RULES_DIR/libogg.sh
+. $RULES_DIR/libvorbis.sh
 . $RULES_DIR/host_findutils.sh
 . $RULES_DIR/host_libIDL.sh
 . $RULES_DIR/libIDL.sh
