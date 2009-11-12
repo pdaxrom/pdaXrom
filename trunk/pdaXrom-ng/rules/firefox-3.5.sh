@@ -10,7 +10,7 @@
 #
 
 XUL_VERSION=1.9.1
-FIREFOX_VERSION=3.5.4
+FIREFOX_VERSION=3.5.5
 FIREFOX=firefox-${FIREFOX_VERSION}.source.tar.bz2
 FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${FIREFOX_VERSION}/source
 FIREFOX_DIR=$BUILD_DIR/mozilla-${XUL_VERSION}
@@ -92,6 +92,7 @@ build_firefox() {
 	    --enable-mathml \
 	    --enable-xft \
 	    --enable-xinerama \
+	    --enable-startup-notification \
 	    --enable-extensions=default,-reporter \
 	    --enable-single-profile \
 	    --enable-system-myspell \
