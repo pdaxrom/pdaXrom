@@ -21,7 +21,10 @@
 
 . $SETS_DIR/packages-audacious.inc
 
-. $SETS_DIR/packages-gtkdialog.inc
+. $RULES_DIR/boolstuff.sh
+. $RULES_DIR/halevt.sh
+
+#. $SETS_DIR/packages-gtkdialog.inc
 
 . $RULES_DIR/dancesplash.sh
 

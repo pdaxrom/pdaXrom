@@ -1,1 +1,3 @@
 rename_signal_struct.patch
+stringman.c.diff
+automaton.c.diff
