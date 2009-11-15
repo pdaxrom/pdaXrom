@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LIBGLADE=libglade-2.6.3.tar.bz2
+LIBGLADE_VERSION=2.6.4
+LIBGLADE=libglade-${LIBGLADE_VERSION}.tar.bz2
 LIBGLADE_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/libglade/2.6
-LIBGLADE_DIR=$BUILD_DIR/libglade-2.6.3
+LIBGLADE_DIR=$BUILD_DIR/libglade-${LIBGLADE_VERSION}
 LIBGLADE_ENV="$CROSS_ENV_AC"
 
 build_libglade() {
