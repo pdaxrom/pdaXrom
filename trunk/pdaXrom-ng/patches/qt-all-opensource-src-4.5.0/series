@@ -1,3 +1,4 @@
 g++.conf.diff
 linux.conf.diff
 qatomic32_ppc.patch
+qatomic_mips32.s.diff
