@@ -1,0 +1,81 @@
+--- qt-all-opensource-src-4.5.0/src/corelib/arch/mips/qatomic_mips32.s-	2009-11-17 01:22:03.000000000 +0600
++++ qt-all-opensource-src-4.5.0/src/corelib/arch/mips/qatomic_mips32.s	2009-11-17 01:22:45.000000000 +0600
+@@ -5,7 +5,6 @@
+ 
+ 	.globl	q_atomic_test_and_set_int
+ 	.ent	q_atomic_test_and_set_int
+-        .set mips2
+ q_atomic_test_and_set_int:
+ 1:	ll   $8,0($4)
+ 	bne  $8,$5,2f
+@@ -17,12 +16,10 @@
+ 	nop
+ 2:	jr   $31
+ 	move $2,$0
+-        .set mips0
+ 	.end	q_atomic_test_and_set_int
+ 
+ 	.globl	q_atomic_test_and_set_acquire_int
+ 	.ent	q_atomic_test_and_set_acquire_int
+-        .set mips2
+ q_atomic_test_and_set_acquire_int:
+ 1:	ll   $8,0($4)
+ 	bne  $8,$5,2f
+@@ -35,12 +32,10 @@
+ 2:	sync
+ 	jr   $31
+ 	move $2,$0
+-        .set mips0
+ 	.end	q_atomic_test_and_set_acquire_int
+ 	
+ 	.globl	q_atomic_test_and_set_release_int
+ 	.ent	q_atomic_test_and_set_release_int
+-        .set mips2
+ q_atomic_test_and_set_release_int:
+ 	sync
+ 1:	ll   $8,0($4)
+@@ -53,12 +48,10 @@
+ 	nop
+ 2:	jr   $31
+ 	move $2,$0
+-        .set mips0
+ 	.end	q_atomic_test_and_set_release_int
+ 
+ 	.globl	q_atomic_test_and_set_ptr
+ 	.ent	q_atomic_test_and_set_ptr
+-        .set mips2
+ q_atomic_test_and_set_ptr:
+ 1:	ll   $8,0($4)
+ 	bne  $8,$5,2f
+@@ -70,12 +63,10 @@
+ 	nop
+ 2:	jr   $31
+ 	move $2,$0
+-        .set mips0
+ 	.end	q_atomic_test_and_set_ptr
+ 
+ 	.globl	q_atomic_test_and_set_acquire_ptr
+ 	.ent	q_atomic_test_and_set_acquire_ptr
+-        .set mips2
+ q_atomic_test_and_set_acquire_ptr:
+ 1:	ll   $8,0($4)
+ 	bne  $8,$5,2f
+@@ -88,12 +79,10 @@
+ 2:	sync
+ 	jr   $31
+ 	move $2,$0
+-        .set mips0
+ 	.end	q_atomic_test_and_set_acquire_ptr
+ 	
+ 	.globl	q_atomic_test_and_set_release_ptr
+ 	.ent	q_atomic_test_and_set_release_ptr
+-        .set mips2
+ q_atomic_test_and_set_release_ptr:
+ 	sync
+ 1:	ll   $8,0($4)
+@@ -106,5 +95,4 @@
+ 	nop
+ 2:	jr   $31
+ 	move $2,$0
+-        .set mips0
+ 	.end	q_atomic_test_and_set_release_ptr
