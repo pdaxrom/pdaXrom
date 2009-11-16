@@ -7,7 +7,7 @@ export GLIBC_ENABLE_KERNEL=2.6.24
 
 export TARGET_VENDOR_PATCH=jz
 
-#export DEFAULT_CPU="loongson2f"
+export DEFAULT_CPU="mips3"
 #export DEFAULT_FPU=
 #export DEFAULT_MABI="n32"
 
