@@ -39,3 +39,4 @@ lzma/uncomp.c.diff
 lzma/do_mounts_rd.c.diff
 
 patch-2.6.27.10.patch
+unifdef.c.diff
