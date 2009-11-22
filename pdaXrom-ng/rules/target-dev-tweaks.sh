@@ -5,6 +5,19 @@ target_dev_tweaks() {
     test -f $TOOLCHAIN_SYSROOT/sbin/ldconfig && $INSTALL -D -m 755 $TOOLCHAIN_SYSROOT/sbin/ldconfig $ROOTFS_DIR/sbin/ldconfig && $STRIP $ROOTFS_DIR/sbin/ldconfig
     ln -sf ../usr/bin/cpp $ROOTFS_DIR/lib/cpp
     mkdir -p $ROOTFS_DIR/opt
+
+    tar c -C $TARGET_INC . | tar x -C ${ROOTFS_DIR}/usr/include || error "includes"
+    cp -a ${TARGET_LIB}/pkgconfig ${ROOTFS_DIR}/usr/lib || error "pkgconfig dir"
+
+    pushd $PWD
+    cd $TARGET_LIB
+    find . -name "*.h" -exec install -D -m 644 {} ${ROOTFS_DIR}/usr/lib/{} \;
+    popd
+
+    cp -a ${TARGET_BIN_DIR}/bin/*-config ${ROOTFS_DIR}/usr/bin || error "dev config files"
+
+    sed -i -e "s|${TARGET_BIN_DIR}||" ${ROOTFS_DIR}/usr/lib/pkgconfig/*.pc
+    sed -i -e "s|${TARGET_BIN_DIR}||" ${ROOTFS_DIR}/usr/bin/*-config
 }
 
 target_dev_tweaks
