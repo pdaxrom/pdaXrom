@@ -17,7 +17,10 @@ target_dev_tweaks() {
     cp -a ${TARGET_BIN_DIR}/bin/*-config ${ROOTFS_DIR}/usr/bin || error "dev config files"
 
     sed -i -e "s|${TARGET_BIN_DIR}||" ${ROOTFS_DIR}/usr/lib/pkgconfig/*.pc
-    sed -i -e "s|${TARGET_BIN_DIR}||" ${ROOTFS_DIR}/usr/bin/*-config
+
+    find ${ROOTFS_DIR}/usr/bin/ -name "*-config" | while read f; do
+	file $f | grep -q "POSIX shell script" && sed -i -e "s|${TARGET_BIN_DIR}||" $f
+    done
 }
 
 target_dev_tweaks
