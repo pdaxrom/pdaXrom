@@ -36,8 +36,6 @@ build_target_pkgconfig() {
 
     make $MAKEARGS || error
 
-    #install_sysroot_files || error
-
     install_fakeroot_init
     install_fakeroot_finish || error
 
