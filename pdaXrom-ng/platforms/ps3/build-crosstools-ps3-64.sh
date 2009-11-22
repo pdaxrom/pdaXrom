@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#export BINUTILS_VERSION=2.19.1
-export GCC_VERSION=4.4.1
+export BINUTILS_VERSION=2.20.51.0.3
+export GCC_VERSION=4.4.2
 
 export KERNEL_VERSION="2.6.30"
 export TARGET_VENDOR_PATCH=ps3
