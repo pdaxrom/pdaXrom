@@ -21,6 +21,9 @@ target_dev_tweaks() {
     find ${ROOTFS_DIR}/usr/bin/ -name "*-config" | while read f; do
 	file $f | grep -q "POSIX shell script" && sed -i -e "s|${TARGET_BIN_DIR}||" $f
     done
+
+    # fix old X11 inc/lib search path
+    test -e $ROOTFS_DIR/usr/X11R6 || ln -sf . $ROOTFS_DIR/usr/X11R6
 }
 
 target_dev_tweaks
