@@ -9,8 +9,8 @@ RESDIR	:= $(DATADIR)/netconfig
 CC	:= gcc
 INSTALL	:= install
 
-LIBS	:= $(shell pkg-config --cflags --libs gtk+-2.0)
-CFLAGS	:=-Wall -g -export-dynamic $(shell pkg-config --cflags gtk+-2.0) -DRESDIR=\"$(RESDIR)\"
+LIBS	:= $(OPT_LDFLAGS) $(shell pkg-config --cflags --libs gtk+-2.0)
+CFLAGS	:= $(OPT_CFLAGS) -Wall -g -export-dynamic $(shell pkg-config --cflags gtk+-2.0) -DRESDIR=\"$(RESDIR)\"
 
 OBJS	= netconfig.o
 UIFILES	= netconfig.ui
