@@ -113,7 +113,7 @@ build_qt_x11_opensource_src() {
     sed -i "s|\$\$\[QT_INSTALL_LIBS\]|$TARGET_LIB|" $TARGET_BIN_DIR/mkspecs/common-cross/linux.conf
 
     export QMAKESPEC=$TARGET_BIN_DIR/mkspecs/default
-    
+
     ln -sf $TARGET_BIN_DIR/bin/qmake $HOST_BIN_DIR/bin/qmake || error
     ln -sf $TARGET_BIN_DIR/bin/moc   $HOST_BIN_DIR/bin/moc   || error
     ln -sf $TARGET_BIN_DIR/bin/uic   $HOST_BIN_DIR/bin/uic   || error
@@ -122,16 +122,16 @@ build_qt_x11_opensource_src() {
     for f in libQt3Support  libQtNetwork  libQtSql   libQtWebKit \
     libQtCore      libQtOpenGL   libQtSvg   libQtXmlPatterns \
     libQtGui       libQtScript   libQtTest  libQtXml; do
-	$INSTALL -D -m 644 lib/$f.so.4.5.0 $ROOTFS_DIR/usr/lib/$f.so.4.5.0 || error
-	ln -sf $f.so.4.5.0 $ROOTFS_DIR/usr/lib/$f.so.4.5
-	ln -sf $f.so.4.5.0 $ROOTFS_DIR/usr/lib/$f.so.4
-	ln -sf $f.so.4.5.0 $ROOTFS_DIR/usr/lib/$f.so
-	$STRIP $ROOTFS_DIR/usr/lib/$f.so.4.5.0 || error
+	$INSTALL -D -m 644 lib/${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} ${ROOTFS_DIR}/usr/lib/${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} || error
+	ln -sf ${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} ${ROOTFS_DIR}/usr/lib/${f}.so.4.5
+	ln -sf ${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} ${ROOTFS_DIR}/usr/lib/${f}.so.4
+	ln -sf ${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} ${ROOTFS_DIR}/usr/lib/${f}.so
+	$STRIP ${ROOTFS_DIR}/usr/lib/${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} || error
     done
-    
+
     cp -r $TARGET_LIB/qt4 $ROOTFS_DIR/usr/lib/ || error
     find $ROOTFS_DIR/usr/lib/qt4/ -name "*.so" | xargs $STRIP
-    
+
     popd
     touch "$STATE_DIR/qt_x11_opensource_src.installed"
 }
