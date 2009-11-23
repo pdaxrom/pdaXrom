@@ -15,6 +15,11 @@ esac
 . $RULES_DIR/target-patch.sh
 . $RULES_DIR/target-distcc.sh
 . $RULES_DIR/target-pkgconfig.sh
+. $RULES_DIR/target-imake.sh
+. $RULES_DIR/target-xorg-cf-files.sh
+. $RULES_DIR/target-gccmakedep.sh
+. $RULES_DIR/target-lndir.sh
+. $RULES_DIR/target-makedepend.sh
 . $RULES_DIR/host_file.sh
 . $RULES_DIR/file.sh
 
