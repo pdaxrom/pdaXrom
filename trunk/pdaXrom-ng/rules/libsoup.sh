@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBSOUP_VERSION=2.26.1
+LIBSOUP_VERSION=2.28.1
 LIBSOUP=libsoup-${LIBSOUP_VERSION}.tar.bz2
-LIBSOUP_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.26
+LIBSOUP_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.28
 LIBSOUP_DIR=$BUILD_DIR/libsoup-${LIBSOUP_VERSION}
 LIBSOUP_ENV="$CROSS_ENV_AC"
 
