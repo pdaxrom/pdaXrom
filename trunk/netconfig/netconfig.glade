@@ -5,6 +5,7 @@
   <widget class="GtkWindow" id="window1">
     <property name="resizable">False</property>
     <property name="window_position">center-always</property>
+    <property name="icon_name">preferences-system-network</property>
     <property name="gravity">south-west</property>
     <signal name="destroy" handler="close_app"/>
     <child>
