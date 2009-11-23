@@ -54,6 +54,11 @@ struct _Data {
     GtkWidget	*iface_wifi_key;
     GtkWidget	*wifi_table;
     Iface	iface;
+
+    GtkWidget	*iface_hostname;
+    GtkWidget	*iface_lan;
+    GtkWidget	*iface_dns;
+    GtkWidget	*iface_dns1;
 };
 
 static void dhcp_ip_fields(Data *data, gboolean active);
@@ -267,6 +272,71 @@ static void free_iface_config(Iface *i)
     i->key = NULL;
 }
 
+static void read_dns(Data *data)
+{
+    FILE *f = fopen("/etc/hostname", "rb");
+    if (f) {
+	char buf[256];
+	if (fgets(buf, 256, f)) {
+	    char *tmp = strchr(buf, '\n');
+	    if (tmp)
+		*tmp = 0;
+	    gtk_entry_set_text(GTK_ENTRY(data->iface_hostname), buf);
+	}
+	fclose(f);
+    }
+
+    f = fopen("/etc/resolv.conf", "rb");
+    if (f) {
+	char buf[256];
+	char *v[2];
+	int ns = 0;
+	while (fgets(buf, 256, f)) {
+	    char *tmp = strchr(buf, '\n');
+	    if (tmp)
+		*tmp = 0;
+	    v[0] = strtok(buf, " ");
+	    v[1] = strtok(NULL, " ");
+	    if (!strcmp(v[0], "search")) {
+		gtk_entry_set_text(GTK_ENTRY(data->iface_lan), v[1]);
+	    } else if (!strcmp(v[0], "nameserver")) {
+		if (!ns)
+		    gtk_entry_set_text(GTK_ENTRY(data->iface_dns), v[1]);
+		else
+		    gtk_entry_set_text(GTK_ENTRY(data->iface_dns1), v[1]);
+		ns++;
+	    }
+	}
+	fclose(f);
+    }
+}
+
+static void write_dns(Data *data)
+{
+    FILE *f = fopen("/etc/hostname", "wb");
+    if (f) {
+	fprintf(f, "%s\n", gtk_entry_get_text(GTK_ENTRY(data->iface_hostname)));
+	fclose(f);
+    }
+    if (!data->iface.dhcp) {
+	f = fopen("/etc/resolv.conf", "wb");
+	if (f) {
+	    const gchar *str = gtk_entry_get_text(GTK_ENTRY(data->iface_lan));
+	    if (strlen(str)) {
+		fprintf(f, "domain %s\n", str);
+		fprintf(f, "search %s\n", str);
+	    }
+	    str = gtk_entry_get_text(GTK_ENTRY(data->iface_dns));
+	    if (strlen(str))
+		fprintf(f, "nameserver %s\n", str);
+	    str = gtk_entry_get_text(GTK_ENTRY(data->iface_dns1));
+	    if (strlen(str))
+		fprintf(f, "nameserver %s\n", str);
+	    fclose(f);
+	}
+    }
+}
+
 void update_iface_fields(GtkWidget *widget, Data *data)
 {
     char *iface_name = gtk_combo_box_get_active_text(GTK_COMBO_BOX(data->iface_name));
@@ -296,6 +366,7 @@ void update_iface_fields(GtkWidget *widget, Data *data)
 	}
 	free(iface_name);
     }
+    read_dns(data);
 }
 
 static void dhcp_ip_fields(Data *data, gboolean active)
@@ -303,6 +374,9 @@ static void dhcp_ip_fields(Data *data, gboolean active)
     gtk_widget_set_sensitive(data->iface_ip, !active);
     gtk_widget_set_sensitive(data->iface_mask, !active);
     gtk_widget_set_sensitive(data->iface_gw, !active);
+    gtk_widget_set_sensitive(data->iface_lan, !active);
+    gtk_widget_set_sensitive(data->iface_dns, !active);
+    gtk_widget_set_sensitive(data->iface_dns1, !active);
     if (!active)
 	gtk_entry_set_text(GTK_ENTRY(data->iface_mask), "255.255.255.0");
 }
@@ -326,6 +400,7 @@ void apply_iface(GtkWidget *widget, Data *data)
     if (iface_name) {
 	write_iface_config(iface_name, &data->iface);
 	free(iface_name);
+	write_dns(data);
     }
 }
 
@@ -371,6 +446,11 @@ int main (int argc, char **argv)
     data.iface_wifi_essid = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_wifi_essid"));
     data.iface_wifi_key = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_wifi_key"));
     data.wifi_table = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"wifi_table"));
+
+    data.iface_hostname = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_hostname"));
+    data.iface_lan = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_lan"));
+    data.iface_dns = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_dns"));
+    data.iface_dns1 = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_dns1"));
 
     gtk_builder_connect_signals(gtkBuilder, &data);
 

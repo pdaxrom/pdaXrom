@@ -7,6 +7,7 @@ DATADIR	:= $(PREFIX)/share
 RESDIR	:= $(DATADIR)/netconfig
 
 CC	:= gcc
+INSTALL	:= install
 
 LIBS	:= $(shell pkg-config --cflags --libs gtk+-2.0)
 CFLAGS	:=-Wall -g -export-dynamic $(shell pkg-config --cflags gtk+-2.0) -DRESDIR=\"$(RESDIR)\"

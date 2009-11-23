@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Network settings
+Name[ru]=Настройки сети
+Comment=Configuring wired and wireless network devices
+Comment[ru]=Конфигурирование проводных и безпроводных сетевых устройств
+Exec=ktsuss /usr/bin/netconfig
+Icon=preferences-system-network
+Terminal=false
+Type=Application
+Categories=GNOME;System;Network;
+StartupNotify=true
