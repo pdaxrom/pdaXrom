@@ -19,6 +19,7 @@
 
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <malloc.h>
@@ -401,6 +402,11 @@ void apply_iface(GtkWidget *widget, Data *data)
 	write_iface_config(iface_name, &data->iface);
 	free(iface_name);
 	write_dns(data);
+	char buf[256];
+	snprintf(buf, 256, "ifdown %s", iface_name);
+	system(buf);
+	snprintf(buf, 256, "ifup %s", iface_name);
+	system(buf);
     }
 }
 
