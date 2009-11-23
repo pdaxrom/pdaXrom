@@ -90,6 +90,7 @@ build_qt_x11_opensource_src() {
 	    -xrender \
 	    -fontconfig \
 	    -xkb \
+	    -opensource \
 	    -v \
 	    || error
     ) || error "configure"
