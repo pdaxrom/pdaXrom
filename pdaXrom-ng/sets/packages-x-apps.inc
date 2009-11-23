@@ -26,33 +26,14 @@ fi
 . $RULES_DIR/giblib.sh
 . $RULES_DIR/scrot.sh
 
-. $SETS_DIR/packages-firefox.inc
+#. $SETS_DIR/packages-firefox.inc
+
+. $SETS_DIR/packages-midori.inc
 
 #
 # skipstone-gecko
 #
 #. $RULES_DIR/skipstone-gecko.sh
-
-#
-# webkit
-#
-#. $RULES_DIR/sqlite.sh
-#. $RULES_DIR/libtasn1.sh
-#. $RULES_DIR/libgpg-error.sh
-#. $RULES_DIR/libgcrypt.sh
-#. $RULES_DIR/gnutls.sh
-#. $RULES_DIR/curl.sh
-#. $RULES_DIR/libxslt.sh
-#. $RULES_DIR/host_icu4c.sh
-#. $RULES_DIR/icu4c.sh
-#. $RULES_DIR/WebKit.sh
-
-#
-# midori
-#
-#. $RULES_DIR/libunique.sh
-#. $RULES_DIR/libsoup.sh
-#. $RULES_DIR/midori.sh
 
 #
 # skipstone

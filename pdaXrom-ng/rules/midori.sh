@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-MIDORI_VERSION=0.1.6
+MIDORI_VERSION=0.2.1
 MIDORI=midori-${MIDORI_VERSION}.tar.bz2
-MIDORI_MIRROR=http://goodies.xfce.org/releases/midori
+MIDORI_MIRROR=http://archive.xfce.org/src/apps/midori/0.2
 MIDORI_DIR=$BUILD_DIR/midori-${MIDORI_VERSION}
 MIDORI_ENV="$CROSS_ENV_AC"
 
@@ -28,20 +28,18 @@ build_midori() {
     LINKFLAGS="-L${TARGET_LIB} -Wl,-rpath,${TARGET_LIB}" CC=${CROSS}gcc ./waf configure --prefix=/usr || error
 
     ) || error "configure"
-    
+
     ./waf build || error
 
     ./waf install --destdir=${MIDORI_DIR}/fakeroot || error
-    
+
     rm -rf fakeroot/usr/share/doc fakeroot/usr/share/locale || error
-    
+
     find fakeroot/ -name "*.la" | xargs rm -f
-    
+
     find fakeroot/ -type f -executable | xargs $STRIP
 
-    mv -f fakeroot/usr/share/icons/hicolor fakeroot/usr/share/icons/gnome || error
-    cp -R fakeroot/etc $ROOTFS_DIR/ || error "copy target binaries"
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error "copy target binaries"
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/midori.installed"
