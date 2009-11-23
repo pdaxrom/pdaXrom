@@ -26,6 +26,8 @@
 
 #. $SETS_DIR/packages-gtkdialog.inc
 
+. $RULES_DIR/netconfig.sh
+
 . $RULES_DIR/dancesplash.sh
 
 . $RULES_DIR/lxde-tweaks.sh
