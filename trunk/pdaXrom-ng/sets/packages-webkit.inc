@@ -13,4 +13,5 @@
 . $RULES_DIR/host_icu4c.sh
 . $RULES_DIR/icu4c.sh
 . $RULES_DIR/enchant.sh
+. $RULES_DIR/libsoup.sh
 . $RULES_DIR/WebKit.sh
