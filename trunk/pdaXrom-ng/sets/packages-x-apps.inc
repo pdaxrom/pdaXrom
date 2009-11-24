@@ -26,9 +26,14 @@ fi
 . $RULES_DIR/giblib.sh
 . $RULES_DIR/scrot.sh
 
-#. $SETS_DIR/packages-firefox.inc
-
-. $SETS_DIR/packages-midori.inc
+case $USE_WEBBROWSER in
+midori)
+    . $SETS_DIR/packages-midori.inc
+    ;;
+*)
+    . $SETS_DIR/packages-firefox.inc
+    ;;
+esac
 
 #
 # skipstone-gecko
