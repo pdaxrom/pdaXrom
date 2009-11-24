@@ -15,6 +15,8 @@ CROSS_OPT_ARCH="-mtune=cell -mcpu=cell -maltivec"
 #CROSS_OPT_CXXFLAGS="-O3"
 
 USE_SPLASH="yes"
+USE_AUFS2="yes"
+USE_WEBBROWSER="midori"
 
 . $SETS_DIR/packages-basic.inc
 . $SETS_DIR/packages-mmlibs.inc
