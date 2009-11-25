@@ -41,6 +41,10 @@ build_midori() {
 
     install_fakeroot_finish || error
 
+    if [ "$USE_WEBBROWSER" = "midori" ]; then
+	echo "WEBBROWSER=midori" > $ROOTFS_DIR/etc/default/applications/webbrowser
+    fi
+
     popd
     touch "$STATE_DIR/midori.installed"
 }
