@@ -23,6 +23,13 @@ build_lxde_tweaks() {
 
     find $ROOTFS_DIR/usr/share/icons/ -type d -name ".svn" | xargs rm -rf
 
+    $INSTALL -D -m 644 $GENERICFS_DIR/default-apps/config/default $ROOTFS_DIR/etc/default/applications/default || error "install wrappers default config"
+
+    for f in webbrowser xterminal textedit; do
+	$INSTALL -D -m 755 $GENERICFS_DIR/default-apps/bin/$f $ROOTFS_DIR/usr/bin/$f || error "install application wrapper"
+	$INSTALL -D -m 755 $GENERICFS_DIR/default-apps/desktop/$f.desktop $ROOTFS_DIR/usr/share/applications/$f.desktop || error "install application desktop file"
+    done
+
     touch "$STATE_DIR/lxde_tweaks.installed"
 }
 

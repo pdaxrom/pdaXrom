@@ -61,10 +61,10 @@ Plugin {
             id=pcmanfm.desktop
         }
         Button {
-            id=mozilla-firefox.desktop
+            id=webbrowser.desktop
         }
         Button {
-            id=lxterminal.desktop
+            id=xterminal.desktop
         }
     }
 }
