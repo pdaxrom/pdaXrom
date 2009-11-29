@@ -50,8 +50,8 @@ libiconv/libiconv2/libiconv2-1.12-1.tar.bz2 \
 libpng/libpng-1.2.12-1.tar.bz2 \
 libpng/libpng12-devel/libpng12-devel-1.2.12-1.tar.bz2 \
 libpng/libpng12/libpng12-1.2.12-1.tar.bz2 \
-openssl/openssl-0.9.8j-1.tar.bz2 \
-openssl/openssl-devel/openssl-devel-0.9.8j-1.tar.bz2 \
+openssl/openssl-0.9.8l-1.tar.bz2 \
+openssl/openssl-devel/openssl-devel-0.9.8l-1.tar.bz2 \
 w32api/w32api-3.13-1.tar.bz2 \
 zlib/zlib-1.2.3-2.tar.bz2 \
 mingw-runtime/mingw-runtime-3.15.1-1.tar.bz2 \

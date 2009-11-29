@@ -45,6 +45,7 @@ case $TARGET_ARCH in
     . $RULES_DIR/mingw32-zziplib.sh
     . $RULES_DIR/mingw32-fltk-2.0.x.sh
     . $RULES_DIR/mingw32-SDL.sh
+    . $RULES_DIR/mingw32-SDL-image.sh
     . $RULES_DIR/mingw32-qemu.sh
     ;;
 *mingw32*)
