@@ -37,6 +37,7 @@ build_mingw32_SDL() {
 
     ln -s ../${TARGET_ARCH/-cygwin*}-mingw32/bin/sdl-config $TOOLCHAIN_PREFIX/bin/i386-mingw32msvc-sdl-config
     ln -s ../${TARGET_ARCH/-cygwin*}-mingw32/bin/sdl-config $TOOLCHAIN_PREFIX/bin/${TARGET_ARCH}-sdl-config
+    ln -s ../${TARGET_ARCH/-cygwin*}-mingw32/bin/sdl-config $TOOLCHAIN_PREFIX/bin/sdl-config
 
     popd
     touch "$STATE_DIR/mingw32_SDL.installed"
