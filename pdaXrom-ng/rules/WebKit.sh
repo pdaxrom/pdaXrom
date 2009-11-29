@@ -15,6 +15,12 @@ WEBKIT_MIRROR=http://builds.nightly.webkit.org/files/trunk/src
 WEBKIT_DIR=$BUILD_DIR/WebKit-${WEBKIT_REVISION}
 WEBKIT_ENV="$CROSS_ENV_AC"
 
+case $TARGET_ARCH in
+ppc64-*|powerpc64-*)
+    WEBKIT_ENV="$WEBKIT_ENV CFLAGS='-O3 -mminimal-toc' CXXFLAGS='-O3 -mminimal-toc'"
+    ;;
+esac
+
 build_WebKit() {
     test -e "$STATE_DIR/WebKit.installed" && return
     banner "Build WebKit"

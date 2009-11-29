@@ -61,6 +61,21 @@ ppc-*|powerpc-*)
 	ac_cv_alignof_CORBA_struct=1 \
 	ac_cv_alignof_CORBA_wchar=2"
 	;;
+ppc64-*|powerpc64-*)
+	ORBIT2_ENV="$ORBIT2_ENV \
+	ac_cv_alignof_CORBA_boolean=1 \
+	ac_cv_alignof_CORBA_char=1 \
+	ac_cv_alignof_CORBA_double=8 \
+	ac_cv_alignof_CORBA_float=4 \
+	ac_cv_alignof_CORBA_long=4 \
+	ac_cv_alignof_CORBA_long_double=8 \
+	ac_cv_alignof_CORBA_long_long=8 \
+	ac_cv_alignof_CORBA_octet=1 \
+	ac_cv_alignof_CORBA_pointer=8 \
+	ac_cv_alignof_CORBA_short=2 \
+	ac_cv_alignof_CORBA_struct=1 \
+	ac_cv_alignof_CORBA_wchar=2"
+	;;
 i*86-*)
 	ORBIT2_ENV="$ORBIT2_ENV \
 	ac_cv_alignof_CORBA_boolean=1 \
