@@ -20,6 +20,12 @@ esac
 . $RULES_DIR/target-gccmakedep.sh
 . $RULES_DIR/target-lndir.sh
 . $RULES_DIR/target-makedepend.sh
+. $RULES_DIR/sqlite.sh
+. $RULES_DIR/neon.sh
+. $RULES_DIR/apr.sh
+. $RULES_DIR/apr-util.sh
+. $RULES_DIR/nano.sh
+. $RULES_DIR/subversion.sh
 . $RULES_DIR/host_file.sh
 . $RULES_DIR/file.sh
 
