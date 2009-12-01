@@ -9,14 +9,14 @@
 # see the README file.
 #
 
-PYLDIN601=pyldin601-3.2
+PYLDIN601=pyldin601
 PYLDIN601_MIRROR=http://mail.pdaXrom.org/files
-PYLDIN601_SVN=https://mail.pdaxrom.org/svn/pyldin/trunk
-PYLDIN601_DIR=$BUILD_DIR/pyldin601-3.2
+PYLDIN601_SVN=http://pyldin.googlecode.com/svn/trunk
+PYLDIN601_DIR=$BUILD_DIR/pyldin601
 PYLDIN601_ENV=
 
 build_pyldin601() {
-    test -e "$STATE_DIR/pyldin601-3.2" && return
+    test -e "$STATE_DIR/pyldin601" && return
     banner "Build $PYLDIN601"
     download_svn $PYLDIN601_SVN $PYLDIN601
     cp -R $SRC_DIR/$PYLDIN601 $PYLDIN601_DIR/
@@ -27,6 +27,7 @@ build_pyldin601() {
 
     make CC=${TARGET_ARCH}-gcc CXX=${TARGET_ARCH}-g++ $MAKEARGS \
 	EXTRA_CFLAGS="$CROSS_CFLAGS" OPT_LIBS="$EXTRA_LDFLAGS" \
+	SOUND="alsa" \
 	|| error
 
     make DESTDIR=$ROOTFS_DIR install || error
@@ -34,7 +35,7 @@ build_pyldin601() {
     $STRIP $ROOTFS_DIR/usr/bin/pyldin
 
     popd
-    touch "$STATE_DIR/pyldin601-3.2"
+    touch "$STATE_DIR/pyldin601"
 }
 
 build_pyldin601

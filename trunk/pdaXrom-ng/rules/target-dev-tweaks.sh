@@ -18,6 +18,8 @@ target_dev_tweaks() {
 
     sed -i -e "s|${TARGET_BIN_DIR}||" ${ROOTFS_DIR}/usr/lib/pkgconfig/*.pc
 
+    test -f ${TARGET_LIB}/libSDLmain.a && cp -a ${TARGET_LIB}/libSDLmain.a ${ROOTFS_DIR}/usr/lib/
+
     find ${ROOTFS_DIR}/usr/bin/ -name "*-config" | while read f; do
 	file $f | grep -q "POSIX shell script" && sed -i -e "s|${TARGET_BIN_DIR}||" $f
     done
