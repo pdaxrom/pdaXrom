@@ -144,7 +144,7 @@ create_initramfs() {
     echo "nod /dev/tty3    0640 0 0 c 4 3" >> $BUILD_DIR/initramfs.list
     echo "nod /dev/null    0666 0 0 c 1 3" >> $BUILD_DIR/initramfs.list
 
-    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS ${TARGET_KERNEL_IMAGE-zImage} CONFIG_INITRAMFS_SOURCE=$BUILD_DIR/initramfs.list || error
+    make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGS `get_kernel_image $TARGET_ARCH` CONFIG_INITRAMFS_SOURCE=$BUILD_DIR/initramfs.list || error
 
     popd
 }

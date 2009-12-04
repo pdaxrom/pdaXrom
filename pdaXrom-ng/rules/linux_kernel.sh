@@ -54,7 +54,7 @@ get_kernel_image() {
 	echo ${TARGET_KERNEL_IMAGE-zImage}
 	;;
     mips*-ls2f-*)
-	echo ${TARGET_KERNEL_IMAGE-zImage}
+	echo ${TARGET_KERNEL_IMAGE-vmlinuz}
 	;;
     mips*)
 	echo ${TARGET_KERNEL_IMAGE-vmlinux}
@@ -77,7 +77,7 @@ get_kernel_image_path() {
 	echo ${KERNEL_DIR}/arch/powerpc/boot/${TARGET_KERNEL_IMAGE-zImage}
 	;;
     mips*-ls2f-*)
-	echo ${KERNEL_DIR}/arch/mips/boot/compressed/${TARGET_KERNEL_IMAGE-vmlinuz}
+	echo ${KERNEL_DIR}/${TARGET_KERNEL_IMAGE-vmlinuz}
 	;;
     mips*-jz-*)
 	echo ${KERNEL_DIR}/arch/mips/boot/${TARGET_KERNEL_IMAGE-vmlinux}
