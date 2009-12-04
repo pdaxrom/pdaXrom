@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-MC_VERSION=4.7.0-pre4
+MC_VERSION=4.6.1
 MC=mc-${MC_VERSION}.tar.gz
-MC_MIRROR=http://www.midnight-commander.org/downloads
+MC_MIRROR=http://www.ibiblio.org/pub/Linux/utils/file/managers/mc
 MC_DIR=$BUILD_DIR/mc-${MC_VERSION}
 MC_ENV="$CROSS_ENV_AC"
 

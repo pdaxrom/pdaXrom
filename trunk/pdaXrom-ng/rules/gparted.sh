@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GPARTED_VERSION=0.4.6
+GPARTED_VERSION=0.5.0
 GPARTED=gparted-${GPARTED_VERSION}.tar.bz2
-GPARTED_MIRROR=http://downloads.sourceforge.net/project/gparted/gparted/gparted-0.4.6
+GPARTED_MIRROR=http://downloads.sourceforge.net/project/gparted/gparted/gparted-0.5.0
 GPARTED_DIR=$BUILD_DIR/gparted-${GPARTED_VERSION}
 GPARTED_ENV="$CROSS_ENV_AC GKSUPROG=ktsuss"
 
