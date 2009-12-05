@@ -6,8 +6,8 @@ TARGET_ARCH="i686-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
-KERNEL_VERSION="2.6.31"
-KERNEL_CONFIG=i686-kernel-2.6.31
+KERNEL_VERSION="2.6.32"
+KERNEL_CONFIG=i686-kernel-2.6.32
 
 . $SETS_DIR/packages-basic.inc
 . $SETS_DIR/packages-mmlibs.inc

@@ -4,10 +4,10 @@ TARGET_ARCH="powerpc-ps3-linux-uclibc"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
-KERNEL_VERSION="2.6.31"
+KERNEL_VERSION="2.6.32"
 TARGET_VENDOR_PATCH=ps3
 
-KERNEL_CONFIG=ps3_kboot_bt_2.6.31
+KERNEL_CONFIG=ps3_kboot_bt_2.6.32
 BUSYBOX_CONFIG=busybox_config
 
 BLUEZ_UTILS3_BIN_FILES="tools/hciconfig"
