@@ -1,0 +1,33 @@
+--- linux-2.6.32/arch/arm/mach-pxa/spitz.c~	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32/arch/arm/mach-pxa/spitz.c	2009-12-04 21:58:35.000000000 -0500
+@@ -647,16 +647,12 @@
+ 
+ static struct mtd_partition sharpsl_nand_partitions[] = {
+ 	{
+-		.name = "System Area",
++		.name = "Logical",
+ 		.offset = 0,
+ 		.size = 7 * 1024 * 1024,
+ 	},
+ 	{
+-		.name = "Root Filesystem",
+-		.offset = 7 * 1024 * 1024,
+-	},
+-	{
+-		.name = "Home Filesystem",
++		.name = "RootFS",
+ 		.offset = MTDPART_OFS_APPEND,
+ 		.size = MTDPART_SIZ_FULL,
+ 	},
+@@ -756,9 +752,9 @@
+ 	if (machine_is_spitz()) {
+ 		sharpsl_nand_partitions[1].size = 5 * 1024 * 1024;
+ 	} else if (machine_is_akita()) {
+-		sharpsl_nand_partitions[1].size = 58 * 1024 * 1024;
++		sharpsl_nand_partitions[1].size = 121 * 1024 * 1024;
+ 	} else if (machine_is_borzoi()) {
+-		sharpsl_nand_partitions[1].size = 32 * 1024 * 1024;
++		sharpsl_nand_partitions[1].size = 121 * 1024 * 1024;
+ 	}
+ 
+ 	PMCR = 0x00;

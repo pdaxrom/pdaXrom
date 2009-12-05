@@ -16,6 +16,10 @@ U_BOOT_DIR=$BUILD_DIR/u-boot-${U_BOOT_VERSION}
 U_BOOT_ENV="$CROSS_ENV_AC"
 CROSS_COMPILE=${TARGET_ARCH}-
 
+if [ $U_BOOT_VERSION = "2006-04-18-1106" ];then
+U_BOOT_MIRROR=http://distro.ibiblio.org/pub/linux/distributions/pdaxrom/src
+fi
+
 if [ "x$U_BOOT_CONFIG" = "x" ]; then
     error "No U-BOOT config defined!"
 fi
