@@ -3,7 +3,7 @@
 TARGET_ARCH="i686-linux"
 
 case $1 in
-*-linux*|*-cygwin*|*-mingw32*)
+*-linux*|*-cygwin*|*-mingw32*|*-darwin*)
     TARGET_ARCH=$1
     ;;
 *)
@@ -51,6 +51,9 @@ case $TARGET_ARCH in
 *mingw32*)
     #. $RULES_DIR/cross-mingw32-tools.sh
     echo "For create mingw32 binaries, please use cygwin compiler with -mno-cygwin option"
+    ;;
+*darwin*)
+    . $RULES_DIR/cross-darwin-tools.sh
     ;;
 *)
     error "unknown target $TARGET_ARCH"
