@@ -1,0 +1,62 @@
+--- odcctools-20060413/ld64/Writers/ExecutableFileMachO-all.cpp-	2009-12-05 19:42:19.615862103 +0600
++++ odcctools-20060413/ld64/Writers/ExecutableFileMachO-all.cpp	2009-12-05 19:42:23.925277509 +0600
+@@ -31,6 +31,9 @@
+ #include <mach-o/ppc/reloc.h>
+ #include <mach-o/stab.h>
+ 
++#include <cstdio>
++#include <cstring>
++#include <climits>
+ #include <vector>
+ #include <algorithm>
+ #include <map>
+--- odcctools-20060413/ld64/ld.cpp-	2009-12-05 19:35:31.697132289 +0600
++++ odcctools-20060413/ld64/ld.cpp	2009-12-05 19:38:11.077091499 +0600
+@@ -30,7 +30,9 @@
+ #include <mach-o/loader.h>
+ #include <mach-o/fat.h>
+ 
+-#include <string>
++#include <cstdio>
++#include <cstring>
++#include <climits>
+ #include <set>
+ #include <string>
+ #include <vector>
+--- odcctools-20060413/ld64/Readers/ObjectFileMachO-all.cpp-	2009-12-05 19:41:11.185237059 +0600
++++ odcctools-20060413/ld64/Readers/ObjectFileMachO-all.cpp	2009-12-05 19:41:17.525257767 +0600
+@@ -31,6 +31,10 @@
+ #include <math.h>
+ #include <ar.h>
+ 
++#include <cstdio>
++#include <cstring>
++#include <climits>
++
+ #include <algorithm>
+ #include <vector>
+ #include <set>
+--- odcctools-20060413/ld64/Options.cpp-	2009-12-05 19:38:30.005475821 +0600
++++ odcctools-20060413/ld64/Options.cpp	2009-12-05 19:38:41.665216670 +0600
+@@ -28,6 +28,9 @@
+ #include <fcntl.h>
+ #include <ctype.h>
+ #include <vector>
++#include <cstdio>
++#include <cstring>
++#include <climits>
+ #include "config.h"
+ 
+ #include "Options.h"
+--- odcctools-20060413/ld64/SectCreate.cpp-	2009-12-05 19:38:56.545237006 +0600
++++ odcctools-20060413/ld64/SectCreate.cpp	2009-12-05 19:39:01.925216859 +0600
+@@ -22,6 +22,9 @@
+  */
+ 
+ #include <vector>
++#include <cstdio>
++#include <cstring>
++#include <climits>
+ 
+ #include "ObjectFile.h"
+ 
