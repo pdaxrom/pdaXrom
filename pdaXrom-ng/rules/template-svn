@@ -10,16 +10,16 @@
 #
 
 @PACKET@_VERSION=@VERSION@
-@PACKET@=@name@-${@PACKET@_VERSION}.@SUFFIX@
-@PACKET@_MIRROR=@URL@
+@PACKET@=@name@-${@PACKET@_VERSION}
+@PACKET@_SVN=@URL@
 @PACKET@_DIR=$BUILD_DIR/@name@-${@PACKET@_VERSION}
 @PACKET@_ENV="$CROSS_ENV_AC"
 
 build_@packet@() {
     test -e "$STATE_DIR/@packet@.installed" && return
     banner "Build @name@"
-    download $@PACKET@_MIRROR $@PACKET@
-    extract $@PACKET@
+    download_svn $@PACKET@_SVN $@PACKET@
+    cp -R $SRC_DIR/$@PACKET@ $@PACKET@_DIR
     apply_patches $@PACKET@_DIR $@PACKET@
     pushd $TOP_DIR
     cd $@PACKET@_DIR
