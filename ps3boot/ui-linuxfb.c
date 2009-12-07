@@ -614,6 +614,7 @@ int db_ui_check_events(db_ui_event *event)
 void db_ui_close(void)
 {
     db_image_free(screen_image);
+    screen_image = NULL;
 
     joystick_off();
     keyboard_off();
