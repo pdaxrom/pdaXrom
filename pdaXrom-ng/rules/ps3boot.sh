@@ -24,7 +24,10 @@ build_ps3boot() {
     pushd $TOP_DIR
     cd $PS3BOOT_DIR
 
-    make $MAKEARGS CC=${CROSS}gcc SYSTEM=linuxfb DATADIR=/usr/share/ps3boot || error
+    local MODE=
+    grep -q "^CONFIG_PPC_PS3=y" ${KERNEL_DIR}/.config || MODE="pc"
+
+    make $MAKEARGS CC=${CROSS}gcc SYSTEM=linuxfb DATADIR=/usr/share/ps3boot MODE=$MODE  || error
 
     $INSTALL -D -m 755 ps3boot $ROOTFS_DIR/usr/sbin/ps3boot || error
     $STRIP $ROOTFS_DIR/usr/sbin/ps3boot
