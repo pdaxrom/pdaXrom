@@ -524,9 +524,15 @@ static int update_screen_from_image(db_image *desk)
 	for (y = 0; y < height; y++) {
 	    for (x = 0; x < width; x++) {
 		int r, g, b;
+#if defined(__LITTLE_ENDIAN)
+		b = (src[x] & 0xf80000) >> 19;
+		g = (src[x] & 0x00fc00) >> 5;
+		r = (src[x] & 0x0000f8) << 8;
+#else
 		r = (src[x] & 0xf80000) >> 8;
-		g = (src[x] & 0x00fa00) >> 5;
+		g = (src[x] & 0x00fc00) >> 5;
 		b = (src[x] & 0x0000f8) >> 3;
+#endif
 		dst[x] = r | g | b;
 	    }
 	    src += desk->width;
