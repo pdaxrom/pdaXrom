@@ -280,8 +280,10 @@ int main(int argc, char *argv[])
 	return EXIT_FAILURE;
     }
 
+    char *sysfs_path = getenv("DEVPATH");
+    syslog(LOG_INFO, "ACTION=%s DEVNAME=%s DEVPATH=%s\n", action, dev_path, sysfs_path);
+
     if (!strcmp(action, "add")) {
-	char *sysfs_path = getenv("DEVPATH");
 	if (sysfs_path && is_removable_device(sysfs_path))
 	    poll_removable_device(sysfs_path, dev_path);
 	else
