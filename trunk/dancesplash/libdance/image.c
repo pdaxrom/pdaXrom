@@ -50,6 +50,9 @@ db_image *db_image_load(char *file)
 
 void db_image_free(db_image *img)
 {
+    if (!img)
+	return;
+
     if (img->buf)
 	free(img->buf);
 
