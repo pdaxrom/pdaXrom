@@ -53,6 +53,7 @@ build_odcctools() {
 	$ODCCTOOLS_ENV \
 	./configure --target=$TARGET_ARCH \
 	    --prefix=$TOOLCHAIN_PREFIX \
+	    --libexecdir=$TOOLCHAIN_PREFIX/lib \
 	    --with-sysroot=$TOOLCHAIN_SYSROOT \
 	    || error
     ) || error "configure"
@@ -99,6 +100,8 @@ build_gcc() {
     $GCC_ENV \
     ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX \
 	--exec-prefix=$TOOLCHAIN_PREFIX --with-sysroot=$TOOLCHAIN_SYSROOT \
+	--libexecdir=$TOOLCHAIN_PREFIX/lib \
+	--with-gxx-include-dir=${TOOLCHAIN_SYSROOT}/usr/include/c++/4.2.1 \
 	--disable-checking \
 	--enable-languages=c,c++ \
 	--with-as=${TOOLCHAIN_PREFIX}/bin/${CROSS}as \
