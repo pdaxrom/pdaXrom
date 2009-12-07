@@ -69,7 +69,7 @@ echo "Selecated config $c"
 TOP_DIR="$PWD"
 
 if [ -f "platforms/$c" ]; then
-    SETS_DIR="$TOP_DIR/sets" bash "platforms/$c" $@
+    SETS_DIR="$TOP_DIR/sets" bash "${TOP_DIR}/platforms/$c" $@
 else
     SETS_DIR="$TOP_DIR/sets" bash "$c" $@
 fi
