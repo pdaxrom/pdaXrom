@@ -56,7 +56,7 @@ static int is_ignored_device(const char *devname)
     const char **dev;
 
     for (dev = ignored_devices; *dev; dev++)
-	if (!strncmp(devname, *dev, strlen(*dev)))
+	if (strstr(devname, *dev))
     	    return 1;
 
     return 0;
