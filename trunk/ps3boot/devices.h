@@ -6,6 +6,7 @@
 
 #define MOUNT_DIR	"/media"
 
+#define POWEROFF_BIN	"/sbin/poweroff"
 #define GAMEOS_BIN	"/usr/sbin/ps3-boot-game-os"
 #define VIDMOD_BIN	"/usr/bin/ps3-video-mode"
 #define KEXEC_BIN	"/sbin/kexec"

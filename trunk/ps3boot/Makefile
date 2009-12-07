@@ -23,6 +23,9 @@ OPT_CFLAGS:=-O2
 CFLAGS = $(OPT_CFLAGS) -Wall -g `freetype-config --cflags`
 #CFLAGS += -DDATADIR=\"/usr/share/ps3boot/\"
 CFLAGS += -DDATADIR=\"$(DATADIR)\"
+ifeq (pc, $(MODE))
+CFLAGS += -DPCBOOT=1
+endif
 LDFLAGS += $(OPT_LDFLAGS) -ljpeg -lpng `freetype-config --libs` -g
 
 $(TARGET): $(OBJS)

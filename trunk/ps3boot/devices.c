@@ -41,6 +41,8 @@ static db_image *get_device_icon(char *dev_path)
 	return db_image_load(DATADIR "/artwork/cdrom.png");
     if (!strcmp(dev_path, "gameos"))
 	return db_image_load(DATADIR "/artwork/gameos.png");
+    if (!strcmp(dev_path, "poweroff"))
+	return db_image_load(DATADIR "/artwork/halt.png");
     return db_image_load(DATADIR "/artwork/hdd.png");
 }
 
@@ -83,7 +85,7 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
     boot_device *dev = (boot_device *) malloc(sizeof(boot_device));    
     memset(dev, 0, sizeof(boot_device));
 
-    if (strcmp(dev_path, "gameos")) {
+    if (dev_path[0] == '/') {
 	if (kboot_conf_read(dev_path, dev)) {
 	    if (yaboot_conf_read(dev_path, dev)) {
 		if (ps3boot_conf_read(dev_path, dev)) {
@@ -93,23 +95,28 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
 	    }
 	}
     }
-    
+
     char buf[1024];
     snprintf(buf, 1024, DATADIR "/artwork/%s", icon);
-    dev->icon = db_image_load(buf);    
+    dev->icon = db_image_load(buf);
     if (!dev->icon)
 	dev->icon = get_device_icon(dev_path);
     dev->device = strdup(dev_path);
     dev->next = NULL;
-    
+
     return dev;
 }
 
 void bootdevice_init(void)
 {
     if (devices == NULL) {
-	devices = bootdevice_create("gameos", "gameos.png");
+	devices = bootdevice_create("poweroff", "halt.png");
+#ifndef PCBOOT
+	devices->next = bootdevice_create("gameos", "gameos.png");
+	cur_device = devices->next;
+#else
 	cur_device = devices;
+#endif
     }
 }
 
@@ -334,7 +341,14 @@ void bootdevice_boot(void)
 		if (system(cmd))
 		    fprintf(stderr, "problem execute %s\n", cmd);
 		return;
+	    } else if (!strcmp(dev->device, "poweroff")) {
+		char *cmd = POWEROFF_BIN;
+		fprintf(stderr, "Execute: %s\n", cmd);
+		if (system(cmd))
+		    fprintf(stderr, "problem execute %s\n", cmd);
+		return;
 	    }
+
 	    char buf[1024];
     
 	    sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", dev->device);
