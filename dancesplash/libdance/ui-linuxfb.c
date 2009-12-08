@@ -97,7 +97,12 @@ static int framebuffer_on(void)
     display_height = var.yres;
     display_depth = var.bits_per_pixel;
     display_pitch  = fix.line_length;
-
+#ifdef __i386__
+    /* atv bootloader wrong screen resolution fix */
+    if ((display_pitch / (display_width * 2)) == 4) {
+	display_width *= 2;
+    }
+#endif
     fprintf(stderr, "depth %d\nwidth %d\npitch %d\nheight %d\n", display_depth, display_width, display_pitch, display_height);
 
     return 0;
