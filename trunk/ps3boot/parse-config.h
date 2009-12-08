@@ -7,5 +7,6 @@ int kboot_conf_read(char *dev_path, boot_device *dev);
 int yaboot_conf_read(char *dev_path, boot_device *dev);
 int ps3boot_conf_read(char *dev_path, boot_device *dev);
 int syslinux_conf_read(char *dev_path, boot_device *dev);
+int grub_conf_read(char *dev_path, boot_device *dev);
 
 #endif
