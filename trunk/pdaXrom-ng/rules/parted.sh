@@ -9,11 +9,16 @@
 # see the README file.
 #
 
-PARTED_VERSION=1.9.0
+PARTED_VERSION=1.8.8
 PARTED=parted-${PARTED_VERSION}.tar.gz
 PARTED_MIRROR=http://ftp.gnu.org/gnu/parted
 PARTED_DIR=$BUILD_DIR/parted-${PARTED_VERSION}
-PARTED_ENV="$CROSS_ENV_AC"
+PARTED_ENV="$CROSS_ENV_AC \
+ac_cv_func_malloc_0_nonnull=yes \
+ac_cv_func_calloc_0_nonnull=yes \
+ac_cv_func_realloc_0_nonnull=yes \
+ac_cv_func_memcmp_working=yes \
+"
 
 build_parted() {
     test -e "$STATE_DIR/parted.installed" && return
@@ -30,6 +35,7 @@ build_parted() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --disable-Werror \
 	    || error
     ) || error "configure"
 
