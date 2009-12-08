@@ -22,6 +22,12 @@ build_e2fsprogs() {
     extract $E2FSPROGS
     apply_patches $E2FSPROGS_DIR $E2FSPROGS
     pushd $TOP_DIR
+    local C=
+    case ${CROSS} in
+    *uclibc*)
+	C="--disable-tls"
+	;;
+    esac
     cd $E2FSPROGS_DIR
     (
     eval \
@@ -31,6 +37,7 @@ build_e2fsprogs() {
 	    --with-cc=${CROSS}gcc \
 	    --with-linker=${CROSS}gcc \
 	    --enable-elf-shlibs \
+	    $C \
 	    || error
     ) || error "configure"
     
