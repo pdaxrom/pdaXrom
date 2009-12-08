@@ -40,19 +40,19 @@ static void bootdevice_add_config(boot_device *dev, char *label, char *kernel, c
 	dev->conf = tmp;
 }
 
-static int get_int_val(char *ptr)
+static int get_int_val(char *ptr, char del)
 {
     int val = 0;
-    ptr = strchr(ptr, '=');
+    ptr = strchr(ptr, del);
     if (!ptr)
 	return 0;
     sscanf(ptr + 1, "%d", &val);
     return val;
 }
 
-static char *get_str_val(char *ptr)
+static char *get_str_val(char *ptr, char del)
 {
-    char *val = strchr(ptr, '=');
+    char *val = strchr(ptr, del);
     if (!val)
 	return NULL;
     val++;
@@ -94,10 +94,10 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 	    if (*ptr == '#')
 		continue;
 	    if (!strncmp(ptr, "timeout", 7))
-		dev->timeout = get_int_val(ptr);
+		dev->timeout = get_int_val(ptr, '=');
 	    else if (!strncmp(ptr, "message", 7)) {
 		struct stat s;
-		char *name = get_str_val(ptr);
+		char *name = get_str_val(ptr, '=');
 		if (!name)
 		    continue;
 		snprintf(buf, 1024, MOUNT_DIR "%s%s", dev_path, name);
@@ -112,7 +112,7 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 		}
 		free(name);
 	    } else if (!strncmp(ptr, "default", 7)) {
-		dev->def = get_str_val(ptr);
+		dev->def = get_str_val(ptr, '=');
 	    } else {
 		char *buf = alloca(strlen(ptr));
 		char *cmdline_buf = alloca(strlen(ptr));
@@ -196,11 +196,11 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		(*ptr == ';'))
 		continue;
 	    if (!strncmp(ptr, "timeout", 7))
-		dev->timeout = get_int_val(ptr);
+		dev->timeout = get_int_val(ptr, '=');
 	    else if (!strncmp(ptr, "default", 7))
-		dev->def = get_str_val(ptr);
+		dev->def = get_str_val(ptr, '=');
 	    else if (!strncmp(ptr, "init-message", 12)) {
-		char *msg = get_str_val(ptr);
+		char *msg = get_str_val(ptr, '=');
 		char *ptr = msg;
 		while(*ptr) {
 		    if ((ptr[0] == '\\') && (ptr[1] == 'n')) {
@@ -214,7 +214,7 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		char *label = NULL;
 		char *initrd = NULL;
 		char *cmdline = (char *) alloca(1024);
-		char *kernel = get_str_val(ptr);
+		char *kernel = get_str_val(ptr, '=');
 		cmdline[0] = 0;
 		while (fgets(buf, 1024, f)) {
 		    char *ptr = buf;
@@ -225,26 +225,26 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		    if (!strlen(ptr))
 			break;
 		    if (!strncmp(ptr, "label", 5))
-			label = get_str_val(ptr);
+			label = get_str_val(ptr, '=');
 		    else if (!strncmp(ptr, "append", 6)) {
-			char *tmp = get_str_val(ptr);
+			char *tmp = get_str_val(ptr, '=');
 			strcat(cmdline, tmp);
 			strcat(cmdline, " ");
 			free(tmp);
 		    } else if (!strncmp(ptr, "root", 4)) {
-			char *tmp = get_str_val(ptr);
+			char *tmp = get_str_val(ptr, '=');
 			strcat(cmdline, "root=");
 			strcat(cmdline, tmp);
 			strcat(cmdline, " ");
 			free(tmp);
 		    } else if (!strncmp(ptr, "ramdisk", 7)) {
-			char *tmp = get_str_val(ptr);
+			char *tmp = get_str_val(ptr, '=');
 			strcat(cmdline, "ramdisk=");
 			strcat(cmdline, tmp);
 			strcat(cmdline, " ");
 			free(tmp);
 		    } else if (!strncmp(ptr, "initrd-size", 11)) {
-			char *tmp = get_str_val(ptr);
+			char *tmp = get_str_val(ptr, '=');
 			strcat(cmdline, "ramdisk_size=");
 			strcat(cmdline, tmp);
 			strcat(cmdline, " ");
@@ -256,7 +256,7 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		    else if (!strncmp(ptr, "novideo", 7))
 			strcat(cmdline, "video=ofonly ");
 		    else if (!strncmp(ptr, "initrd", 6))
-			initrd = get_str_val(ptr);
+			initrd = get_str_val(ptr, '=');
 		}
 		if (label)
 		    bootdevice_add_config(dev, label, kernel, initrd, strdup(cmdline));
@@ -293,11 +293,11 @@ int ps3boot_conf_read(char *dev_path, boot_device *dev)
 		(*ptr == ';'))
 		continue;
 	    if (!strncmp(ptr, "timeout", 7))
-		dev->timeout = get_int_val(ptr);
+		dev->timeout = get_int_val(ptr, '=');
 	    else if (!strncmp(ptr, "default", 7))
-		dev->def = get_str_val(ptr);
+		dev->def = get_str_val(ptr, '=');
 	    else if (!strncmp(ptr, "message", 7)) {
-		char *msg = get_str_val(ptr);
+		char *msg = get_str_val(ptr, '=');
 		char *ptr = msg;
 		while(*ptr) {
 		    if ((ptr[0] == '\\') && (ptr[1] == 'n')) {
@@ -309,7 +309,7 @@ int ps3boot_conf_read(char *dev_path, boot_device *dev)
 		dev->message = msg;
 	    } else if (!strncmp(ptr, "label", 5)) {
 		char *cmdline = (char *) alloca(1024);
-		char *label = get_str_val(ptr);
+		char *label = get_str_val(ptr, '=');
 		cmdline[0] = 0;
 		while (fgets(buf, 1024, f)) {
 		    char *ptr = buf;
@@ -320,7 +320,7 @@ int ps3boot_conf_read(char *dev_path, boot_device *dev)
 		    if (!strlen(ptr))
 			break;
 		    if (!strncmp(ptr, "exec", 4)) {
-			char *tmp = get_str_val(ptr);
+			char *tmp = get_str_val(ptr, '=');
 			strcat(cmdline, tmp);
 			strcat(cmdline, " ");
 			free(tmp);
@@ -329,6 +329,108 @@ int ps3boot_conf_read(char *dev_path, boot_device *dev)
 		if (label)
 		    bootdevice_add_config(dev, label, NULL, NULL, strdup(cmdline));
 	    }
+	}
+	fclose(f);
+	return 0;
+    }
+    
+    return 1;
+}
+
+int syslinux_conf_read(char *dev_path, boot_device *dev)
+{
+    const char *cfile[] = { "isolinux/text.cfg", "ISOLINUX/TEXT.CFG",
+			    "isolinux/isolinux.cfg", "ISOLINUX/ISOLINUX.CFG",
+			    "syslinux.cfg", "SYSLINUX.CFG",
+			    NULL
+			  };
+    char buf[1024];
+    FILE *f;
+    int i = 0;
+
+    while(1) {
+	if (cfile[i] == NULL)
+	    return 1;
+	snprintf(buf, 1024, MOUNT_DIR "%s/%s", dev_path, cfile[i]);
+	f = fopen(buf, "rb");
+	if (f)
+	    break;
+	i++;
+    }
+
+    char *work_dir = strdup(cfile[i]);
+    char *ptr = strrchr(work_dir, '/');
+    if (ptr)
+	*++ptr = 0;
+    else
+	*work_dir = 0;
+
+    if (f) {
+	while (fgets(buf, 1024, f)) {
+	  while(1) {
+	    char *ptr = buf;
+	    if ((*ptr == '#') ||
+		(*ptr == ';'))
+		continue;
+//	    if (!strncasecmp(ptr, "timeout", 7))
+//		dev->timeout = get_int_val(ptr, ' ');
+//	    else if (!strncasecmp(ptr, "default", 7))
+//		dev->def = get_str_val(ptr, ' ');
+//	    else
+	    if (!strncasecmp(ptr, "display", 7)) {
+		struct stat s;
+		char *name = get_str_val(ptr, ' ');
+		if (!name)
+		    continue;
+		snprintf(buf, 1024, MOUNT_DIR "%s/%s%s", dev_path, work_dir, name);
+		if (!lstat(buf, &s)) {
+		    FILE *fm = fopen(buf, "rb");
+		    if (fm) {
+			dev->message = (char *) malloc(s.st_size + 1);
+			int l = fread(dev->message, 1, s.st_size, fm);
+			dev->message[l] = 0;
+			fclose(fm);
+		    }
+		}
+		free(name);
+	    } else if (!strncasecmp(ptr, "label", 5)) {
+		char *kernel = NULL;
+		char *initrd = NULL;
+		char *cmdline = (char *) alloca(1024);
+		char *label = get_str_val(ptr, ' ');
+		cmdline[0] = 0;
+		while (fgets(buf, 1024, f)) {
+		    char *ptr = buf;
+		    if (*ptr > ' ')
+			break;
+		    while ((*ptr != 0) && (*ptr <= ' '))
+			ptr++;
+		    if (!strlen(ptr))
+			continue;
+		    if (!strncasecmp(ptr, "kernel", 6)) {
+			kernel = get_str_val(ptr, ' ');
+		    } else if (!strncmp(ptr, "append", 6)) {
+			char *tmp = get_str_val(ptr, ' ');
+			strcat(cmdline, tmp);
+			strcat(cmdline, " ");
+			free(tmp);
+		    }
+		}
+		initrd = strstr(cmdline, "initrd=");
+		if (initrd) {
+		    char *ptr = strdup(initrd);
+		    char *end = strchr(ptr, ' ');
+		    if (end)
+			*end = 0;
+		    initrd = get_str_val(ptr, '=');
+		    free(ptr);
+		}
+		if (label)
+		    bootdevice_add_config(dev, label, kernel, initrd, strdup(cmdline));
+		continue;
+	    }
+	    break;
+	  }
 	}
 	fclose(f);
 	return 0;
