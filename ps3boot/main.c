@@ -13,6 +13,9 @@
 #include "server.h"
 #include "settings.h"
 
+static int disable_autoboot = 0;
+static int autoboot_counter = 0;
+
 static int f_quit = 0;
 
 db_font *font = NULL;
@@ -32,6 +35,15 @@ void ps3boot_quit(void)
 static void timer_handler(int signum)
 {
     db_ui_timer();
+    if ((!disable_autoboot) && (!(autoboot_counter++ % 4))) {
+	int t = bootdevice_autoboot_timer();
+	if (t >= 0) {
+	    char buf[256];
+	    snprintf(buf, 256, "Timeout: %d", t);
+	    db_message_draw(img_desk, font, buf, 30, 30, 400, 60, 0xffffff, DB_WINDOW_COORD_CENTER);
+	    db_ui_update_screen();
+	}
+    }
 }
 
 db_image *load_wallpaper(db_image *desk)
@@ -96,18 +108,9 @@ int main(int argc, char *argv[])
 
     atexit(db_ui_close);
 
-    memset (&sa, 0, sizeof (sa));
+    disable_autoboot = 0;
+    autoboot_counter = 0;
 
-    sa.sa_handler = &timer_handler;
-    sigaction (SIGVTALRM, &sa, NULL);
-
-    timer.it_value.tv_sec = 0;
-    timer.it_value.tv_usec = 250000;
-    timer.it_interval.tv_sec = 0;
-    timer.it_interval.tv_usec = 250000;
-
-    setitimer (ITIMER_VIRTUAL, &timer, NULL);
-    
     font = db_font_open(DATADIR "/fonts/Vera.ttf", 12, 0);
     if (!font) {
 	fprintf(stderr, "Can't open font!\n");
@@ -126,7 +129,19 @@ int main(int argc, char *argv[])
 	img_desk = db_ui_get_screen();
 	img_wallp = load_wallpaper(img_desk);
     }
-    
+
+    memset (&sa, 0, sizeof (sa));
+
+    sa.sa_handler = &timer_handler;
+    sigaction (SIGVTALRM, &sa, NULL);
+
+    timer.it_value.tv_sec = 0;
+    timer.it_value.tv_usec = 250000;
+    timer.it_interval.tv_sec = 0;
+    timer.it_interval.tv_usec = 250000;
+
+    setitimer (ITIMER_VIRTUAL, &timer, NULL);
+
     bootdevice_init();
     ps3boot_serv_on();
 
@@ -189,6 +204,7 @@ int main(int argc, char *argv[])
 			bootdevice_boot();
 			break;
 		}
+		disable_autoboot = 1;
 		bootdevices_draw_devices(img_desk, img_wallp);
 		db_ui_update_screen();
 	    } break;
@@ -267,6 +283,7 @@ int main(int argc, char *argv[])
 			f_edit = 1;
 			continue;
 		};
+		disable_autoboot = 1;
 		bootdevices_draw_devices(img_desk, img_wallp);
 		db_ui_update_screen();
 	    }; break;

@@ -170,6 +170,11 @@ int kboot_conf_read(char *dev_path, boot_device *dev)
 		    cmdline_buf[strlen(cmdline_buf) - 1] = 0;
 		    cmdline = strdup(cmdline_buf);
 		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
+		    if (dev->def) {
+			if (!strcmp(dev->def, label)) {
+			    bootdevice_default_config(label, dev_path, kernel, initrd, cmdline, dev->timeout);
+			}
+		    }
 		}
 	    }
 	}
@@ -269,8 +274,14 @@ int yaboot_conf_read(char *dev_path, boot_device *dev)
 		    else if (!strncmp(ptr, "initrd", 6))
 			initrd = get_str_val(ptr, '=');
 		}
-		if (label)
+		if (label) {
 		    bootdevice_add_config(dev, label, kernel, initrd, strdup(cmdline));
+		    if (dev->def) {
+			if (!strcmp(dev->def, label)) {
+			    bootdevice_default_config(label, dev_path, kernel, initrd, cmdline, dev->timeout);
+			}
+		    }
+		}
 	    }
 	}
 	fclose(f);
@@ -337,8 +348,14 @@ int ps3boot_conf_read(char *dev_path, boot_device *dev)
 			free(tmp);
 		    }
 		}
-		if (label)
+		if (label) {
 		    bootdevice_add_config(dev, label, NULL, NULL, strdup(cmdline));
+		    if (dev->def) {
+			if (!strcmp(dev->def, label)) {
+			    bootdevice_default_config(label, dev_path, NULL, NULL, cmdline, dev->timeout);
+			}
+		    }
+		}
 	    }
 	}
 	fclose(f);
@@ -456,6 +473,7 @@ int grub_conf_read(char *dev_path, boot_device *dev)
     char buf[1024];
     FILE *f;
     int i = 0;
+    int def_pos = -1;
 
     while(1) {
 	if (cfile[i] == NULL)
@@ -473,7 +491,11 @@ int grub_conf_read(char *dev_path, boot_device *dev)
 	    if ((*ptr == '#') ||
 		(*ptr == ';'))
 		continue;
-	    if (!strncasecmp(ptr, "title", 5)) {
+	    if (!strncmp(ptr, "timeout", 7))
+		dev->timeout = get_int_val(ptr, ' ');
+	    else if (!strncmp(ptr, "default", 7))
+		def_pos = get_int_val(ptr, ' ');
+	    else if (!strncasecmp(ptr, "title", 5)) {
 		char *kernel = NULL;
 		char *initrd = NULL;
 		char *cmdline= NULL;
@@ -496,9 +518,13 @@ int grub_conf_read(char *dev_path, boot_device *dev)
 		    if (end) 
 			*end = 0;
 		}
-		if (label)
+		if (label) {
 		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
-		continue;
+		    if (def_pos-- == 0) {
+			dev->def = strdup(label);
+			bootdevice_default_config(label, dev_path, kernel, initrd, cmdline, dev->timeout);
+		    }
+		}
 	    }
 	}
 	fclose(f);

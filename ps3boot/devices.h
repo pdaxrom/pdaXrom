@@ -34,6 +34,8 @@ typedef struct boot_device {
 
 void bootdevice_init(void);
 
+void bootdevice_default_config(char *label, char *devname, char *kernel, char *initrd, char *cmdline, int timeout);
+
 void bootdevice_add(char *dev_path, char *icon);
 
 void bootdevice_remove(char *dev_path);
@@ -53,5 +55,9 @@ void bootdevice_config_next(void);
 void bootdevice_boot(void);
 
 boot_config *bootdevice_get_current_config(int *x, int *y);
+
+void execute_boot_conf(char *devname, char *kernel, char *initrd, char *cmdline);
+
+int bootdevice_autoboot_timer(void);
 
 #endif

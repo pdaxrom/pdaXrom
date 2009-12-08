@@ -26,12 +26,40 @@ static int selected_device = 0;
 static int selected_config = -1;
 
 //
+// autoboot
+//
+static int   default_timeout = -1;
+static char *default_label   = NULL;
+static char *default_devname = NULL;
+static char *default_kernel  = NULL;
+static char *default_initrd  = NULL;
+static char *default_cmdline = NULL;
+
+//
 // for external export
 //
 static int current_config_x_pos = 0;
 static int current_config_y_pos = 0;
 static boot_config *current_config_ptr = NULL;
 //
+
+void bootdevice_default_config(char *label, char *devname, char *kernel, char *initrd, char *cmdline, int timeout)
+{
+    if (default_timeout >= 0)
+	return;
+    default_timeout = timeout;
+    if (label)
+	default_label   = strdup(label);
+    if (devname)
+	default_devname = strdup(devname);
+    if (kernel)
+	default_kernel  = strdup(kernel);
+    if (initrd)
+	default_initrd  = strdup(initrd);
+    if (cmdline)
+	default_cmdline = strdup(cmdline);
+    fprintf(stderr, "Default: %d,%s,%s,%s,%s,%s\n", default_timeout, default_label, default_devname, default_kernel, default_initrd, default_cmdline);
+}
 
 static db_image *get_device_icon(char *dev_path)
 {
@@ -77,7 +105,7 @@ static void bootdevice_free(boot_device *dev)
 	free(dev->def);
     if (dev->conf)
 	boot_configs_free(dev->conf);
-    free(dev);    
+    free(dev);
 }
 
 static boot_device *bootdevice_create(char *dev_path, char *icon)
@@ -353,65 +381,12 @@ void bootdevice_boot(void)
 		return;
 	    }
 
-	    char buf[1024];
-    
-	    sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", dev->device);
-	    int rc = system(buf);
-	    if (rc)
-		fprintf(stderr, "mkdir problem\n");
-
-	    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", dev->device, dev->device);
-	    rc = system(buf);
-	    if (rc)
-		return;
 	    boot_config *conf = dev->conf;
 	    c = 0;
 	    while (conf) {
 		if (c == selected_config) {
-		    char buf[1024];
-		    if (!conf->initrd && !conf->kernel) {
-			FILE *f = fopen("/tmp/ps3boot.inc", "w");
-			if (f) {
-			    fprintf(f, "mount %s /mnt\n", dev->device);
-			    fprintf(f, "cd /mnt\n");
-			    fprintf(f, "/mnt/%s\n", conf->cmdline);
-			    fprintf(f, "cd /tmp; umount /mnt || umount -lf /mnt\n");
-			    fclose(f);
-			}
-			ps3boot_quit();
-			return;
-		    }
-		    system("hciconfig hci0 down");
-		    snprintf(buf, 1024, KEXEC_BIN " -f ");
-		    if (conf->initrd) {
-			strcat(buf, "--initrd=");
-			strcat(buf, MOUNT_DIR);
-			strcat(buf, dev->device);
-			strcat(buf, "/");
-			strcat(buf, conf->initrd);
-			strcat(buf, " ");
-		    }
-		    if (conf->cmdline) {
-			strcat(buf, "--append=\"");
-			strcat(buf, conf->cmdline);
-			strcat(buf, "\" ");
-		    }
-		    if (conf->kernel) {
-			strcat(buf, MOUNT_DIR);
-			strcat(buf, dev->device);
-			strcat(buf, "/");
-			strcat(buf, conf->kernel);
-			fprintf(stderr, "Execute: %s\n", buf);
-			if (system(buf))
-			    fprintf(stderr, "error execute %s\n", buf);
-			sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", dev->device);
-			rc = system(buf);
-			sprintf(buf, MOUNT_DIR "%s", dev->device);
-			rc = rmdir(buf);
-			exit(0);
-			return;
-		    } else
-			return;
+		    execute_boot_conf(dev->device, conf->kernel, conf->initrd, conf->cmdline);
+		    break;
 		}
 		c++;
 		conf = conf->next;
@@ -428,4 +403,80 @@ boot_config *bootdevice_get_current_config(int *x, int *y)
     *x = current_config_x_pos;
     *y = current_config_y_pos;
     return current_config_ptr;
+}
+
+void execute_boot_conf(char *devname, char *kernel, char *initrd, char *cmdline)
+{
+    int rc;
+    char buf[1024];
+
+    sprintf(buf, MKDIR_BIN " -p " MOUNT_DIR "%s", devname);
+    rc = system(buf);
+    if (rc)
+	fprintf(stderr, "mkdir problem\n");
+
+    sprintf(buf, MOUNT_BIN " -o ro %s " MOUNT_DIR "%s", devname, devname);
+    rc = system(buf);
+    if (rc)
+	return;
+
+    if (!initrd && !kernel) {
+	FILE *f = fopen("/tmp/ps3boot.inc", "w");
+	if (f) {
+	    fprintf(f, "mount %s /mnt\n", devname);
+	    fprintf(f, "cd /mnt\n");
+	    fprintf(f, "/mnt/%s\n", cmdline);
+	    fprintf(f, "cd /tmp; umount /mnt || umount -lf /mnt\n");
+	    fclose(f);
+	}
+	ps3boot_quit();
+	return;
+    }
+    system("hciconfig hci0 down");
+    snprintf(buf, 1024, KEXEC_BIN " -f ");
+    if (initrd) {
+	strcat(buf, "--initrd=");
+	strcat(buf, MOUNT_DIR);
+	strcat(buf, devname);
+	strcat(buf, "/");
+	strcat(buf, initrd);
+	strcat(buf, " ");
+    }
+    if (cmdline) {
+	strcat(buf, "--append=\"");
+	strcat(buf, cmdline);
+	strcat(buf, "\" ");
+    }
+    if (kernel) {
+	strcat(buf, MOUNT_DIR);
+	strcat(buf, devname);
+	strcat(buf, "/");
+	strcat(buf, kernel);
+	fprintf(stderr, "Execute: %s\n", buf);
+	if (system(buf))
+	    fprintf(stderr, "error execute %s\n", buf);
+	sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", devname);
+	rc = system(buf);
+	sprintf(buf, MOUNT_DIR "%s", devname);
+	rc = rmdir(buf);
+    }
+
+    sprintf(buf, UMOUNT_BIN " " MOUNT_DIR "%s", devname);
+    rc = system(buf);
+
+    return;
+}
+
+int bootdevice_autoboot_timer(void)
+{
+    if (default_timeout < 0)
+	return default_timeout;
+
+    default_timeout--;
+
+    if (default_timeout == 0) {
+	execute_boot_conf(default_devname, default_kernel, default_initrd, default_cmdline);
+    }
+
+    return default_timeout;
 }
