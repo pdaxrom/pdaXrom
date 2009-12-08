@@ -40,9 +40,19 @@ static void bootdevice_add_config(boot_device *dev, char *label, char *kernel, c
 	dev->conf = tmp;
 }
 
+static void remove_tabs(char *ptr)
+{
+    char *val = ptr;
+    while(*val) {
+	if (*val == '\t') *val = ' ';
+	val++;
+    }
+}
+
 static int get_int_val(char *ptr, char del)
 {
     int val = 0;
+    remove_tabs(ptr);
     ptr = strchr(ptr, del);
     if (!ptr)
 	return 0;
@@ -52,6 +62,7 @@ static int get_int_val(char *ptr, char del)
 
 static char *get_str_val(char *ptr, char del)
 {
+    remove_tabs(ptr);
     char *val = strchr(ptr, del);
     if (!val)
 	return NULL;
@@ -431,6 +442,64 @@ int syslinux_conf_read(char *dev_path, boot_device *dev)
 	    }
 	    break;
 	  }
+	}
+	fclose(f);
+	return 0;
+    }
+    
+    return 1;
+}
+
+int grub_conf_read(char *dev_path, boot_device *dev)
+{
+    const char *cfile[] = { "boot/grub/menu.lst", NULL };
+    char buf[1024];
+    FILE *f;
+    int i = 0;
+
+    while(1) {
+	if (cfile[i] == NULL)
+	    return 1;
+	snprintf(buf, 1024, MOUNT_DIR "%s/%s", dev_path, cfile[i]);
+	f = fopen(buf, "rb");
+	if (f)
+	    break;
+	i++;
+    }
+
+    if (f) {
+	while (fgets(buf, 1024, f)) {
+	    char *ptr = buf;
+	    if ((*ptr == '#') ||
+		(*ptr == ';'))
+		continue;
+	    if (!strncasecmp(ptr, "title", 5)) {
+		char *kernel = NULL;
+		char *initrd = NULL;
+		char *cmdline= NULL;
+		char *label = get_str_val(ptr, ' ');
+		while (fgets(buf, 1024, f)) {
+		    char *ptr = buf;
+		    while ((*ptr != 0) && (*ptr <= ' '))
+			ptr++;
+		    if (!strlen(ptr))
+			break;
+		    if (!strncasecmp(ptr, "kernel", 6)) {
+			kernel = get_str_val(ptr, ' ');
+		    } else if (!strncmp(ptr, "initrd", 6)) {
+			initrd = get_str_val(ptr, ' ');
+		    }
+		}
+		if (kernel) {
+		    cmdline = get_str_val(kernel, ' ');
+		    char *end = strchr(kernel, ' ');
+		    if (end) 
+			*end = 0;
+		}
+		if (label)
+		    bootdevice_add_config(dev, label, kernel, initrd, cmdline);
+		continue;
+	    }
 	}
 	fclose(f);
 	return 0;
