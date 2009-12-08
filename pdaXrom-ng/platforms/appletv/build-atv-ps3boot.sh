@@ -37,6 +37,7 @@ TARGET_KERNEL_IMAGE=bzImage
 . $BSP_RULES_DIR/diskdev-cmds.sh
 . $RULES_DIR/e2fsprogs.sh
 . $BSP_RULES_DIR/parted.sh
+. $RULES_DIR/gdisk.sh
 
 cp -f ${BSP_DIR}/README ${ROOTFS_DIR}/home/root/
 cp -f ${BSP_SRC_DIR}/build-usbpen.sh ${ROOTFS_DIR}/home/root/
@@ -45,8 +46,8 @@ sed -i -e "s|@PARTED@|/usr/sbin/parted|" ${ROOTFS_DIR}/home/root/build-usbpen.sh
 sed -i -e "s|@PPROBE@|/usr/sbin/partprobe|" ${ROOTFS_DIR}/home/root/build-usbpen.sh
 sed -i -e "s|@MKFSHFS@|/sbin/mkfs.hfsplus|" ${ROOTFS_DIR}/home/root/build-usbpen.sh
 
-# we don't use c++ here :)
-rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
+# we don't use c++ here :) but gdisk ;)
+#rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
 
 . $BSP_RULES_DIR/host_parted.sh
 . $BSP_RULES_DIR/host_diskdev-cmds.sh
