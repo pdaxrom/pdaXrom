@@ -11,6 +11,8 @@ export KERNEL_VERSION=2.6.30
 TARGET_ARCH="i686-linux-uclibc"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
+export UCLIBC_CONFIG=x86-config-wchar-locale
+
 test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}
 
 #mkdir -p $TOOLCHAIN_SYSROOT/usr

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ISOIMAGE_NAME=atv-ps3boot
+
 TARGET_ARCH="i686-linux-uclibc"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
@@ -30,6 +32,11 @@ TARGET_KERNEL_IMAGE=bzImage
 . $RULES_DIR/libpng.sh
 . $RULES_DIR/freetype.sh
 . $RULES_DIR/ps3boot.sh
+
+. $RULES_DIR/openssl.sh
+. $BSP_RULES_DIR/diskdev-cmds.sh
+. $RULES_DIR/e2fsprogs.sh
+. $BSP_RULES_DIR/parted.sh
 
 # we don't use c++ here :)
 rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
