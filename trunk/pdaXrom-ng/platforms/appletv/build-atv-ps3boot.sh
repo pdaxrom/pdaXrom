@@ -38,6 +38,13 @@ TARGET_KERNEL_IMAGE=bzImage
 . $RULES_DIR/e2fsprogs.sh
 . $BSP_RULES_DIR/parted.sh
 
+cp -f ${BSP_DIR}/README ${ROOTFS_DIR}/home/root/
+cp -f ${BSP_SRC_DIR}/build-usbpen.sh ${ROOTFS_DIR}/home/root/
+chmod 755 ${ROOTFS_DIR}/home/root/build-usbpen.sh
+sed -i -e "s|@PARTED@|/usr/sbin/parted|" ${ROOTFS_DIR}/home/root/build-usbpen.sh
+sed -i -e "s|@PPROBE@|/usr/sbin/partprobe|" ${ROOTFS_DIR}/home/root/build-usbpen.sh
+sed -i -e "s|@MKFSHFS@|/sbin/mkfs.hfsplus|" ${ROOTFS_DIR}/home/root/build-usbpen.sh
+
 # we don't use c++ here :)
 rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
 
@@ -46,6 +53,13 @@ rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
 . $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh
 . $BSP_RULES_DIR/atv-bootloader.sh
+. $BSP_RULES_DIR/build_atv_archive.sh
+
+cp -f ${BSP_SRC_DIR}/build-usbpen.sh ${IMAGES_DIR}/
+chmod 755 ${IMAGES_DIR}/build-usbpen.sh
+sed -i -e "s|@PARTED@|${HOST_BIN_DIR}/sbin/parted|" ${IMAGES_DIR}/build-usbpen.sh
+sed -i -e "s|@PPROBE@|${HOST_BIN_DIR}/sbin/partprobe|" ${IMAGES_DIR}/build-usbpen.sh
+sed -i -e "s|@MKFSHFS@|${HOST_BIN_DIR}/sbin/mkfs.hfsplus|" ${IMAGES_DIR}/build-usbpen.sh
 
 . $RULES_DIR/host_syslinux.sh
 . $RULES_DIR/create_x86cd.sh
