@@ -89,8 +89,10 @@ static boot_device *bootdevice_create(char *dev_path, char *icon)
 	if (kboot_conf_read(dev_path, dev)) {
 	    if (yaboot_conf_read(dev_path, dev)) {
 		if (ps3boot_conf_read(dev_path, dev)) {
-		    free(dev);
-		    return NULL;
+		    if (syslinux_conf_read(dev_path, dev)) {
+			free(dev);
+			return NULL;
+		    }
 		}
 	    }
 	}
