@@ -1,0 +1,40 @@
+---
+ mozilla/security/coreconf/Linux.mk |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+Index: nss-3.12.1~rc1/mozilla/security/coreconf/Linux.mk
+===================================================================
+--- nss-3.12.1~rc1.orig/mozilla/security/coreconf/Linux.mk
++++ nss-3.12.1~rc1/mozilla/security/coreconf/Linux.mk
+@@ -85,27 +85,31 @@
+ 	CPU_ARCH        = arm
+ else
+ ifeq ($(OS_TEST),parisc)
+ 	CPU_ARCH        = hppa
+ else
+ ifeq ($(OS_TEST),parisc64)
+ 	CPU_ARCH        = hppa
+ else
++ifeq ($(OS_TEST),mips64)
++	CPU_ARCH	= mips
++else
+ ifeq (,$(filter-out i686 i586 i486 i386,$(OS_TEST)))
+ 	OS_REL_CFLAGS	+= -Di386
+ 	CPU_ARCH	= x86
+ endif
+ endif
+ endif
+ endif
+ endif
+ endif
+ endif
+ endif
++endif
+ 
+ 
+ LIBC_TAG		= _glibc
+ 
+ ifeq ($(KERNEL)-$(OS_RELEASE),linux-2.0)
+ 	OS_REL_CFLAGS	+= -DLINUX2_0
+ 	MKSHLIB		= $(CC) -shared -Wl,-soname -Wl,$(@:$(OBJDIR)/%.so=%.so)
+ 	ifdef MAPFILE
