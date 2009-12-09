@@ -136,20 +136,24 @@ check_rootfs() {
 		echo -n "Copy root image to vram ... "
 		splash_text "Copy root image to vram"
 		dd if=/mnt/boot/rootfs.img of=/dev/ps3vram bs=1M >/dev/null 2>/dev/null && echo "done!" || echo "error!"
-		mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs && boot_rootfs
+		mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs
 	    elif [ $(( IMAGE_SIZE * 2)) -gt $TOTAL_MEMORY ]; then
 		echo "Mount root image locally"
-		mount -n -o loop,ro -t squashfs /mnt/boot/rootfs.img /rootfs && boot_rootfs
+		mount -n -o loop,ro -t squashfs /mnt/boot/rootfs.img /rootfs
 		ENABLE_UNMOUNT="no"
 	    else
 		echo -n "Copy root image to ram ... "
 		splash_text "Copy root image to ram"
 		cp /mnt/boot/rootfs.img /boot && splash_success "done!" || splash_success "error!"
-		mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs && boot_rootfs
+		mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs
 	    fi
-	    echo "Can't mount root :("
-	    splash_text "Can't mount root :("
-	    echo
+	    if mountpoint -q /rootfs ; then
+		boot_rootfs
+	    else
+		echo "Can't mount root :("
+		splash_text "Can't mount root :("
+		echo
+	    fi
 	fi
     fi
 
