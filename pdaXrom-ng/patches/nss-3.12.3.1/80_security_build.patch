@@ -1,0 +1,20 @@
+---
+ mozilla/security/nss/cmd/shlibsign/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: nss-3.12.0~cvs20071126t1617+nobinonly/mozilla/security/nss/cmd/shlibsign/Makefile
+===================================================================
+--- nss-3.12.0~cvs20071126t1617+nobinonly.orig/mozilla/security/nss/cmd/shlibsign/Makefile
++++ nss-3.12.0~cvs20071126t1617+nobinonly/mozilla/security/nss/cmd/shlibsign/Makefile
+@@ -94,10 +94,10 @@
+ 	$(call core_abspath,$(OBJDIR)) $(OS_TARGET) \
+ 	$(call core_abspath,$(NSPR_LIB_DIR)) $(call core_abspath,$<)
+ else
+ 	cd $(OBJDIR) ; sh $(SRCDIR)/sign.sh $(call core_abspath,$(DIST)) \
+ 	$(call core_abspath,$(OBJDIR)) $(OS_TARGET) \
+ 	$(call core_abspath,$(NSPR_LIB_DIR)) $(call core_abspath,$<)
+ endif
+ 
+-libs install :: $(CHECKLOC)
++libs install ::
+ 

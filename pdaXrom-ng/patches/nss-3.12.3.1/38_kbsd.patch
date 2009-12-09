@@ -1,0 +1,309 @@
+---
+ mozilla/security/coreconf/Linux.mk          |   71 ++++++----------------------
+ mozilla/security/coreconf/Linux2.6.mk       |    3 +
+ mozilla/security/coreconf/arch.mk           |    8 +++
+ mozilla/security/coreconf/config.mk         |    2 
+ mozilla/security/nss/lib/freebl/unix_rand.c |    2 
+ mozilla/security/nss/lib/ssl/sslmutex.c     |    2 
+ mozilla/security/nss/lib/ssl/sslmutex.h     |    2 
+ 7 files changed, 32 insertions(+), 58 deletions(-)
+
+Index: nss-3.12.3/mozilla/security/nss/lib/freebl/unix_rand.c
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/nss/lib/freebl/unix_rand.c
++++ nss-3.12.3/mozilla/security/nss/lib/freebl/unix_rand.c
+@@ -183,16 +183,18 @@
+     }
+     return rv;
+ }
+ 
+ #endif
+ 
+ #if defined(SCO) || defined(UNIXWARE) || defined(BSDI) || defined(FREEBSD) \
+     || defined(NETBSD) || defined(DARWIN) || defined(OPENBSD) \
++    || defined(__FreeBSD_kernel__) || defined(__NetBSD_kernel__) \
++    || defined(__GNU__) \
+     || defined(NTO) || defined(__riscos__)
+ #include <sys/times.h>
+ 
+ #define getdtablesize() sysconf(_SC_OPEN_MAX)
+ 
+ static size_t
+ GetHighResClock(void *buf, size_t maxbytes)
+ {
+Index: nss-3.12.3/mozilla/security/nss/lib/ssl/sslmutex.c
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/nss/lib/ssl/sslmutex.c
++++ nss-3.12.3/mozilla/security/nss/lib/ssl/sslmutex.c
+@@ -84,17 +84,17 @@
+     if (!pMutex->u.sslLock) {
+         PORT_SetError(PR_INVALID_ARGUMENT_ERROR);
+         return SECFailure;
+     }
+     PR_Lock(pMutex->u.sslLock);
+     return SECSuccess;
+ }
+ 
+-#if defined(LINUX) || defined(AIX) || defined(VMS) || defined(BEOS) || defined(BSDI) || (defined(NETBSD) && __NetBSD_Version__ < 500000000) || defined(OPENBSD)
++#if defined(LINUX) || defined(AIX) || defined(VMS) || defined(BEOS) || defined(BSDI) || (defined(NETBSD) && __NetBSD_Version__ < 500000000) || defined(OPENBSD) || defined(__GLIBC__)
+ 
+ #include <unistd.h>
+ #include <fcntl.h>
+ #include <string.h>
+ #include <errno.h>
+ #include "unix_err.h"
+ #include "pratom.h"
+ 
+Index: nss-3.12.3/mozilla/security/nss/lib/ssl/sslmutex.h
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/nss/lib/ssl/sslmutex.h
++++ nss-3.12.3/mozilla/security/nss/lib/ssl/sslmutex.h
+@@ -78,17 +78,17 @@
+ #endif
+         PRLock* sslLock;
+         HANDLE sslMutx;
+     } u;
+ } sslMutex;
+ 
+ typedef int    sslPID;
+ 
+-#elif defined(LINUX) || defined(AIX) || defined(VMS) || defined(BEOS) || defined(BSDI) || (defined(NETBSD) && __NetBSD_Version__ < 500000000) || defined(OPENBSD)
++#elif defined(LINUX) || defined(AIX) || defined(VMS) || defined(BEOS) || defined(BSDI) || (defined(NETBSD) && __NetBSD_Version__ < 500000000) || defined(OPENBSD) || defined(__GLIBC__)
+ 
+ #include <sys/types.h>
+ #include "prtypes.h"
+ 
+ typedef struct { 
+     PRBool isMultiProcess;
+     union {
+         PRLock* sslLock;
+Index: nss-3.12.3/mozilla/security/coreconf/Linux.mk
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/coreconf/Linux.mk
++++ nss-3.12.3/mozilla/security/coreconf/Linux.mk
+@@ -47,107 +47,70 @@
+ endif
+ 
+ CC			= gcc
+ CCC			= g++
+ RANLIB			= ranlib
+ 
+ DEFAULT_COMPILER = gcc
+ 
+-ifeq ($(OS_TEST),m68k)
+-	OS_REL_CFLAGS	= -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH	= m68k
++CPU_ARCH		= $(OS_TEST)
++
++ifeq ($(KERNEL),linux)
++	OS_REL_CFLAGS	= -D_XOPEN_SOURCE -DLINUX1_2
++	ARCH		= linux
+ else
++	OS_REL_CFLAGS	= -D_XOPEN_SOURCE
++	ARCH		= gnu
++endif
++
+ ifeq ($(OS_TEST),ppc64)
+-	OS_REL_CFLAGS	= -DLINUX1_2 -D_XOPEN_SOURCE
+ 	CPU_ARCH	= ppc
+ ifeq ($(USE_64),1)
+ 	ARCHFLAG	= -m64
+ endif
+ else
+-ifeq ($(OS_TEST),ppc)
+-	OS_REL_CFLAGS	= -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH	= ppc
+-else
+ ifeq ($(OS_TEST),alpha)
+-        OS_REL_CFLAGS   = -D_ALPHA_ -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH	= alpha
+-else
+-ifeq ($(OS_TEST),ia64)
+-	OS_REL_CFLAGS	= -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH	= ia64
++	OS_REL_CFLAGS	+= -D_ALPHA_
+ else
+ ifeq ($(OS_TEST),x86_64)
+-ifeq ($(USE_64),1)
+-	OS_REL_CFLAGS	= -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH	= x86_64
+-else
+-	OS_REL_CFLAGS	= -DLINUX1_2 -Di386 -D_XOPEN_SOURCE
++ifneq ($(USE_64),1)
++	OS_REL_CFLAGS	+= -Di386
+ 	CPU_ARCH	= x86
+ 	ARCHFLAG	= -m32
+ endif
+ else
+-ifeq ($(OS_TEST),sparc)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH        = sparc
+-else
+ ifeq ($(OS_TEST),sparc64)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+ 	CPU_ARCH        = sparc
+ else
+ ifeq (,$(filter-out arm% sa110,$(OS_TEST)))
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+ 	CPU_ARCH        = arm
+ else
+ ifeq ($(OS_TEST),parisc)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+ 	CPU_ARCH        = hppa
+ else
+ ifeq ($(OS_TEST),parisc64)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+ 	CPU_ARCH        = hppa
+ else
+-ifeq ($(OS_TEST),s390)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH        = s390
+-else
+-ifeq ($(OS_TEST),s390x)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH        = s390x
+-else
+-ifeq ($(OS_TEST),mips)
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH        = mips
+-else
+-ifeq (,$(filter-out i%86,$(OS_TEST)))
+-	OS_REL_CFLAGS	= -DLINUX1_2 -Di386 -D_XOPEN_SOURCE
++ifeq (,$(filter-out i686 i586 i486 i386,$(OS_TEST)))
++	OS_REL_CFLAGS	+= -Di386
+ 	CPU_ARCH	= x86
+-else
+-	OS_REL_CFLAGS   = -DLINUX1_2 -D_XOPEN_SOURCE
+-	CPU_ARCH	= $(OS_TEST)
+-endif
+-endif
+-endif
+-endif
+-endif
+-endif
+-endif
+ endif
+ endif
+ endif
+ endif
+ endif
+ endif
+ endif
+ endif
+ 
+ 
+ LIBC_TAG		= _glibc
+ 
+-ifeq ($(OS_RELEASE),2.0)
++ifeq ($(KERNEL)-$(OS_RELEASE),linux-2.0)
+ 	OS_REL_CFLAGS	+= -DLINUX2_0
+ 	MKSHLIB		= $(CC) -shared -Wl,-soname -Wl,$(@:$(OBJDIR)/%.so=%.so)
+ 	ifdef MAPFILE
+ 		MKSHLIB += -Wl,--version-script,$(MAPFILE)
+ 	endif
+ 	PROCESS_MAP_FILE = grep -v ';-' $< | \
+          sed -e 's,;+,,' -e 's; DATA ;;' -e 's,;;,,' -e 's,;.*,;,' > $@
+ endif
+@@ -166,24 +129,22 @@
+ 
+ OS_CFLAGS		= $(DSO_CFLAGS) $(OS_REL_CFLAGS) $(ARCHFLAG) -ansi -Wall -Werror-implicit-function-declaration -Wno-switch -pipe -DLINUX -Dlinux -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR
+ OS_LIBS			= $(OS_PTHREAD) -ldl -lc
+ 
+ ifdef USE_PTHREADS
+ 	DEFINES		+= -D_REENTRANT
+ endif
+ 
+-ARCH			= linux
+-
+ DSO_CFLAGS		= -fPIC
+ DSO_LDOPTS		= -shared $(ARCHFLAG) -Wl,-z,defs
+ DSO_LDFLAGS		=
+ LDFLAGS			+= $(ARCHFLAG)
+ 
+-# INCLUDES += -I/usr/include -Y/usr/include/linux
++# INCLUDES += -I/usr/include
+ G++INCLUDES		= -I/usr/include/g++
+ 
+ #
+ # Always set CPU_TAG on Linux, OpenVMS, WINCE.
+ #
+ CPU_TAG = _$(CPU_ARCH)
+ 
+ USE_SYSTEM_ZLIB = 1
+Index: nss-3.12.3/mozilla/security/coreconf/Linux2.6.mk
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/coreconf/Linux2.6.mk
++++ nss-3.12.3/mozilla/security/coreconf/Linux2.6.mk
+@@ -32,17 +32,20 @@
+ # and other provisions required by the GPL or the LGPL. If you do not delete
+ # the provisions above, a recipient may use your version of this file under
+ # the terms of any one of the MPL, the GPL or the LGPL.
+ #
+ # ***** END LICENSE BLOCK *****
+ 
+ include $(CORE_DEPTH)/coreconf/Linux.mk
+ 
++ifeq ($(KERNEL), linux)
+ OS_REL_CFLAGS   += -DLINUX2_1
++endif
++
+ MKSHLIB         = $(CC) $(DSO_LDOPTS) -Wl,-soname -Wl,$(@:$(OBJDIR)/%.so=%.so)
+ 
+ ifdef MAPFILE
+ 	MKSHLIB += -Wl,--version-script,$(MAPFILE)
+ endif
+ PROCESS_MAP_FILE = grep -v ';-' $< | \
+         sed -e 's,;+,,' -e 's; DATA ;;' -e 's,;;,,' -e 's,;.*,;,' > $@
+ 
+Index: nss-3.12.3/mozilla/security/coreconf/arch.mk
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/coreconf/arch.mk
++++ nss-3.12.3/mozilla/security/coreconf/arch.mk
+@@ -150,16 +150,24 @@
+     OS_RELEASE := $(shell echo $(OS_RELEASE) | sed 's/-.*//')
+ endif
+ 
+ ifeq ($(OS_ARCH),Linux)
+     OS_RELEASE := $(subst ., ,$(OS_RELEASE))
+     ifneq ($(words $(OS_RELEASE)),1)
+ 	OS_RELEASE := $(word 1,$(OS_RELEASE)).$(word 2,$(OS_RELEASE))
+     endif
++    KERNEL = linux
++endif
++
++# This check must be last.  Since all uses of OS_ARCH that follow affect only
++# userland, we can merge other Glibc systems with Linux here.
++ifneq (, $(filter GNU GNU_%, $(OS_ARCH)))
++OS_ARCH = Linux
++OS_RELEASE = 2.6
+ endif
+ 
+ #
+ # For OS/2
+ #
+ ifeq ($(OS_ARCH),OS_2)
+     OS_ARCH = OS2
+     OS_RELEASE := $(shell uname -v)
+Index: nss-3.12.3/mozilla/security/coreconf/config.mk
+===================================================================
+--- nss-3.12.3.orig/mozilla/security/coreconf/config.mk
++++ nss-3.12.3/mozilla/security/coreconf/config.mk
+@@ -58,17 +58,17 @@
+ #       (dependent upon <architecture> tags)                          #
+ #                                                                     #
+ #       We are moving towards just having a $(OS_TARGET).mk file      #
+ #       as opposed to multiple $(OS_TARGET)$(OS_RELEASE).mk files,    #
+ #       one for each OS release.                                      #
+ #######################################################################
+ 
+ TARGET_OSES = FreeBSD BSD_OS NetBSD OpenUNIX OS2 QNX Darwin BeOS OpenBSD \
+-              OpenVMS AIX RISCOS WINNT WIN95 WINCE
++              OpenVMS AIX RISCOS WINNT WIN95 WINCE GNU GNU_%
+ 
+ ifeq (,$(filter-out $(TARGET_OSES),$(OS_TARGET)))
+ include $(CORE_DEPTH)/coreconf/$(OS_TARGET).mk
+ else
+ include $(CORE_DEPTH)/coreconf/$(OS_TARGET)$(OS_RELEASE).mk
+ endif
+ 
+ #######################################################################
