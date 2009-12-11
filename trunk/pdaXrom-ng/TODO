@@ -12,3 +12,4 @@ host_mame needs libsdl1.2-dev
 update u-boot version
 add create_initrd for zaurus
 add init scripts for zaurus
+add keyboard maps, strip kbd
