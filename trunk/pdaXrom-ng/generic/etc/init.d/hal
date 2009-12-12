@@ -38,8 +38,7 @@ do_start() {
 
 do_stop() {
 	log_begin_msg -n "Stopping $DESC" "$NAME"
-	start-stop-daemon --stop --quiet --pidfile $PIDFILE \
-		--exec $DAEMON 
+	start-stop-daemon --stop --quiet --exec $DAEMON
 	log_end_msg $?
 }
 
