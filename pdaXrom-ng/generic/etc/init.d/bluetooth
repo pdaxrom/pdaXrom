@@ -26,7 +26,7 @@ case "$1" in
   start)
 	if $DAEMON_ENABLE && [ -x "$DAEMON_EXEC" ]; then
 		log_begin_msg -n "Starting bluetooth"
-		$DAEMON_EXEC
+		start-stop-daemon --start --quiet --exec $DAEMON_EXEC
 		log_end_msg $?
 	fi
 	if $HID2HCI_ENABLE && [ -x "$HID2HCI_EXEC" ] ; then
@@ -37,7 +37,9 @@ case "$1" in
 	;;
   stop)
 	log_begin_msg -n "Stopping bluetooth"
-	killall $DAEMON_NAME > /dev/null 2>&1 || true
+	if $DAEMON_ENABLE && [ -x "$DAEMON_EXEC" ]; then
+	    start-stop-daemon --stop --quiet --exec $DAEMON_EXEC
+	fi
 	log_end_msg $?
 	;;
   *)

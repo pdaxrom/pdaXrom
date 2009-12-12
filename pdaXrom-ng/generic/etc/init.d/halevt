@@ -11,12 +11,12 @@ DESC="HAL events manager"
 case "$1" in
   start)
 	log_begin_msg -n "Starting $DESC"
-	$DAEMON $DAEMON_OPTS
+	start-stop-daemon --start --quiet --exec $DAEMON -- $DAEMON_OPTS
 	log_end_msg $?
 	;;
   stop)
 	log_begin_msg -n "Stopping $DESC"
-	killall $DAEMON >/dev/null 2>/dev/null
+	start-stop-daemon --stop --quiet --exec  $DAEMON
 	log_end_msg $?
 	;;
   *)
