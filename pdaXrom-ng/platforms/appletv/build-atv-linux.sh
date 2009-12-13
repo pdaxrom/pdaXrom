@@ -18,6 +18,7 @@ USE_SPLASH="yes"
 USE_INITRAMFS="yes"
 USE_AUFS2="yes"
 USE_WEBBROWSER="midori"
+USE_LOGINMANAGER="yes"
 
 . $SETS_DIR/packages-basic.inc
 

@@ -22,6 +22,7 @@ target_locale_install() {
 
     echo "LANG=\"${DEFAULT_LOCALE-en_US.UTF-8}\"" > $ROOTFS_DIR/etc/default/locale
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/genlocale $ROOTFS_DIR/etc/init.d/genlocale
+    $INSTALL -D -m 755 $GENERICFS_DIR/etc/profile.d/locale.sh $ROOTFS_DIR/etc/profile.d/locale.sh
     install_rc_start genlocale 11
 }
 

@@ -21,8 +21,8 @@
 
 . $SETS_DIR/packages-audacious.inc
 
-. $RULES_DIR/boolstuff.sh
-. $RULES_DIR/halevt.sh
+#. $RULES_DIR/boolstuff.sh
+#. $RULES_DIR/halevt.sh
 
 #. $SETS_DIR/packages-gtkdialog.inc
 

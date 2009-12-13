@@ -4,7 +4,7 @@
 # $Id: profile 6917 2007-01-25 10:10:08Z sha $
 #
 
-export PATH="$PATH:/usr/bin:/bin:/sbin"
+export PATH="$PATH:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
 
 #umask 022
 

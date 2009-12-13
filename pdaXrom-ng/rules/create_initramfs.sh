@@ -136,6 +136,7 @@ create_initramfs() {
 
     cd $KERNEL_DIR
     bash scripts/gen_initramfs_list.sh $INITRAMFS_DIR > $BUILD_DIR/initramfs.list
+    sed -i -e "s/`id -u` `id -g`$/0 0/" $BUILD_DIR/initramfs.list
     echo "nod /dev/console 0600 0 0 c 5 1" >> $BUILD_DIR/initramfs.list
     echo "nod /dev/fb0     0666 0 0 c 29 0" >> $BUILD_DIR/initramfs.list
     echo "nod /dev/tty0    0640 0 0 c 4 0" >> $BUILD_DIR/initramfs.list

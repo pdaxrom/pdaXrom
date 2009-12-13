@@ -13,10 +13,11 @@ if [ -e /usr/bin/figlet ]; then
     echo -ne "\n\n"
 fi
 
-log_begin_msg -n "Мounting filesystems..."
+log_begin_msg -n "Mounting filesystems..."
 mount /proc 2>/dev/null
 mount /sys 2>/dev/null
 mount /tmp 2>/dev/null
+mount /var/tmp 2>/dev/null
 log_end_msg $?
 
 if mount | grep ' / ' | grep -q 'squashfs' ; then
