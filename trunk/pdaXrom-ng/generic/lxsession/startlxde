@@ -1,5 +1,7 @@
 #!/bin/sh
 
+test -e /etc/profile && . /etc/profile
+
 test -e $HOME/Desktop || mkdir $HOME/Desktop
 
 test -e /usr/bin/dancesplash && dancesplash -b

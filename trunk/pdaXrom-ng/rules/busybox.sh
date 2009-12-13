@@ -26,6 +26,9 @@ build_busybox() {
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS || error
     make SUBARCH=$SUBARCH CROSS_COMPILE=$TARGET_ARCH- $MAKEARGS CONFIG_PREFIX=$ROOTFS_DIR install || error
 
+    test -f ${ROOTFS_DIR}/etc/busybox.conf && chmod 600 ${ROOTFS_DIR}/etc/busybox.conf
+    chmod 4755 ${ROOTFS_DIR}/bin/busybox
+
     #
     # no shutdown in busybox, add simple script for it
     #
