@@ -13,6 +13,8 @@ MESALIB_VERSION_MAJOR=7
 MESALIB_VERSION_MINOR=6
 MESALIB_VERSION=${MESALIB_VERSION_MAJOR}.${MESALIB_VERSION_MINOR}
 MESALIB=MesaLib-${MESALIB_VERSION}.tar.bz2
+MESALIB_GLUT=MesaGLUT-${MESALIB_VERSION}.tar.bz2
+MESALIB_DEMOS=MesaDemos-${MESALIB_VERSION}.tar.bz2
 MESALIB_MIRROR=ftp://ftp.freedesktop.org/pub/mesa/7.6
 MESALIB_DIR=$BUILD_DIR/Mesa-${MESALIB_VERSION}
 MESALIB_ENV="$CROSS_ENV_AC MKLIB_OPTIONS='-arch Linux'"
@@ -54,7 +56,11 @@ build_MesaLib() {
     test -e "$STATE_DIR/MesaLib.installed" && return
     banner "Build MesaLib"
     download $MESALIB_MIRROR $MESALIB
+    download $MESALIB_MIRROR $MESALIB_GLUT
+    download $MESALIB_MIRROR $MESALIB_DEMOS
     extract $MESALIB
+    extract $MESALIB_GLUT
+    extract $MESALIB_DEMOS
     apply_patches $MESALIB_DIR $MESALIB
     pushd $TOP_DIR
     cd $MESALIB_DIR
@@ -69,8 +75,9 @@ build_MesaLib() {
 	SDK=${TOOLCHAIN_SYSROOT}/usr \
 	MKDEP=true \
 	X11_INCLUDES="-I$TARGET_INC" \
-	EXTRA_LIB_PATH="-L$TARGET_LIB" \
+	EXTRA_LIB_PATH="-Wl,-rpath,$TARGET_LIB -L$TARGET_LIB" \
 	INSTALL_DIR="/usr" \
+	APP_LIB_DEPS="-Wl,-rpath,$TARGET_LIB -L$TARGET_LIB" \
 	|| error
 
     install_sysroot_files CROSS=${CROSS} \
@@ -109,6 +116,9 @@ build_MesaLib() {
 	|| error
 
     rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig fakeroot/usr/lib64/pkgconfig
+
+    test -f progs/xdemos/glxgears && $INSTALL -D -m 755 progs/xdemos/glxgears fakeroot/usr/bin/glxgears
+    test -f progs/xdemos/glxinfo  && $INSTALL -D -m 755 progs/xdemos/glxinfo  fakeroot/usr/bin/glxinfo
 
     find fakeroot -not -type d | while read f; do
 	file $f | grep -q "ELF " && $STRIP $f
