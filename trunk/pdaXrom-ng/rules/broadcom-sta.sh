@@ -43,8 +43,6 @@ build_broadcom_sta() {
     local K_V=`ls $ROOTFS_DIR/lib/modules`
     $DEPMOD -a -b $ROOTFS_DIR $K_V
 
-    sleep 5
-
     popd
     touch "$STATE_DIR/broadcom_sta.installed"
 }
