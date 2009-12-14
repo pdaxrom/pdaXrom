@@ -19,7 +19,8 @@ USE_INITRAMFS="yes"
 USE_AUFS2="yes"
 USE_WEBBROWSER="midori"
 USE_LOGINMANAGER="yes"
-USE_WINDOWMANAGER="pekwm"
+USE_WINDOWMANAGER="openbox"
+NVIDIA_CLOSESOURSE_VIDEO="yes"
 
 . $SETS_DIR/packages-basic.inc
 
@@ -45,8 +46,6 @@ USE_WINDOWMANAGER="pekwm"
 #. $SETS_DIR/packages-emulators.inc
 
 . $SETS_DIR/packages-x-apps.inc
-
-. $RULES_DIR/NVIDIA-Linux-x86.sh
 
 . $SETS_DIR/packages-x-lxde.inc
 

@@ -74,9 +74,14 @@ build_NVIDIA_Linux_x86() {
 	ln -sf ${f/*\/}.${NVIDIA_LINUX_X86_VERSION} fakeroot/usr/lib/${f}
     done
 
+    rm -f ${ROOTFS_DIR}/usr/lib/libGL.so*
+
     install_fakeroot_finish || error
 
-    cp -a fakeroot/usr/include/* $TARGET_INC
+    rm -f ${TARGET_LIB}/libGL.so*
+    tar c -C fakeroot/usr . | tar x -C ${TARGET_BIN_DIR} || error "install"
+    sed -i -e "s|/usr/lib|$TARGET_LIB|" ${TARGET_LIB}/libGL.la
+    sed -i -e "s|/usr/X11R6/lib|$TARGET_LIB|" ${TARGET_LIB}/libGL.la
 
     popd
     touch "$STATE_DIR/NVIDIA_Linux_x86.installed"

@@ -23,7 +23,10 @@ if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" -o \
 #. $RULES_DIR/xf86-video-cirrus.sh
 
 . $RULES_DIR/xf86-video-ati.sh
-. $RULES_DIR/xf86-video-nv.sh
+
+if [ ! "$NVIDIA_CLOSESOURSE_VIDEO" = "yes" ]; then
+    . $RULES_DIR/xf86-video-nv.sh
+fi
 
 fi
 
