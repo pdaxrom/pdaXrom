@@ -46,6 +46,8 @@ USE_WINDOWMANAGER="pekwm"
 
 . $SETS_DIR/packages-x-apps.inc
 
+. $RULES_DIR/NVIDIA-Linux-x86.sh
+
 . $SETS_DIR/packages-x-lxde.inc
 
 . $SETS_DIR/packages-x-office.inc
