@@ -19,6 +19,7 @@ USE_INITRAMFS="yes"
 USE_AUFS2="yes"
 USE_WEBBROWSER="midori"
 USE_LOGINMANAGER="yes"
+USE_WINDOWMANAGER="pekwm"
 
 . $SETS_DIR/packages-basic.inc
 

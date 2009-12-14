@@ -30,6 +30,9 @@ build_lxde_tweaks() {
 	$INSTALL -D -m 755 $GENERICFS_DIR/default-apps/desktop/$f.desktop $ROOTFS_DIR/usr/share/applications/$f.desktop || error "install application desktop file"
     done
 
+    echo "[Session]" >${ROOTFS_DIR}/etc/xdg/lxsession/LXDE/config
+    echo "window_manager=${USE_WINDOWMANAGER-openbox}" >>${ROOTFS_DIR}/etc/xdg/lxsession/LXDE/config
+
     touch "$STATE_DIR/lxde_tweaks.installed"
 }
 
