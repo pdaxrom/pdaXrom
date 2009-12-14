@@ -5,13 +5,31 @@ if [ "$USE_LOGINMANAGER" = "yes" ]; then
     . $RULES_DIR/slim.sh
 fi
 
-. $RULES_DIR/openbox.sh
-
-#. $RULES_DIR/pekwm.sh
-
-#. $RULES_DIR/libtool.sh
-#. $RULES_DIR/libcanberra.sh
-#. $RULES_DIR/metacity.sh
+case $USE_WINDOWMANAGER in
+compiz)
+    . $RULES_DIR/libwnck.sh
+    . $RULES_DIR/compiz.sh
+    ;;
+jwm)
+    . $RULES_DIR/jwm.sh
+    ;;
+kahakai)
+    . $RULES_DIR/boost.sh
+    . $RULES_DIR/kahakai.sh
+    ;;
+metacity)
+    . $RULES_DIR/libtool.sh
+    . $RULES_DIR/libcanberra.sh
+    . $RULES_DIR/metacity.sh
+    ;;
+pekwm)
+    . $RULES_DIR/sn-monitor.sh
+    . $RULES_DIR/pekwm.sh
+    ;;
+*)
+    . $RULES_DIR/openbox.sh
+    ;;
+esac
 
 # Minimal X display lock program
 . $RULES_DIR/xtrlock.sh

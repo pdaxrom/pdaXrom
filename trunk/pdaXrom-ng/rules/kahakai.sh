@@ -9,28 +9,28 @@
 # see the README file.
 #
 
-METACITY_VERSION=2.28.0
-METACITY=metacity-${METACITY_VERSION}.tar.bz2
-METACITY_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/metacity/2.28
-METACITY_DIR=$BUILD_DIR/metacity-${METACITY_VERSION}
-METACITY_ENV="$CROSS_ENV_AC"
+KAHAKAI_VERSION=0.6.2
+KAHAKAI=kahakai-${KAHAKAI_VERSION}.tar.bz2
+KAHAKAI_MIRROR=http://downloads.sourceforge.net/project/kahakai/kahakai/0.6.2
+KAHAKAI_DIR=$BUILD_DIR/kahakai-${KAHAKAI_VERSION}
+KAHAKAI_ENV="$CROSS_ENV_AC"
 
-build_metacity() {
-    test -e "$STATE_DIR/metacity.installed" && return
-    banner "Build metacity"
-    download $METACITY_MIRROR $METACITY
-    extract $METACITY
-    apply_patches $METACITY_DIR $METACITY
+build_kahakai() {
+    test -e "$STATE_DIR/kahakai.installed" && return
+    banner "Build kahakai"
+    download $KAHAKAI_MIRROR $KAHAKAI
+    extract $KAHAKAI
+    apply_patches $KAHAKAI_DIR $KAHAKAI
     pushd $TOP_DIR
-    cd $METACITY_DIR
+    cd $KAHAKAI_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$METACITY_ENV \
+	$KAHAKAI_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --disable-gconf \
+	    --disable-python \
 	    || error
     ) || error "configure"
 
@@ -39,11 +39,10 @@ build_metacity() {
     #install_sysroot_files || error
 
     install_fakeroot_init
-    rm -rf fakeroot/usr/share/gnome*
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/metacity.installed"
+    touch "$STATE_DIR/kahakai.installed"
 }
 
-build_metacity
+build_kahakai
