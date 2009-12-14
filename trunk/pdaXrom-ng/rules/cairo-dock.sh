@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-CAIRO_DOCK_VERSION=2.0.8.2
+CAIRO_DOCK_VERSION=2.1.0
 CAIRO_DOCK=cairo-dock-${CAIRO_DOCK_VERSION}.tar.bz2
 CAIRO_DOCK_MIRROR=http://download.berlios.de/cairo-dock
 CAIRO_DOCK_DIR=$BUILD_DIR/cairo-dock-${CAIRO_DOCK_VERSION}
