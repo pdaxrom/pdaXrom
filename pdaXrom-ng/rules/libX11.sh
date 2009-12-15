@@ -62,7 +62,8 @@ build_libX11() {
 
     # locales
 
-    for f in iso8859-1 iso8859-15 ; do
+    for f in iso8859-1 iso8859-15 en_US.UTF-8 ${INSTALL_XLIB_LOCALES}; do
+	test -e nls/${f} || continue
 	$INSTALL -D -m 644 nls/${f}/Compose	$ROOTFS_DIR/usr/share/X11/locale/${f}/Compose
 	$INSTALL -D -m 644 nls/${f}/XI18N_OBJS	$ROOTFS_DIR/usr/share/X11/locale/${f}/XI18N_OBJS
 	$INSTALL -D -m 644 nls/${f}/XLC_LOCALE	$ROOTFS_DIR/usr/share/X11/locale/${f}/XLC_LOCALE
