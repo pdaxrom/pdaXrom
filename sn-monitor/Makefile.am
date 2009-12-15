@@ -13,5 +13,6 @@ sn_monitor_SOURCES = \
 	sn-monitor.c
 
 sn_monitor_LDADD = \
+		$(LIBS) \
 		$(PACKAGE_LIBS) \
 		$(INTLLIBS)
