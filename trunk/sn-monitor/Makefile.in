@@ -55,7 +55,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_sn_monitor_OBJECTS = sn-monitor.$(OBJEXT)
 sn_monitor_OBJECTS = $(am_sn_monitor_OBJECTS)
 am__DEPENDENCIES_1 =
-sn_monitor_DEPENDENCIES = $(am__DEPENDENCIES_1)
+sn_monitor_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -147,6 +147,11 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+XMKMF = @XMKMF@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -210,6 +215,7 @@ sn_monitor_SOURCES = \
 	sn-monitor.c
 
 sn_monitor_LDADD = \
+		$(LIBS) \
 		$(PACKAGE_LIBS) \
 		$(INTLLIBS)
 

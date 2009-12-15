@@ -13,8 +13,12 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
 
+AC_PATH_XTRA
+
+LIBS="-lXcursor"
+
 # Checks for libraries.
-pkg_modules="gtk+-2.0 libstartup-notification-1.0"
+pkg_modules="libstartup-notification-1.0"
 PKG_CHECK_MODULES(PACKAGE, [$pkg_modules])
 AC_SUBST(PACKAGE_CFLAGS)
 AC_SUBST(PACKAGE_LIBS)
