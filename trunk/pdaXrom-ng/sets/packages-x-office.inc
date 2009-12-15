@@ -24,5 +24,5 @@
 #
 # mtpaint
 #
-
+. $RULES_DIR/giflib.sh
 . $RULES_DIR/mtpaint.sh
