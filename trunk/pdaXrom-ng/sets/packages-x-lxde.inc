@@ -8,25 +8,11 @@
 . $RULES_DIR/lxde-lxsession-lite.sh
 . $RULES_DIR/libvte.sh
 . $RULES_DIR/lxde-lxterminal.sh
-. $RULES_DIR/leafpad.sh
-. $RULES_DIR/gpicview.sh
-
-. $RULES_DIR/unzip.sh
-. $RULES_DIR/zip.sh
-. $RULES_DIR/unrar.sh
-. $RULES_DIR/xarchiver.sh
 
 #. $RULES_DIR/lxde-lxmusic.sh
 #. $RULES_DIR/lxde-lxlauncher.sh
 
-. $SETS_DIR/packages-audacious.inc
-
-#. $RULES_DIR/boolstuff.sh
-#. $RULES_DIR/halevt.sh
-
 #. $SETS_DIR/packages-gtkdialog.inc
-
-. $RULES_DIR/netconfig.sh
 
 . $RULES_DIR/dancesplash.sh
 

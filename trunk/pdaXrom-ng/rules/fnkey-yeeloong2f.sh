@@ -31,6 +31,8 @@ build_fnkey_yeeloong2f() {
     $INSTALL -D -m 644 fnkey.conf $ROOTFS_DIR/etc/fnkey/fnkey.conf
     $INSTALL -D -m 644 default.sh $ROOTFS_DIR/etc/fnkey/default.sh
 
+    echo "test -e /usr/bin/fnkey && fnkey" > ${ROOTFS_DIR}/etc/X11/Xsession.d/10_fnkeylemote
+
     popd
     touch "$STATE_DIR/fnkey_yeeloong2f.installed"
 }

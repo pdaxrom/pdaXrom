@@ -20,7 +20,7 @@ MoveResize {
 Screen {
     Workspaces = "4"
     WorkspacesPerRow = "4"
-    WorkspaceNames = "Web&Mail;Chat;Work;Media"
+    WorkspaceNames = "1;2;3;4"
     ShowFrameList = "True"
     ShowStatusWindow = "True"
     ShowStatusWindowCenteredOnRoot = "False"
@@ -61,8 +61,8 @@ Menu {
     DisplayIcons = "True"
 
     Icons = "DEFAULT" {
-        Minimum = "16x16"
-        Maximum = "16x16"
+        Minimum = "32x32"
+        Maximum = "32x32"
     }
 
     # To enable make separate window have other icon size restrictions,

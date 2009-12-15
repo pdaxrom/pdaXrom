@@ -19,8 +19,9 @@ USE_INITRAMFS="yes"
 USE_AUFS2="yes"
 USE_WEBBROWSER="midori"
 USE_LOGINMANAGER="yes"
-USE_WINDOWMANAGER="openbox"
+USE_WINDOWMANAGER="pekwm"
 NVIDIA_CLOSESOURSE_VIDEO="yes"
+INSTALL_PEKWM_THEMES="nimbus"
 
 . $SETS_DIR/packages-basic.inc
 
@@ -47,7 +48,7 @@ NVIDIA_CLOSESOURSE_VIDEO="yes"
 
 . $SETS_DIR/packages-x-apps.inc
 
-. $SETS_DIR/packages-x-lxde.inc
+. $SETS_DIR/packages-x-minidesk.inc
 
 . $SETS_DIR/packages-x-office.inc
 

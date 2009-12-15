@@ -32,6 +32,7 @@ build_xorg_xinit() {
 	    --datadir=/usr/share \
 	    --libdir=/etc \
 	    --without-launchd \
+	    --with-xterm=xterminal \
 	    || error
     )
     make $MAKEARGS XINITDIR=/etc/X11/xinit RAWCPP=${TARGET_ARCH}-cpp || error
@@ -40,6 +41,7 @@ build_xorg_xinit() {
     $STRIP $ROOTFS_DIR/usr/bin/xinit
     $INSTALL -D -m 755 startx  $ROOTFS_DIR/usr/bin/startx || error "startx"
     $INSTALL -D -m 755 xinitrc $ROOTFS_DIR/etc/X11/xinit/xinitrc  || error "xinitrc"
+    $INSTALL -d ${ROOTFS_DIR}/etc/X11/Xsession.d
 
     popd
     touch "$STATE_DIR/xorg_xinit-1.1.0"
