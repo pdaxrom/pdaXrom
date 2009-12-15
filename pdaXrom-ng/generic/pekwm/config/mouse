@@ -40,42 +40,42 @@ OtherTitle {
 	Motion = "Mod1 1" { Threshold = "4"; Actions = "Raise; Move" }
 	Motion = "Mod4 1" { Threshold = "4"; Actions = "Raise; Move" }
 	# Remove the following line if you want to use click to focus.
-	Enter = "Any Any" { Actions = "Focus" }
+	# Enter = "Any Any" { Actions = "Focus" }
 }
 
 Border {
 	TopLeft {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize TopLeft" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize TopLeft" } }
 	Top {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize Top" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize Top" } }
 	TopRight {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize TopRight" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize TopRight" } }
 	Left {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize Left" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize Left" } }
 	Right {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize Right" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize Right" } }
 	BottomLeft {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize BottomLeft" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize BottomLeft" } }
 	Bottom {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize Bottom" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize Bottom" } }
 	BottomRight {
 		# Remove the following line if you want to use click to focus.
-		Enter = "Any Any" { Actions = "Focus" }
-		ButtonPress = "1" { Actions = "Focus; Resize BottomRight" } }
+		# Enter = "Any Any" { Actions = "Focus" }
+		ButtonPress = "1" { Actions = "Raise; Focus; Resize BottomRight" } }
 }
 
 ScreenEdge {

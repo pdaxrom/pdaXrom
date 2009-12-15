@@ -17,9 +17,6 @@ build_tweak_epc700() {
 
     test -d $ROOTFS_DIR/etc/X11 && touch $ROOTFS_DIR/etc/X11/xorg.conf
 
-    #ln -sf ../../../usr/bin/openbox-session $ROOTFS_DIR/etc/X11/xinit/xinitrc || error
-    test -e $ROOTFS_DIR/usr/bin/startlxde && ln -sf ../../../usr/bin/startlxde $ROOTFS_DIR/etc/X11/xinit/xinitrc
-
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
     if [ "$USE_FASTBOOT" = "yes" ]; then
 	install_rc_start xstart 03

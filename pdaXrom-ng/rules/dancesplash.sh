@@ -33,6 +33,8 @@ build_dancesplash() {
 
     $INSTALL -D -m 644 $GENERICFS_DIR/dancesplash.conf $ROOTFS_DIR/etc/dancesplash.conf || error
 
+    echo "test -e /usr/bin/dancesplash && dancesplash -b" > ${ROOTFS_DIR}/etc/X11/Xsession.d/01_dancesplash
+
     popd
     touch "$STATE_DIR/dancesplash.installed"
 }

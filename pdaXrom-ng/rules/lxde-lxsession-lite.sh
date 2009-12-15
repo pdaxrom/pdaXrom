@@ -33,16 +33,13 @@ build_lxde_lxsession_lite() {
 	    --x-libraries=$TARGET_LIB \
 	    --enable-hal \
 	    || error
-
-#	    --disable-hal
-
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     $INSTALL -D -m 755 lxsession/lxsession $ROOTFS_DIR/usr/bin/lxsession || error
     $STRIP $ROOTFS_DIR/usr/bin/lxsession
-    
+
     $INSTALL -D -m 755 lxsession-logout/lxsession-logout $ROOTFS_DIR/usr/bin/lxsession-logout || error
     $STRIP $ROOTFS_DIR/usr/bin/lxsession-logout
 
@@ -52,7 +49,11 @@ build_lxde_lxsession_lite() {
     $INSTALL -D -m 644 $GENERICFS_DIR/lxsession/autostart $ROOTFS_DIR/etc/xdg/lxsession/LXDE/autostart || error
     $INSTALL -D -m 644 $GENERICFS_DIR/lxsession/config    $ROOTFS_DIR/etc/xdg/lxsession/LXDE/config    || error
     $INSTALL -D -m 755 $GENERICFS_DIR/lxsession/startlxde $ROOTFS_DIR/usr/bin/startlxde || error
-    
+
+    ln -sf ../../../usr/bin/startlxde $ROOTFS_DIR/etc/X11/Xsession.d/99_startxlxde
+    echo "[Session]" >${ROOTFS_DIR}/etc/xdg/lxsession/LXDE/config
+    echo "window_manager=${USE_WINDOWMANAGER-openbox}" >>${ROOTFS_DIR}/etc/xdg/lxsession/LXDE/config
+
     popd
     touch "$STATE_DIR/lxde_lxsession_lite.installed"
 }

@@ -27,9 +27,6 @@ build_tweak_ps3() {
     $INSTALL -D -m 644 $GENERICFS_DIR/asound.state.PS3 $ROOTFS_DIR/var/lib/alsa/asound.state || error
     touch $ROOTFS_DIR/etc/X11/xorg.conf
 
-    #ln -sf ../../../usr/bin/openbox-session $ROOTFS_DIR/etc/X11/xinit/xinitrc || error
-    test -e $ROOTFS_DIR/usr/bin/startlxde && ln -sf ../../../usr/bin/startlxde $ROOTFS_DIR/etc/X11/xinit/xinitrc
-
     for f in mach64_dri.so r128_dri.so r200_dri.so r300_dri.so radeon_dri.so tdfx_dri.so; do
 	rm -f $ROOTFS_DIR/usr/lib/dri/$f
     done

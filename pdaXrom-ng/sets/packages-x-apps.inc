@@ -25,6 +25,7 @@ metacity)
 pekwm)
     . $RULES_DIR/sn-monitor.sh
     . $RULES_DIR/pekwm.sh
+    . $RULES_DIR/pekwm-themes.sh
     ;;
 *)
     . $RULES_DIR/openbox.sh
@@ -55,15 +56,8 @@ midori)
 esac
 
 #
-# skipstone-gecko
+# IM
 #
-#. $RULES_DIR/skipstone-gecko.sh
-
-#
-# skipstone
-#
-#. $RULES_DIR/skipstone.sh
-
 . $SETS_DIR/packages-pidgin.inc
 
 #
@@ -90,3 +84,31 @@ esac
 
 . $RULES_DIR/mplayer.sh
 . $RULES_DIR/clearplayer.sh
+
+#
+# audioplayer
+#
+. $SETS_DIR/packages-audacious.inc
+
+#
+# Texteditor
+#
+. $RULES_DIR/leafpad.sh
+
+#
+# Image viewer
+#
+. $RULES_DIR/gpicview.sh
+
+#
+# Archiver
+#
+. $RULES_DIR/unzip.sh
+. $RULES_DIR/zip.sh
+. $RULES_DIR/unrar.sh
+. $RULES_DIR/xarchiver.sh
+
+#
+# Network configurator
+#
+. $RULES_DIR/netconfig.sh
