@@ -87,6 +87,8 @@ IMAGES_DIR="$TOP_DIR/images"
 
 DOWNLOAD_MIRROR="http://mail.pdaXrom.org/downloads/src"
 
+SVN_REVISION=`/usr/bin/svn info | grep Revision | cut -c 11-15`
+
 download2() {
     echo "Downloading $1 from mirror $DOWNLOAD_MIRROR"
     wget -c "$DOWNLOAD_MIRROR/$1" -O "$SRC_DIR/$1"
