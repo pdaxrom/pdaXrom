@@ -17,4 +17,5 @@ U_BOOT_VERSION=2006-04-18-1106
 . $SETS_DIR/packages-minimal.inc
 . $RULES_DIR/kbd.sh
 . $RULES_DIR/u-boot.sh
+. $BSP_RULES_DIR/survive.sh
 . $BSP_RULES_DIR/create_emer_initrd.sh
