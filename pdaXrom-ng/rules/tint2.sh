@@ -38,10 +38,8 @@ build_tint2() {
     #install_sysroot_files || error
 
     install_fakeroot_init
+    $INSTALL -D -m 644 ${GENERICFS_DIR}/tint2/tint2rc fakeroot/etc/xdg/tint2/tint2rc
     install_fakeroot_finish || error
-
-    $INSTALL -D -m 755 ${GENERICFS_DIR}/minidesk/minidesk-session ${ROOTFS_DIR}/usr/bin/minidesk-session
-    echo "exec /usr/bin/minidesk-session" > ${ROOTFS_DIR}/etc/X11/Xsession.d/90_minidesk
 
     popd
     touch "$STATE_DIR/tint2.installed"

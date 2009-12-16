@@ -13,3 +13,6 @@
 
 . $RULES_DIR/lxde-tweaks.sh
 
+
+$INSTALL -D -m 755 ${GENERICFS_DIR}/minidesk/minidesk-session ${ROOTFS_DIR}/usr/bin/minidesk-session
+echo "exec /usr/bin/minidesk-session" > ${ROOTFS_DIR}/etc/X11/Xsession.d/90_minidesk
