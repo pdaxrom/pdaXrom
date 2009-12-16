@@ -9,6 +9,7 @@
 #. $RULES_DIR/lxde-lxterminal.sh
 
 . $RULES_DIR/htop.sh
+. $RULES_DIR/ht.sh
 
 . $RULES_DIR/lxde-tweaks.sh
 
