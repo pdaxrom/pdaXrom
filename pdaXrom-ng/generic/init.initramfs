@@ -1,26 +1,26 @@
 #!/bin/sh
 
-if [ -f /bin/dancesplashfb ]; then
+if [ -f /usr/bin/dancesplashfb ]; then
     USE_SPLASH="y"
-    /bin/dancesplashfb 2>/dev/null &
+    /usr/bin/dancesplashfb -b 2>/dev/null
 fi
 
 splash_text() {
     if [ "$USE_SPLASH" = "y" ]; then
-	/bin/dancesplashfb -u "TEXT $@"
+	/usr/bin/dancesplashfb -u "TEXT $@"
     fi
 }
 
 splash_success() {
     echo -n "$@"
     if [ "$USE_SPLASH" = "y" ]; then
-	/bin/dancesplashfb -u "SUCCESS $@"
+	/usr/bin/dancesplashfb -u "SUCCESS $@"
     fi
 }
 
 splash_finish() {
     if [ "$USE_SPLASH" = "y" ]; then
-	/bin/dancesplashfb -u "QUIT"
+	/usr/bin/dancesplashfb -u "QUIT"
     fi
 }
 
@@ -118,6 +118,8 @@ boot_rootfs() {
     umount /sys
     umount /proc
     #exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
+    rm -rf /lib/modules
+    rm -rf /usr
     exec /sbin/switch_root . /sbin/init
 }
 

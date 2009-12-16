@@ -2,7 +2,9 @@
 
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin"
 
-if [ -e /usr/bin/dancesplashfb ]; then
+SPLASH_APP="/usr/bin/dancesplashfb"
+
+if [ -e $SPLASH_APP ]; then
     USE_SPLASH="y"
 fi
 
@@ -71,7 +73,7 @@ log_begin_msg() {
 	    echo $*
         fi
         if [ "$USE_SPLASH" = "y" ]; then
-	    dancesplashfb -u "TEXT $*"
+	    $SPLASH_APP -u "TEXT $*"
 	fi
     fi
 }
@@ -81,12 +83,12 @@ log_end_msg() {
 	if [ "$1" = "0" ]; then
 	    echo_success
 	    if [ "$USE_SPLASH" = "y" ]; then
-		dancesplashfb -u "SUCCESS ok"
+		$SPLASH_APP -u "SUCCESS ok"
 	    fi
 	else
 	    echo_failure
 	    if [ "$USE_SPLASH" = "y" ]; then
-		dancesplashfb -u "SUCCESS fail"
+		$SPLASH_APP -u "SUCCESS fail"
 	    fi
 	fi
 	echo
@@ -112,19 +114,14 @@ go_background() {
 
 splash_start() {
     if [ "$USE_SPLASH" = "y" ]; then
-	if ! pidof dancesplashfb 2>/dev/null >/dev/null; then
-	    sleep 1
-	    dancesplashfb 2>/dev/null &
-	fi
+	start-stop-daemon -S -q -x $SPLASH_APP -- -b
     fi
 }
 
 splash_finish() {
     if [ "$USE_SPLASH" = "y" ]; then
-	dancesplashfb -u "QUIT"
+	$SPLASH_APP -u "QUIT"
 	sleep 1
-	if pidof dancesplashfb > /dev/null; then
-	    kill `pidof dancesplashfb`
-	fi
+	#start-stop-daemon -K -q -x $SPLASH_APP
     fi
 }

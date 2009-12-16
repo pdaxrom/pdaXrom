@@ -5,6 +5,8 @@
 
 . /etc/init.d/functions
 
+mount /proc 2>/dev/null
+
 splash_start
 
 if [ -e /usr/bin/figlet ]; then
@@ -14,7 +16,6 @@ if [ -e /usr/bin/figlet ]; then
 fi
 
 log_begin_msg -n "Mounting filesystems..."
-mount /proc 2>/dev/null
 mount /sys 2>/dev/null
 mount /tmp 2>/dev/null
 mount /var/tmp 2>/dev/null
