@@ -104,7 +104,7 @@ create_initramfs() {
     sed -i -e "s|@MODULES_LIST@|${MODULES}|" ${INITRAMFS_DIR}/init
 
     if [ "$USE_SPLASH" = "yes" ] && [ -f $ROOTFS_DIR/usr/bin/dancesplashfb ]; then
-	cp -f $ROOTFS_DIR/usr/bin/dancesplashfb $INITRAMFS_DIR/bin || error "install dancesplashfb"
+	$INSTALL -D -m 755 $ROOTFS_DIR/usr/bin/dancesplashfb $INITRAMFS_DIR/usr/bin/dancesplashfb || error "install dancesplashfb"
 	mkdir -p $INITRAMFS_DIR/etc
 	mkdir -p $INITRAMFS_DIR/usr/share
 	cp -a $ROOTFS_DIR/usr/share/dancesplashfb $INITRAMFS_DIR/usr/share || error "install dancesplash share files"
