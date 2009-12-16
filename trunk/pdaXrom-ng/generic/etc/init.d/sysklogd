@@ -4,22 +4,26 @@
 
 NAME=syslogd
 
+SYSLOGD=/sbin/syslogd
+SYSLOGD_ARGS="-S"
+KLOGD=/sbin/klogd
+
 case "$1" in
   start)
 	log_begin_msg -n "Starting syslogd"
-	syslogd -S
+	start-stop-daemon -S -q -x "$SYSLOGD" -- $SYSLOGD_ARGS
 	log_end_msg $?
 	log_begin_msg -n "Starting klogd"
-	klogd
+	start-stop-daemon -S -q -x "$KLOGD"
 	log_end_msg $?
 	exit 0
 	;;
   stop)
 	log_begin_msg -n "Stopping klogd"
-	killall klogd 2>/dev/null >/dev/null
+	start-stop-daemon -K -q -x "$KLOGD"
 	log_end_msg $?
 	log_begin_msg -n "Stopping syslogd"
-	killall syslogd 2>/dev/null >/dev/null
+	start-stop-daemon -K -q -x "$SYSLOGD"
 	log_end_msg $?
 	exit 0;
 	;;

@@ -13,14 +13,14 @@ case "$1" in
 	/usr/sbin/hciconfig hci0 up
 	/usr/sbin/hciconfig hci0 lm master
 	/usr/sbin/hciconfig hci0 piscan
-    
-	start-stop-daemon -S -x "$DAEMON" -q -b -- $DAEMON_ARGS  >/dev/null 2>/dev/null
-    
+
+	start-stop-daemon -S -q -b -x "$DAEMON" -- $DAEMON_ARGS
+
 	log_end_msg $?
 	;;
   stop)
 	log_begin_msg -n "Stopping sixaxis bluetooth mouse emulator"
-	killall sixaxisd 2>/dev/null >/dev/null
+	start-stop-daemon -K -q -x "$DAEMON"
 	/usr/sbin/hciconfig hci0 down 2>/dev/null >/dev/null
 	true
 	log_end_msg $?
