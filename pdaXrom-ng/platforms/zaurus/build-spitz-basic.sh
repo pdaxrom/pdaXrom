@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if [ "x$TARGET_ARCH" = "x" ]; then
 TARGET_ARCH="armel-linux-gnueabi"
 fi

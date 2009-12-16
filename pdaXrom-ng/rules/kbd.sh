@@ -32,13 +32,14 @@ build_kbd() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-
+   
     make $MAKEARGS || error
+    
+    make $MAKEARGS DESTDIR=$PWD/fakeroot install || error
 
-    #install_sysroot_files || error
-
-    install_fakeroot_init
-    install_fakeroot_finish || error
+    $INSTALL -D -m 755 $KBD_DIR/fakeroot/usr/bin/loadkeys $ROOTFS_DIR/usr/bin
+    $INSTALL -D -m 755 $KBD_DIR/fakeroot/usr/bin/dumpkeys $ROOTFS_DIR/usr/bin
+    $INSTALL -D -m 755 $KBD_DIR/fakeroot/usr/bin/showkey $ROOTFS_DIR/usr/bin
 
     popd
     touch "$STATE_DIR/kbd.installed"
