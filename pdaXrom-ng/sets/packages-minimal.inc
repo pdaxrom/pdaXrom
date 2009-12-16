@@ -4,7 +4,6 @@
 . $RULES_DIR/host_findutils.sh
 . $RULES_DIR/host_genext2fs.sh
 . $RULES_DIR/host_makebootfat.sh
-. $RULES_DIR/host_cdrkit.sh
 . $RULES_DIR/host_module-init-tools.sh
 . $RULES_DIR/host_u-boot-mkimage.sh
 
@@ -20,17 +19,3 @@
 . $RULES_DIR/install_libc.sh
 . $RULES_DIR/zlib.sh
 . $RULES_DIR/figlet.sh
-
-if [ "$USE_SPLASH" = "yes" ]; then
-    . $SETS_DIR/packages-dancesplash-fb.inc
-fi
-
-if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" ]; then
-    . $RULES_DIR/ipw2100-fw.sh
-    . $RULES_DIR/ipw2200-fw.sh
-    . $RULES_DIR/iwlwifi-3945-ucode.sh
-    . $RULES_DIR/iwlwifi-4965-ucode.sh
-    . $RULES_DIR/iwlwifi-5000-ucode.sh
-    . $RULES_DIR/broadcom-sta.sh
-fi
-
