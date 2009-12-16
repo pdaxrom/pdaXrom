@@ -39,16 +39,19 @@ build_pekwm() {
     $INSTALL -D -m 755 src/pekwm $ROOTFS_DIR/usr/bin/pekwm || error
     $STRIP $ROOTFS_DIR/usr/bin/pekwm || error
 
-    install -m 644 -t ${ROOTFS_DIR}/etc/xdg/pekwm	\
+    $INSTALL -m 644 -t ${ROOTFS_DIR}/etc/xdg/pekwm	\
 	${GENERICFS_DIR}/pekwm/config/autoproperties	\
 	${GENERICFS_DIR}/pekwm/config/config	\
 	${GENERICFS_DIR}/pekwm/config/keys	\
 	${GENERICFS_DIR}/pekwm/config/menu	\
 	${GENERICFS_DIR}/pekwm/config/mouse	\
 	${GENERICFS_DIR}/pekwm/config/start	\
-	${GENERICFS_DIR}/pekwm/config/vars
+	${GENERICFS_DIR}/pekwm/config/vars || error
 
     chmod 755 ${ROOTFS_DIR}/etc/xdg/pekwm/start
+
+    $INSTALL -D -m 755 ${GENERICFS_DIR}/pekwm/scripts/buildmenu.sh ${ROOTFS_DIR}/usr/share/pekwm/scripts/buildmenu.sh
+    echo "/usr/share/pekwm/scripts/buildmenu.sh" > ${ROOTFS_DIR}/etc/X11/Xsession.d/80_pekwm_update_menu
 
     popd
     touch "$STATE_DIR/pekwm.installed"
