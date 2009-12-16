@@ -14,15 +14,14 @@ case "$1" in
   start)
 	log_begin_msg -n "Starting slim"
 	splash_finish
-	start-stop-daemon --start --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_OPTS
+	start-stop-daemon -S -q -b -x $DAEMON -- $DAEMON_OPTS
 	log_end_msg $?
 	sleep 2
 	;;
   stop)
 	log_begin_msg -n "Stopping slim"
-	start-stop-daemon --stop --quiet --pidfile $PIDFILE --exec $DAEMON || true
+	start-stop-daemon -K -q -x $DAEMON
 	log_end_msg $?
-	while pidof X > /dev/null; do killall X; sleep 1; done
 	splash_start
 	;;
   *)
