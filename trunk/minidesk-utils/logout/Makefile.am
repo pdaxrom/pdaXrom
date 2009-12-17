@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-bin_PROGRAMS = minilogout
+bin_PROGRAMS = minidesk-logout
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -10,16 +10,16 @@ INCLUDES = \
 	$(HAL_CFLAGS) \
 	$(G_CAST_CHECKS)
 
-minilogout_SOURCES = \
+minidesk_logout_SOURCES = \
 	logout.c
 
-minilogout_LDADD = \
+minidesk_logout_LDADD = \
 		$(LIBS) \
 		$(PACKAGE_LIBS) \
 		$(HAL_LIBS) \
 		$(INTLLIBS)
 
-imagedir=$(datadir)/pixmaps/minilogout
+imagedir=$(datadir)/pixmaps/minidesk-logout
 
 image_DATA= \
 	images/gnome-session-halt.png \
@@ -29,5 +29,10 @@ image_DATA= \
 	images/gnome-session-suspend.png \
 	images/gnome-session-switch.png
 
+minidesk_logout_desktop_DATA = minidesk-logout.desktop
+
+minidesk_logout_desktopdir = $(datadir)/applications
+
 EXTRA_DIST = \
+	$(minidesk_logout_desktop_DATA) \
 	$(image_DATA)

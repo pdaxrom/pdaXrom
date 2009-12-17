@@ -35,7 +35,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = minilogout$(EXEEXT)
+bin_PROGRAMS = minidesk-logout$(EXEEXT)
 subdir = logout
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -46,13 +46,14 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(imagedir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(imagedir)" \
+	"$(DESTDIR)$(minidesk_logout_desktopdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_minilogout_OBJECTS = logout.$(OBJEXT)
-minilogout_OBJECTS = $(am_minilogout_OBJECTS)
+am_minidesk_logout_OBJECTS = logout.$(OBJEXT)
+minidesk_logout_OBJECTS = $(am_minidesk_logout_OBJECTS)
 am__DEPENDENCIES_1 =
-minilogout_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+minidesk_logout_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -66,8 +67,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(minilogout_SOURCES)
-DIST_SOURCES = $(minilogout_SOURCES)
+SOURCES = $(minidesk_logout_SOURCES)
+DIST_SOURCES = $(minidesk_logout_SOURCES)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -89,7 +90,7 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-DATA = $(image_DATA)
+DATA = $(image_DATA) $(minidesk_logout_desktop_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -223,16 +224,16 @@ INCLUDES = \
 	$(HAL_CFLAGS) \
 	$(G_CAST_CHECKS)
 
-minilogout_SOURCES = \
+minidesk_logout_SOURCES = \
 	logout.c
 
-minilogout_LDADD = \
+minidesk_logout_LDADD = \
 		$(LIBS) \
 		$(PACKAGE_LIBS) \
 		$(HAL_LIBS) \
 		$(INTLLIBS)
 
-imagedir = $(datadir)/pixmaps/minilogout
+imagedir = $(datadir)/pixmaps/minidesk-logout
 image_DATA = \
 	images/gnome-session-halt.png \
 	images/gnome-session-hibernate.png \
@@ -241,7 +242,10 @@ image_DATA = \
 	images/gnome-session-suspend.png \
 	images/gnome-session-switch.png
 
+minidesk_logout_desktop_DATA = minidesk-logout.desktop
+minidesk_logout_desktopdir = $(datadir)/applications
 EXTRA_DIST = \
+	$(minidesk_logout_desktop_DATA) \
 	$(image_DATA)
 
 all: all-am
@@ -321,9 +325,9 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-minilogout$(EXEEXT): $(minilogout_OBJECTS) $(minilogout_DEPENDENCIES) 
-	@rm -f minilogout$(EXEEXT)
-	$(LINK) $(minilogout_OBJECTS) $(minilogout_LDADD) $(LIBS)
+minidesk-logout$(EXEEXT): $(minidesk_logout_OBJECTS) $(minidesk_logout_DEPENDENCIES) 
+	@rm -f minidesk-logout$(EXEEXT)
+	$(LINK) $(minidesk_logout_OBJECTS) $(minidesk_logout_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -379,6 +383,26 @@ uninstall-imageDATA:
 	test -n "$$files" || exit 0; \
 	echo " ( cd '$(DESTDIR)$(imagedir)' && rm -f" $$files ")"; \
 	cd "$(DESTDIR)$(imagedir)" && rm -f $$files
+install-minidesk_logout_desktopDATA: $(minidesk_logout_desktop_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(minidesk_logout_desktopdir)" || $(MKDIR_P) "$(DESTDIR)$(minidesk_logout_desktopdir)"
+	@list='$(minidesk_logout_desktop_DATA)'; test -n "$(minidesk_logout_desktopdir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(minidesk_logout_desktopdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(minidesk_logout_desktopdir)" || exit $$?; \
+	done
+
+uninstall-minidesk_logout_desktopDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(minidesk_logout_desktop_DATA)'; test -n "$(minidesk_logout_desktopdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(minidesk_logout_desktopdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(minidesk_logout_desktopdir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -466,7 +490,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(imagedir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(imagedir)" "$(DESTDIR)$(minidesk_logout_desktopdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -516,7 +540,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-imageDATA
+install-data-am: install-imageDATA install-minidesk_logout_desktopDATA
 
 install-dvi: install-dvi-am
 
@@ -562,7 +586,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-imageDATA
+uninstall-am: uninstall-binPROGRAMS uninstall-imageDATA \
+	uninstall-minidesk_logout_desktopDATA
 
 .MAKE: install-am install-strip
 
@@ -573,12 +598,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-imageDATA
 	install-binPROGRAMS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-imageDATA install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-imageDATA
+	install-man install-minidesk_logout_desktopDATA install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-imageDATA uninstall-minidesk_logout_desktopDATA
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
