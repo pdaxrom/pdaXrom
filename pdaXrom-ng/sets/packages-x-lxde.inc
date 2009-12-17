@@ -9,6 +9,11 @@
 . $RULES_DIR/libvte.sh
 . $RULES_DIR/lxde-lxterminal.sh
 
+#
+# Network configurator
+#
+. $RULES_DIR/netconfig.sh
+
 #. $RULES_DIR/lxde-lxmusic.sh
 #. $RULES_DIR/lxde-lxlauncher.sh
 

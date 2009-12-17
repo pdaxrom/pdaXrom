@@ -1,4 +1,5 @@
 . $RULES_DIR/tint2.sh
+#. $RULES_DIR/bmpanel.sh
 
 . $RULES_DIR/gamin.sh
 . $RULES_DIR/pcmanfm.sh
@@ -10,6 +11,8 @@
 
 . $RULES_DIR/htop.sh
 . $RULES_DIR/ht.sh
+
+. $RULES_DIR/minidesk-utils.sh
 
 . $RULES_DIR/lxde-tweaks.sh
 

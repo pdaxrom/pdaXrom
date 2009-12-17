@@ -39,6 +39,7 @@ INCLUDE = "appmenu"
 			Entry = "TWM" { Actions = "RestartOther twm" }
 		}
 	}
+	Entry = "Logout" { Actions = "Exec minidesk-logout" }
 }
 
 WindowMenu = "Window Menu" {
