@@ -19,5 +19,6 @@ U_BOOT_VERSION=2006-04-18-1106
 . $RULES_DIR/kbd.sh
 . $RULES_DIR/u-boot.sh
 . $BSP_RULES_DIR/survive.sh
+. $RULES_DIR/mtd-utils.sh
 . $BSP_RULES_DIR/zaurus_custom.sh
 . $BSP_RULES_DIR/create_emer_initrd.sh
