@@ -1,0 +1,1 @@
+SUBDIRS = netconfig logout
