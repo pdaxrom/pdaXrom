@@ -108,7 +108,3 @@ esac
 . $RULES_DIR/unrar.sh
 . $RULES_DIR/xarchiver.sh
 
-#
-# Network configurator
-#
-. $RULES_DIR/netconfig.sh
