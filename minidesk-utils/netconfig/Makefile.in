@@ -35,7 +35,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = netconfig$(EXEEXT)
+bin_PROGRAMS = minidesk-netconfig$(EXEEXT)
 subdir = netconfig
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -46,13 +46,15 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(netconfigdir)" \
-	"$(DESTDIR)$(netconfig_desktopdir)"
+am__installdirs = "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(minidesk_netconfigdir)" \
+	"$(DESTDIR)$(minidesk_netconfig_desktopdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_netconfig_OBJECTS = netconfig.$(OBJEXT)
-netconfig_OBJECTS = $(am_netconfig_OBJECTS)
+am_minidesk_netconfig_OBJECTS = netconfig.$(OBJEXT)
+minidesk_netconfig_OBJECTS = $(am_minidesk_netconfig_OBJECTS)
 am__DEPENDENCIES_1 =
-netconfig_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+minidesk_netconfig_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -66,8 +68,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(netconfig_SOURCES)
-DIST_SOURCES = $(netconfig_SOURCES)
+SOURCES = $(minidesk_netconfig_SOURCES)
+DIST_SOURCES = $(minidesk_netconfig_SOURCES)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -89,7 +91,7 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-DATA = $(netconfig_DATA) $(netconfig_desktop_DATA)
+DATA = $(minidesk_netconfig_DATA) $(minidesk_netconfig_desktop_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -215,33 +217,33 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-netconfigdir = $(datadir)/netconfig
+minidesk_netconfigdir = $(datadir)/minidesk/netconfig
 INCLUDES = \
 	-I$(top_srcdir) \
 	-DPACKAGE_BIN_DIR=\""$(bindir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	$(PACKAGE_CFLAGS) \
 	$(G_CAST_CHECKS) \
-	-DRESDIR=\""$(netconfigdir)"\"
+	-DRESDIR=\""$(minidesk_netconfigdir)"\"
 
-netconfig_SOURCES = \
+minidesk_netconfig_SOURCES = \
 	netconfig.c
 
-netconfig_LDADD = \
+minidesk_netconfig_LDADD = \
 		$(LIBS) \
 		$(PACKAGE_LIBS) \
 		$(INTLLIBS)
 
-netconfig_DATA = \
+minidesk_netconfig_DATA = \
 		netconfig.ui
 
-netconfig_desktop_DATA = netconfig.desktop
-netconfig_desktopdir = $(datadir)/applications
+minidesk_netconfig_desktop_DATA = minidesk-netconfig.desktop
+minidesk_netconfig_desktopdir = $(datadir)/applications
 EXTRA_DIST = \
-	$(netconfig_desktop_DATA)
+	$(minidesk_netconfig_desktop_DATA)
 
 CLEANFILES = \
-        $(netconfig_DATA)
+        $(minidesk_netconfig_DATA)
 
 all: all-am
 
@@ -320,9 +322,9 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-netconfig$(EXEEXT): $(netconfig_OBJECTS) $(netconfig_DEPENDENCIES) 
-	@rm -f netconfig$(EXEEXT)
-	$(LINK) $(netconfig_OBJECTS) $(netconfig_LDADD) $(LIBS)
+minidesk-netconfig$(EXEEXT): $(minidesk_netconfig_OBJECTS) $(minidesk_netconfig_DEPENDENCIES) 
+	@rm -f minidesk-netconfig$(EXEEXT)
+	$(LINK) $(minidesk_netconfig_OBJECTS) $(minidesk_netconfig_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -358,46 +360,46 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-netconfigDATA: $(netconfig_DATA)
+install-minidesk_netconfigDATA: $(minidesk_netconfig_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(netconfigdir)" || $(MKDIR_P) "$(DESTDIR)$(netconfigdir)"
-	@list='$(netconfig_DATA)'; test -n "$(netconfigdir)" || list=; \
+	test -z "$(minidesk_netconfigdir)" || $(MKDIR_P) "$(DESTDIR)$(minidesk_netconfigdir)"
+	@list='$(minidesk_netconfig_DATA)'; test -n "$(minidesk_netconfigdir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(netconfigdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(netconfigdir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(minidesk_netconfigdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(minidesk_netconfigdir)" || exit $$?; \
 	done
 
-uninstall-netconfigDATA:
+uninstall-minidesk_netconfigDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(netconfig_DATA)'; test -n "$(netconfigdir)" || list=; \
+	@list='$(minidesk_netconfig_DATA)'; test -n "$(minidesk_netconfigdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(netconfigdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(netconfigdir)" && rm -f $$files
-install-netconfig_desktopDATA: $(netconfig_desktop_DATA)
+	echo " ( cd '$(DESTDIR)$(minidesk_netconfigdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(minidesk_netconfigdir)" && rm -f $$files
+install-minidesk_netconfig_desktopDATA: $(minidesk_netconfig_desktop_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(netconfig_desktopdir)" || $(MKDIR_P) "$(DESTDIR)$(netconfig_desktopdir)"
-	@list='$(netconfig_desktop_DATA)'; test -n "$(netconfig_desktopdir)" || list=; \
+	test -z "$(minidesk_netconfig_desktopdir)" || $(MKDIR_P) "$(DESTDIR)$(minidesk_netconfig_desktopdir)"
+	@list='$(minidesk_netconfig_desktop_DATA)'; test -n "$(minidesk_netconfig_desktopdir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(netconfig_desktopdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(netconfig_desktopdir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(minidesk_netconfig_desktopdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(minidesk_netconfig_desktopdir)" || exit $$?; \
 	done
 
-uninstall-netconfig_desktopDATA:
+uninstall-minidesk_netconfig_desktopDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(netconfig_desktop_DATA)'; test -n "$(netconfig_desktopdir)" || list=; \
+	@list='$(minidesk_netconfig_desktop_DATA)'; test -n "$(minidesk_netconfig_desktopdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(netconfig_desktopdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(netconfig_desktopdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(minidesk_netconfig_desktopdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(minidesk_netconfig_desktopdir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -485,7 +487,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(netconfigdir)" "$(DESTDIR)$(netconfig_desktopdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(minidesk_netconfigdir)" "$(DESTDIR)$(minidesk_netconfig_desktopdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -536,7 +538,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-netconfigDATA install-netconfig_desktopDATA
+install-data-am: install-minidesk_netconfigDATA \
+	install-minidesk_netconfig_desktopDATA
 
 install-dvi: install-dvi-am
 
@@ -582,8 +585,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-netconfigDATA \
-	uninstall-netconfig_desktopDATA
+uninstall-am: uninstall-binPROGRAMS uninstall-minidesk_netconfigDATA \
+	uninstall-minidesk_netconfig_desktopDATA
 
 .MAKE: install-am install-strip
 
@@ -594,14 +597,15 @@ uninstall-am: uninstall-binPROGRAMS uninstall-netconfigDATA \
 	install-binPROGRAMS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
-	install-netconfigDATA install-netconfig_desktopDATA \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-netconfigDATA \
-	uninstall-netconfig_desktopDATA
+	install-minidesk_netconfigDATA \
+	install-minidesk_netconfig_desktopDATA install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-minidesk_netconfigDATA \
+	uninstall-minidesk_netconfig_desktopDATA
 
 
 #ui_DATA = $(ui_in_files:.glade=.ui)

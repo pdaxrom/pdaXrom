@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-bin_PROGRAMS = netconfig
+bin_PROGRAMS = minidesk-netconfig
 
-netconfigdir = $(datadir)/netconfig
+minidesk_netconfigdir = $(datadir)/minidesk/netconfig
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -10,17 +10,17 @@ INCLUDES = \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	$(PACKAGE_CFLAGS) \
 	$(G_CAST_CHECKS) \
-	-DRESDIR=\""$(netconfigdir)"\"
+	-DRESDIR=\""$(minidesk_netconfigdir)"\"
 
-netconfig_SOURCES = \
+minidesk_netconfig_SOURCES = \
 	netconfig.c
 
-netconfig_LDADD = \
+minidesk_netconfig_LDADD = \
 		$(LIBS) \
 		$(PACKAGE_LIBS) \
 		$(INTLLIBS)
 
-netconfig_DATA = \
+minidesk_netconfig_DATA = \
 		netconfig.ui
 
 #ui_DATA = $(ui_in_files:.glade=.ui)
@@ -28,12 +28,12 @@ netconfig_DATA = \
 %.ui: %.glade
 	gtk-builder-convert $< $@
 
-netconfig_desktop_DATA = netconfig.desktop
+minidesk_netconfig_desktop_DATA = minidesk-netconfig.desktop
 
-netconfig_desktopdir = $(datadir)/applications
+minidesk_netconfig_desktopdir = $(datadir)/applications
 
 EXTRA_DIST = \
-	$(netconfig_desktop_DATA)
+	$(minidesk_netconfig_desktop_DATA)
 
 CLEANFILES = \
-        $(netconfig_DATA)
+        $(minidesk_netconfig_DATA)
