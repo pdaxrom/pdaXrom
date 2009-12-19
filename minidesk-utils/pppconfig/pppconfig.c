@@ -149,9 +149,9 @@ void apply_ppp(GtkWidget *widget, Data *data)
 	    fprintf(outf, "connect '/usr/sbin/chat -s -v \"\" \"at+crm=1;&C0\" OK ATDT%s CONNECT'\n",
 		    gtk_entry_get_text(GTK_ENTRY(data->entry_phone)));
 	else
-	    fprintf(outf, "connect '/usr/sbin/chat -s -v ABORT \"NO CARRIER\" ABORT \"NO DIALTONE\" ABORT \"BUSY\" \"\" \"AT+CGDCONT=1,\\\"IP\\\",\\\"%s\\\"\" OK ATDT%s CONNECT'\n",
+	    fprintf(outf, "connect '/usr/sbin/chat -s -v ABORT \"NO CARRIER\" ABORT \"NO DIALTONE\" ABORT \"BUSY\" \"\" \"AT+CGDCONT=1,\\\\\\\"IP\\\\\\\",\\\\\\\"%s\\\\\\\"\" OK ATDT%s CONNECT'\n",
 		    gtk_entry_get_text(GTK_ENTRY(data->entry_ap)), gtk_entry_get_text(GTK_ENTRY(data->entry_phone)));
-	fprintf(outf, "crtscts\nnoipdefault\nmodem\nusepeerdns\ndefaultroute\nconnect-delay 117000\n"
+	fprintf(outf, "crtscts\nnoipdefault\nmodem\nusepeerdns\ndefaultroute\nconnect-delay 6000\n"
 		      "remotename pdaXrom-linux\nmaxfail 0\npersist\ndebug\nnodetach\nlogfile /tmp/ppp.txt\n");
 	if (strlen(gtk_entry_get_text(GTK_ENTRY(data->entry_passwd))) == 0) {
 	    if (strlen(gtk_entry_get_text(GTK_ENTRY(data->entry_login))) != 0) {
@@ -174,7 +174,7 @@ void update_conn_type(GtkWidget *widget, Data *data)
 {
     data->type = gtk_combo_box_get_active(GTK_COMBO_BOX(data->entry_type));
     fprintf(stderr, "-- %d\n", data->type);
-    gtk_entry_set_text(GTK_ENTRY(data->entry_phone), data->type?"#777":"*99***1#");
+    gtk_entry_set_text(GTK_ENTRY(data->entry_phone), data->type?"#777":"*99#");
     if (data->type)
 	gtk_widget_hide(data->entry_ap);
     else
