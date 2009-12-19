@@ -1,24 +1,31 @@
 #!/bin/bash
 
-ISOIMAGE_NAME=pdaXrom-ng-dev-yeelong-8089
+ISOIMAGE_NAME=atv-pdaXrom-linux
+FATIMAGE_NAME=${ISOIMAGE_NAME}
 
-TARGET_ARCH="mipsel-ls2f-linux"
+TARGET_ARCH="i686-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
+
+KERNEL_VERSION="2.6.32"
+KERNEL_CONFIG=i686-kernel-2.6.32
+TARGET_KERNEL_IMAGE=bzImage
 
 TARGET_GCC_VERSION=4.4.2
 TARGET_BINUTILS_VERSION=2.20.51.0.3
 
-TARGET_VENDOR_PATCH=ls2f
-
-KERNEL_VERSION="2.6.32"
-KERNEL_CONFIG=yeeloong2f_2.6.32
-
+USE_SPLASH="yes"
+USE_INITRAMFS="yes"
 USE_AUFS2="yes"
+USE_WEBBROWSER="midori"
 USE_LOGINMANAGER="yes"
+NVIDIA_CLOSESOURSE_VIDEO="yes"
+USE_VLC_PLAYER="yes"
 
 . $SETS_DIR/packages-basic.inc
+
 . $SETS_DIR/packages-acpi.inc
+
 . $SETS_DIR/packages-mmlibs.inc
 . $SETS_DIR/packages-libs.inc
 
@@ -30,16 +37,7 @@ USE_LOGINMANAGER="yes"
 . $SETS_DIR/packages-hal.inc
 
 . $SETS_DIR/packages-xorg-xserver.inc
-
-. $RULES_DIR/xf86-input-evdev.sh
-. $RULES_DIR/xf86-input-joystick.sh
-. $RULES_DIR/xf86-input-keyboard.sh
-. $RULES_DIR/xf86-input-mouse.sh
-. $RULES_DIR/xf86-input-synaptics.sh
-. $RULES_DIR/xf86-video-fbdev.sh
-. $RULES_DIR/xf86-video-siliconmotion.sh
-. $RULES_DIR/xf86-video-v4l.sh
-
+. $SETS_DIR/packages-xorg-drivers.inc
 . $SETS_DIR/packages-xorg-apps.inc
 . $SETS_DIR/packages-xorg-fonts.inc
 
@@ -55,6 +53,12 @@ USE_LOGINMANAGER="yes"
 
 . $SETS_DIR/packages-x-voip.inc
 
+. $SETS_DIR/packages-bluetooth.inc
+
+. $SETS_DIR/packages-x-vkeyboard.inc
+
+. $SETS_DIR/packages-x-rdp.inc
+
 . $SETS_DIR/packages-gparted.inc
 
 . $SETS_DIR/packages-mc.inc
@@ -63,12 +67,17 @@ USE_LOGINMANAGER="yes"
 
 . $RULES_DIR/install_locale.sh
 
-#. $RULES_DIR/fnkey-yeeloong2f.sh
+. $RULES_DIR/tweak-i686.sh
 
-. $RULES_DIR/tweak-yeelong2f.sh
+if [ "$USE_INITRAMFS" = "yes" ]; then
+    INITRAMFS_MODULES=`cat $ROOTFS_DIR/lib/modules/*/modules.dep | grep '/scsi/\|/pata/\|/block/' | sed 's/\://' | cut -f1 -d' ' | while read f; do echo ${f/*\/}; done | sed 's/\.ko//' | sort | uniq`
+    INITRAMFS_MODULES="$INITRAMFS_MODULES usb-storage ohci-hcd ehci-hcd sg vfat isofs udf nls_cp437 nls_utf8 nls_iso8859-1"
+    echo ">>>$INITRAMFS_MODULES"
+    . $RULES_DIR/create_initramfs.sh
+fi
 
 . $SETS_DIR/packages-host-squashfs.inc
-. $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
-
-. $RULES_DIR/create_lemote.sh
+. $RULES_DIR/host_syslinux.sh
+. $RULES_DIR/create_x86cd.sh
+. $RULES_DIR/create_bootfat.sh

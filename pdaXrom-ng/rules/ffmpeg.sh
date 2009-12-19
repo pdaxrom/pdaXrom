@@ -87,6 +87,8 @@ build_ffmpeg() {
 
     install_sysroot_files || error
 
+    ln -s libpostproc ${TARGET_INC}/postproc
+
     install_fakeroot_init
     install_fakeroot_finish || error
 

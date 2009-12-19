@@ -23,14 +23,13 @@ build_usb_modeswitch() {
     apply_patches $USB_MODESWITCH_DIR $USB_MODESWITCH
     pushd $TOP_DIR
     cd $USB_MODESWITCH_DIR
-    
+
     make $MAKEARGS clean || error
     make $MAKEARGS CC=${CROSS}gcc CCFLAGS="-L${TARGET_LIB} -Wl,-rpath-link,${TARGET_LIB} -lusb" STRIP="${STRIP}" || error
 
     $INSTALL -D -m 755 usb_modeswitch $ROOTFS_DIR/usr/sbin/usb_modeswitch || error
     $INSTALL -D -m 644 usb_modeswitch.conf $ROOTFS_DIR/etc/usb_modeswitch.conf || error
-
-    error "update install"
+    $INSTALL -D -m 644 ${GENERICFS_DIR}/etc/udev/rules.d/90-zte.rules ${ROOTFS_DIR}/etc/udev/rules.d/90-zte.rules || error
 
     popd
     touch "$STATE_DIR/usb_modeswitch.installed"
