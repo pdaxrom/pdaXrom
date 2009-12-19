@@ -29,8 +29,15 @@
 #define RESDIR "."
 #endif
 
+//#define PPP_DIR "ppp"
+
+#ifndef PPP_DIR
+#define PPP_DIR "/etc/ppp"
+#endif
+
 typedef struct _Data Data;
 struct _Data {
+    GtkWidget	*entry_type;
     GtkWidget	*entry_phone;
     GtkWidget	*entry_login;
     GtkWidget	*entry_passwd;
@@ -38,6 +45,7 @@ struct _Data {
     GtkWidget	*entry_speed;
     GtkWidget	*entry_ap;
     GtkWidget	*entry_cmdline;
+    gint	type;
 };
 
 #if 0
@@ -133,24 +141,44 @@ void update_secret(char *secret, char *login, char *passwd)
 
 void apply_ppp(GtkWidget *widget, Data *data)
 {
-    FILE *outf = fopen("/etc/ppp/peers/mobile", "wb");
+    FILE *outf = fopen(PPP_DIR "/peers/mobile", "wb");
     if (outf) {
 	fprintf(outf, "%s\n", gtk_entry_get_text(GTK_ENTRY(data->entry_device)));
 	fprintf(outf, "%s\n", gtk_combo_box_get_active_text(GTK_COMBO_BOX(data->entry_speed)));
-	fprintf(outf, "connect '/usr/sbin/chat -s -v ABORT \"NO CARRIER\" ABORT \"NO DIALTONE\" ABORT \"BUSY\" \"\" \"AT+CGDCONT=1,\\\"IP\\\",\\\"%s\\\"\" OK ATDT*99***1# CONNECT'",
-	gtk_entry_get_text(GTK_ENTRY(data->entry_ap)));
+	if (data->type)
+	    fprintf(outf, "connect '/usr/sbin/chat -s -v \"\" \"at+crm=1;&C0\" OK ATDT%s CONNECT'\n",
+		    gtk_entry_get_text(GTK_ENTRY(data->entry_phone)));
+	else
+	    fprintf(outf, "connect '/usr/sbin/chat -s -v ABORT \"NO CARRIER\" ABORT \"NO DIALTONE\" ABORT \"BUSY\" \"\" \"AT+CGDCONT=1,\\\"IP\\\",\\\"%s\\\"\" OK ATDT%s CONNECT'\n",
+		    gtk_entry_get_text(GTK_ENTRY(data->entry_ap)), gtk_entry_get_text(GTK_ENTRY(data->entry_phone)));
 	fprintf(outf, "crtscts\nnoipdefault\nmodem\nusepeerdns\ndefaultroute\nconnect-delay 117000\n"
 		      "remotename pdaXrom-linux\nmaxfail 0\npersist\ndebug\nnodetach\nlogfile /tmp/ppp.txt\n");
-	if (!strlen(gtk_entry_get_text(GTK_ENTRY(data->entry_device)))) {
+	if (strlen(gtk_entry_get_text(GTK_ENTRY(data->entry_passwd))) == 0) {
+	    if (strlen(gtk_entry_get_text(GTK_ENTRY(data->entry_login))) != 0) {
+		fprintf(outf, "user %s\n", gtk_entry_get_text(GTK_ENTRY(data->entry_login)));
+	    }
 	    fprintf(outf, "noauth\n");
 	} else {
 	    fprintf(outf, "user %s\n", gtk_entry_get_text(GTK_ENTRY(data->entry_login)));
-	    update_secret("/etc/ppp/pap-secrets", (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_login)), (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_passwd)));
-	    update_secret("/etc/ppp/chap-secrets", (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_login)), (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_passwd)));
+	    update_secret(PPP_DIR "/pap-secrets", (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_login)), (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_passwd)));
+	    update_secret(PPP_DIR "/chap-secrets", (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_login)), (char *) gtk_entry_get_text(GTK_ENTRY(data->entry_passwd)));
 	}
 	
 	fclose(outf);
+    } else {
+	fprintf(stderr, "Can't write to " PPP_DIR "/peers/mobile\n");
     }
+}
+
+void update_conn_type(GtkWidget *widget, Data *data)
+{
+    data->type = gtk_combo_box_get_active(GTK_COMBO_BOX(data->entry_type));
+    fprintf(stderr, "-- %d\n", data->type);
+    gtk_entry_set_text(GTK_ENTRY(data->entry_phone), data->type?"#777":"*99***1#");
+    if (data->type)
+	gtk_widget_hide(data->entry_ap);
+    else
+	gtk_widget_show(data->entry_ap);
 }
 
 void close_app(GtkWidget *widget, Data *data)
@@ -163,6 +191,8 @@ int main (int argc, char **argv)
     GtkBuilder *gtkBuilder;
     GtkWidget *mainwin;
     Data data;
+
+    data.type = 0; // gprs
 
     gtk_set_locale();
 
@@ -179,7 +209,8 @@ int main (int argc, char **argv)
     data.entry_login = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"entry_login"));
     data.entry_passwd = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"entry_passwd"));
     data.entry_device = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"entry_device"));
-    data.entry_speed = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"entry_speed"));
+    data.entry_speed = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"combobox_speed"));
+    data.entry_type = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"combobox_type"));
     data.entry_ap = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"entry_ap"));
     data.entry_cmdline = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"entry_cmdline"));
 
