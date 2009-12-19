@@ -133,7 +133,7 @@ void update_secret(char *secret, char *login, char *passwd)
 
 void apply_ppp(GtkWidget *widget, Data *data)
 {
-    FILE *outf = fopen("/etc/ppp/peers", "wb");
+    FILE *outf = fopen("/etc/ppp/peers/mobile", "wb");
     if (outf) {
 	fprintf(outf, "%s\n", gtk_entry_get_text(GTK_ENTRY(data->entry_device)));
 	fprintf(outf, "%s\n", gtk_combo_box_get_active_text(GTK_COMBO_BOX(data->entry_speed)));
