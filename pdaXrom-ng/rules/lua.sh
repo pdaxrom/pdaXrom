@@ -24,7 +24,7 @@ build_lua() {
     pushd $TOP_DIR
     cd $LUA_DIR
 
-    make linux $MAKEARGS CC=${CROSS}gcc AR="${CROSS}ar rcu" RANLIB=${CROSS}ranlib MYLDFLAGS="-Wl,-rpath,${TARGET_LIB} -L${TARGET_LIB}" || error
+    make linux $MAKEARGS CC="${CROSS}gcc -fPIC" AR="${CROSS}ar rcu" RANLIB=${CROSS}ranlib MYLDFLAGS="-Wl,-rpath,${TARGET_LIB} -L${TARGET_LIB}" || error
 
     install_sysroot_files INSTALL_TOP=${TARGET_BIN_DIR} || error
 

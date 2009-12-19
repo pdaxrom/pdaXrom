@@ -15,6 +15,12 @@ A52DEC_MIRROR=http://liba52.sourceforge.net/files
 A52DEC_DIR=$BUILD_DIR/a52dec-${A52DEC_VERSION}
 A52DEC_ENV="$CROSS_ENV_AC"
 
+case $TARGET_ARCH in
+mips*|ppc*)
+    A52DEC_ENV="$CROSS_ENV_AC CFLAGS='-O3 -fomit-frame-pointer -fPIC'"
+    ;;
+esac
+
 build_a52dec() {
     test -e "$STATE_DIR/a52dec.installed" && return
     banner "Build a52dec"
@@ -30,6 +36,8 @@ build_a52dec() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --enable-shared \
+	    --disable-static \
 	    || error
     ) || error "configure"
 

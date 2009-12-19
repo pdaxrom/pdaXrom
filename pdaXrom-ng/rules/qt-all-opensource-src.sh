@@ -128,6 +128,10 @@ build_qt_x11_opensource_src() {
 	    -e "/^libdir = /s:\(libdir = \)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
 	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
 
+    sed -i -e "s|-I/usr/include|-I${TARGET_INC}|" \
+	    -e "s|-L/usr/lib|-L${TARGET_LIB}|" \
+	    `find ${TARGET_LIB} -name "*.pc"` || true
+
     export QMAKESPEC=$TARGET_BIN_DIR/mkspecs/default
 
     ln -sf $TARGET_BIN_DIR/bin/qmake $HOST_BIN_DIR/bin/qmake || error

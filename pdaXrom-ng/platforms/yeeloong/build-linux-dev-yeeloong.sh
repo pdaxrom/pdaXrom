@@ -16,6 +16,7 @@ KERNEL_CONFIG=yeeloong2f_2.6.32
 
 USE_AUFS2="yes"
 USE_LOGINMANAGER="yes"
+USE_VLC_PLAYER="yes"
 
 . $SETS_DIR/packages-basic.inc
 . $SETS_DIR/packages-acpi.inc
