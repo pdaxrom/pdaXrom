@@ -1,1 +1,1 @@
-SUBDIRS = netconfig logout
+SUBDIRS = netconfig pppconfig logout

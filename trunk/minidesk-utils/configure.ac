@@ -48,5 +48,6 @@ AC_SUBST(HAL_LIBS)
 AC_OUTPUT([
   Makefile
   netconfig/Makefile
+  pppconfig/Makefile
   logout/Makefile
 ])
