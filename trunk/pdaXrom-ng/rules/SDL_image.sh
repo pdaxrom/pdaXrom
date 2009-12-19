@@ -35,6 +35,7 @@ build_SDL_image() {
 	    --enable-png-shared=no \
 	    --disable-tif \
 	    --disable-static \
+	    --with-sdl-prefix=${TARGET_BIN_DIR} \
 	    || error
     )
     make $MAKEARGS || error

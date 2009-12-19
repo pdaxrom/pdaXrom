@@ -21,6 +21,7 @@ QMAKE_LINK_SHLIB=${CROSS}g++
 QMAKE_AR='${CROSS}ar cqs'
 QMAKE_OBJCOPY='${CROSS}objcopy'
 QMAKE_RANLIB='${CROSS}ranlib'
+PKG_CONFIG=pkg-config
 "
 
 get_qt_arch() {
@@ -91,7 +92,12 @@ build_qt_x11_opensource_src() {
 	    -fontconfig \
 	    -xkb \
 	    -opensource \
+	    -glib \
+	    -gtkstyle \
 	    -v \
+	    -force-pkg-config \
+	    -nomake examples \
+	    -nomake demos \
 	    || error
     ) || error "configure"
     
@@ -112,6 +118,16 @@ build_qt_x11_opensource_src() {
     sed -i "s|\$\$\[QT_INSTALL_HEADERS\]|$TARGET_INC/qt4|" $TARGET_BIN_DIR/mkspecs/common-cross/linux.conf
     sed -i "s|\$\$\[QT_INSTALL_LIBS\]|$TARGET_LIB|" $TARGET_BIN_DIR/mkspecs/common-cross/linux.conf
 
+    sed -i -e  "/^exec_prefix=/s:\(exec_prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
+	    -e "/^prefix=/s:\(prefix=\)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
+	    -e "/^libdir=/s:\(libdir=\)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
+	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
+
+    sed -i -e  "/^exec_prefix = /s:\(exec_prefix = \)\(/usr\):\1${TARGET_BIN_DIR}\2:g" 	\
+	    -e "/^prefix = /s:\(prefix = \)\(/usr\):\1${TARGET_BIN_DIR}\2:g"		\
+	    -e "/^libdir = /s:\(libdir = \)\(/lib\|/usr/lib\):\1${TARGET_BIN_DIR}\2:g"	\
+	    `find ${TARGET_BIN_DIR} -name "*.pc"` || true
+
     export QMAKESPEC=$TARGET_BIN_DIR/mkspecs/default
 
     ln -sf $TARGET_BIN_DIR/bin/qmake $HOST_BIN_DIR/bin/qmake || error
@@ -119,6 +135,14 @@ build_qt_x11_opensource_src() {
     ln -sf $TARGET_BIN_DIR/bin/uic   $HOST_BIN_DIR/bin/uic   || error
     ln -sf $TARGET_BIN_DIR/bin/rcc   $HOST_BIN_DIR/bin/rcc   || error
 
+###
+    ln -sf $TARGET_BIN_DIR/bin/qmake $HOST_BIN_DIR/bin/qmake-qt4 || error
+    ln -sf $TARGET_BIN_DIR/bin/moc   $HOST_BIN_DIR/bin/moc-qt4   || error
+    ln -sf $TARGET_BIN_DIR/bin/uic   $HOST_BIN_DIR/bin/uic-qt4   || error
+
+###
+
+if [ "INSTALL_QT_ALL_LIBS" = "yes" ]; then
     for f in libQt3Support  libQtNetwork  libQtSql   libQtWebKit \
     libQtCore      libQtOpenGL   libQtSvg   libQtXmlPatterns \
     libQtGui       libQtScript   libQtTest  libQtXml; do
@@ -128,7 +152,7 @@ build_qt_x11_opensource_src() {
 	ln -sf ${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} ${ROOTFS_DIR}/usr/lib/${f}.so
 	$STRIP ${ROOTFS_DIR}/usr/lib/${f}.so.${QT_X11_OPENSOURCE_SRC_VERSION} || error
     done
-
+fi
     cp -r $TARGET_LIB/qt4 $ROOTFS_DIR/usr/lib/ || error
     find $ROOTFS_DIR/usr/lib/qt4/ -name "*.so" | xargs $STRIP
 

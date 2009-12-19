@@ -14,6 +14,8 @@
 
 . $RULES_DIR/minidesk-utils.sh
 
+. $RULES_DIR/xdotool.sh
+
 . $RULES_DIR/lxde-tweaks.sh
 
 

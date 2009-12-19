@@ -86,6 +86,50 @@ esac
 . $RULES_DIR/clearplayer.sh
 
 #
+# vlc
+#
+if [ "$USE_VLC_PLAYER" = "yes" ]; then
+. $RULES_DIR/SDL.sh
+. $RULES_DIR/libogg.sh
+. $RULES_DIR/libvorbis.sh
+. $RULES_DIR/speex.sh
+. $RULES_DIR/libtheora.sh
+. $RULES_DIR/libv4l.sh
+. $RULES_DIR/libmad.sh
+. $RULES_DIR/SDL_image.sh
+. $RULES_DIR/a52dec.sh
+. $RULES_DIR/libmpeg2.sh
+. $RULES_DIR/libmtp.sh
+#. $RULES_DIR/live555.sh
+. $RULES_DIR/zvbi.sh
+. $RULES_DIR/libdvbpsi5.sh
+. $RULES_DIR/libcddb.sh
+. $RULES_DIR/libcdio.sh
+. $RULES_DIR/popt.sh
+. $RULES_DIR/vcdimager.sh
+. $RULES_DIR/libupnp.sh
+. $RULES_DIR/host_yasm.sh
+. $RULES_DIR/x264-snapshot.sh
+. $RULES_DIR/libdvdcss.sh
+. $RULES_DIR/libdvdread.sh
+. $RULES_DIR/libdvdnav.sh
+. $RULES_DIR/taglib.sh
+. $RULES_DIR/libproxy.sh
+. $RULES_DIR/flac.sh
+. $RULES_DIR/readline.sh
+. $RULES_DIR/lua.sh
+. $RULES_DIR/libfribidi.sh
+. $RULES_DIR/qt-all-opensource-src.sh
+. $RULES_DIR/vlc.sh
+
+#
+# Arora
+#
+#. $RULES_DIR/arora.sh
+fi
+
+
+#
 # audioplayer
 #
 . $SETS_DIR/packages-audacious.inc

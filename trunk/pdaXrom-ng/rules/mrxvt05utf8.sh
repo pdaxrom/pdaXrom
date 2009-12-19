@@ -49,6 +49,8 @@ build_mrxvt05utf8() {
     $INSTALL -D -m 644 ${GENERICFS_DIR}/mrxvt/mrxvt.desktop ${ROOTFS_DIR}/usr/share/applications/mrxvt.desktop
     $INSTALL -D -m 644 ${GENERICFS_DIR}/mrxvt/mrxvtrc ${ROOTFS_DIR}/etc/mrxvt/mrxvtrc
 
+    echo "XTERMINAL=mrxvt" > ${ROOTFS_DIR}/etc/default/applications/xterminal
+
     popd
     touch "$STATE_DIR/mrxvt05utf8.installed"
 }

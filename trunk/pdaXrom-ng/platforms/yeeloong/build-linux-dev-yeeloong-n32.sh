@@ -19,6 +19,7 @@ CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
 #CROSS_OPT_CXXFLAGS="-O3"
 
 USE_AUFS2="yes"
+USE_LOGINMANAGER="yes"
 
 . $SETS_DIR/packages-basic.inc
 . $SETS_DIR/packages-acpi.inc

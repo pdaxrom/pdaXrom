@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PPP_VERSION=2.4.4
+PPP_VERSION=2.4.5
 PPP=ppp-${PPP_VERSION}.tar.gz
 PPP_MIRROR=ftp://ftp.samba.org/pub/ppp
 PPP_DIR=$BUILD_DIR/ppp-${PPP_VERSION}

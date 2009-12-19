@@ -39,6 +39,7 @@ INCLUDE = "appmenu"
 			Entry = "TWM" { Actions = "RestartOther twm" }
 		}
 	}
+	Entry = "Lock computer" { Actions = "Exec xtrlock" }
 	Entry = "Logout" { Actions = "Exec minidesk-logout" }
 }
 

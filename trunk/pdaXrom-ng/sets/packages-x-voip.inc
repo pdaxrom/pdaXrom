@@ -8,6 +8,8 @@
 . $RULES_DIR/libtheora.sh
 . $RULES_DIR/libv4l.sh
 . $RULES_DIR/ffmpeg.sh
+. $RULES_DIR/host_yasm.sh
+. $RULES_DIR/x264-snapshot.sh
 
 #
 # ekiga
