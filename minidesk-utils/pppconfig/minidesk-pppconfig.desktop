@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Modem settings
+Name[ru]=Настройки модема
+Comment=Configuring gprs/3G devices
+Comment[ru]=Конфигурирование модемов
+Exec=ktsuss /usr/bin/minidesk-pppconfig
+Icon=gnome-modem
+Terminal=false
+Type=Application
+Categories=GNOME;Settings;Network;
+StartupNotify=true
