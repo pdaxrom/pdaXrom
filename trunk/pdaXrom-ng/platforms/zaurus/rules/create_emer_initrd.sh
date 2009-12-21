@@ -20,7 +20,8 @@ create_ramdisk_image() {
 	    $IMAGES_DIR/emergenc.img
 }
 compress_image() {
-	cp $BSP_GENERICFS_DIR/initrd_flash/* $IMAGES_DIR/
+	cp $BSP_GENERICFS_DIR/flash_tools/u* $IMAGES_DIR/
+	cp $BSP_GENERICFS_DIR/flash_tools/autoboot.sh_emer $IMAGES_DIR/autoboot.sh
 	cd $IMAGES_DIR && zip -9 pdaXrom-spitz-r$SVN_REVISION-$TARGET_ARCH-uboot.zip \
 	     emergenc.img* u-boot.bin* updater.pro updater.sh autoboot.sh
 

@@ -15,7 +15,7 @@ allconfigs() {
     cd platforms
     for d in *; do
 	cd $d
-	for f in *; do
+	for f in *.sh; do
 	    echo "$d/$f"
 	done
 	cd ..
