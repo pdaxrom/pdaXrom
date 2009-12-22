@@ -15,7 +15,16 @@ KERNEL_CONFIG=akita_kernel_2.6.32
 U_BOOT_CONFIG=akita
 U_BOOT_VERSION=2006-04-18-1106
 
-. $SETS_DIR/packages-minimal.inc
+. $SETS_DIR/packages-basic.inc
+
+. $SETS_DIR/packages-acpi.inc
+
+. $SETS_DIR/packages-mmlibs.inc
+. $SETS_DIR/packages-libs.inc
+
+. $RULES_DIR/wpa_supplicant.sh
+
+
 . $RULES_DIR/kbd.sh
 . $RULES_DIR/u-boot.sh
 . $BSP_RULES_DIR/survive.sh
