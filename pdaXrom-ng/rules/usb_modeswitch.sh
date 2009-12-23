@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-USB_MODESWITCH_VERSION=1.0.2
+USB_MODESWITCH_VERSION=1.0.6
 USB_MODESWITCH=usb_modeswitch-${USB_MODESWITCH_VERSION}.tar.bz2
 USB_MODESWITCH_MIRROR=http://www.draisberghof.de/usb_modeswitch
 USB_MODESWITCH_DIR=$BUILD_DIR/usb_modeswitch-${USB_MODESWITCH_VERSION}
