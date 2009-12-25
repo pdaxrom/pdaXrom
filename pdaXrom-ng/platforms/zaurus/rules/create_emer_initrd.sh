@@ -1,5 +1,5 @@
 create_initrd() {
-    rm -f $IMAGES_DIR/initrd* emergenc.img    
+    rm -f $IMAGES_DIR/initrd* $IMAGES_DIR/emergenc.img $IMAGES_DIR/*.zip   
 	genext2fs \
 	    -d $ROOTFS_DIR/ \
 	    -f -U \
