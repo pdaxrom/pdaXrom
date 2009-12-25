@@ -1,3 +1,6 @@
+remove_data() {
+    rm -rf $IMAGES_DIR/rootfs.img $IMAGES_DIR/*.zip $IMAGES_DIR/kernel.img
+}
 create_jffs2() {
     rm -f $ROOTFS_DIR/linuxrc
     ln -sf /sbin/init $ROOTFS_DIR/init
@@ -17,7 +20,7 @@ create_jffs2() {
     esac
     mkfs.jffs2 $TARGET_JFFS2_ARGS \
             --devtable=$GENERICFS_DIR/jffs2/devtable.jffs2 \
-            --eraseblock=${TARGET_JFFS2_ERASEBLOCK-16384} \
+            --eraseblock=${TARGET_JFFS2_ERASEBLOCK-8192} \
             $MKS -f -q -p -n \
             -d $ROOTFS_DIR \
             -o $IMAGES_DIR/rootfs.img
@@ -38,6 +41,7 @@ compress_image() {
 
         rm -f autoboot.sh
 }
+remove_data
 create_jffs2
 copy_kernel_image
 create_uboot_kernel_image
