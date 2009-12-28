@@ -16,6 +16,7 @@ KERNEL_CONFIG=akita_kernel_2.6.32
 . $SETS_DIR/packages-libs.inc
 . $RULES_DIR/kbd.sh
 . $RULES_DIR/host_lzo.sh
+. $RULES_DIR/host_e2fsprogs.sh
 . $RULES_DIR/host_mtd-utils.sh
 . $BSP_RULES_DIR/zaurus_custom.sh
 . $BSP_RULES_DIR/create_jffs2.sh
