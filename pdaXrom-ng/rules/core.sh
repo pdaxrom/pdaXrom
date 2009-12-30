@@ -472,6 +472,8 @@ else
     INSTALL=install
 fi
 
+#. ${RULES_DIR}/host_fakeroot-ng.sh
+
 if [ $HOST_SYSTEM = "CYGWIN" ]; then
     HOST_EXE_SUFFIX=".exe"
 else
@@ -520,6 +522,7 @@ CROSS_ENV_AC=" \
 HOST_CC=gcc
 HOST_CXX=g++
 HOST_PKG_CONFIG=`which pkg-config`
+HOST_PKG_CONFIG_PATH="${HOST_BIN_DIR}/lib/pkgconfig"
 HOST_CPPFLAGS="-I$HOST_BIN_DIR/include"
 HOST_LDFLAGS="-L$HOST_BIN_DIR/lib -Wl,-rpath -Wl,$HOST_BIN_DIR/lib"
 

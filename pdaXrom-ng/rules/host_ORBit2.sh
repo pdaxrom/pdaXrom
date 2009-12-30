@@ -13,7 +13,7 @@ HOST_ORBIT2_VERSION=2.14.17
 HOST_ORBIT2=ORBit2-${HOST_ORBIT2_VERSION}.tar.bz2
 HOST_ORBIT2_MIRROR=ftp://ftp.gnome.org/pub/GNOME/sources/ORBit2/2.14
 HOST_ORBIT2_DIR=$HOST_BUILD_DIR/ORBit2-${HOST_ORBIT2_VERSION}
-HOST_ORBIT2_ENV="PKG_CONFIG=\"$HOST_PKG_CONFIG\" PKG_CONFIG_PATH=''"
+HOST_ORBIT2_ENV="PKG_CONFIG=\"$HOST_PKG_CONFIG\" PKG_CONFIG_PATH=\"$HOST_PKG_CONFIG_PATH\""
 
 build_host_ORBit2() {
     test -e "$STATE_DIR/host_ORBit2.installed" && return
@@ -28,8 +28,8 @@ build_host_ORBit2() {
     eval $HOST_ORBIT2_ENV \
 	./configure --prefix=$HOST_BIN_DIR
     ) || error
-    make $MAKEARGS || error
-    make $MAKEARGS install || error
+    make $MAKEARGS || error "build"
+    make $MAKEARGS install || error "install"
     popd
     touch "$STATE_DIR/host_ORBit2.installed"
 }
