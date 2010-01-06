@@ -12,7 +12,7 @@
 HOST_DBUS_GLIB=dbus-glib-0.78.tar.gz
 HOST_DBUS_GLIB_MIRROR=http://dbus.freedesktop.org/releases/dbus-glib
 HOST_DBUS_GLIB_DIR=$HOST_BUILD_DIR/dbus-glib-0.78
-HOST_DBUS_GLIB_ENV="PKG_CONFIG=\"$HOST_PKG_CONFIG\" PKG_CONFIG_PATH=\"$HOST_BIN_DIR/lib/pkgconfig\" \
+HOST_DBUS_GLIB_ENV="PKG_CONFIG=\"$HOST_PKG_CONFIG\" PKG_CONFIG_PATH=\"$HOST_PKG_CONFIG_PATH\" \
 CPPFLAGS=\"-I$HOST_BIN_DIR/include\" \
 LDFLAGS=\"-L$HOST_BIN_DIR/lib\""
 
@@ -25,6 +25,7 @@ build_host_dbus_glib() {
     pushd $TOP_DIR
     cd $HOST_DBUS_GLIB_DIR
     (
+    unset PKG_CONFIG_PATH
     eval $HOST_DBUS_GLIB_ENV \
 	./configure --prefix=$HOST_BIN_DIR
     ) || error

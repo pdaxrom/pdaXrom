@@ -26,8 +26,7 @@ build_host_glib2() {
      eval $HOST_GLIB2_ENV \
 	CFLAGS="\"-I$HOST_BIN_DIR/include -fPIC\"" \
 	LDFLAGS="-L$HOST_BIN_DIR/lib" \
-	./configure --prefix=$HOST_BIN_DIR \
-	    --disable-shared
+	./configure --prefix=$HOST_BIN_DIR
     ) || error
     make $MAKEARGS || error
     make $MAKEARGS install || error
