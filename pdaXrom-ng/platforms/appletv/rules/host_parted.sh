@@ -13,7 +13,7 @@ HOST_PARTED_VERSION=1.8.8
 HOST_PARTED=parted-${HOST_PARTED_VERSION}.tar.gz
 HOST_PARTED_MIRROR=http://ftp.gnu.org/gnu/parted
 HOST_PARTED_DIR=$HOST_BUILD_DIR/parted-${HOST_PARTED_VERSION}
-HOST_PARTED_ENV=
+HOST_PARTED_ENV="CFLAGS='-O2 -I${HOST_BIN_DIR}/include' LDFLAGS='-L${HOST_BIN_DIR}/lib'"
 
 build_host_parted() {
     test -e "$STATE_DIR/host_parted.installed" && return
