@@ -49,6 +49,7 @@ sed -i -e "s|@MKFSHFS@|/sbin/mkfs.hfsplus|" ${ROOTFS_DIR}/home/root/build-usbpen
 # we don't use c++ here :) but gdisk ;)
 #rm -f $ROOTFS_DIR/usr/lib/libstdc++.so*
 
+. $RULES_DIR/host_e2fsprogs.sh
 . $BSP_RULES_DIR/host_parted.sh
 . $BSP_RULES_DIR/host_diskdev-cmds.sh
 . $SETS_DIR/packages-host-squashfs.inc
