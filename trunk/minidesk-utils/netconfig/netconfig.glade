@@ -182,7 +182,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label5">
+                  <widget class="GtkLabel" id="label_essid">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">ESSID</property>
                   </widget>
@@ -192,7 +192,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label6">
+                  <widget class="GtkLabel" id="label_key">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Key</property>
                   </widget>
@@ -243,10 +243,23 @@ Ad-Hoc</property>
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <widget class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Protocol</property>
+                  </widget>
                 </child>
                 <child>
-                  <placeholder/>
+                  <widget class="GtkComboBox" id="iface_wifi_type">
+                    <property name="visible">True</property>
+                    <property name="active">0</property>
+                    <property name="items" translatable="yes">WEP
+WPA/WPA2</property>
+                    <signal name="changed" handler="update_wifi_type"/>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                  </packing>
                 </child>
                 <child>
                   <placeholder/>

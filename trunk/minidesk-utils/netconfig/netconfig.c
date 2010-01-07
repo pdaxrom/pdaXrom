@@ -36,6 +36,7 @@ typedef struct _Iface Iface;
 struct _Iface {
     int	dhcp;
     int wifi;
+    int wifi_proto;
     char *ip;
     char *mask;
     char *gw;
@@ -51,8 +52,11 @@ struct _Data {
     GtkWidget	*iface_ip;
     GtkWidget	*iface_mask;
     GtkWidget	*iface_gw;
+    GtkWidget	*iface_wifi_type;
     GtkWidget	*iface_wifi_mode;
+    GtkWidget	*iface_wifi_label_essid;
     GtkWidget	*iface_wifi_essid;
+    GtkWidget	*iface_wifi_label_key;
     GtkWidget	*iface_wifi_key;
     GtkWidget	*wifi_table;
     Iface	iface;
@@ -184,7 +188,15 @@ static void write_iface_config(char *name, Iface *iface)
 	if (strlen(iface->gw))
 	    fprintf(f_tmp, "gateway %s\n", iface->gw);
     }
-    if (iface->wifi) {
+    if (iface->wifi && iface->wifi_proto) {
+	if (iface->mode)
+	    if (!strcasecmp(iface->mode,"ad-hoc"))
+		fprintf(f_tmp, "wpa-mode 1\n");
+	if (strlen(iface->essid))
+	    fprintf(f_tmp, "wpa-ssid %s\n", iface->essid);
+	if (strlen(iface->key))
+	    fprintf(f_tmp, "wpa-psk %s\n", iface->key);
+    } else if (iface->wifi) {
 	if (iface->mode)
 	    fprintf(f_tmp, "wireless-mode %s\n", iface->mode);
 	if (strlen(iface->essid))
@@ -209,6 +221,7 @@ static void read_iface_config(char *name, Iface *iface)
     iface->mode = NULL;
     iface->essid = NULL;
     iface->key = NULL;
+    iface->wifi_proto = 0;
 
     FILE *f = fopen(IFACE_CONFIG, "rb");
     if (!f)
@@ -237,6 +250,14 @@ static void read_iface_config(char *name, Iface *iface)
 		iface->essid = strdup(v[1]);
 	    else if (!strcmp(v[0], "wireless-key"))
 		iface->key = strdup(v[1]);
+	    else if (!strcmp(v[0], "wpa-mode"))
+		iface->mode = atoi(v[1])?"Ad-Hoc":"Managed";
+	    else if (!strcmp(v[0], "wpa-ssid"))
+		iface->essid = strdup(v[1]);
+	    else if (!strcmp(v[0], "wpa-psk"))
+		iface->key = strdup(v[1]);
+	    if (!strncmp(v[0], "wpa-", 4))
+		iface->wifi_proto = 1;
 	    continue;
 	}
 	if (!v[0])
@@ -362,6 +383,9 @@ void update_iface_fields(GtkWidget *widget, Data *data)
 	    gtk_entry_set_text(GTK_ENTRY(data->iface_wifi_key), data->iface.key?data->iface.key:"");
 	    gtk_widget_show_all(GTK_WIDGET(data->wifi_table));
 	    data->iface.wifi = 1;
+	    if (data->iface.wifi_proto == 1) {
+		gtk_combo_box_set_active(GTK_COMBO_BOX(data->iface_wifi_type), 1);
+	    }
 	} else {
 	    gtk_widget_hide_all(GTK_WIDGET(data->wifi_table));
 	    data->iface.wifi = 0;
@@ -383,6 +407,13 @@ static void dhcp_ip_fields(Data *data, gboolean active)
 	gtk_entry_set_text(GTK_ENTRY(data->iface_mask), "255.255.255.0");
 }
 
+void update_wifi_type(GtkWidget *widget, Data *data)
+{
+    gint i = gtk_combo_box_get_active(GTK_COMBO_BOX(data->iface_wifi_type));
+    gtk_label_set_text(GTK_LABEL(data->iface_wifi_label_essid), i?"SSID":"ESSID");
+    gtk_label_set_text(GTK_LABEL(data->iface_wifi_label_key), i?"PSK":"Key");
+}
+
 void apply_iface(GtkWidget *widget, Data *data)
 {
     free_iface_config(&data->iface);
@@ -392,6 +423,7 @@ void apply_iface(GtkWidget *widget, Data *data)
 	data->iface.gw = strdup(gtk_entry_get_text(GTK_ENTRY(data->iface_gw)));
     }
     if (data->iface.wifi) {
+	data->iface.wifi_proto = gtk_combo_box_get_active(GTK_COMBO_BOX(data->iface_wifi_type));
 	data->iface.mode = gtk_combo_box_get_active_text(GTK_COMBO_BOX(data->iface_wifi_mode));
 	data->iface.essid = strdup(gtk_entry_get_text(GTK_ENTRY(data->iface_wifi_essid)));
 	data->iface.key = strdup(gtk_entry_get_text(GTK_ENTRY(data->iface_wifi_key)));
@@ -449,8 +481,11 @@ int main (int argc, char **argv)
     data.iface_ip = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_ip"));
     data.iface_mask = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_mask"));
     data.iface_gw = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_gw"));
+    data.iface_wifi_type = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_wifi_type"));
     data.iface_wifi_mode = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_wifi_mode"));
+    data.iface_wifi_label_essid = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"label_essid"));
     data.iface_wifi_essid = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_wifi_essid"));
+    data.iface_wifi_label_key = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"label_key"));
     data.iface_wifi_key = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"iface_wifi_key"));
     data.wifi_table = GTK_WIDGET(gtk_builder_get_object(gtkBuilder,"wifi_table"));
 
