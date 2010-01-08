@@ -16,6 +16,7 @@ U_BOOT_CONFIG=akita
 U_BOOT_VERSION=2006-04-18-1106
 
 . $SETS_DIR/packages-basic.inc
+. $RULES_DIR/host_e2fsprogs.sh
 
 . $SETS_DIR/packages-acpi.inc
 
