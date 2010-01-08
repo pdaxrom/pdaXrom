@@ -12,7 +12,7 @@
 HOST_LIBIDL=libIDL-0.8.12.tar.bz2
 HOST_LIBIDL_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/libIDL/0.8
 HOST_LIBIDL_DIR=$HOST_BUILD_DIR/libIDL-0.8.12
-HOST_LIBIDL_ENV="PKG_CONFIG=\"$HOST_PKG_CONFIG\" PKG_CONFIG_PATH=''"
+HOST_LIBIDL_ENV="PKG_CONFIG=\"$HOST_PKG_CONFIG\" PKG_CONFIG_PATH=\"$HOST_PKG_CONFIG_PATH\""
 
 build_host_libIDL() {
     test -e "$STATE_DIR/host_libIDL.installed" && return
@@ -23,6 +23,7 @@ build_host_libIDL() {
     pushd $TOP_DIR
     cd $HOST_LIBIDL_DIR
     (
+    unset PKG_CONFIG_PATH
     eval $HOST_LIBIDL_ENV \
 	./configure --prefix=$HOST_BIN_DIR
     ) || error
