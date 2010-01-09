@@ -46,4 +46,4 @@ U_BOOT_VERSION=2006-04-18-1106
 . $RULES_DIR/host_lzo.sh
 . $RULES_DIR/host_mtd-utils.sh
 . $BSP_RULES_DIR/zaurus_custom.sh
-. $BSP_RULES_DIR/create_jffs2.sh
+. $BSP_RULES_DIR/create_ubifs.sh
