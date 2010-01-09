@@ -29,11 +29,11 @@ if [ "x$file" = "x" ]; then
     echo "No kernel"
 fi
 
-for file in $LOC/rootfs.img $LOC/ROOTFS.IMG; do
+for file in $LOC/root_ubi.img $LOC/ROOT_UBI.IMG; do
     if [ -e $file ]; then
 	echo "RootFS $file"
 	flash_eraseall /dev/mtd1
-	nandwrite /dev/mtd1 $file
+	ubiformat /dev/mtd1 -f $file
 	break
     fi
     file=""

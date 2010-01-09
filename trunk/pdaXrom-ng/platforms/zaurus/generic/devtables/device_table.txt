@@ -11,7 +11,7 @@
 /dev/tty	c	666	0	0	5	0	0	0	-
 /dev/tty	c	666	0	0	4	0	0	1	6
 /dev/console	c	640	0	0	5	1	0	0	-
-/dev/log	s	666	0	0	-	-	-	-	-
+#/dev/log	s	666	0	0	-	-	-	-	-
 /dev/ram	b	640	0	0	1	1	0	0	-
 /dev/ram	b	640	0	0	1	0	0	1	4
 /dev/loop	b	640	0	0	7	0	0	1	2
@@ -22,9 +22,9 @@
 
 # Adjust permissions on some normal files
 /etc		d	755
-/bin/		d	755
+/bin		d	755
 /etc/shadow	f	600	0	0	-	-	-	-	-
-/bin/tinylogin	f	4755	0	0	-	-	-	-	-
+#/bin/tinylogin	f	4755	0	0	-	-	-	-	-
 
 # User-mode Linux stuff
 /dev/ubda	b	640	0	0	98	0	0	0	-
