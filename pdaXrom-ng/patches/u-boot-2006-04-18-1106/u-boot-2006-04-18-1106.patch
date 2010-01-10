@@ -1896,7 +1896,7 @@ diff -Nur u-boot-2006-04-18-1106/include/configs/akita.h u-boot-2006-04-18-1106-
 +		"bootm; "												\
 +	"fi; "														\
 +	"nand read 0xa1000000 0x500000 0x200000; "								\
-+	"setenv bootargs 'console=ttyS0,115200 ubi.mtd=1,2048 root=ubi0:rootfs rootfstype=ubifs fbcon=rotate:1'; " 	\
++	"setenv bootargs console=ttyS0,115200 console=tty1 ubi.mtd=1,2048 root=ubi0:rootfs rootfstype=ubifs fbcon=rotate:1; " 	\
 +	"bootm; "
 +#else
 +#define CONFIG_BOOTCOMMAND	"" // "run boot_flash"
