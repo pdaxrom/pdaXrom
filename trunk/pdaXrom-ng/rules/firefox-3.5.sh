@@ -10,7 +10,7 @@
 #
 
 XUL_VERSION=1.9.1
-FIREFOX_VERSION=3.5.5
+FIREFOX_VERSION=3.5.7
 FIREFOX=firefox-${FIREFOX_VERSION}.source.tar.bz2
 FIREFOX_MIRROR=http://releases.mozilla.org/pub/mozilla.org/firefox/releases/${FIREFOX_VERSION}/source
 FIREFOX_DIR=$BUILD_DIR/mozilla-${XUL_VERSION}
@@ -32,6 +32,10 @@ build_firefox() {
     apply_patches $FIREFOX_DIR $FIREFOX
     pushd $TOP_DIR
     cd $FIREFOX_DIR
+
+    # fix sqlite path
+    sed -i -e "s|-LSQLITE_LIB|-L${TARGET_LIB}|" security/nss/lib/softoken/config.mk
+    #
 
     local HOST_LIBIDL_CFLAGS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --cflags`"
     local HOST_LIBIDL_LIBS="`unset PKG_CONFIG_PATH; PATH=$(dirname $HOST_PKG_CONFIG):$PATH; host-libIDL-config-2 --libs`"
@@ -96,6 +100,7 @@ build_firefox() {
 	    --enable-extensions=default,-reporter \
 	    --enable-single-profile \
 	    --enable-system-myspell \
+	    --enable-system-sqlite \
 	    --with-distribution-id=org.pdaXrom \
 	    ${FF_OPT_ARGS}
 
