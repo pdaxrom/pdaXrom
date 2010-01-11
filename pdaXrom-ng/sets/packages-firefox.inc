@@ -1,5 +1,6 @@
 #!/bin/sh
 
+. $RULES_DIR/sqlite.sh
 . $RULES_DIR/libogg.sh
 . $RULES_DIR/libvorbis.sh
 . $RULES_DIR/host_findutils.sh
