@@ -39,6 +39,10 @@ build_wpa_supplicant() {
 	$STRIP $ROOTFS_DIR/usr/sbin/$f || error
     done
 
+    $INSTALL -D -m 755 ${GENERICFS_DIR}/etc/wpa_supplicant/ifupdown.sh ${ROOTFS_DIR}/etc/wpa_supplicant/ifupdown.sh || error "install script"
+    ln -sf ../../wpa_supplicant/ifupdown.sh ${ROOTFS_DIR}/etc/network/if-post-down.d/wpasupplicant
+    ln -sf ../../wpa_supplicant/ifupdown.sh ${ROOTFS_DIR}/etc/network/if-pre-up.d/wpasupplicant
+
     popd
     touch "$STATE_DIR/wpa_supplicant.installed"
 }
