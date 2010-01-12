@@ -193,9 +193,9 @@ static void write_iface_config(char *name, Iface *iface)
 	    if (!strcasecmp(iface->mode,"ad-hoc"))
 		fprintf(f_tmp, "wpa-mode 1\n");
 	if (strlen(iface->essid))
-	    fprintf(f_tmp, "wpa-ssid %s\n", iface->essid);
+	    fprintf(f_tmp, "wpa-ssid \"%s\"\n", iface->essid);
 	if (strlen(iface->key))
-	    fprintf(f_tmp, "wpa-psk %s\n", iface->key);
+	    fprintf(f_tmp, "wpa-psk \"%s\"\n", iface->key);
     } else if (iface->wifi) {
 	if (iface->mode)
 	    fprintf(f_tmp, "wireless-mode %s\n", iface->mode);
@@ -206,6 +206,16 @@ static void write_iface_config(char *name, Iface *iface)
     }
     fclose(f_tmp);
     rename(IFACE_CONFIG ".tmp", IFACE_CONFIG);
+}
+
+static char *str_no_q(char *str)
+{
+    if (!str)
+	return NULL;
+
+    str[strlen(str) - 1] = 0;
+
+    return str + 1;
 }
 
 static void read_iface_config(char *name, Iface *iface)
@@ -253,9 +263,9 @@ static void read_iface_config(char *name, Iface *iface)
 	    else if (!strcmp(v[0], "wpa-mode"))
 		iface->mode = atoi(v[1])?"Ad-Hoc":"Managed";
 	    else if (!strcmp(v[0], "wpa-ssid"))
-		iface->essid = strdup(v[1]);
+		iface->essid = strdup(str_no_q(v[1]));
 	    else if (!strcmp(v[0], "wpa-psk"))
-		iface->key = strdup(v[1]);
+		iface->key = strdup(str_no_q(v[1]));
 	    if (!strncmp(v[0], "wpa-", 4))
 		iface->wifi_proto = 1;
 	    continue;
