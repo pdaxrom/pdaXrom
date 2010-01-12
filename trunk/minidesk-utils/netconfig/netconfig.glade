@@ -252,8 +252,8 @@ Ad-Hoc</property>
                   <widget class="GtkComboBox" id="iface_wifi_type">
                     <property name="visible">True</property>
                     <property name="active">0</property>
-                    <property name="items" translatable="yes">WEP
-WPA/WPA2</property>
+                    <property name="items" translatable="yes">WEP 40/128
+WPA &amp; WPA2</property>
                     <signal name="changed" handler="update_wifi_type"/>
                   </widget>
                   <packing>
