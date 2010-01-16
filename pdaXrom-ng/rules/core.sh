@@ -272,16 +272,22 @@ apply_patches() {
     # hack! remove hardcoded libdir
     test -e $1/ltmain.sh && sed -i -e 's:add_dir="-L$libdir"::g' $1/ltmain.sh
 
+
     local src_d=`getfilename $2`
-
-    apply_patches1 $1 $src_d $PATCH_DIR
-
-    if [ ! "x$TARGET_VENDOR_PATCH" = "x" ]; then
-	src_d="${src_d}-${TARGET_VENDOR_PATCH}"
+    if [ -e ${BSP_PATCH_DIR}/${src_d}/series ]; then
+	apply_patches1 $1 $src_d $BSP_PATCH_DIR
+    else
 	apply_patches1 $1 $src_d $PATCH_DIR
     fi
 
-    apply_patches1 $1 $src_d $BSP_PATCH_DIR
+    if [ ! "x$TARGET_VENDOR_PATCH" = "x" ]; then
+	src_d="${src_d}-${TARGET_VENDOR_PATCH}"
+	if [ -e ${BSP_PATCH_DIR}/${src_d}/series ]; then
+	    apply_patches1 $1 $src_d $BSP_PATCH_DIR
+	else
+	    apply_patches1 $1 $src_d $PATCH_DIR
+	fi
+    fi
 
     touch "$1/.pdaXrom-ng-patched"
 }
