@@ -29,7 +29,7 @@ build_host_sdlmame() {
     x86_64)
 	C_ARGS="PTR64=1"
 	;;
-    ppc*|arm*eb-*|mips-*|mips*eb-*)
+    ppc*|arm*eb-*|mips-*|mips*eb-*|armbe-*)
 	C_ARGS="BIGENDIAN=1"
 	;;
     esac

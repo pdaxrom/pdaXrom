@@ -17,10 +17,10 @@ OPENSSL_ENV=
 
 build_openssl_thud() {
     case $1 in
-    arm*l-*)
+    arm*l-*|armle-*)
 	echo "linux-armel"
 	;;
-    arm*b-*)
+    arm*b-*|armbe-*)
 	echo "linux-armeb"
 	;;
     mips*l-*)

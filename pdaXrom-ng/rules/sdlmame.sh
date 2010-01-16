@@ -32,7 +32,7 @@ build_sdlmame() {
     ppc64*|powerpc64*|mips64-*|mips64eb-*)
 	C_ARGS="BIGENDIAN=1 PTR64=1"
 	;;
-    ppc-*|powerpc-*|mips-*|mips*eb-*|arm*eb-)
+    ppc-*|powerpc-*|mips-*|mips*eb-*|arm*eb-*|armbe-*)
 	C_ARGS="BIGENDIAN=1"
 	;;
     esac

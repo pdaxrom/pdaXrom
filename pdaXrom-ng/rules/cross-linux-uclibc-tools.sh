@@ -100,8 +100,15 @@ install_uclibc_headers() {
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
 	case $TARGET_ARCH in
-	arm*-*eabi*)
-	    cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	arm*el-*eabi*|armle-*)
+	    cp $CONFIG_DIR/uClibc/armel-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
+		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
+		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
+	    fi
+	    ;;
+	arm*eb-*eabi*|armbe-*)
+	    cp $CONFIG_DIR/uClibc/armeb-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
 		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
 		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
@@ -140,8 +147,15 @@ build_uClibc() {
 
     if [ "x$UCLIBC_CONFIG" = "x" ]; then
 	case $TARGET_ARCH in
-	arm*-*eabi*)
-	    cp $CONFIG_DIR/uClibc/${TARGET_ARCH/-*/}-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	arm*el-*eabi*|armle-*eabi*)
+	    cp $CONFIG_DIR/uClibc/armel-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
+	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
+		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
+		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
+	    fi
+	    ;;
+	arm*eb-*eabi*|armbe-*eabi*)
+	    cp $CONFIG_DIR/uClibc/armeb-config .config || error "no uClibc config for ${TARGET_ARCH/-*/}"
 	    if grep -q "^CONFIG_AEABI=y" $KERNEL_DIR/.config ; then
 		sed -i -e "s:CONFIG_ARM_OABI.*:# CONFIG_ARM_OABI is not set:g" .config
 		sed -i -e "s:# CONFIG_ARM_EABI.*:CONFIG_ARM_EABI=y:g" .config
