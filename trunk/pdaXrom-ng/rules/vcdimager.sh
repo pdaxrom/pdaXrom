@@ -34,7 +34,7 @@ build_vcdimager() {
     ) || error "configure"
 
     case $TARGET_ARCH in
-    mips*el-*|x86_64-*|i*86-*|amd64-*|arm*el-*)
+    mips*el-*|x86_64-*|i*86-*|amd64-*|arm*el-*|armle-*)
 	sed -i -e 's|/\* #undef BITFIELD_LSBF \*/|#define BITFIELD_LSBF|' config.h
 	;;
     *)

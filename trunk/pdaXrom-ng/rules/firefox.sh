@@ -80,11 +80,11 @@ build_firefox() {
 	    T_ARCH="x86"
 	    T_CONF="x86"
 	    ;;
-	arm*l-*)
+	arm*l-*|armle-*)
 	    T_ARCH="arm"
 	    T_CONF="armel"
 	    ;;
-	arm*b-*)
+	arm*b-*|armbe-*)
 	    T_ARCH="arm"
 	    T_CONF="armeb"
 	    ;;

@@ -37,10 +37,10 @@ build_libart_lgpl() {
 	i386*|i486*|i586*|i686*)
 	    T_CONF="x86"
 	    ;;
-	arm*l-*)
+	arm*l-*|armle-*)
 	    T_CONF="armel"
 	    ;;
-	arm*b-*)
+	arm*b-*|armbe-*)
 	    T_CONF="armeb"
 	    ;;
 	mips*l-*)
