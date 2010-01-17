@@ -100,7 +100,12 @@ create_initramfs() {
 	fi
     done
     $DEPMOD -a -b $INITRAMFS_DIR $K_V
-    MODULES="ps3vram usb-storage ohci-hcd ehci-hcd sg vfat isofs udf sr_mod sd_mod scsi_mod"
+
+    if [ "x$INITRAMFS_MODULES_SEQUENCE" = "x" ]; then
+	MODULES="ps3vram usb-storage ohci-hcd ehci-hcd sg vfat isofs udf sr_mod sd_mod scsi_mod"
+    else
+	MODULES="$INITRAMFS_MODULES_SEQUENCE"
+    fi
     sed -i -e "s|@MODULES_LIST@|${MODULES}|" ${INITRAMFS_DIR}/init
 
     if [ "$USE_SPLASH" = "yes" ] && [ -f $ROOTFS_DIR/usr/bin/dancesplashfb ]; then
