@@ -53,7 +53,7 @@ create_initramfs() {
 	powerpc64*|ppc64*)
 	    cp -a $ROOTFS_DIR/lib/ld64.so* $INITRAMFS_DIR/lib || error
 	    ;;
-	i*86-*|x86_64-*|amd64-*)
+	i*86-*|x86_64-*|amd64-*|arm*-*)
 	    cp -a $ROOTFS_DIR/lib/ld-linux* $INITRAMFS_DIR/lib || error
 	    ;;
 	*)
