@@ -19,8 +19,7 @@ BUSYBOX_CONFIG=config-sysutils
 . $RULES_DIR/create_root.sh
 . $RULES_DIR/linux_kernel.sh
 . $BSP_RULES_DIR/build-spica-mods.sh
+. $BSP_RULES_DIR/build-su.sh
 . $RULES_DIR/busybox.sh
-. $RULES_DIR/iptables.sh
-. $RULES_DIR/install_libc.sh
 
-. $BSP_RULES_DIR/create_initramfs.sh
+. $BSP_RULES_DIR/create_android_initramfs.sh

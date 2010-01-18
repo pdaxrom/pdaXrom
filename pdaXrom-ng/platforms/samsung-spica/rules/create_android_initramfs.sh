@@ -15,9 +15,9 @@ create_initramfs() {
     cp -a ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/extra/* ${INITRAMFS_DIR}/lib/modules/
 
     $INSTALL -D -m 4755 ${ROOTFS_DIR}/bin/busybox ${INITRAMFS_DIR}/sbin/busybox
+    $INSTALL -D -m 4755 ${ROOTFS_DIR}/bin/su ${INITRAMFS_DIR}/sbin/su
 
     ln -sf busybox ${INITRAMFS_DIR}/sbin/ash
-    ln -sf busybox ${INITRAMFS_DIR}/sbin/su
     ln -sf busybox ${INITRAMFS_DIR}/sbin/chroot
     ln -sf busybox ${INITRAMFS_DIR}/sbin/switch_root
 
@@ -30,10 +30,10 @@ ro.debuggable=1
 persist.service.adb.enable=1
 EOF
 
-    echo "root::0:0:root:/:/sbin/ash" > ${INITRAMFS_DIR}/sbin/passwd.txt
+    #echo "root::0:0:root:/:/sbin/ash" > ${INITRAMFS_DIR}/sbin/passwd.txt
 
     #$INSTALL -D -m 644 ${BSP_GENERICFS_DIR}/init.rc ${INITRAMFS_DIR}/init.rc
-    $INSTALL -D -m 755 ${BSP_GENERICFS_DIR}/passwd_inst.sh ${INITRAMFS_DIR}/sbin/passwd_inst.sh
+    #$INSTALL -D -m 755 ${BSP_GENERICFS_DIR}/passwd_inst.sh ${INITRAMFS_DIR}/sbin/passwd_inst.sh
 
     cd $KERNEL_DIR
     bash scripts/gen_initramfs_list.sh $INITRAMFS_DIR > $BUILD_DIR/initramfs.list

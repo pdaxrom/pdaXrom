@@ -19,6 +19,9 @@ build_spica_mods() {
 
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
 
+    mkdir -p "${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/extra/"
+    cp -f ${BSP_SRC_DIR}/modules-proprietary/*.ko ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/extra/
+
     make SUBARCH=$SUBARCH CROSS_COMPILE=${TOOLCHAIN_PREFIX}/bin/${CROSS} $MAKEARGSz KDIR=${KERNEL_DIR} PRJROOT=${BUILD_DIR} \
 	${SPICA_MODULES} \
 	|| error
