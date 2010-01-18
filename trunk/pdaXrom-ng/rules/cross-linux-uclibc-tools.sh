@@ -230,7 +230,7 @@ build_gcc_stage1() {
             CONF_ARGS="$CONF_ARGS --with-float=hard"
 	    ;;
 	vfp)
-            CONF_ARGS="$CONF_ARGS --with-fpu=vfp"
+            CONF_ARGS="$CONF_ARGS --with-float=softfp --with-fpu=vfp"
 	    ;;
 	esac
 	;;
@@ -322,7 +322,7 @@ build_gcc() {
             CONF_ARGS="$CONF_ARGS --with-float=hard"
 	    ;;
 	vfp)
-            CONF_ARGS="$CONF_ARGS --with-fpu=vfp"
+            CONF_ARGS="$CONF_ARGS --with-float=softfp --with-fpu=vfp"
 	    ;;
 	esac
 	;;

@@ -79,8 +79,8 @@ install_linux_headers() {
     touch "$STATE_DIR/linux_kernel_headers"
 }
 
-GLIBC=eglibc-2.9
-GLIBC_MIRROR=svn://svn.eglibc.org/branches/eglibc-2_9
+GLIBC=eglibc-2.10
+GLIBC_MIRROR=svn://svn.eglibc.org/branches/eglibc-2_10
 GLIBC_DIR="$BUILD_DIR/$GLIBC"
 install_glibc_headers() {
     test -e "$STATE_DIR/glibc_headers" && return
@@ -279,7 +279,7 @@ build_gcc_bootstrap() {
             CONF_ARGS="$CONF_ARGS --with-float=hard"
 	    ;;
 	vfp)
-            CONF_ARGS="$CONF_ARGS --with-fpu=vfp"
+            CONF_ARGS="$CONF_ARGS --with-float=softfp --with-fpu=vfp"
 	    ;;
 	esac
 	;;
@@ -385,7 +385,7 @@ build_gcc_stage1() {
             CONF_ARGS="$CONF_ARGS --with-float=hard"
 	    ;;
 	vfp)
-            CONF_ARGS="$CONF_ARGS --with-fpu=vfp"
+            CONF_ARGS="$CONF_ARGS --with-float=softfp --with-fpu=vfp"
 	    ;;
 	esac
 	;;
@@ -493,7 +493,7 @@ build_gcc() {
             CONF_ARGS="$CONF_ARGS --with-float=hard"
 	    ;;
 	vfp)
-            CONF_ARGS="$CONF_ARGS --with-fpu=vfp"
+            CONF_ARGS="$CONF_ARGS --with-float=softfp --with-fpu=vfp"
 	    ;;
 	esac
 	;;
