@@ -9,7 +9,7 @@ export KERNEL_VERSION=2.6.27
 export DEFAULT_CPU="armv6k"
 export DEFAULT_FPU="vfp"
 export CROSS_OPT_ARCH="-march=armv6k -mtune=arm1136j-s"
-#export CROSS_OPT_ARCH="-march=armv6 -mtune=arm1176jzfs"
+#export CROSS_OPT_ARCH="-march=armv6k -mtune=arm1176jzf-s"
 
 #export TARGET_VENDOR_PATCH=samsung-spica
 

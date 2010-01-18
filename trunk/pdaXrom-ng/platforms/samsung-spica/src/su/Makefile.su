@@ -1,0 +1,6 @@
+LDFLAGS += -static
+
+all: su
+
+clean:
+	rm -f su
