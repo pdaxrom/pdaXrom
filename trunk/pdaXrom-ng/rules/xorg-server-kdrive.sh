@@ -28,16 +28,19 @@ build_xorg_server() {
     pushd $TOP_DIR
     cd $XORG_SERVER_DIR
     (
+    if [ "$ENABLE_TSLIB" =  "y" ]; then
+        XORG_SERVER_TSLIB_CONF="--enable-tslib"
+	XORG_SERVER_TSLIB_ENV="TSLIB_CFLAGS=$TARGET_BIN_DIR/include/ TSLIB_LIBS=$TARGET_BIN_DIR/lib/"
+    fi
     eval \
 	$CROSS_CONF_ENV \
 	$XORG_SERVER_ENV \
+	$XORG_SERVER_TSLIB_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    --localstatedir=/var \
 	    --datadir=/usr/share \
-	    --enable-shm \
-	    --enable-freetype \
 	    --disable-dri \
 	    --disable-glx \
 	    --enable-xorg=no \
@@ -47,6 +50,7 @@ build_xorg_server() {
 	    --enable-xfake=no \
 	    --enable-kdrive \
 	    --enable-xfbdev \
+	    $XORG_SERVER_TSLIB_CONF \
 	    --with-fontdir=/usr/share/fonts \
 	    --without-dtrace \
 	    --with-xkb-output=/var/lib/xkb/compiled \

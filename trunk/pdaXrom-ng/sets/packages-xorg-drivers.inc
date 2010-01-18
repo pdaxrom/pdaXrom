@@ -7,6 +7,9 @@
 . $RULES_DIR/xf86-input-mouse.sh
 . $RULES_DIR/xf86-input-synaptics.sh
 #. $RULES_DIR/xf86-input-void.sh
+if [ "$ENABLE_TSLIB" =  "y" ]; then
+. $RULES_DIR/xf86-input-tslib.sh
+fi
 
 #
 # Video drivers
