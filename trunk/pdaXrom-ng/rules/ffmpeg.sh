@@ -47,7 +47,7 @@ build_ffmpeg() {
     pushd $TOP_DIR
     cd $FFMPEG_DIR
     (
-    local C_ARGS=
+    local C_ARGS="${FFMPEG_CONFIGURE_OPTS}"
     case $TARGET_ARCH in
     mips*)
 	case $TARGET_ARCH in
