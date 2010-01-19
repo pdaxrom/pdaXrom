@@ -20,6 +20,8 @@ BUSYBOX_CONFIG=config-sysutils
 . $RULES_DIR/linux_kernel.sh
 . $BSP_RULES_DIR/build-spica-mods.sh
 . $BSP_RULES_DIR/build-su.sh
+#. $RULES_DIR/zlib.sh
+. $RULES_DIR/kexec-tools.sh
 . $RULES_DIR/busybox.sh
 
 . $BSP_RULES_DIR/create_android_initramfs.sh
