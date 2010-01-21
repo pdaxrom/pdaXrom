@@ -35,12 +35,18 @@ ENABLE_TSLIB="y"
 #. $SETS_DIR/packages-emulators.inc
 
 #. $SETS_DIR/packages-x-apps.inc
+. $RULES_DIR/openbox.sh
+. $RULES_DIR/xmodmap.sh
 
 . $SETS_DIR/packages-hal.inc
 
 . $SETS_DIR/packages-x-lxde.inc
 
 . $SETS_DIR/packages-x-office.inc
+
+. $RULES_DIR/imlib2.sh
+. $RULES_DIR/giblib.sh
+. $RULES_DIR/scrot.sh
 
 . $RULES_DIR/kbd.sh
 . $RULES_DIR/host_lzo.sh
