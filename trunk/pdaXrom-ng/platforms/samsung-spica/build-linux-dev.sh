@@ -10,6 +10,9 @@ export KERNEL_CONFIG=spica-pdaXrom-2.6.27
 TARGET_KERNEL_IMAGE=zImage
 TARGET_VENDOR_PATCH=samsung-spica
 
+TARGET_GCC_VERSION=4.4.3
+TARGET_BINUTILS_VERSION=2.20.51.0.3
+
 INITRAMFS_MODULES="multipdp vibrator s3c_rotator s3c_mfc s3c_g2d_driver s3c_pp s3c_jpeg s3c_g3d s3c_cmm s3c_camera param btgpio"
 INITRAMFS_MODULES_SEQUENCE="multipdp vibrator s3c_rotator s3c_mfc s3c_g2d_driver s3c_pp s3c_jpeg s3c_g3d s3c_cmm s3c_camera param btgpio"
 
