@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export BINUTILS_VERSION=2.20.51.0.3
-export GCC_VERSION=4.4.2
+export GCC_VERSION=4.4.3
 
 export KERNEL_VERSION="2.6.30"
 export TARGET_VENDOR_PATCH=ps3
@@ -20,7 +20,7 @@ ln -sf lib64 $TOOLCHAIN_SYSROOT/lib
 ln -sf lib64 $TOOLCHAIN_SYSROOT/usr/lib
 
 if [ "x$1" = "xclean" ]; then
-   ./build-crosstools.sh clean
+   . ./build-crosstools.sh clean
 else
-   ./build-crosstools.sh $TARGET_ARCH
+   . ./build-crosstools.sh $TARGET_ARCH
 fi

@@ -18,7 +18,7 @@ test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}
 #ln -sf lib32 $TOOLCHAIN_SYSROOT/usr/lib
 
 if [ "x$1" = "xclean" ]; then
-   ./build-crosstools.sh clean
+   . ./build-crosstools.sh clean
 else
-   ./build-crosstools.sh $TARGET_ARCH
+   . ./build-crosstools.sh $TARGET_ARCH
 fi

@@ -9,7 +9,7 @@ export KERNEL_VERSION=2.6.28
 
 
 if [ "x$1" = "xclean" ]; then
-   ./build-crosstools.sh clean
+   . ./build-crosstools.sh clean
 else
-   ./build-crosstools.sh armel-linux-uclibc
+   . ./build-crosstools.sh armel-linux-uclibc
 fi

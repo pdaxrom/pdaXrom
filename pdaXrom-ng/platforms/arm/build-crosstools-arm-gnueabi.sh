@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #export BINUTILS_VERSION=2.19.1
-export GCC_VERSION=4.4.1
+export GCC_VERSION=4.4.3
 #export KERNEL_VERSION=2.6.30
 #export KERNEL_CONFIG=i686-kernel-2.6.30
 
@@ -19,7 +19,7 @@ test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}
 #ln -sf lib32 $TOOLCHAIN_SYSROOT/usr/lib
 
 if [ "x$1" = "xclean" ]; then
-   ./build-crosstools.sh clean
+   . ./build-crosstools.sh clean
 else
-   ./build-crosstools.sh $TARGET_ARCH
+   . ./build-crosstools.sh $TARGET_ARCH
 fi

@@ -4,7 +4,7 @@ create_ps3kboot() {
     rm -f $ROOTFS_DIR/linuxrc
     ln -sf /sbin/init $ROOTFS_DIR/init
 
-    ( umask 077; cd $ROOTFS_DIR && find . | cpio -o -H newc | lzma -9 > `get_kernel_ramdisk_path $TARGET_ARCH`; ) || error "create ramdisk"
+    ( umask 077; cd $ROOTFS_DIR && find . | cpio -o -H newc -R root:root | lzma -9 > `get_kernel_ramdisk_path $TARGET_ARCH`; ) || error "create ramdisk"
 
     local SUBARCH=`get_kernel_subarch $TARGET_ARCH`
 
