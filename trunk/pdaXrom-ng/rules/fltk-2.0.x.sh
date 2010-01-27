@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-FLTK_2_0_X_VERSION=r6525
+FLTK_2_0_X_VERSION=r6970
 FLTK_2_0_X=fltk-2.0.x-${FLTK_2_0_X_VERSION}.tar.bz2
 FLTK_2_0_X_MIRROR=http://ftp.rz.tu-bs.de/pub/mirror/ftp.easysw.com/ftp/pub/fltk/snapshots
 FLTK_2_0_X_DIR=$BUILD_DIR/fltk-2.0.x-${FLTK_2_0_X_VERSION}
