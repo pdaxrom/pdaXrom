@@ -30,7 +30,6 @@ build_iptables() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --with-kernel=${KERNEL_DIR} \
 	    --disable-ipv6 \
 	    --libexecdir=/usr/lib/iptables \
 	    || error
