@@ -9,7 +9,7 @@ create_jffs2() {
             --devtable=$BSP_GENERICFS_DIR/devtables/device_table.txt \
             --min-io-size=2048 \
             --leb-size=126976 \
-	    --max-leb-cnt=950 \
+	    --max-leb-cnt=955 \
 	    --squash-uids \
 	    --compr=lzo \
             --root=$ROOTFS_DIR \
