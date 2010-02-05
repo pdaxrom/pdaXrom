@@ -10,7 +10,7 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 TARGET_VENDOR_PATCH="zaurus"
 TARGET_BUILD="spitz"
 KERNEL_VERSION="2.6.32"
-KERNEL_CONFIG=akita_kernel_2.6.32
+KERNEL_CONFIG=akita_kernel_2.6.32_full
 U_BOOT_CONFIG=akita
 U_BOOT_VERSION=2006-04-18-1106
 ENABLE_TSLIB="y"
@@ -42,7 +42,7 @@ ENABLE_TSLIB="y"
 
 . $SETS_DIR/packages-x-lxde.inc
 
-. $SETS_DIR/packages-x-office.inc
+#. $SETS_DIR/packages-x-office.inc
 
 . $RULES_DIR/imlib2.sh
 . $RULES_DIR/giblib.sh

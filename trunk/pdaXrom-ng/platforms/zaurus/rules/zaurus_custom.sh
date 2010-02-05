@@ -9,6 +9,7 @@ create_customizations() {
 
     mkdir -p $ROOTFS_DIR/usr/share/keymaps/
     cp $BSP_GENERICFS_DIR/keymaps/spitz.keymap $ROOTFS_DIR/usr/share/keymaps/
+    cp $BSP_GENERICFS_DIR/configs/xorg.conf $ROOTFS_DIR/etc/X11/xorg.conf
 
     touch "$STATE_DIR/zaurus_customizations"
 }
