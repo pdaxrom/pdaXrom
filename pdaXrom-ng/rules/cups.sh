@@ -68,8 +68,8 @@ build_cups() {
     cp -a fakeroot/var $ROOTFS_DIR/ || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/cups $ROOTFS_DIR/etc/init.d/cups || error
-    install_rc_start dbus 85
-    install_rc_stop  dbus 15
+    install_rc_start cups 85
+    install_rc_stop  cups 15
 
     popd
     touch "$STATE_DIR/cups.installed"
