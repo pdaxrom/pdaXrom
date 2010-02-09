@@ -13,7 +13,9 @@ KERNEL_VERSION="2.6.32"
 KERNEL_CONFIG=akita_kernel_2.6.32_full
 U_BOOT_CONFIG=akita
 U_BOOT_VERSION=2006-04-18-1106
-ENABLE_TSLIB="y"
+ENABLE_TSLIB="yes"
+ENABLE_HAL="no"
+USE_LOGINMANAGER="yes"
 
 . $SETS_DIR/packages-basic.inc
 . $RULES_DIR/host_e2fsprogs.sh
@@ -34,11 +36,11 @@ ENABLE_TSLIB="y"
 
 #. $SETS_DIR/packages-emulators.inc
 
-#. $SETS_DIR/packages-x-apps.inc
+. $SETS_DIR/packages-x-apps.inc
 . $RULES_DIR/openbox.sh
 . $RULES_DIR/xmodmap.sh
 
-. $SETS_DIR/packages-hal.inc
+#. $SETS_DIR/packages-hal.inc
 
 . $SETS_DIR/packages-x-lxde.inc
 
@@ -51,5 +53,5 @@ ENABLE_TSLIB="y"
 . $RULES_DIR/kbd.sh
 . $RULES_DIR/host_lzo.sh
 . $RULES_DIR/host_mtd-utils.sh
-. $BSP_RULES_DIR/zaurus_custom.sh
+. $BSP_RULES_DIR/spitz_custom.sh
 . $BSP_RULES_DIR/create_ubifs.sh

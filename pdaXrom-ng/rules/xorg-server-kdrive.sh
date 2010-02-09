@@ -28,7 +28,7 @@ build_xorg_server() {
     pushd $TOP_DIR
     cd $XORG_SERVER_DIR
     (
-    if [ "$ENABLE_TSLIB" =  "y" ]; then
+    if [ "$ENABLE_TSLIB" =  "yes" ]; then
         XORG_SERVER_TSLIB_CONF="--enable-tslib"
 	XORG_SERVER_TSLIB_ENV="TSLIB_CFLAGS=$TARGET_BIN_DIR/include/ TSLIB_LIBS=$TARGET_BIN_DIR/lib/"
     fi

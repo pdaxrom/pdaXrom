@@ -21,6 +21,13 @@ build_lxde_lxsession_lite() {
     extract $LXDE_LXSESSION_LITE
     apply_patches $LXDE_LXSESSION_LITE_DIR $LXDE_LXSESSION_LITE
     pushd $TOP_DIR
+
+    if [ "$ENABLE_HAL" = "no" ]; then
+        HAL_CONF="--disable-hal"
+    else
+        HAL_CONF="--enable-hal"
+    fi
+
     cd $LXDE_LXSESSION_LITE_DIR
     (
     eval \
@@ -31,7 +38,7 @@ build_lxde_lxsession_lite() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
-	    --enable-hal \
+	    $HAL_CONF \
 	    || error
     ) || error "configure"
 

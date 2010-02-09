@@ -24,6 +24,13 @@ build_minidesk_utils() {
 	apply_patches $MINIDESK_UTILS_DIR $MINIDESK_UTILS
     fi
     pushd $TOP_DIR
+
+    if [ "$ENABLE_HAL" = "no" ]; then
+        HAL_CONF="--disable-hal"
+    else
+        HAL_CONF="--enable-hal"
+    fi
+
     cd $MINIDESK_UTILS_DIR
     (
     eval \
@@ -32,6 +39,7 @@ build_minidesk_utils() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    $HAL_CONF \
 	    || error
     ) || error "configure"
 
