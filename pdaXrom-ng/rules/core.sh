@@ -241,8 +241,6 @@ apply_patches1()
     echo "Patching $2"
     local f=
     local o=
-    pushd .
-    cd "$1"
     cat $patch_d/$src_d/series | while read f ; do
 	o=${f/* /}
 	f=${f/ */}
@@ -253,17 +251,16 @@ apply_patches1()
 	echo "*** $patch_d/$src_d/$f  patch $o"
 	case $f in
 	*.gz)
-	    zcat "$patch_d/$src_d/$f" | patch $o || error "patching $2"
+	    zcat "$patch_d/$src_d/$f" | patch $o -d "$1" || error "patching $2"
 	    ;;
 	*.bz2)
-	    bzcat "$patch_d/$src_d/$f" | patch $o || error "patching $2"
+	    bzcat "$patch_d/$src_d/$f" | patch $o -d "$1" || error "patching $2"
 	    ;;
 	*)
-	    cat "$patch_d/$src_d/$f" | patch $o || error "patching $2"
+	    cat "$patch_d/$src_d/$f" | patch $o -d "$1" || error "patching $2"
 	    ;;
 	esac
     done
-    popd
 }
 
 apply_patches() {
@@ -271,7 +268,6 @@ apply_patches() {
 
     # hack! remove hardcoded libdir
     test -e $1/ltmain.sh && sed -i -e 's:add_dir="-L$libdir"::g' $1/ltmain.sh
-
 
     local src_d=`getfilename $2`
     if [ -e ${BSP_PATCH_DIR}/${src_d}/series ]; then

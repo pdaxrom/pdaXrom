@@ -107,11 +107,11 @@ build_gcc() {
     popd
     ###
     apply_patches $GCC_DIR $GCC
-    sed -i "s|target-gperf target-libstdc++-v3|target-gperf |" configure
     echo "configure"
     pushd $TOP_DIR
     mkdir -p $GCC_DIR/build
     cd $GCC_DIR/build
+    ###sed -i "s|target-gperf target-libstdc++-v3|target-gperf |" ../configure
     ../configure --target=$TARGET_ARCH --prefix=$TOOLCHAIN_PREFIX --exec-prefix=$TOOLCHAIN_PREFIX \
 	--libexecdir=$TOOLCHAIN_PREFIX/lib \
 	--with-sysroot=$TOOLCHAIN_SYSROOT --enable-version-specific-runtime-libs --without-x \
