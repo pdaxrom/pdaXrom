@@ -30,6 +30,7 @@ build_sqlite() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --disable-tcl \
 	    || error
     ) || error "configure"
 

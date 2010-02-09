@@ -22,6 +22,13 @@ build_pcmanfm() {
     extract $PCMANFM
     apply_patches $PCMANFM_DIR $PCMANFM
     pushd $TOP_DIR
+
+    if [ "$ENABLE_HAL" = "no" ]; then
+	HAL_CONF="--disable-hal"
+    else
+	HAL_CONF="--enable-hal"
+    fi
+
     cd $PCMANFM_DIR
     (
     eval \
@@ -32,7 +39,7 @@ build_pcmanfm() {
 	    --sysconfdir=/etc \
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB \
-	    --enable-hal \
+	    $HAL_CONF \
 	    --disable-superuser-checks
     ) || error "configure"
 
