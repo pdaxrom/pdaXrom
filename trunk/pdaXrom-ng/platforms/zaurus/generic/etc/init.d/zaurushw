@@ -7,6 +7,11 @@ NAME=zaurushw
 case "$1" in
   start)
 loadkeys /usr/share/keymaps/spitz.keymap
+
+if [ ! -f /etc/pointercal ]; then
+     /usr/bin/ts_calibrate
+fi
+
 ;;
   stop)
 	;;
