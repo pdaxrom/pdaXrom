@@ -9,7 +9,9 @@ case "$1" in
 loadkeys /usr/share/keymaps/spitz.keymap
 
 if [ ! -f /etc/pointercal ]; then
+if [ -f /usr/bin/X ]; then
      /usr/bin/ts_calibrate
+fi
 fi
 
 ;;

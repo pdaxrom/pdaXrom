@@ -1873,29 +1873,29 @@ diff -Nur u-boot-2006-04-18-1106/include/configs/akita.h u-boot-2006-04-18-1106-
 +#define	CONFIG_BOOTCOMMAND						\
 +	"if testkey 101 ; "												\
 +	"then "														\
-+		"nand read 0xa1000000 0x00060000 0x00540000; "							\
++		"nand read.logical 0xa1000000 0x00060000 0x00540000; "							\
 +		"setenv bootargs console=ttyS0,115200 console=tty1 root=/dev/ram rw fbcon=rotate:1 ramdisk_size=8192; " \
 +		"bootm; "												\
 +	"fi; "														\
 +	"if testkey 2 ; "												\
 +	"then "														\
-+		"nand read 0xa1000000 0x500000 0x200000; "							\
++		"nand read.logical 0xa1000000 0x500000 0x200000; "							\
 +		"setenv bootargs console=ttyS0,115200 console=tty1 root=/dev/mmcblk0p1 fbcon=rotate:1; " 		\
 +		"bootm; "												\
 +	"fi; "														\
 +	"if testkey 18 ; "												\
 +	"then "														\
-+		"nand read 0xa1000000 0x500000 0x200000; "							\
++		"nand read.logical 0xa1000000 0x500000 0x200000; "							\
 +		"setenv bootargs console=ttyS0,115200 console=tty1 root=/dev/hda1 fbcon=rotate:1; "	 		\
 +		"bootm; "												\
 +	"fi; "														\
 +	"if testkey 3 ; "												\
 +	"then "														\
-+		"nand read 0xa1000000 0x500000 0x200000; "							\
++		"nand read.logical 0xa1000000 0x500000 0x200000; "							\
 +		"setenv bootargs console=ttyS0,115200 console=tty1 root=/dev/hdc1 fbcon=rotate:1; "	 		\
 +		"bootm; "												\
 +	"fi; "														\
-+	"nand read 0xa1000000 0x500000 0x200000; "								\
++	"nand read.logical 0xa1000000 0x500000 0x200000; "								\
 +	"setenv bootargs console=ttyS0,115200 console=tty1 ubi.mtd=1,2048 root=ubi0:rootfs rootfstype=ubifs fbcon=rotate:1; " 	\
 +	"bootm; "
 +#else
