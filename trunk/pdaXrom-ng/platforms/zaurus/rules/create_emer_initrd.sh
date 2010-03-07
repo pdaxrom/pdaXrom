@@ -17,7 +17,11 @@ copy_kernel_image() {
 create_ramdisk_image() {
 	mkimage -A arm -O linux -T multi -C none -a 0xa0008000 -e 0xa0008000 \
 	    -n "Zaurus Emergency System" -d $IMAGES_DIR/zImage:$IMAGES_DIR/initrd.gz \
-	    $IMAGES_DIR/emergenc.img
+	    $IMAGES_DIR/emergenc.tmp
+
+	# Needed to pad image for uboot
+	cd $IMAGES_DIR
+	dd if=emergenc.tmp of=emergenc.img ibs=5505024 conv=sync
 }
 compress_image() {
 	cp $BSP_GENERICFS_DIR/flash_tools/u* $IMAGES_DIR/

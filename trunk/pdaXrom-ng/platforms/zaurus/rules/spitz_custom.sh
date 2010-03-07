@@ -9,9 +9,9 @@ create_customizations() {
 
     mkdir -p $ROOTFS_DIR/usr/share/keymaps/
     $INSTALL -m 644 $BSP_GENERICFS_DIR/keymaps/spitz.keymap $ROOTFS_DIR/usr/share/keymaps/ || error
-    $INSTALL -m 644 $BSP_GENERICFS_DIR/configs/xorg.conf $ROOTFS_DIR/etc/X11/xorg.conf || error
-    $INSTALL -m 644 $BSP_GENERICFS_DIR/configs/ts.conf_spitz $ROOTFS_DIR/etc/ts.conf || error
-    $INSTALL -m 755 $BSP_GENERICFS_DIR/scripts/startx_spitz $ROOTFS_DIR/usr/bin/startx || error
+    $INSTALL -m 644 $BSP_GENERICFS_DIR/configs/xorg.conf $ROOTFS_DIR/etc/X11/xorg.conf 
+    $INSTALL -m 644 $BSP_GENERICFS_DIR/configs/ts.conf_spitz $ROOTFS_DIR/etc/ts.conf 
+    $INSTALL -m 755 $BSP_GENERICFS_DIR/scripts/startx_spitz $ROOTFS_DIR/usr/bin/startx
 
     touch "$STATE_DIR/zaurus_customizations"
 }
