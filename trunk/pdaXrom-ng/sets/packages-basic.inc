@@ -38,3 +38,4 @@ if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" ]; then
     . $RULES_DIR/broadcom-sta.sh
 fi
 
+. $RULES_DIR/ralink-firmware.sh
