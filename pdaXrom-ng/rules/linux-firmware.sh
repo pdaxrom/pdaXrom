@@ -12,7 +12,7 @@
 LINUX_FIRMWARE_VERSION=1.26
 LINUX_FIRMWARE=linux-firmware_${LINUX_FIRMWARE_VERSION}.tar.gz
 LINUX_FIRMWARE_MIRROR=http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware
-LINUX_FIRMWARE_DIR=$BUILD_DIR/linux-firmware-${LINUX_FIRMWARE_VERSION}
+LINUX_FIRMWARE_DIR=$BUILD_DIR/linux-firmware-karmic
 LINUX_FIRMWARE_ENV="$CROSS_ENV_AC"
 
 build_linux_firmware() {
