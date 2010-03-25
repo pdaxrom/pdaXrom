@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LINUX_FIRMWARE_VERSION=1.24
+LINUX_FIRMWARE_VERSION=1.26
 LINUX_FIRMWARE=linux-firmware_${LINUX_FIRMWARE_VERSION}.tar.gz
 LINUX_FIRMWARE_MIRROR=http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware
 LINUX_FIRMWARE_DIR=$BUILD_DIR/linux-firmware-${LINUX_FIRMWARE_VERSION}
