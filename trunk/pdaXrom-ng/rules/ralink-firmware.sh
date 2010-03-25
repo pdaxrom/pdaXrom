@@ -9,11 +9,11 @@
 # see the README file.
 #
 
+. $RULES_DIR/linux-firmware.sh
+
 build_ralink_firmware() {
     test -e "$STATE_DIR/ralink_firmware.installed" && return
     banner "Build ralink-firmware"
-
-    linux_firmware
 
     cp -f ${LINUX_FIRMWARE_DIR}/rt2x00/*.bin ${ROOTFS_DIR}/lib/firmware/
 
