@@ -46,6 +46,9 @@ build_ppp() {
     install -m 755 -t fakeroot/usr/bin scripts/pon scripts/poff scripts/plog
 
     rm -rf fakeroot/usr/include fakeroot/usr/share
+    rm -rf fakeroot/etc/ppp/.svn
+    rm -rf fakeroot/etc/ppp/peers/.svn
+    rm -rf fakeroot/etc/ppp/scripts/.svn
 
     $STRIP fakeroot/usr/sbin/* fakeroot/usr/lib/pppd/${PPP_VERSION}/*
 
