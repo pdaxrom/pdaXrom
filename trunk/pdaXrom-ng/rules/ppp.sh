@@ -41,7 +41,10 @@ build_ppp() {
     cp -a $GENERICFS_DIR/etc/ppp fakeroot/etc/
     chmod 755 fakeroot/etc/ppp/ip-* fakeroot/etc/ppp/ppp-*
     chmod 600 fakeroot/etc/ppp/chap-secrets fakeroot/etc/ppp/pap-secrets
-    
+
+    mkdir -p fakeroot/usr/bin
+    install -m 755 -t fakeroot/usr/bin scripts/pon scripts/poff scripts/plog
+
     rm -rf fakeroot/usr/include fakeroot/usr/share
 
     $STRIP fakeroot/usr/sbin/* fakeroot/usr/lib/pppd/${PPP_VERSION}/*
