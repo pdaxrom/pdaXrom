@@ -1,0 +1,4 @@
+#!/bin/sh
+
+test -e $HOME/Desktop || mkdir $HOME/Desktop
+exec /usr/bin/lxsession -s LXDE

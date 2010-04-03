@@ -1,0 +1,14 @@
+--- diskdev_cmds-332.14/fsck_hfs.tproj/dfalib/Makefile.lnx-	2009-12-08 15:08:35.957697913 +0600
++++ diskdev_cmds-332.14/fsck_hfs.tproj/dfalib/Makefile.lnx	2009-12-08 15:35:01.156538176 +0600
+@@ -8,8 +8,10 @@
+          SCatalog.c SStubs.c VolumeBitmapCheck.c
+ OFILES = $(CFILES:.c=.o)
+ 
++AR := ar
++
+ libdfa.a: $(OFILES)
+-	ar rc $@ $?
++	$(AR) rc $@ $?
+ 
+ clean:
+ 	$(RM) $(OFILES) libdfa.a

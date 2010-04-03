@@ -1,0 +1,37 @@
+Subject: block/ps3vram: Fix slow VRAM IO
+
+From: Hideyuki Sasaki <Hideyuki_Sasaki@hq.scei.sony.co.jp>
+
+The current VRAM driver uses msleep() to wait for completion of
+RSX DMA transfers between system memory and VRAM.  Depending on
+the system timing, the processing delay and overhead of this
+msleep() call can significantly impact VRAM driver IO.
+
+To avoid the condition, add a short duration (200 usec max) udelay()
+polling loop before entering the msleep() polling loop.
+
+Signed-off-by: Hideyuki Sasaki <xhide@rd.scei.sony.co.jp>
+Signed-off-by: Geoff Levand <geoffrey.levand@am.sony.com>
+---
+ drivers/block/ps3vram.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+--- a/drivers/block/ps3vram.c
++++ b/drivers/block/ps3vram.c
+@@ -123,7 +123,15 @@ static int ps3vram_notifier_wait(struct 
+ {
+ 	struct ps3vram_priv *priv = ps3_system_bus_get_drvdata(dev);
+ 	u32 *notify = ps3vram_get_notifier(priv->reports, NOTIFIER);
+-	unsigned long timeout = jiffies + msecs_to_jiffies(timeout_ms);
++	unsigned long timeout;
++
++	for (timeout = 20; timeout; timeout--) {
++		if (!notify[3])
++			return 0;
++		udelay(10);
++	}
++
++	timeout = jiffies + msecs_to_jiffies(timeout_ms);
+ 
+ 	do {
+ 		if (!notify[3])

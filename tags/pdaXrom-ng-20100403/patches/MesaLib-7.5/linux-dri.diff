@@ -1,0 +1,10 @@
+--- s/configs/linux-dri-	2009-08-25 15:10:32.000000000 +0700
++++ s/configs/linux-dri	2009-08-25 15:10:43.000000000 +0700
+@@ -62,6 +62,7 @@
+ GALLIUM_WINSYS_DIRS = drm
+ GALLIUM_WINSYS_DRM_DIRS = intel
+ GALLIUM_STATE_TRACKERS_DIRS = egl
++GALLIUM_DRIVERS_DIRS = softpipe i915simple failover trace
+ 
+ DRI_DIRS = i810 i915 i965 mach64 mga r128 r200 r300 radeon s3v \
+ 	savage sis tdfx trident unichrome ffb swrast

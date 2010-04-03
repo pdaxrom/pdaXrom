@@ -1,0 +1,5 @@
+kexec-tools-arm.patch
+kexec-arm-atags.patch
+recentheader.patch
+configure.ac.diff
+static_link.patch

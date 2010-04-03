@@ -1,0 +1,830 @@
+diff -Nur lxpanel-0.3.99/config.h.in lxpanel-0.3.99-libsn/config.h.in
+--- lxpanel-0.3.99/config.h.in	2008-12-10 17:03:08.000000000 +0600
++++ lxpanel-0.3.99-libsn/config.h.in	2009-01-13 16:51:20.000000000 +0600
+@@ -130,6 +130,9 @@
+ /* Define to 1 if your <sys/time.h> declares `struct tm'. */
+ #undef TM_IN_SYS_TIME
+ 
++/* Use startup-notification */
++#undef USE_LIBSN
++
+ /* Version number of package */
+ #undef VERSION
+ 
+diff -Nur lxpanel-0.3.99/configure lxpanel-0.3.99-libsn/configure
+--- lxpanel-0.3.99/configure	2008-12-10 17:02:58.000000000 +0600
++++ lxpanel-0.3.99-libsn/configure	2009-01-13 16:51:14.000000000 +0600
+@@ -903,6 +903,8 @@
+ MENU_CACHE_LIBS
+ ENABLE_MENU_CACHE_TRUE
+ ENABLE_MENU_CACHE_FALSE
++LIBSN_CFLAGS
++LIBSN_LIBS
+ G_CAST_CHECKS
+ LXPANEL_MODULE
+ BUILD_ALSA_PLUGINS_TRUE
+@@ -945,6 +947,8 @@
+ PACKAGE_LIBS
+ MENU_CACHE_CFLAGS
+ MENU_CACHE_LIBS
++LIBSN_CFLAGS
++LIBSN_LIBS
+ XMKMF'
+ 
+ 
+@@ -1537,6 +1541,9 @@
+                           optimize for fast installation [default=yes]
+   --disable-libtool-lock  avoid locking (might break parallel builds)
+   --disable-nls           do not use Native Language Support
++  --disable-startup-notification
++                          disable the startup notification library.
++                          [default=enabled]
+   --enable-cast-checks    enable Glib casting checks (default: disable)
+   --disable-alsa          compile ALSA providers (default: enable)
+   --disable-libiw         compile libiw-based netstat plugin (default: enable)
+@@ -1574,6 +1581,9 @@
+               C compiler flags for MENU_CACHE, overriding pkg-config
+   MENU_CACHE_LIBS
+               linker flags for MENU_CACHE, overriding pkg-config
++  LIBSN_CFLAGS
++              C compiler flags for LIBSN, overriding pkg-config
++  LIBSN_LIBS  linker flags for LIBSN, overriding pkg-config
+   XMKMF       Path to xmkmf, Makefile generator for X Window System
+ 
+ Use these variables to override the choices made by `configure' or to help
+@@ -4469,13 +4479,13 @@
+ else
+   lt_cv_nm_interface="BSD nm"
+   echo "int some_variable = 0;" > conftest.$ac_ext
+-  (eval echo "\"\$as_me:4472: $ac_compile\"" >&5)
++  (eval echo "\"\$as_me:4482: $ac_compile\"" >&5)
+   (eval "$ac_compile" 2>conftest.err)
+   cat conftest.err >&5
+-  (eval echo "\"\$as_me:4475: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
++  (eval echo "\"\$as_me:4485: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
+   cat conftest.err >&5
+-  (eval echo "\"\$as_me:4478: output\"" >&5)
++  (eval echo "\"\$as_me:4488: output\"" >&5)
+   cat conftest.out >&5
+   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
+     lt_cv_nm_interface="MS dumpbin"
+@@ -5575,7 +5585,7 @@
+   ;;
+ *-*-irix6*)
+   # Find out which ABI we are using.
+-  echo '#line 5578 "configure"' > conftest.$ac_ext
++  echo '#line 5588 "configure"' > conftest.$ac_ext
+   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+   (eval $ac_compile) 2>&5
+   ac_status=$?
+@@ -7392,11 +7402,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:7395: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7405: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>conftest.err)
+    ac_status=$?
+    cat conftest.err >&5
+-   echo "$as_me:7399: \$? = $ac_status" >&5
++   echo "$as_me:7409: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s "$ac_outfile"; then
+      # The compiler can only warn and ignore the option if not recognized
+      # So say no if there are warnings other than the usual output.
+@@ -7716,11 +7726,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:7719: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7729: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>conftest.err)
+    ac_status=$?
+    cat conftest.err >&5
+-   echo "$as_me:7723: \$? = $ac_status" >&5
++   echo "$as_me:7733: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s "$ac_outfile"; then
+      # The compiler can only warn and ignore the option if not recognized
+      # So say no if there are warnings other than the usual output.
+@@ -7821,11 +7831,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:7824: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7834: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>out/conftest.err)
+    ac_status=$?
+    cat out/conftest.err >&5
+-   echo "$as_me:7828: \$? = $ac_status" >&5
++   echo "$as_me:7838: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s out/conftest2.$ac_objext
+    then
+      # The compiler can only warn and ignore the option if not recognized
+@@ -7876,11 +7886,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:7879: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7889: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>out/conftest.err)
+    ac_status=$?
+    cat out/conftest.err >&5
+-   echo "$as_me:7883: \$? = $ac_status" >&5
++   echo "$as_me:7893: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s out/conftest2.$ac_objext
+    then
+      # The compiler can only warn and ignore the option if not recognized
+@@ -10637,7 +10647,7 @@
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 10640 "configure"
++#line 10650 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -10737,7 +10747,7 @@
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 10740 "configure"
++#line 10750 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -11568,7 +11578,6 @@
+ # Checks for libraries.
+ pkg_modules="gtk+-2.0 >= 2.12.0 \
+              gthread-2.0"
+-#             libstartup-notification-1.0"
+ 
+ 
+ if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+@@ -11898,6 +11907,109 @@
+ PACKAGE_CFLAGS="$PACKAGE_CFLAGS $MENU_CACHE_CFLAGS"
+ PACKAGE_LIBS="$PACKAGE_LIBS $MENU_CACHE_LIBS"
+ 
++# Check whether --enable-startup-notification was given.
++if test "${enable_startup_notification+set}" = set; then
++  enableval=$enable_startup_notification; enable_sn=$enableval
++else
++  enable_sn=yes
++
++fi
++
++
++if test "$enable_sn" = yes; then
++
++pkg_failed=no
++{ echo "$as_me:$LINENO: checking for LIBSN" >&5
++echo $ECHO_N "checking for LIBSN... $ECHO_C" >&6; }
++
++if test -n "$PKG_CONFIG"; then
++    if test -n "$LIBSN_CFLAGS"; then
++        pkg_cv_LIBSN_CFLAGS="$LIBSN_CFLAGS"
++    else
++        if test -n "$PKG_CONFIG" && \
++    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"libstartup-notification-1.0 >= 0.8\"") >&5
++  ($PKG_CONFIG --exists --print-errors "libstartup-notification-1.0 >= 0.8") 2>&5
++  ac_status=$?
++  echo "$as_me:$LINENO: \$? = $ac_status" >&5
++  (exit $ac_status); }; then
++  pkg_cv_LIBSN_CFLAGS=`$PKG_CONFIG --cflags "libstartup-notification-1.0 >= 0.8" 2>/dev/null`
++else
++  pkg_failed=yes
++fi
++    fi
++else
++	pkg_failed=untried
++fi
++if test -n "$PKG_CONFIG"; then
++    if test -n "$LIBSN_LIBS"; then
++        pkg_cv_LIBSN_LIBS="$LIBSN_LIBS"
++    else
++        if test -n "$PKG_CONFIG" && \
++    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"libstartup-notification-1.0 >= 0.8\"") >&5
++  ($PKG_CONFIG --exists --print-errors "libstartup-notification-1.0 >= 0.8") 2>&5
++  ac_status=$?
++  echo "$as_me:$LINENO: \$? = $ac_status" >&5
++  (exit $ac_status); }; then
++  pkg_cv_LIBSN_LIBS=`$PKG_CONFIG --libs "libstartup-notification-1.0 >= 0.8" 2>/dev/null`
++else
++  pkg_failed=yes
++fi
++    fi
++else
++	pkg_failed=untried
++fi
++
++
++
++if test $pkg_failed = yes; then
++
++if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
++        _pkg_short_errors_supported=yes
++else
++        _pkg_short_errors_supported=no
++fi
++        if test $_pkg_short_errors_supported = yes; then
++	        LIBSN_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "libstartup-notification-1.0 >= 0.8"`
++        else
++	        LIBSN_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "libstartup-notification-1.0 >= 0.8"`
++        fi
++	# Put the nasty error message in config.log where it belongs
++	echo "$LIBSN_PKG_ERRORS" >&5
++
++	{ echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++
++    sn_found=no
++
++
++elif test $pkg_failed = untried; then
++
++    sn_found=no
++
++
++else
++	LIBSN_CFLAGS=$pkg_cv_LIBSN_CFLAGS
++	LIBSN_LIBS=$pkg_cv_LIBSN_LIBS
++        { echo "$as_me:$LINENO: result: yes" >&5
++echo "${ECHO_T}yes" >&6; }
++
++
++cat >>confdefs.h <<\_ACEOF
++#define USE_LIBSN 1
++_ACEOF
++
++
++
++    PACKAGE_CFLAGS="$PACKAGE_CFLAGS $LIBSN_CFLAGS"
++    PACKAGE_LIBS="$PACKAGE_LIBS $LIBSN_LIBS"
++    sn_found=yes
++
++fi
++else
++  sn_found=no
++fi
++
++
+ # Gtk Builder
+ #AC_PATH_PROG([GTK_BUILDER_CONVERT],[gtk-builder-convert],[false])
+ #if test "$GTK_BUILDER_CONVERT" = "false"; then
+@@ -16968,6 +17080,8 @@
+ MENU_CACHE_LIBS!$MENU_CACHE_LIBS$ac_delim
+ ENABLE_MENU_CACHE_TRUE!$ENABLE_MENU_CACHE_TRUE$ac_delim
+ ENABLE_MENU_CACHE_FALSE!$ENABLE_MENU_CACHE_FALSE$ac_delim
++LIBSN_CFLAGS!$LIBSN_CFLAGS$ac_delim
++LIBSN_LIBS!$LIBSN_LIBS$ac_delim
+ G_CAST_CHECKS!$G_CAST_CHECKS$ac_delim
+ LXPANEL_MODULE!$LXPANEL_MODULE$ac_delim
+ BUILD_ALSA_PLUGINS_TRUE!$BUILD_ALSA_PLUGINS_TRUE$ac_delim
+@@ -16997,7 +17111,7 @@
+ LTLIBOBJS!$LTLIBOBJS$ac_delim
+ _ACEOF
+ 
+-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 69; then
++  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 71; then
+     break
+   elif $ac_last_try; then
+     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
+diff -Nur lxpanel-0.3.99/configure.ac lxpanel-0.3.99-libsn/configure.ac
+--- lxpanel-0.3.99/configure.ac	2008-12-10 17:02:48.000000000 +0600
++++ lxpanel-0.3.99-libsn/configure.ac	2009-01-13 16:48:27.000000000 +0600
+@@ -17,7 +17,6 @@
+ # Checks for libraries.
+ pkg_modules="gtk+-2.0 >= 2.12.0 \
+              gthread-2.0"
+-#             libstartup-notification-1.0"
+ PKG_CHECK_MODULES(PACKAGE, [$pkg_modules])
+ AC_SUBST(PACKAGE_CFLAGS)
+ AC_SUBST(PACKAGE_LIBS)
+@@ -36,6 +35,34 @@
+ PACKAGE_CFLAGS="$PACKAGE_CFLAGS $MENU_CACHE_CFLAGS"
+ PACKAGE_LIBS="$PACKAGE_LIBS $MENU_CACHE_LIBS"
+ 
++AC_ARG_ENABLE(startup-notification,
++  AC_HELP_STRING(
++    [--disable-startup-notification],
++    [disable the startup notification library. [[default=enabled]]]
++  ),
++  [enable_sn=$enableval],
++  [enable_sn=yes]
++)
++
++if test "$enable_sn" = yes; then
++PKG_CHECK_MODULES(LIBSN, [libstartup-notification-1.0 >= 0.8],
++  [
++    AC_DEFINE(USE_LIBSN, [1], [Use startup-notification])
++    AC_SUBST(LIBSN_CFLAGS)
++    AC_SUBST(LIBSN_LIBS)
++    PACKAGE_CFLAGS="$PACKAGE_CFLAGS $LIBSN_CFLAGS"
++    PACKAGE_LIBS="$PACKAGE_LIBS $LIBSN_LIBS"
++    sn_found=yes
++  ],
++  [
++    sn_found=no
++  ]
++)
++else
++  sn_found=no
++fi
++
++
+ # Gtk Builder
+ #AC_PATH_PROG([GTK_BUILDER_CONVERT],[gtk-builder-convert],[false])
+ #if test "$GTK_BUILDER_CONVERT" = "false"; then
+diff -Nur lxpanel-0.3.99/data/Makefile.in lxpanel-0.3.99-libsn/data/Makefile.in
+--- lxpanel-0.3.99/data/Makefile.in	2008-12-10 17:02:56.000000000 +0600
++++ lxpanel-0.3.99-libsn/data/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -126,6 +126,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/Makefile.in lxpanel-0.3.99-libsn/Makefile.in
+--- lxpanel-0.3.99/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -149,6 +149,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/man/Makefile.in lxpanel-0.3.99-libsn/man/Makefile.in
+--- lxpanel-0.3.99/man/Makefile.in	2008-12-10 17:02:56.000000000 +0600
++++ lxpanel-0.3.99-libsn/man/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -115,6 +115,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/Makefile.in lxpanel-0.3.99-libsn/src/Makefile.in
+--- lxpanel-0.3.99/src/Makefile.in	2008-12-10 17:02:56.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -184,6 +184,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/batt/Makefile.in lxpanel-0.3.99-libsn/src/plugins/batt/Makefile.in
+--- lxpanel-0.3.99/src/plugins/batt/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/batt/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -141,6 +141,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/cpu/Makefile.in lxpanel-0.3.99-libsn/src/plugins/cpu/Makefile.in
+--- lxpanel-0.3.99/src/plugins/cpu/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/cpu/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -141,6 +141,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/deskno/Makefile.in lxpanel-0.3.99-libsn/src/plugins/deskno/Makefile.in
+--- lxpanel-0.3.99/src/plugins/deskno/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/deskno/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -141,6 +141,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/kbled/Makefile.in lxpanel-0.3.99-libsn/src/plugins/kbled/Makefile.in
+--- lxpanel-0.3.99/src/plugins/kbled/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/kbled/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -141,6 +141,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/launchbar.c lxpanel-0.3.99-libsn/src/plugins/launchbar.c
+--- lxpanel-0.3.99/src/plugins/launchbar.c	2008-12-05 00:02:19.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/launchbar.c	2009-01-13 16:53:33.000000000 +0600
+@@ -16,6 +16,10 @@
+  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#endif
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -28,6 +32,11 @@
+ #include <gdk-pixbuf/gdk-pixbuf.h>
+ #include <glib/gi18n.h>
+ 
++#ifdef USE_LIBSN
++#define SN_API_NOT_YET_FROZEN 1
++#include <libsn/sn.h>
++#endif
++
+ #include "panel.h"
+ #include "misc.h"
+ #include "plugin.h"
+@@ -72,6 +81,9 @@
+     gchar *desktop_id;
+     gchar *image;
+     gchar *action;
++#ifdef USE_LIBSN
++    int snFlag;
++#endif
+     gchar *tooltip;
+ /*  NOTE: Users can override the values specified in desktop file,
+           and we should process these special cases. */
+@@ -98,6 +110,44 @@
+ }
+ #endif
+ 
++#ifdef USE_LIBSN
++extern SnDisplay  *sn_display;
++
++static void 
++sn_exec(gchar *name)
++{
++    SnLauncherContext *context;
++    GError *error = NULL;
++
++    char *bin_name, *desc;
++
++    ENTER;
++
++    bin_name = name;
++    desc = name;
++
++    if (!sn_display) {
++	sn_display = sn_display_new (GDK_DISPLAY(), NULL, NULL);
++    }
++ 
++    context = sn_launcher_context_new (sn_display, DefaultScreen (GDK_DISPLAY()));
++  
++    if (name)     sn_launcher_context_set_name (context, name);
++    if (desc)     sn_launcher_context_set_description (context, desc);
++    if (bin_name) sn_launcher_context_set_binary_name (context, bin_name);
++  
++    sn_launcher_context_initiate (context, "lxpanel launchbar", bin_name, CurrentTime);
++
++    sn_launcher_context_setup_child_process (context);
++    if (! g_spawn_command_line_async(name, &error) ) {
++        ERR("can't spawn %s\nError is %s\n", name, error->message);
++        g_error_free (error);
++    }
++    
++    RET();
++}
++#endif
++
+ void btn_free( btn_t* btn )
+ {
+     g_free( btn->desktop_id );
+@@ -120,7 +170,12 @@
+             if ((event->x >=0 && event->x < widget->allocation.width)
+                   && (event->y >=0 && event->y < widget->allocation.height)) {
+ 
+-                g_spawn_command_line_async(b->action, NULL);
++#ifdef USE_LIBSN
++		if (b->snFlag)
++		    sn_exec(b->action);
++		else
++#endif
++            	    g_spawn_command_line_async(b->action, NULL);
+             }
+             gtk_misc_set_padding (GTK_MISC(image), 0, 0);
+ 
+@@ -211,7 +266,12 @@
+             s = e+1;
+         }
+         DBG("cmd=<%s>\n", str);
+-        g_spawn_command_line_async(str, NULL);
++#ifdef USE_LIBSN
++	if (b->snFlag)
++	    sn_exec(str);
++	else
++#endif
++    	    g_spawn_command_line_async(str, NULL);
+         g_free(str);
+ 
+         //gtk_drag_finish (context, TRUE, FALSE, time);
+@@ -259,7 +319,19 @@
+                 else if (!g_ascii_strcasecmp(s.t[0], "action")) {
+                     btn->customize_action = 1;
+                     btn->action = g_strdup(s.t[1]);
++#ifdef USE_LIBSN
++		    btn->snFlag = 0;
++#endif
+                 }
++        	else if (!g_ascii_strcasecmp(s.t[0], "actionsn")) {
++                    btn->customize_action = 1;
++#ifdef USE_LIBSN
++                    btn->action = g_strdup(s.t[1]);
++                    btn->snFlag = 1;
++#else
++                    btn->action = g_strdup(s.t[1]);
++#endif
++        	} 
+                 else {
+                     ERR( "launchbar: unknown var %s\n", s.t[0]);
+                     goto error;
+@@ -290,9 +362,19 @@
+ 
+             if( ! btn->customize_action ) {
+                 gchar* exec;
++                gchar* sn;
+                 exec = g_key_file_get_string( desktop, desktop_ent, "Exec", NULL);
+                 btn->action = translate_exec_to_cmd( exec, icon, title, desktop_file );
+                 g_free( exec );
++#ifdef USE_LIBSN
++            	btn->snFlag = 0;
++                sn = g_key_file_get_string( desktop, desktop_ent, "StartupNotify", NULL);
++		if (sn) {
++            	    if ( !g_ascii_strcasecmp(sn, "true") )
++            		btn->snFlag = 1;
++            	    g_free( sn );
++                }
++#endif
+             }
+             if( ! btn->customize_tooltip )
+                 btn->tooltip = title;
+@@ -446,8 +528,14 @@
+             lxpanel_put_str( fp, "image", btn->image );
+         if( btn->customize_tooltip )
+             lxpanel_put_str( fp, "tooltip", btn->tooltip );
+-        if( btn->customize_action )
+-            lxpanel_put_str( fp, "action", btn->action );
++        if( btn->customize_action ) {
++#ifdef USE_LIBSN
++    	    if ( btn->snFlag )
++        	lxpanel_put_str( fp, "actionsn", btn->action );
++    	    else
++#endif
++        	lxpanel_put_str( fp, "action", btn->action );
++        }
+         lxpanel_put_line( fp, "}" );
+     }
+ }
+diff -Nur lxpanel-0.3.99/src/plugins/Makefile.in lxpanel-0.3.99-libsn/src/plugins/Makefile.in
+--- lxpanel-0.3.99/src/plugins/Makefile.in	2008-12-10 17:02:56.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -146,6 +146,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/menu.c lxpanel-0.3.99-libsn/src/plugins/menu.c
+--- lxpanel-0.3.99/src/plugins/menu.c	2008-12-10 11:29:37.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/menu.c	2009-01-13 16:48:27.000000000 +0600
+@@ -16,13 +16,24 @@
+  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#endif
++
+ #include <stdlib.h>
+ #include <string.h>
++#include <unistd.h>
++#include <errno.h>
+ 
+ #include <gdk-pixbuf/gdk-pixbuf.h>
+ #include <glib.h>
+ #include <glib/gi18n.h>
+ 
++#ifdef USE_LIBSN
++#define SN_API_NOT_YET_FROZEN 1
++#include <libsn/sn.h>
++#endif
++
+ #include <menu-cache.h>
+ 
+ #include <sys/types.h>
+@@ -61,6 +72,10 @@
+     gpointer reload_notify;
+ } menup;
+ 
++#ifdef USE_LIBSN
++SnDisplay  *sn_display = NULL;
++#endif
++
+ static guint idle_loader = 0;
+ 
+ GQuark SYS_MENU_ITEM_ID = 0;
+@@ -100,6 +115,46 @@
+     RET();
+ }
+ 
++#ifdef USE_LIBSN
++
++static void 
++spawn_app_sn(GtkWidget *widget, gpointer data)
++{
++    SnLauncherContext *context;
++    GError *error = NULL;
++
++    char *name, *bin_name, *desc;
++
++    ENTER;
++
++    if (data) {
++	name = (char *) data;
++	bin_name = name;
++	desc = name;
++
++	if (!sn_display) {
++	    sn_display = sn_display_new (GDK_DISPLAY(), NULL, NULL);
++	}
++
++	context = sn_launcher_context_new (sn_display, DefaultScreen (GDK_DISPLAY()));
++  
++	if (name)     sn_launcher_context_set_name (context, name);
++	if (desc)     sn_launcher_context_set_description (context, desc);
++	if (bin_name) sn_launcher_context_set_binary_name (context, bin_name);
++  
++	sn_launcher_context_initiate (context, "lxpanel menu launch", bin_name, CurrentTime);
++
++	sn_launcher_context_setup_child_process (context);
++	if (! g_spawn_command_line_async(data, &error) ) {
++    	    ERR("can't spawn %s\nError is %s\n", (char *)data, error->message);
++    	    g_error_free (error);
++	}
++    }
++    RET();
++}
++
++#endif
++
+ static void
+ spawn_app(GtkWidget *widget, gpointer data)
+ {
+@@ -176,7 +231,12 @@
+             g_free(cmd);
+         cmd = term_cmd;
+     }
+-    spawn_app( NULL, cmd );
++#ifdef USE_LIBSN
++    if ( menu_cache_app_get_use_sn(MENU_CACHE_APP(item)) )
++	spawn_app_sn( NULL, cmd );
++    else
++#endif
++	spawn_app( NULL, cmd );
+     if( cmd != exec )
+         g_free(cmd);
+ }
+@@ -662,14 +722,14 @@
+ read_item(Plugin *p, char** fp)
+ {
+     line s;
+-    gchar *name, *fname, *action;
++    gchar *name, *fname, *action, *action_sn;
+     GtkWidget *item;
+     menup *m = (menup *)p->priv;
+     Command *cmd_entry = NULL;
+ 
+     ENTER;
+     s.len = 256;
+-    name = fname = action = NULL;
++    name = fname = action = action_sn = NULL;
+ 
+     if( fp )
+     {
+@@ -681,6 +741,8 @@
+                     name = g_strdup(s.t[1]);
+                 else if (!g_ascii_strcasecmp(s.t[0], "action"))
+                     action = g_strdup(s.t[1]);
++        	else if (!g_ascii_strcasecmp(s.t[0], "actionsn"))
++            	    action_sn = g_strdup(s.t[1]);
+                 else if (!g_ascii_strcasecmp(s.t[0], "command")) {
+                     Command *tmp;
+ 
+@@ -709,6 +771,13 @@
+         if (action) {
+             g_signal_connect(G_OBJECT(item), "activate", (GCallback)spawn_app, action);
+         }
++        else if (action_sn) {
++#ifdef USE_LIBSN
++    	    g_signal_connect(G_OBJECT(item), "activate", (GCallback)spawn_app_sn, action_sn);
++#else
++            g_signal_connect(G_OBJECT(item), "activate", (GCallback)spawn_app, action_sn);
++#endif
++    	}
+     }
+     gtk_container_set_border_width(GTK_CONTAINER(item), 0);
+     g_free(name);
+@@ -726,6 +795,7 @@
+     g_free(fname);
+     g_free(name);
+     g_free(action);
++    g_free(action_sn);
+     RET(NULL);
+ }
+ 
+diff -Nur lxpanel-0.3.99/src/plugins/netstat/Makefile.in lxpanel-0.3.99-libsn/src/plugins/netstat/Makefile.in
+--- lxpanel-0.3.99/src/plugins/netstat/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/netstat/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -148,6 +148,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/netstatus/Makefile.in lxpanel-0.3.99-libsn/src/plugins/netstatus/Makefile.in
+--- lxpanel-0.3.99/src/plugins/netstatus/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/netstatus/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -144,6 +144,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/thermal/Makefile.in lxpanel-0.3.99-libsn/src/plugins/thermal/Makefile.in
+--- lxpanel-0.3.99/src/plugins/thermal/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/thermal/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -141,6 +141,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/volume/Makefile.in lxpanel-0.3.99-libsn/src/plugins/volume/Makefile.in
+--- lxpanel-0.3.99/src/plugins/volume/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/volume/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -146,6 +146,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/volumealsa/Makefile.in lxpanel-0.3.99-libsn/src/plugins/volumealsa/Makefile.in
+--- lxpanel-0.3.99/src/plugins/volumealsa/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/volumealsa/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -144,6 +144,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@
+diff -Nur lxpanel-0.3.99/src/plugins/xkb/Makefile.in lxpanel-0.3.99-libsn/src/plugins/xkb/Makefile.in
+--- lxpanel-0.3.99/src/plugins/xkb/Makefile.in	2008-12-10 17:02:57.000000000 +0600
++++ lxpanel-0.3.99-libsn/src/plugins/xkb/Makefile.in	2009-01-13 16:51:13.000000000 +0600
+@@ -144,6 +144,8 @@
+ LDFLAGS = @LDFLAGS@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
++LIBSN_CFLAGS = @LIBSN_CFLAGS@
++LIBSN_LIBS = @LIBSN_LIBS@
+ LIBTOOL = @LIBTOOL@
+ LIPO = @LIPO@
+ LN_S = @LN_S@

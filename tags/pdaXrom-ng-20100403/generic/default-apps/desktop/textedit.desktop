@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=TextEdit
+Comment=Text editor
+Comment[bg]=Текстов редактор
+Comment[ru]=Текстовый редактор
+Exec=textedit %f
+Icon=text-editor
+Terminal=false
+Type=Application
+MimeType=text/plain
+Categories=Utility;TextEditor;
+OnlyShowIn=KDE

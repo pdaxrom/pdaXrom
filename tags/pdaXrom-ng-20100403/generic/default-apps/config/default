@@ -1,0 +1,9 @@
+WEBBROWSER=firefox
+XTERMINAL=lxterminal
+TEXTPROCESSOR=abiword
+SPREADSHEET=gnumeric
+TEXTEDIT=leafpad
+PICTVIEWER=gpicviewer
+MEDIAPLAYER=mplayer
+AUDIOPLAYER=audacious
+PDFVIEWER=epdfview

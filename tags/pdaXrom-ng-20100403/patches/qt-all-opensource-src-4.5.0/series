@@ -1,0 +1,3 @@
+g++.conf.diff
+linux.conf.diff
+qatomic32_ppc.patch

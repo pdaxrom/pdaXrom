@@ -1,0 +1,6 @@
+Makefile.webkit.diff
+config.webkit.diff
+configure.diff
+configure.in.diff
+skipdownload.c.diff
+skipstone.h.diff

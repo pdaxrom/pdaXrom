@@ -1,0 +1,91 @@
+From 3d8f972994060604f225cb026cfba715f159e547 Mon Sep 17 00:00:00 2001
+From: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+Date: Thu, 19 Feb 2009 16:50:46 +0100
+Subject: [PATCH] m68k: Hook up rtc-generic
+
+m68k has been a long time user of the generic RTC abstraction, so hook up
+rtc-generic:
+  - Create the "rtc-generic" platform device if mach_hwclk is set,
+  - Add checks for mach_hwclk, in anticipation of RTC chip drivers being moved
+    to drivers/rtc/.
+
+Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+Acked-by: Alessandro Zummo <a.zummo@towertech.it>
+---
+ arch/m68k/include/asm/rtc.h |    7 +++++--
+ arch/m68k/kernel/time.c     |   18 ++++++++++++++++++
+ drivers/rtc/Kconfig         |    2 +-
+ 3 files changed, 24 insertions(+), 3 deletions(-)
+
+diff --git a/arch/m68k/include/asm/rtc.h b/arch/m68k/include/asm/rtc.h
+index 5d3e038..a4d08ea 100644
+--- a/arch/m68k/include/asm/rtc.h
++++ b/arch/m68k/include/asm/rtc.h
+@@ -36,13 +36,16 @@ static inline unsigned int get_rtc_time(struct rtc_time *time)
+ 	 * RTC has RTC_DAY_OF_WEEK, we ignore it, as it is only updated
+ 	 * by the RTC when initially set to a non-zero value.
+ 	 */
+-	mach_hwclk(0, time);
++	if (mach_hwclk)
++		mach_hwclk(0, time);
+ 	return RTC_24H;
+ }
+ 
+ static inline int set_rtc_time(struct rtc_time *time)
+ {
+-	return mach_hwclk(1, time);
++	if (mach_hwclk)
++		return mach_hwclk(1, time);
++	return -EINVAL;
+ }
+ 
+ static inline unsigned int get_rtc_ss(void)
+diff --git a/arch/m68k/kernel/time.c b/arch/m68k/kernel/time.c
+index 7db4159..54d9807 100644
+--- a/arch/m68k/kernel/time.c
++++ b/arch/m68k/kernel/time.c
+@@ -18,6 +18,7 @@
+ #include <linux/string.h>
+ #include <linux/mm.h>
+ #include <linux/rtc.h>
++#include <linux/platform_device.h>
+ 
+ #include <asm/machdep.h>
+ #include <asm/io.h>
+@@ -159,3 +160,20 @@ int do_settimeofday(struct timespec *tv)
+ }
+ 
+ EXPORT_SYMBOL(do_settimeofday);
++
++
++static int __init rtc_init(void)
++{
++	struct platform_device *pdev;
++
++	if (!mach_hwclk)
++		return -ENODEV;
++
++	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	return 0;
++}
++
++module_init(rtc_init);
+diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
+index d0aeff2..c8ead87 100644
+--- a/drivers/rtc/Kconfig
++++ b/drivers/rtc/Kconfig
+@@ -681,7 +681,7 @@ config RTC_DRV_GENERIC
+ 	tristate "Generic RTC support"
+ 	# Please consider writing a new RTC driver instead of using the generic
+ 	# RTC abstraction
+-	depends on PARISC
++	depends on PARISC || M68K
+ 	help
+ 	  Say Y or M here to enable RTC support on systems using the generic
+ 	  RTC abstraction. If you do not know what you are doing, you should
+-- 
+1.6.0.4
+

@@ -1,0 +1,78 @@
+diff -Nur kahakai-0.6.2/configure kahakai-0.6.2-gcc44/configure
+--- kahakai-0.6.2/configure	2004-02-08 06:52:10.000000000 +0600
++++ kahakai-0.6.2-gcc44/configure	2009-12-14 13:32:09.446396610 +0600
+@@ -24706,7 +24706,8 @@
+   echo ""
+   { { echo "$as_me:$LINENO: error: you need to enable support for at least one scripting language !" >&5
+ echo "$as_me: error: you need to enable support for at least one scripting language !" >&2;}
+-   { (exit 1); exit 1; }; }
++   #{ (exit 1); exit 1; }; 
++   }
+ fi
+ 
+ echo ""
+diff -Nur kahakai-0.6.2/src/Kahakai.hh kahakai-0.6.2-gcc44/src/Kahakai.hh
+--- kahakai-0.6.2/src/Kahakai.hh	2004-02-06 06:08:35.000000000 +0600
++++ kahakai-0.6.2-gcc44/src/Kahakai.hh	2009-12-14 13:30:19.177061640 +0600
+@@ -26,6 +26,7 @@
+ # include <string>
+ # include <map>
+ # include <sstream>
++# include <cstring>
+ 
+ # define __m_wastrdup(_str) (((__m_wastrdup_tmp =                       \
+                                new char[strlen(_str) + 1]) &&           \
+diff -Nur kahakai-0.6.2/src/Logger.hh kahakai-0.6.2-gcc44/src/Logger.hh
+--- kahakai-0.6.2/src/Logger.hh	2004-02-06 06:08:35.000000000 +0600
++++ kahakai-0.6.2-gcc44/src/Logger.hh	2009-12-14 13:34:42.035206667 +0600
+@@ -10,6 +10,7 @@
+ 
+ # include <iostream>
+ # include <fstream>
++# include <limits.h>
+ 
+ # include "config.h"
+ 
+diff -Nur kahakai-0.6.2/src/main.cc kahakai-0.6.2-gcc44/src/main.cc
+--- kahakai-0.6.2/src/main.cc	2004-02-06 06:08:40.000000000 +0600
++++ kahakai-0.6.2-gcc44/src/main.cc	2009-12-14 13:34:20.105166528 +0600
+@@ -28,6 +28,9 @@
+ #endif // HAVE_STDIO_H
+ #include <iostream>
+ #include <string>
++#include <cstdio>
++#include <cstdlib>
++#include <limits.h>
+ 
+ using std::exception;
+ using std::string;
+diff -Nur kahakai-0.6.2/src/Screen.cc kahakai-0.6.2-gcc44/src/Screen.cc
+--- kahakai-0.6.2/src/Screen.cc	2004-02-08 06:50:59.000000000 +0600
++++ kahakai-0.6.2-gcc44/src/Screen.cc	2009-12-14 13:36:36.316436539 +0600
+@@ -59,6 +59,7 @@
+ #endif // HAVE_SIGNAL_H
+ }
+ 
++#include <errno.h>
+ #include <algorithm>
+ #include <sstream>
+ #include <iostream>
+diff -Nur kahakai-0.6.2/src/Script.cc kahakai-0.6.2-gcc44/src/Script.cc
+--- kahakai-0.6.2/src/Script.cc	2004-02-06 06:08:37.000000000 +0600
++++ kahakai-0.6.2-gcc44/src/Script.cc	2009-12-14 14:16:13.515214180 +0600
+@@ -16,9 +16,15 @@
+ #include <sys/stat.h>
+ #include <unistd.h>
+ 
++#include <cstdio>
++#include <cstdlib>
+ #include <iostream>
+ #include <string>
+ #include <list>
++#include <algorithm>
++#include <sstream>
++#include <iostream>
++#include <iomanip>
+ 
+ using std::string;
+ using std::list;

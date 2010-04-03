@@ -1,0 +1,29 @@
+From ac9fbfe2c57b1abf885c330bdcbaea096c53f3de Mon Sep 17 00:00:00 2001
+From: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+Date: Fri, 6 Mar 2009 15:54:54 +0100
+Subject: [PATCH] parisc: rtc: get_rtc_time() returns unsigned int
+
+Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+Acked-by: Alessandro Zummo <a.zummo@towertech.it>
+---
+ drivers/rtc/rtc-parisc.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/rtc/rtc-parisc.c b/drivers/rtc/rtc-parisc.c
+index b966f56..620b949 100644
+--- a/drivers/rtc/rtc-parisc.c
++++ b/drivers/rtc/rtc-parisc.c
+@@ -13,9 +13,7 @@
+ 
+ static int parisc_get_time(struct device *dev, struct rtc_time *tm)
+ {
+-	unsigned long ret;
+-
+-	ret = get_rtc_time(tm);
++	unsigned int ret = get_rtc_time(tm);
+ 
+ 	if (ret & RTC_BATT_BAD)
+ 		return -EOPNOTSUPP;
+-- 
+1.6.0.4
+

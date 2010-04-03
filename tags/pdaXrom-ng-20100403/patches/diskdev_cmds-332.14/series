@@ -1,0 +1,5 @@
+diskdev_cmds-332.14.patch
+newfs_hfs_ldflags.patch
+makehfs_uclibc.patch
+dfalib_uclibc.patch
+dfalib_ar.patch

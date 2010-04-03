@@ -1,0 +1,48 @@
+#!/bin/sh
+
+ps3-video-mode -m $1
+
+echo "boot me!!! [$@]"
+
+. /etc/init.d/functions
+
+killall sixaxisd >/dev/null 2>/dev/null
+
+for i in /etc/rc.d/K*; do 
+    $i stop
+done
+
+fuser -km /tmp
+
+log_begin_msg -n "Unmounting filesystems..."
+umount -a -r 2>/dev/null >/dev/null
+log_end_msg 0
+
+pwd
+
+mount /proc
+
+insmod boot/ps3vram.ko
+mknod /dev/ps3vram b 253 0
+
+for i in 7 6 5 4 3 2 1 0; do
+    mknod /dev/loop$i b 7 $i
+done
+
+/sbin/losetup -o 134217728 /dev/loop0 /dev/ps3vram && /sbin/mkswap /dev/loop0 >/dev/null 2>/dev/null && swapon /dev/loop0
+echo -n "Copy root image to vram ... "
+dd if=boot/rootfs.img of=/dev/ps3vram bs=1M >/dev/null 2>/dev/null && echo "done!" || echo "error!"
+cd /
+umount -l /mnt
+mkdir /rootfs
+mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs
+###
+mknod /dev/tty1 c 4 1
+mount -o bind /rootfs/etc /etc
+###
+umount /proc
+
+cd /rootfs
+exec chroot . /etc/init.d/rcS
+
+/bin/sh

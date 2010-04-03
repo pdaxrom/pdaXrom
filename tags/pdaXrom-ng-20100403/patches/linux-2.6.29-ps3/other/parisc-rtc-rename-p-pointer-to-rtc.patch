@@ -1,0 +1,51 @@
+From 7d9ee74bcff69483f61a041f0669e166206affbb Mon Sep 17 00:00:00 2001
+From: dann frazier <dannf@hp.com>
+Date: Thu, 15 Jan 2009 16:46:56 -0700
+Subject: [PATCH] parisc: rtc: rename p pointer to rtc
+
+Signed-off-by: dann frazier <dannf@hp.com>
+Acked-by: Alessandro Zummo <a.zummo@towertech.it>
+Signed-off-by: Kyle McMartin <kyle@mcmartin.ca>
+---
+ drivers/rtc/rtc-parisc.c |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/rtc/rtc-parisc.c b/drivers/rtc/rtc-parisc.c
+index c29e918..b966f56 100644
+--- a/drivers/rtc/rtc-parisc.c
++++ b/drivers/rtc/rtc-parisc.c
+@@ -38,23 +38,23 @@ static const struct rtc_class_ops parisc_rtc_ops = {
+ 
+ static int __init parisc_rtc_probe(struct platform_device *dev)
+ {
+-	struct rtc_device *p;
++	struct rtc_device *rtc;
+ 
+-	p = rtc_device_register("rtc-parisc", &dev->dev, &parisc_rtc_ops,
+-				THIS_MODULE);
+-	if (IS_ERR(p))
+-		return PTR_ERR(p);
++	rtc = rtc_device_register("rtc-parisc", &dev->dev, &parisc_rtc_ops,
++				  THIS_MODULE);
++	if (IS_ERR(rtc))
++		return PTR_ERR(rtc);
+ 
+-	platform_set_drvdata(dev, p);
++	platform_set_drvdata(dev, rtc);
+ 
+ 	return 0;
+ }
+ 
+ static int __exit parisc_rtc_remove(struct platform_device *dev)
+ {
+-	struct rtc_device *p = platform_get_drvdata(dev);
++	struct rtc_device *rtc = platform_get_drvdata(dev);
+ 
+-	rtc_device_unregister(p);
++	rtc_device_unregister(rtc);
+ 
+ 	return 0;
+ }
+-- 
+1.6.0.4
+
