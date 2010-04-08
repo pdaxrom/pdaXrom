@@ -37,14 +37,16 @@ build_e2fsprogs() {
 	    --with-cc=${CROSS}gcc \
 	    --with-linker=${CROSS}gcc \
 	    --enable-elf-shlibs \
+	    --disable-libuuid \
+	    --disable-libblkid \
 	    $C \
 	    || error
     ) || error "configure"
     
     make $MAKEARGS || error
 
-    make -C lib/uuid $MAKEARGS DESTDIR=$TARGET_BIN_DIR install || error
-    make -C lib/blkid $MAKEARGS DESTDIR=$TARGET_BIN_DIR install || error
+    #make -C lib/uuid $MAKEARGS DESTDIR=$TARGET_BIN_DIR install || error
+    #make -C lib/blkid $MAKEARGS DESTDIR=$TARGET_BIN_DIR install || error
 
     install_sysroot_files || error
 

@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-LIBUSB=libusb-1.0.2.tar.bz2
+LIBUSB=libusb-1.0.6.tar.bz2
 LIBUSB_MIRROR=http://downloads.sourceforge.net/libusb
-LIBUSB_DIR=$BUILD_DIR/libusb-1.0.2
+LIBUSB_DIR=$BUILD_DIR/libusb-1.0.6
 LIBUSB_ENV="$CROSS_ENV_AC"
 
 build_libusb() {
@@ -35,11 +35,9 @@ build_libusb() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 libusb/.libs/libusb-1.0.so.0.0.0 $ROOTFS_DIR/usr/lib/libusb-1.0.so.0.0.0 || error
-    ln -sf libusb-1.0.so.0.0.0 $ROOTFS_DIR/usr/lib/libusb-1.0.so.0
-    ln -sf libusb-1.0.so.0.0.0 $ROOTFS_DIR/usr/lib/libusb-1.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libusb-1.0.so.0.0.0
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libusb.installed"

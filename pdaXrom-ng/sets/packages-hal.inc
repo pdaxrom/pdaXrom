@@ -13,6 +13,8 @@ fi
 . $RULES_DIR/libusb-compat.sh
 . $RULES_DIR/usbutils.sh
 . $RULES_DIR/dbus-glib.sh
+. $RULES_DIR/libblkid.sh
+. $RULES_DIR/libuuid.sh
 . $RULES_DIR/hal.sh
 . $RULES_DIR/hal-info.sh
 

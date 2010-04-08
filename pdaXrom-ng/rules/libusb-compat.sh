@@ -35,11 +35,10 @@ build_libusb_compat() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 libusb/.libs/libusb-0.1.so.4.4.4 $ROOTFS_DIR/usr/lib/libusb-0.1.so.4.4.4 || error
-    ln -sf libusb-0.1.so.4.4.4 $ROOTFS_DIR/usr/lib/libusb-0.1.so.4
-    ln -sf libusb-0.1.so.4.4.4 $ROOTFS_DIR/usr/lib/libusb-0.1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libusb-0.1.so.4.4.4
+
+    install_fakeroot_init
+    rm -rf fakeroot/usr/bin
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libusb_compat.installed"
