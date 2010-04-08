@@ -9,11 +9,11 @@
 # see the README file.
 #
 
-SQLITE_VERSION=3.6.22
+SQLITE_VERSION=3.6.23.1
 SQLITE=sqlite-${SQLITE_VERSION}.tar.gz
 SQLITE_MIRROR=http://sqlite.org
 SQLITE_DIR=$BUILD_DIR/sqlite-${SQLITE_VERSION}
-SQLITE_ENV="$CROSS_ENV_AC"
+SQLITE_ENV="$CROSS_ENV_AC CPPFLAGS='-DSQLITE_ENABLE_COLUMN_METADATA=1'"
 
 build_sqlite() {
     test -e "$STATE_DIR/sqlite.installed" && return
