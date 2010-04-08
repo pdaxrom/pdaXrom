@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-HAL_INFO_VERSION=20081219
+HAL_INFO_VERSION=20091130
 HAL_INFO=hal-info-${HAL_INFO_VERSION}.tar.gz
 HAL_INFO_MIRROR=http://hal.freedesktop.org/releases
 HAL_INFO_DIR=$BUILD_DIR/hal-info-${HAL_INFO_VERSION}

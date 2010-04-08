@@ -35,7 +35,7 @@ if [ "`get_kernel_subarch $TARGET_ARCH`" = "i386" ]; then
     . $RULES_DIR/iwlwifi-3945-ucode.sh
     . $RULES_DIR/iwlwifi-4965-ucode.sh
     . $RULES_DIR/iwlwifi-5000-ucode.sh
-    . $RULES_DIR/broadcom-sta.sh
+#    . $RULES_DIR/broadcom-sta.sh
 fi
 
 . $RULES_DIR/ralink-firmware.sh
