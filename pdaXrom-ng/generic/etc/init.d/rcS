@@ -43,4 +43,8 @@ for i in /etc/rc.d/S*; do
     $i start
 done
 
+if [ -x /etc/rc.local ]; then
+    /etc/rc.local
+fi
+
 splash_finish
