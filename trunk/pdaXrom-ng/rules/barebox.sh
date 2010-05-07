@@ -15,6 +15,10 @@ BAREBOX_MIRROR=http://www.barebox.org/download
 BAREBOX_DIR=$BUILD_DIR/barebox-${BAREBOX_VERSION}
 BAREBOX_ENV="$CROSS_ENV_AC"
 
+if [ "x$BAREBOX_CONFIG" = "x" ]; then
+    error "No barebox config defined!"
+fi
+
 build_barebox() {
     test -e "$STATE_DIR/barebox.installed" && return
     banner "Build barebox"
@@ -23,16 +27,8 @@ build_barebox() {
     apply_patches $BAREBOX_DIR $BAREBOX
     pushd $TOP_DIR
     cd $BAREBOX_DIR
-#    (
-#    eval \
-#	$CROSS_CONF_ENV \
-#	$BAREBOX_ENV \
-#	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
-#	    --prefix=/usr \
-#	    --sysconfdir=/etc \
-#	    || error
-#    ) || error "configure"
 
+    make ${BAREBOX_CONFIG}_config || error "configure barebox"
     make $MAKEARGS || error
 
     #install_sysroot_files || error
