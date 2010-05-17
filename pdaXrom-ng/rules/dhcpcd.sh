@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-DHCPCD=dhcpcd-4.0.7.tar.bz2
+DHCPCD=dhcpcd-5.2.2.tar.bz2
 DHCPCD_MIRROR=http://roy.marples.name/downloads/dhcpcd
-DHCPCD_DIR=$BUILD_DIR/dhcpcd-4.0.7
+DHCPCD_DIR=$BUILD_DIR/dhcpcd-5.2.2
 DHCPCD_ENV="$CROSS_ENV_AC"
 
 build_dhcpcd() {
@@ -22,7 +22,9 @@ build_dhcpcd() {
     apply_patches $DHCPCD_DIR $DHCPCD
     pushd $TOP_DIR
     cd $DHCPCD_DIR
-    
+
+    ./configure --with-cc=${CROSS}gcc --enable-fork --prefix=/ --libexecdir=/lib/dhcpcd
+
     make $MAKEARGS OS="Linux" \
 	HAVE_FORK="yes" \
 	HAVE_INIT="SYSV" \
