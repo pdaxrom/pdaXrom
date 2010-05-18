@@ -1,7 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=Shutdown
-Comment=Shutdown or Reboot
-Icon=stock_exit
-Exec=minidesk-logout
-NoDisplay=true
