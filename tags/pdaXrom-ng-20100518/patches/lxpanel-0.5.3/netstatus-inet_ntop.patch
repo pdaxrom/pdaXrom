@@ -1,0 +1,62 @@
+--- s/src/plugins/netstat/devproc.c-	2009-09-09 10:45:25.000000000 +0700
++++ s/src/plugins/netstat/devproc.c	2009-09-09 12:42:32.000000000 +0700
+@@ -353,6 +353,7 @@
+ 
+ 				/* get network information */
+ 				if (devptr->info.enable&&devptr->info.plug) {
++					char strbuf[INET_ADDRSTRLEN + 1];
+ 					if (devptr->info.flags & IFF_RUNNING) {
+ 						/* release old information */
+ 						g_free(devptr->info.ipaddr);
+@@ -365,8 +366,10 @@
+ 						ifr.ifr_name[IF_NAMESIZE - 1] = '\0';
+ 						if (ioctl(sockfd, SIOCGIFADDR, &ifr)<0)
+ 							devptr->info.ipaddr = g_strdup("0.0.0.0");
+-						else
+-							devptr->info.ipaddr = g_strdup(inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
++						else {
++							inet_ntop(AF_INET, &((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr, strbuf, INET_ADDRSTRLEN);
++							devptr->info.ipaddr = g_strdup(strbuf);
++						}
+ 
+ 						/* Point-to-Porint Address */
+ 						if (devptr->info.flags & IFF_POINTOPOINT) {
+@@ -375,8 +378,10 @@
+ 							ifr.ifr_name[IF_NAMESIZE - 1] = '\0';
+ 							if (ioctl(sockfd, SIOCGIFDSTADDR, &ifr)<0)
+ 								devptr->info.dest = NULL;
+-							else
+-								devptr->info.dest = g_strdup(inet_ntoa(((struct sockaddr_in*)&ifr.ifr_dstaddr)->sin_addr));
++							else {
++								inet_ntop(AF_INET, &((struct sockaddr_in *)&ifr.ifr_dstaddr)->sin_addr, strbuf, INET_ADDRSTRLEN);
++								devptr->info.dest = g_strdup(strbuf);
++							}
+ 						}
+ 
+ 						/* Broadcast */
+@@ -386,8 +391,10 @@
+ 							ifr.ifr_name[IF_NAMESIZE - 1] = '\0';
+ 							if (ioctl(sockfd, SIOCGIFBRDADDR, &ifr)<0)
+ 								devptr->info.bcast = NULL;
+-							else
+-								devptr->info.bcast = g_strdup(inet_ntoa(((struct sockaddr_in*)&ifr.ifr_broadaddr)->sin_addr));
++							else {
++								inet_ntop(AF_INET, &((struct sockaddr_in *)&ifr.ifr_broadaddr)->sin_addr, strbuf, INET_ADDRSTRLEN);
++								devptr->info.bcast = g_strdup(strbuf);
++							}
+ 						}
+ 
+ 						/* Netmask */
+@@ -396,8 +403,10 @@
+ 						ifr.ifr_name[IF_NAMESIZE - 1] = '\0';
+ 						if (ioctl(sockfd, SIOCGIFNETMASK, &ifr)<0)
+ 							devptr->info.mask = NULL;
+-						else
+-							devptr->info.mask = g_strdup(inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
++						else {
++							inet_ntop(AF_INET, &((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr, strbuf, INET_ADDRSTRLEN);
++							devptr->info.mask = g_strdup(strbuf);
++						}
+ 
+ 						/* Wireless Information */
+ 						if (devptr->info.wireless) {

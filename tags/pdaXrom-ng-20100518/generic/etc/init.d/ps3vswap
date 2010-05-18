@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+
+. /etc/init.d/functions
+
+NAME=ps3vswap
+DESC="PS3 vram swap"
+SWAPDEV=/dev/ps3vram
+
+grep "mtdblock" /proc/devices 2>/dev/null >/dev/null || exit 0
+grep "noswap" /proc/cmdline 2>/dev/null >/dev/null && exit 0
+
+go_background $1
+
+#[ -e $SWAPDEV ] || mknod $SWAPDEV b 31 0
+
+case "$1" in
+  start)
+	log_begin_msg -n "Starting PS3 vram swap"
+	if mount | grep squashfs | grep -q ps3vram ; then
+	    log_end_msg $?
+	else
+	    mkswap $SWAPDEV >/dev/null 2>/dev/null && swapon $SWAPDEV >/dev/null 2>/dev/null
+	    log_end_msg $?
+	fi
+	;;
+  stop)
+	log_begin_msg -n "Stopping PS3 vram swap"
+	if mount | grep squashfs | grep -q ps3vram ; then
+	    swapoff /dev/loop0  >/dev/null 2>/dev/null
+	else
+	    swapoff $SWAPDEV >/dev/null 2>/dev/null
+	fi
+	log_end_msg $?
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

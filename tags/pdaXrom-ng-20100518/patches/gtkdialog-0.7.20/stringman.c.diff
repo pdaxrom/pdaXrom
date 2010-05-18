@@ -1,0 +1,21 @@
+--- gtkdialog-0.7.20/src/stringman.c-	2007-03-16 20:25:47.000000000 +0600
++++ gtkdialog-0.7.20/src/stringman.c	2009-11-11 23:10:07.000000000 +0600
+@@ -359,7 +359,7 @@
+ 		return strdup(tmp);
+ 
+ 
+-	snprintf(tmp, 127, "locate /%s", filename);
++	snprintf(tmp, 127, "find /usr/share/icons /usr/share/pixmaps -name %s", filename);
+ 	tmp[127] = '\0';
+ 
+ 	locate = popen(tmp, "r");
+@@ -373,6 +373,9 @@
+ 			return line;
+ 		}
+ 	}
++	pclose(locate);
++
++	return NULL;
+ }
+ 
+ /*

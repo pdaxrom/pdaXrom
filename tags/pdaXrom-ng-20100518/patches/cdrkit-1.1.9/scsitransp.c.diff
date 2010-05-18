@@ -1,0 +1,11 @@
+--- cdrkit-1.1.9.orig/libusal/scsitransp.c
++++ cdrkit-1.1.9/libusal/scsitransp.c
+@@ -301,7 +301,7 @@
+ 
+ 	printf("%s", msg);
+ 	flush();
+-	if (getline(okbuf, sizeof (okbuf)) == EOF)
++	if (get_line(okbuf, sizeof (okbuf)) == EOF)
+ 		exit(EX_BAD);
+ 	if (streql(okbuf, "y") || streql(okbuf, "yes") ||
+ 	    streql(okbuf, "Y") || streql(okbuf, "YES"))

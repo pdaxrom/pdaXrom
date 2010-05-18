@@ -1,0 +1,1721 @@
+diff -Nur mplayer-29544/configure mplayer-29544-godson2/configure
+--- mplayer-29544/configure	2009-08-22 16:19:35.000000000 +0700
++++ mplayer-29544-godson2/configure	2009-08-22 15:01:28.000000000 +0700
+@@ -469,6 +469,7 @@
+   --enable-armv6t2          enable ARMv6t2 (ARM) [autodetect]
+   --enable-armvfp           enable ARM VFP (ARM) [autodetect]
+   --enable-iwmmxt           enable iWMMXt (ARM) [autodetect]
++  --enable-godson2          disable GODSON2 Multi-Media Instructions usage [disable]
+   --disable-fastmemcpy      disable 3DNow!/SSE/MMX optimized memcpy [enable]
+   --enable-big-endian       force byte order to big-endian [autodetect]
+   --enable-debug[=1-3]      compile-in debugging information [disable]
+@@ -518,6 +519,7 @@
+ _armv6t2=auto
+ _armvfp=auto
+ _iwmmxt=auto
++_godson2_mmi=no
+ _mtrr=auto
+ _altivec=auto
+ _install=install
+@@ -1322,6 +1324,8 @@
+   --disable-armvfp) _armvfp=no ;;
+   --enable-iwmmxt) _iwmmxt=yes ;;
+   --disable-iwmmxt) _iwmmxt=no ;;
++  --enable-godson2) _godson2_mmi=yes ;;
++  --disable-godson2) _godson2_mmi=no ;;
+   --enable-mmx)	_mmx=yes ;;
+   --disable-mmx) # 3Dnow! and MMX2 require MMX
+         _3dnow=no _3dnowext=no _mmx=no _mmxext=no ;;
+@@ -8912,6 +8916,11 @@
+ #endif /* MPLAYER_CONFIG_H */
+ EOF
+ 
++if test "$_godson2_mmi" = "yes"; then
++    echo "HAVE_LOONGSON=yes" >> config.mak
++    echo "#define HAVE_LOONGSON 1" >> $TMPH
++fi
++
+ # Do not overwrite an unchanged config.h to avoid superfluous rebuilds.
+ cmp -s "$TMPH" config.h || mv -f "$TMPH" config.h
+ 
+diff -Nur mplayer-29544/libavcodec/avcodec.h mplayer-29544-godson2/libavcodec/avcodec.h
+--- mplayer-29544/libavcodec/avcodec.h	2009-08-22 13:14:52.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/avcodec.h	2009-08-22 14:35:39.000000000 +0700
+@@ -1540,6 +1540,8 @@
+ #define FF_IDCT_EA            21
+ #define FF_IDCT_SIMPLENEON    22
+ #define FF_IDCT_SIMPLEALPHA   23
++#define FF_IDCT_LIBMPEG2GODSON2	24
++#define FF_IDCT_XVIDGODSON2     25
+ 
+     /**
+      * slice count
+diff -Nur mplayer-29544/libavcodec/dsputil.c mplayer-29544-godson2/libavcodec/dsputil.c
+--- mplayer-29544/libavcodec/dsputil.c	2009-08-22 13:14:53.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/dsputil.c	2009-08-22 14:50:06.000000000 +0700
+@@ -4693,6 +4693,7 @@
+     if (ARCH_PPC)        dsputil_init_ppc   (c, avctx);
+     if (HAVE_MMI)        dsputil_init_mmi   (c, avctx);
+     if (ARCH_SH4)        dsputil_init_sh4   (c, avctx);
++    if (HAVE_LOONGSON) dsputil_init_godson2(c, avctx);
+     if (ARCH_BFIN)       dsputil_init_bfin  (c, avctx);
+ 
+     for(i=0; i<64; i++){
+diff -Nur mplayer-29544/libavcodec/dsputil.h mplayer-29544-godson2/libavcodec/dsputil.h
+--- mplayer-29544/libavcodec/dsputil.h	2009-08-22 13:14:53.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/dsputil.h	2009-08-22 14:38:06.000000000 +0700
+@@ -606,6 +606,7 @@
+ void dsputil_init_mmx(DSPContext* c, AVCodecContext *avctx);
+ void dsputil_init_ppc(DSPContext* c, AVCodecContext *avctx);
+ void dsputil_init_sh4(DSPContext* c, AVCodecContext *avctx);
++void dsputil_init_pix_godson2(DSPContext* c, AVCodecContext *avctx);
+ void dsputil_init_vis(DSPContext* c, AVCodecContext *avctx);
+ 
+ #define DECLARE_ALIGNED_16(t, v) DECLARE_ALIGNED(16, t, v)
+diff -Nur mplayer-29544/libavcodec/godson2/dsputil_godson2.c mplayer-29544-godson2/libavcodec/godson2/dsputil_godson2.c
+--- mplayer-29544/libavcodec/godson2/dsputil_godson2.c	1970-01-01 07:00:00.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/godson2/dsputil_godson2.c	2009-08-22 16:12:38.000000000 +0700
+@@ -0,0 +1,378 @@
++/*
++ *  Copyright(C) 2006-2010 comcat <jiankemeng@gmail.com>
++ *
++ *  Optimized for Godson2 CPUs by comcat <jiankemeng@gmail.com>
++ * 
++ */
++
++#include "../dsputil.h"
++#include "../simple_idct.h"
++#include "../mpegvideo.h"
++
++//extern void ff_idct_xvid_godson2(short *block);
++
++extern void ff_godson2_idct(DCTELEM *block);
++extern void ff_idct_xvid_godson2(short *block);
++
++static void add_pixels_clamped_godson2(const DCTELEM *block, uint8_t *restrict pixels, int line_size)
++{
++    const DCTELEM *p;
++    uint8_t *pix;
++    int i,j;
++    p = block;
++    pix = pixels;
++    i = 4;
++    j = line_size << 1;
++	__asm __volatile("xor  $f14, $f14, $f14\n\t");
++	do {
++		__asm __volatile(
++				"ldc1   $f0, 0(%2)			\n\t"
++				"ldc1   $f2, 8(%2)			\n\t"
++				"ldc1   $f4, 16(%2)			\n\t"
++				"ldc1   $f6, 24(%2)			\n\t"
++				"ldc1   $f8, %0				\n\t"
++				"ldc1   $f12, %1			\n\t"
++				"mov.d  $f10, $f8			\n\t"
++
++				"punpcklbh  $f8, $f8, $f14 	\n\t"
++				"punpckhbh  $f10, $f10, $f14\n\t"
++
++				"paddsh $f0, $f0, $f8		\n\t"
++				"paddsh $f2, $f2, $f10		\n\t"
++
++				"mov.d  $f10, $f12			\n\t"
++
++				"punpcklbh  $f12, $f12, $f14\n\t"
++				"punpckhbh  $f10, $f10, $f14\n\t"
++
++				"paddsh $f4, $f4, $f12		\n\t"
++				"paddsh $f6, $f6, $f10		\n\t"
++
++				"packushb   $f0, $f0, $f2	\n\t"
++				"packushb   $f4, $f4, $f6	\n\t"
++
++				"sdc1   $f0, %0				\n\t"
++				"sdc1   $f4, %1				\n\t"
++				:"+m"(*pix), "+m"(*(pix+line_size))
++				:"r"(p)
++				:"$f0","$f2","$f4","$f6","$f8","$f10","$f12","$f14","memory");
++		pix += j;
++		p += 16;
++	} while (--i);
++
++}
++
++static void put_pixels_clamped_godson2(const DCTELEM *block, uint8_t *restrict pixels, int line_size)
++{
++    const DCTELEM *p;
++    uint8_t *pix;
++    int tmp = line_size * 3;
++    p = block;
++    pix = pixels;
++	__asm __volatile
++	   (
++		   //"dadd	$12, $0, $0\n\t"
++		   //"dadd	$13, $0, $0\n\t"
++		   //"dadd	$14, $0, $0\n\t"
++
++		   "ldc1    $f0, 0(%3)\n\t"
++		   "ldc1    $f2, 8(%3)\n\t"
++		   "ldc1    $f4, 16(%3)\n\t"
++		   "ldc1    $f6, 24(%3)\n\t"
++		   "ldc1    $f8, 32(%3)\n\t"
++		   "ldc1    $f10, 40(%3)\n\t"
++		   "ldc1    $f16, 48(%3)\n\t"
++		   "ldc1    $f18, 56(%3)\n\t"
++
++		   "packushb    $f0, $f0, $f2\n\t"
++		   "packushb    $f4, $f4, $f6\n\t"
++		   "packushb    $f8, $f8, $f10\n\t"
++		   "packushb    $f16, $f16, $f18\n\t"
++
++		   "add    $12, %0, %1\n\t"
++		   "add    $13, $12, %1\n\t"
++		   "add    $14, %0, %2\n\t"
++
++		   "sdc1    $f0, 0(%0)\n\t"
++		   "sdc1    $f4, 0($12)\n\t"
++		   "sdc1    $f8, 0($13)\n\t"
++		   "sdc1    $f16, 0($14)\n\t"
++		   :
++		   :"r" (pix), "r" (line_size), "r" (tmp), "r"(p)
++		   :"$12","$13","$14","$f0","$f2","$f4","$f6","$f8","$f10","$16","$18"
++		);
++
++		pix += line_size*4;
++		p += 32;
++
++	__asm __volatile
++		(
++		    "dadd	$12, $0, $0\n\t"
++		    "dadd	$13, $0, $0\n\t"
++		    "dadd	$14, $0, $0\n\t"
++			"lw      $12, %3\n\t"
++
++			"ldc1    $f0, 0($12)\n\t"
++			"ldc1    $f2, 8($12)\n\t"
++			"ldc1    $f4, 16($12)\n\t"
++			"ldc1    $f6, 24($12)\n\t"
++			"ldc1    $f8, 32($12)\n\t"
++			"ldc1    $f10, 40($12)\n\t"
++			"ldc1    $f16, 48($12)\n\t"
++			"ldc1    $f18, 56($12)\n\t"
++
++			"packushb        $f0, $f0, $f2\n\t"
++			"packushb        $f4, $f4, $f6\n\t"
++			"packushb        $f8, $f8, $f10\n\t"
++			"packushb        $f16, $f16, $f18\n\t"
++
++			"add    $12, %1, %0\n\t"
++			"add    $13, $12, %1\n\t"
++			"add    $15, %2, %0\n\t"
++
++			"sdc1    $f0, 0(%0)\n\t"
++			"sdc1    $f4, 0($12)\n\t"
++
++			"sdc1    $f8, 0($13)\n\t"
++			"sdc1    $f16, 0($15)\n\t"
++			:
++			:"r" (pix), "r" (line_size), "r" (tmp), "m"(p)
++			:"$12","$13","$15","$f0","$f2","$f4","$f6","$f8","$f10","$16","$18","memory"
++		);
++
++}
++
++void put_signed_pixels_clamped_godson2(const DCTELEM *block, uint8_t *pixels, int line_size)
++{
++
++}
++
++
++void ff_godson2_idct_put(uint8_t *dest, int line_size, DCTELEM *block)
++{
++	ff_godson2_idct(block);
++	put_pixels_clamped_godson2(block, dest, line_size);
++}
++
++void ff_godson2_idct_add(uint8_t *dest, int line_size, DCTELEM *block)
++{
++	ff_godson2_idct(block);
++	add_pixels_clamped_godson2(block, dest, line_size);	
++}
++
++void ff_idct_xvid_godson2_put(uint8_t *dest, int line_size, DCTELEM *block)
++{
++	ff_idct_xvid_godson2(block);	
++	put_pixels_clamped_godson2(block, dest, line_size);
++}
++
++void ff_idct_xvid_godson2_add(uint8_t *dest, int line_size, DCTELEM *block)
++{
++	ff_idct_xvid_godson2(block);	
++	add_pixels_clamped_godson2(block, dest, line_size);	
++}
++
++/* draw the edges of width 'w' of an image of size width, height
++   this mmx version can only handle w==8 || w==16 */
++
++static void draw_edges_godson2(uint8_t *buf, int wrap, int width, int height, int w)
++{
++    uint8_t *ptr, *last_line;
++    int i;
++
++    last_line = buf + (height - 1) * wrap;
++    
++    ptr = buf;
++    if(w==8)
++    {
++        asm volatile(
++				"#.set mips3						\n\t"
++
++				"move		$9, %0				\n\t"
++
++                "1:                             \n\t"
++                
++				"xor		$f0, $f0, $f0		\n\t"
++				"lwc1		$f0, ($9)			\n\t"
++                
++				"punpcklbh	$f0, $f0, $f0		\n\t"
++
++				"add		$12, $9, %2			\n\t"
++                
++				"punpcklhw	$f0, $f0, $f0		\n\t"
++
++				"punpcklwd	$f0, $f0, $f0		\n\t"
++
++				"ldc1		$f2, -8($12)		\n\t"
++
++				"sdc1		$f0, -8($9)			\n\t"
++                
++				"punpckhbh	$f2, $f2, $f2		\n\t"
++                
++				"add		$9, $9, %1			\n\t"
++
++				"punpckhhw	$f2, $f2, $f2		\n\t"
++                
++				"sub		$13, $9, %3			\n\t"
++
++				"punpckhwd	$f2, $f2, $f2		\n\t"
++
++				"bltz		$13, 1b				\n\t"
++                
++				"sdc1		$f2, ($12)			\n\t"
++
++                : "+r" (ptr)
++                : "r" ((long)wrap), "r" ((long)width), "r" (ptr + wrap*height)
++				: "$9", "$13", "$12", "$f2", "$f0"
++        );
++    }
++    else
++    {
++        asm volatile(
++				"#.set mips3						\n\t"
++
++				"move		$8, %0				\n\t"
++
++                "1:                             \n\t"
++                
++				"xor		$f0, $f0, $f0		\n\t"
++				"lwc1		$f0, ($8)			\n\t"
++                
++				"punpcklbh	$f0, $f0, $f0		\n\t"
++				"punpcklhw	$f0, $f0, $f0		\n\t"
++				"punpcklwd	$f0, $f0, $f0		\n\t"
++
++				"sdc1		$f0, -8($8)			\n\t"
++				"sdc1		$f0, -16($8)		\n\t"
++                
++				"add		$15, $8, %2			\n\t"
++				"ldc1		$f2, -8($15)		\n\t"
++                
++				"punpckhbh	$f2, $f2, $f2		\n\t"
++				"punpckhhw	$f2, $f2, $f2		\n\t"
++				"punpckhwd	$f2, $f2, $f2		\n\t"
++
++				"sdc1		$f2, ($15)			\n\t"
++				"sdc1		$f2, 8($15)			\n\t"
++
++				"add		$8, $8, %1			\n\t"
++                
++				"sub		$16, $8, %3			\n\t"
++				"bltz		$16, 1b				\n\t"
++				"nop							\n\t"
++                : "+r" (ptr)
++                : "r" ((long)wrap), "r" ((long)width), "r" (ptr + wrap*height)
++				: "$8", "$15", "$16", "$f0", "$f2"
++        );
++    }
++
++    for(i=0;i<w;i+=4) {
++        
++        ptr= buf - (i + 1) * wrap - w;
++        asm volatile(
++				"#.set mips3						\n\t"
++				"move		$8, %0				\n\t"
++
++                "1:                             \n\t"
++                
++				"add		$9, $8, %1			\n\t"
++				"ldc1		$f0, ($9)			\n\t"
++
++				"add		$10, $8, %2			\n\t"
++				"add		$11, $10, %2		\n\t"
++				"add		$12, $8, %3			\n\t"
++                
++				"sdc1		$f0, ($8)			\n\t"
++				"sdc1		$f0, ($10)			\n\t"
++				"sdc1		$f0, ($11)			\n\t"
++				"sdc1		$f0, ($12)			\n\t"
++
++				"addiu		$8, $8, 8			\n\t"
++                
++				"sub		$13, $8, %4			\n\t"
++                
++				"bltz		$13, 1b				\n\t"
++				"nop							\n\t"
++
++                : "+r" (ptr)
++                : "r" (((long)buf - (long)ptr - w)), "r" ((long)-wrap), "r" ((long)-wrap*3), "r" (*(ptr+width+2*w))
++				: "$8", "$9", "$10", "$11", "$12", "$13", "$f0"
++		);
++
++        ptr= last_line + (i + 1) * wrap - w;
++
++        asm volatile(
++				"#.set mips3						\n\t"
++
++				"move		$9, %0				\n\t"
++
++                "1:                             \n\t"
++                
++				"add		$10, $9, %1			\n\t"
++				"ldc1		$f0, ($10)				\n\t"
++
++				"add		$11, $9, %2			\n\t"
++				"add		$12, $11, %2		\n\t"
++				"add		$13, $9, %3			\n\t"
++				
++				"sdc1		$f0, ($9)			\n\t"
++				"sdc1		$f0, ($11)			\n\t"
++				"sdc1		$f0, ($12)			\n\t"
++				"sdc1		$f0, ($13)			\n\t"
++                
++				"addiu		$9, $9, 8			\n\t"
++                
++				"sub		$14, $9, %4			\n\t"
++                
++				"bltz		$14, 1b				\n\t"
++				"nop							\n\t"
++                : "+r" (ptr)
++                : "r" ((long)last_line - (long)ptr - w), "r" ((long)wrap), "r" ((long)wrap*3), "r" (ptr+width+2*w)
++				: "$9", "$10", "$11", "$12", "$13", "$14", "$f0"
++
++		);
++    }
++}
++
++void dsputil_init_godson2(DSPContext *c, AVCodecContext *avctx)
++{
++
++	const int idct_algo = avctx->idct_algo;
++
++/*
++#ifdef CONFIG_ENCODERS
++	const int dct_algo = avctx->dct_algo;
++	if(dct_algo == FF_DCT_AUTO || dct_algo == FF_DCT_GODSON2)
++		c->fdct = ff_fdct_godson2;
++#endif
++*/
++
++	av_log(NULL, AV_LOG_INFO, "dsputil_init_godson2()\n");
++
++#if 0
++	if(avctx->lowres==0)
++	{
++		if(idct_algo == FF_IDCT_LIBMPEG2GODSON2)
++		{
++			c->idct_add = ff_godson2_idct_add;
++			c->idct_put = ff_godson2_idct_put;
++			c->idct = ff_godson2_idct;
++		}
++		else if(idct_algo == FF_IDCT_XVIDGODSON2)
++		{
++#endif
++			c->idct_add = ff_idct_xvid_godson2_add;
++			c->idct_put = ff_idct_xvid_godson2_put;
++			c->idct = ff_idct_xvid_godson2;
++		//}
++	//}
++
++	c->put_pixels_clamped = put_pixels_clamped_godson2;
++	c->add_pixels_clamped = add_pixels_clamped_godson2;
++	c->draw_edges = draw_edges_godson2;
++
++#ifdef	CONFIG_ENCODERS
++	dsputil_init_pix_godson2(c, avctx);
++#endif
++
++}
+diff -Nur mplayer-29544/libavcodec/godson2/idct_godson2.c mplayer-29544-godson2/libavcodec/godson2/idct_godson2.c
+--- mplayer-29544/libavcodec/godson2/idct_godson2.c	1970-01-01 07:00:00.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/godson2/idct_godson2.c	2009-08-22 16:01:22.000000000 +0700
+@@ -0,0 +1,326 @@
++/*
++ * Copyright (C) 2000-2003 Michel Lespinasse <walken@zoy.org>
++ * Copyright (C) 1999-2000 Aaron Holtzman <aholtzma@ess.engr.uvic.ca>
++ *
++ * Copyright (c) 2007-2010 comcat <jiankemeng@gmail.com>.
++ *
++ * Optimized for Godson2 CPUs by comcat <jiankemeng@gmail.com>
++ * 
++ * Based on i386
++ */
++
++#include "libavutil/common.h"
++#include "libavcodec/dsputil.h"
++
++
++#define ATTR_ALIGN(align) __attribute__ ((__aligned__ (align)))
++
++
++#define ROW_SHIFT 11
++#define COL_SHIFT 6
++
++#define round(bias) ((int)(((bias)+0.5) * (1<<ROW_SHIFT)))
++#define rounder(bias) {round (bias), round (bias)}
++
++
++
++#define godson2_table(c1,c2,c3,c4,c5,c6,c7) { c4,c2,-c4,-c2, \
++					       c4,c6,c4,c6, \
++					       c1,c3,-c1,-c5,\
++					       c5,c7,c3,-c7, \
++					       c4,-c6,c4,-c6, \
++					       -c4,c2,c4,-c2, \
++					       c5,-c1,c3,-c1, \
++					       c7,c3,c7,-c5 }
++
++
++static inline void godson2_row_head(int16_t * const row, const int offset,
++					const int16_t * const table)
++{
++	__asm__ volatile(
++		".set noreorder\n"
++		"ldc1	$f6,%0\n"
++		"ldc1	$f14,%1\n"
++		"ldc1	$f2,%2\n"
++		"ldc1	$f8,%3\n"
++		"dli $12,%4\n"
++		"dmtc1	$12,$f16\n"
++		"mov.d	$f4,$f6\n"
++		"mov.d	$f10,$f14\n"
++		"pmaddhw	$f2,$f2,$f4\n"
++		"pshufh	$f6,$f6,$f16\n"
++		".set reorder\n"
++		:	
++		:"m"(*(row+offset)),"m"(*(row+offset+4)),"m"(*table),"m"(*(table+4)),"i"(0x4e)
++		:"$f2","$f4","$f6","$f8","$f10","$f14","$f16","$12"
++	);
++}
++
++
++static inline void godson2_row(const int16_t * const table,
++				const int32_t * const rounder)
++{
++	__asm__ volatile (
++	".set\tnoreorder\n"
++	"ldc1	$f0,%0\n"
++	"pmaddhw $f8,$f8,$f6\n"
++	"ldc1	$f16,%1\n"
++	"dli	$13,%8\n"
++	"ldc1	$f20,%2\n"
++	"pmaddhw $f0,$f0,$f14\n"
++	"ldc1	$f22,%3\n"
++	"pmaddhw $f4,$f4,$f16\n"
++	"paddw	$f2,$f2,$f22\n"
++	"ldc1	$f22,%4\n"
++	"dmtc1	$13,$f16\n"
++	"paddw	$f2,$f2,$f8\n"
++	"pmaddhw	$f14,$f14,$f22\n"
++	"mov.d	$f8,$f2\n"
++	"pshufh	$f10,$f10,$f16\n"
++	"ldc1	$f22,%3\n"
++	"pmaddhw	$f20,$f20,$f10\n"
++	"ldc1	$f16,%5\n"
++	"paddw	$f4,$f4,$f22\n"
++	"paddw	$f0,$f0,$f20\n"
++	"dli	$12,%6\n"
++	"pmaddhw	$f6,$f6,$f16\n"
++	"psubw	$f2,$f2,$f0\n"
++	"ldc1	$f16,%7\n"
++	"paddw	$f0,$f0,$f8\n"
++	"paddw	$f4,$f4,$f6\n"
++	"pmaddhw	$f10,$f10,$f16\n"
++	"mov.d	$f8,$f4\n"
++	"dmtc1	$12,$f16\n"
++	"paddw	$f14,$f14,$f10\n"
++	"psraw	$f2,$f2,$f16\n"
++	"psraw	$f0,$f0,$f16\n"
++	"paddw	$f4,$f4,$f14\n"
++	"psubw	$f8,$f8,$f14\n"
++	".set\treorder\n"
++	:
++	:"m"(*(table+8)),"m"(*(table+16)),"m"(*(table+12)),"m"(*rounder),"m"(*(table+24)),"m"(*(table+20)),"i"(ROW_SHIFT),"m"(*(table+16)),"i"(0x4e)
++	:"$f0","$f2","$f4","$f6","$f8","$f10","$f14","$f16","$f20","$f22","$12","$13","memory"
++	);
++}
++
++static inline void godson2_row_tail(int16_t * const row, const int store)
++{
++	__asm__ volatile (
++	".set\tnoreorder\n"
++	"dli	$12,%2\n"
++	"dmtc1	$12,$f16\n"
++	"psraw	$f4,$f4,$f16\n"
++	"psraw	$f8,$f8,$f16\n"
++	"packsswh	$f0,$f0,$f4\n"
++	"packsswh	$f8,$f8,$f2\n"
++	"sdc1	$f0,%0\n"
++	"dli $13,%3\n"
++	"dmtc1	$13,$f22\n"
++	"pshufh	$f8,$f8,$f22\n"
++	"sdc1	$f8,%1\n"
++	".set\treorder\n"
++	:"=m"(*(row+store)),"=m"(*(row+store+4))
++	:"i"(ROW_SHIFT),"i"(0xb1)
++	:"$f0","$f2","$f4","$f6","$f8","$f16","$f22","$12","$13","memory"
++	);
++}
++
++static inline void godson2_row_mid(int16_t * const row, const int store,
++					const int offset,
++					const int16_t * const table)
++{
++	__asm__ volatile (
++	".set\tnoreorder\n"
++	"ldc1	$f6,%2\n"
++	"dli $12,%3\n"
++	"dmtc1	$12,$f16\n"
++	"psraw	$f4,$f4,$f16\n"
++	"ldc1	$f14,%4\n"
++	"psraw	$f8,$f8,$f16\n"
++	"packsswh	$f0,$f0,$f4\n"
++	"mov.d	$f10,$f14\n"
++	"packsswh	$f8,$f8,$f2\n"
++	"mov.d	$f4,$f6\n"
++	"sdc1	$f0,%0\n"
++	"dli $13,%5\n"
++	"dmtc1	$13,$f22\n"
++	"pshufh	$f8,$f8,$f22\n"
++	"ldc1	$f2,%6\n"
++	"sdc1	$f8,%1\n"
++	"pmaddhw	$f2,$f2,$f4\n"
++	"ldc1	$f8,%7\n"
++	"dli $12,%8\n"
++	"dmtc1	$12,$f16\n"
++	"pshufh	$f6,$f6,$f16\n"
++	".set\treorder\n"
++	:"=m"(*(row+store)),"=m"(*(row+store+4))
++	: "m"(*(row+offset)),"i"(ROW_SHIFT),"m"(*(row+offset+4)),"i"(0xb1),"m"(*table),"m"(*(table+4)),"i"(0x4e)
++	:"$f0","$f2","$f4","$f6","$f8","$f10","$14","$f16","$f22","$12","$13","memory"
++	);
++}
++
++static inline void idct_col(int16_t * const col, const int offset)
++{
++#define T1 13036
++#define T2 27146
++#define T3 43790
++#define C4 23170
++	static const short _T1[] ATTR_ALIGN(8) = {T1,T1,T1,T1};
++	static const short _T2[] ATTR_ALIGN(8) = {T2,T2,T2,T2};
++	static const short _T3[] ATTR_ALIGN(8) = {T3,T3,T3,T3};
++	static const short _C4[] ATTR_ALIGN(8) = {C4,C4,C4,C4};
++
++	__asm__ volatile (
++	".set\tnoreorder\n"
++	"ldc1	$f4,%8\n"
++	"ldc1	$f0,%9\n"
++	"mov.d	$f6,$f4\n"
++	"ldc1	$f8,%10\n"
++	"pmulhh	$f4,$f4,$f0\n"
++	"ldc1	$f14,%11\n"
++	"pmulhh	$f6,$f6,$f8\n"
++	"ldc1	$f10,%12\n"
++	"mov.d	$f20,$f14\n"
++	"ldc1	$f2,%13\n"
++	"psubsh	$f4,$f4,$f8\n"
++	"ldc1	$f8,%14\n"
++	"pmulhh	$f14,$f14,$f2\n"
++	"paddsh	$f0,$f0,$f6\n"
++	"pmulhh	$f20,$f20,$f10\n"
++	"mov.d	$f6,$f8\n"
++	"paddsh	$f14,$f14,$f2\n"
++	"ldc1	$f16,%15\n"
++	"pmulhh	$f8,$f8,$f16\n"
++	"paddsh	$f20,$f20,$f10\n"
++	"psubsh	$f14,$f14,$f10\n"
++	"paddsh	$f20,$f20,$f2\n"
++	"ldc1	$f2,%16\n"
++	"mov.d	$f10,$f4\n"
++	"pmulhh	$f6,$f6,$f2\n"
++	"psubsh	$f4,$f4,$f14\n"
++	"psubsh	$f8,$f8,$f2\n"
++	"paddsh	$f14,$f14,$f10\n"
++	"sdc1	$f4,%0\n"
++	"mov.d	$f10,$f0\n"
++	"ldc1	$f22,%15\n"
++	"paddsh	$f6,$f6,$f22\n"
++	"paddsh	$f10,$f10,$f20\n"
++	"psubsh	$f0,$f0,$f20\n"
++	"mov.d	$f20,$f0\n"
++	"ldc1	$f2,%17\n"
++	"paddsh	$f0,$f0,$f14\n"
++	"ldc1	$f4,%18\n"
++	"psubsh	$f20,$f20,$f14\n"
++	"sdc1	$f10,%1\n"
++	"pmulhh	$f0,$f0,$f4\n"
++	"mov.d	$f10,$f8\n"
++	"pmulhh	$f20,$f20,$f4\n"
++	"ldc1	$f14,%19\n"
++	"mov.d	$f4,$f2\n"
++	"psubsh	$f2,$f2,$f14\n"
++	"paddsh	$f4,$f4,$f14\n"
++	"paddsh	$f8,$f8,$f2\n"
++	"mov.d	$f14,$f4\n"
++	"psubsh	$f2,$f2,$f10\n"
++	"paddsh	$f14,$f14,$f6\n"
++	"paddsh	$f0,$f0,$f0\n"
++	"psubsh	$f4,$f4,$f6\n"
++	"paddsh	$f20,$f20,$f20\n"
++	"mov.d	$f6,$f2\n"
++	"mov.d	$f10,$f8\n"
++	"paddsh	$f2,$f2,$f20\n"
++	"dli $12,%20\n"
++	"dmtc1	$12,$f16\n"
++	"psrah	$f2,$f2,$f16\n"
++	"paddsh	$f8,$f8,$f0\n"
++	"psrah	$f8,$f8,$f16\n"
++	"psubsh	$f10,$f10,$f0\n"
++	"ldc1	$f0,%12\n"
++	"psubsh	$f6,$f6,$f20\n"
++	"psrah	$f10,$f10,$f16\n"
++	"mov.d	$f20,$f14\n"
++	"sdc1	$f8,%2\n"
++	"psrah	$f6,$f6,$f16\n"
++	"sdc1	$f2,%3\n"
++	"paddsh	$f14,$f14,$f0\n"
++	"ldc1	$f8,%13\n"
++	"psubsh	$f20,$f20,$f0\n"
++	"psrah	$f14,$f14,$f16\n"
++	"mov.d	$f2,$f4\n"
++	"sdc1	$f6,%1\n"
++	"psubsh	$f2,$f2,$f8\n"
++	"psrah	$f20,$f20,$f16\n"
++	"paddsh	$f8,$f8,$f4\n"
++	"sdc1	$f14,%4\n"
++	"psrah	$f2,$f2,$f16\n"
++	"sdc1	$f10,%5\n"
++	"psrah	$f8,$f8,$f16\n"
++	"sdc1	$f20,%6\n"
++	"sdc1	$f2,%7\n"
++	"sdc1	$f8,%0\n"
++	".set\treorder\n"
++	:"=m"(*(col+offset+3*8)),"=m"(*(col+offset+5*8)),"=m"(*(col+offset+1*8)),"=m"(*(col+offset+2*8)),"=m"(*(col+offset+0*8)),"=m"(*(col+offset+6*8)),"=m"(*(col+offset+7*8)),"=m"(*(col+offset+4*8))
++	:"m"(*_T1),"m"(*(col+offset+1*8)),"m"(*(col+offset+7*8)),"m"(*_T3),"m"(*(col+offset+5*8)),"m"(*(col+offset+3*8)),"m"(*_T2),"m"(*(col+offset+2*8)),"m"(*(col+offset+6*8)),"m"(*(col+offset+0*8)),"m"(*_C4),"m"(*(col+offset+4*8)),"i"(COL_SHIFT)
++	:"$f0","$f2","$f4","$f6","$f8","$f10","$14","$f16","$20","$f22","$12","memory" 
++	);
++}
++
++static const int32_t rounder0[] ATTR_ALIGN(8) =
++    rounder ((1 << (COL_SHIFT - 1)) - 0.5);
++static const int32_t rounder4[] ATTR_ALIGN(8) = rounder (0);
++static const int32_t rounder1[] ATTR_ALIGN(8) =
++    rounder (1.25683487303);	/* C1*(C1/C4+C1+C7)/2 */
++static const int32_t rounder7[] ATTR_ALIGN(8) =
++    rounder (-0.25);		/* C1*(C7/C4+C7-C1)/2 */
++static const int32_t rounder2[] ATTR_ALIGN(8) =
++    rounder (0.60355339059);	/* C2 * (C6+C2)/2 */
++static const int32_t rounder6[] ATTR_ALIGN(8) =
++    rounder (-0.25);		/* C2 * (C6-C2)/2 */
++static const int32_t rounder3[] ATTR_ALIGN(8) =
++    rounder (0.087788325588);	/* C3*(-C3/C4+C3+C5)/2 */
++static const int32_t rounder5[] ATTR_ALIGN(8) =
++    rounder (-0.441341716183);	/* C3*(-C5/C4+C5-C3)/2 */
++
++
++#undef COL_SHIFT
++#undef ROW_SHIFT
++
++
++#define declare_idct(idct,table,idct_row_head,idct_row,idct_row_tail,idct_row_mid)	\
++inline void idct (int16_t * const block)				\
++{									\
++    static const int16_t table04[] ATTR_ALIGN(16) =			\
++	table (22725, 21407, 19266, 16384, 12873,  8867, 4520);		\
++    static const int16_t table17[] ATTR_ALIGN(16) =			\
++	table (31521, 29692, 26722, 22725, 17855, 12299, 6270);		\
++    static const int16_t table26[] ATTR_ALIGN(16) =			\
++	table (29692, 27969, 25172, 21407, 16819, 11585, 5906);		\
++    static const int16_t table35[] ATTR_ALIGN(16) =			\
++	table (26722, 25172, 22654, 19266, 15137, 10426, 5315);		\
++									\
++    idct_row_head (block, 0*8, table04);				\
++    idct_row (table04, rounder0);					\
++    idct_row_mid (block, 0*8, 4*8, table04);				\
++    idct_row (table04, rounder4);					\
++    idct_row_mid (block, 4*8, 1*8, table17);				\
++    idct_row (table17, rounder1);					\
++    idct_row_mid (block, 1*8, 7*8, table17);				\
++    idct_row (table17, rounder7);					\
++    idct_row_mid (block, 7*8, 2*8, table26);				\
++    idct_row (table26, rounder2);					\
++    idct_row_mid (block, 2*8, 6*8, table26);				\
++    idct_row (table26, rounder6);					\
++    idct_row_mid (block, 6*8, 3*8, table35);				\
++    idct_row (table35, rounder3);					\
++    idct_row_mid (block, 3*8, 5*8, table35);				\
++    idct_row (table35, rounder5);					\
++    idct_row_tail (block, 5*8);						\
++									\
++    idct_col (block, 0);						\
++    idct_col (block, 4);						\
++}
++
++void ff_godson2_idct(DCTELEM *block);
++
++declare_idct (ff_godson2_idct, godson2_table,
++	      godson2_row_head, godson2_row, godson2_row_tail, godson2_row_mid)
+diff -Nur mplayer-29544/libavcodec/godson2/idct_godson2_xvid.c mplayer-29544-godson2/libavcodec/godson2/idct_godson2_xvid.c
+--- mplayer-29544/libavcodec/godson2/idct_godson2_xvid.c	1970-01-01 07:00:00.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/godson2/idct_godson2_xvid.c	2009-08-22 15:45:09.000000000 +0700
+@@ -0,0 +1,298 @@
++/*
++ *  XVID MPEG-4 VIDEO CODEC
++ *
++ *  Copyright(C) 2006-2010 comcat <jiankemeng@gmail.com>
++ *
++ *  Optimized for Godson2 CPUs by comcat <jiankemeng@gmail.com>
++ * 
++ *  Based on i386
++ *
++ */
++
++
++#include <inttypes.h>
++#include "../avcodec.h"
++
++//=============================================================================
++// Macros and other preprocessor constants
++//=============================================================================
++
++#define BITS_INV_ACC    5                              // 4 or 5 for IEEE
++#define SHIFT_INV_ROW   (16 - BITS_INV_ACC) //11
++#define SHIFT_INV_COL   (1 + BITS_INV_ACC) //6
++#define RND_INV_ROW     (1024 * (6 - BITS_INV_ACC))
++#define RND_INV_COL     (16 * (BITS_INV_ACC - 3))
++#define RND_INV_CORR    (RND_INV_COL - 1)
++
++#define BITS_FRW_ACC    3                              // 2 or 3 for accuracy
++#define SHIFT_FRW_COL   BITS_FRW_ACC
++#define SHIFT_FRW_ROW   (BITS_FRW_ACC + 17)
++#define RND_FRW_ROW     (262144*(BITS_FRW_ACC - 1))
++
++
++//-----------------------------------------------------------------------------
++// Various memory constants (trigonometric values or rounding values)
++//-----------------------------------------------------------------------------
++
++static const int16_t tg_1_16[4*4] attribute_used __attribute__ ((aligned(8))) = {
++  13036,13036,13036,13036,        // tg * (2<<16) + 0.5
++  27146,27146,27146,27146,        // tg * (2<<16) + 0.5
++  -21746,-21746,-21746,-21746,    // tg * (2<<16) + 0.5
++  23170,23170,23170,23170};       // cos * (2<<15) + 0.5
++
++static const int32_t rounder_0[2*8] attribute_used __attribute__ ((aligned(8))) = {
++  65536,65536,
++  3597,3597,
++  2260,2260,
++  1203,1203,
++  0,0,
++  120,120,
++  512,512,
++  512,512};
++
++
++// Table for rows 0,4 - constants are multiplied by cos_4_16
++static const int16_t tab_i_04_mmx[32*4] attribute_used __attribute__ ((aligned(8))) = {
++  16384,16384,16384,-16384,       // movq-> w06 w04 w02 w00
++  21407,8867,8867,-21407,         // w07 w05 w03 w01
++  16384,-16384,16384,16384,       // w14 w12 w10 w08
++  -8867,21407,-21407,-8867,       // w15 w13 w11 w09
++  22725,12873,19266,-22725,       // w22 w20 w18 w16
++  19266,4520,-4520,-12873,        // w23 w21 w19 w17
++  12873,4520,4520,19266,          // w30 w28 w26 w24
++  -22725,19266,-12873,-22725,     // w31 w29 w27 w25
++// Table for rows 1,7 - constants are multiplied by cos_1_16
++  22725,22725,22725,-22725,       // movq-> w06 w04 w02 w00
++  29692,12299,12299,-29692,       // w07 w05 w03 w01
++  22725,-22725,22725,22725,       // w14 w12 w10 w08
++  -12299,29692,-29692,-12299,     // w15 w13 w11 w09
++  31521,17855,26722,-31521,       // w22 w20 w18 w16
++  26722,6270,-6270,-17855,        // w23 w21 w19 w17
++  17855,6270,6270,26722,          // w30 w28 w26 w24
++  -31521,26722,-17855,-31521,     // w31 w29 w27 w25
++// Table for rows 2,6 - constants are multiplied by cos_2_16
++  21407,21407,21407,-21407,       // movq-> w06 w04 w02 w00
++  27969,11585,11585,-27969,       // w07 w05 w03 w01
++  21407,-21407,21407,21407,       // w14 w12 w10 w08
++  -11585,27969,-27969,-11585,     // w15 w13 w11 w09
++  29692,16819,25172,-29692,       // w22 w20 w18 w16
++  25172,5906,-5906,-16819,        // w23 w21 w19 w17
++  16819,5906,5906,25172,          // w30 w28 w26 w24
++  -29692,25172,-16819,-29692,     // w31 w29 w27 w25
++// Table for rows 3,5 - constants are multiplied by cos_3_16
++  19266,19266,19266,-19266,       // movq-> w06 w04 w02 w00
++  25172,10426,10426,-25172,       // w07 w05 w03 w01
++  19266,-19266,19266,19266,       // w14 w12 w10 w08
++  -10426,25172,-25172,-10426,     // w15 w13 w11 w09
++  26722,15137,22654,-26722,       // w22 w20 w18 w16
++  22654,5315,-5315,-15137,        // w23 w21 w19 w17
++  15137,5315,5315,22654,          // w30 w28 w26 w24
++  -26722,22654,-15137,-26722,     // w31 w29 w27 w25
++};
++
++
++// %3 for rows 0,4 - constants are multiplied by cos_4_16
++static const int16_t tab_i_04_xmm[32*4] attribute_used __attribute__ ((aligned(8))) = {
++  16384,21407,16384,8867,      // movq-> w05 w04 w01 w00
++  16384,8867,-16384,-21407,    // w07 w06 w03 w02
++  16384,-8867,16384,-21407,    // w13 w12 w09 w08
++  -16384,21407,16384,-8867,    // w15 w14 w11 w10
++  22725,19266,19266,-4520,     // w21 w20 w17 w16
++  12873,4520,-22725,-12873,    // w23 w22 w19 w18
++  12873,-22725,4520,-12873,    // w29 w28 w25 w24
++  4520,19266,19266,-22725,     // w31 w30 w27 w26
++// %3 for rows 1,7 - constants are multiplied by cos_1_16
++  22725,29692,22725,12299,     // movq-> w05 w04 w01 w00
++  22725,12299,-22725,-29692,   // w07 w06 w03 w02
++  22725,-12299,22725,-29692,   // w13 w12 w09 w08
++  -22725,29692,22725,-12299,   // w15 w14 w11 w10
++  31521,26722,26722,-6270,     // w21 w20 w17 w16
++  17855,6270,-31521,-17855,    // w23 w22 w19 w18
++  17855,-31521,6270,-17855,    // w29 w28 w25 w24
++  6270,26722,26722,-31521,     // w31 w30 w27 w26
++// %3 for rows 2,6 - constants are multiplied by cos_2_16
++  21407,27969,21407,11585,     // movq-> w05 w04 w01 w00
++  21407,11585,-21407,-27969,   // w07 w06 w03 w02
++  21407,-11585,21407,-27969,   // w13 w12 w09 w08
++  -21407,27969,21407,-11585,   // w15 w14 w11 w10
++  29692,25172,25172,-5906,     // w21 w20 w17 w16
++  16819,5906,-29692,-16819,    // w23 w22 w19 w18
++  16819,-29692,5906,-16819,    // w29 w28 w25 w24
++  5906,25172,25172,-29692,     // w31 w30 w27 w26
++// %3 for rows 3,5 - constants are multiplied by cos_3_16
++  19266,25172,19266,10426,     // movq-> w05 w04 w01 w00
++  19266,10426,-19266,-25172,   // w07 w06 w03 w02
++  19266,-10426,19266,-25172,   // w13 w12 w09 w08
++  -19266,25172,19266,-10426,   // w15 w14 w11 w10
++  26722,22654,22654,-5315,     // w21 w20 w17 w16
++  15137,5315,-26722,-15137,    // w23 w22 w19 w18
++  15137,-26722,5315,-15137,    // w29 w28 w25 w24
++  5315,22654,22654,-26722,     // w31 w30 w27 w26
++};
++
++
++
++#define DCT_8_INV_ROW_GODSON2(A1,A2,A3,A4)\
++  "ldc1		$f0, " #A1 "           \n\t"/* 0     ; x3 x2 x1 x0*/\
++  "ldc1		$f2, 8+" #A1 "         \n\t"/* 1     ; x7 x6 x5 x4*/\
++  "mov.d	$f4, $f0               \n\t"/* 2     ; x3 x2 x1 x0*/\
++  "ldc1		$f6, " #A3 "           \n\t"/* 3     ; w05 w04 w01 w00*/\
++  "li		$12, 0x88				\n\t"\
++  "dmtc1	$12, $f16				\n\t"\
++  "pshufh	$f0, $f0, $f16         \n\t"/* x2 x0 x2 x0*/\
++  "ldc1		$f8, 8+" #A3 "         \n\t"/* 4     ; w07 w06 w03 w02*/\
++  "mov.d	$f10, $f2              \n\t"/* 5     ; x7 x6 x5 x4*/\
++  "pmaddhw	$f6, $f6, $f0          \n\t"/* x2*w05+x0*w04 x2*w01+x0*w00*/\
++  "ldc1		$f12, 32+" #A3 "       \n\t"/* 6     ; w21 w20 w17 w16*/\
++  "pshufh	$f2, $f2, $f16        \n\t"/* x6 x4 x6 x4*/\
++  "pmaddhw	$f8, $f8, $f2          \n\t"/* x6*w07+x4*w06 x6*w03+x4*w02*/\
++  "li		$12, 0xdd			   \n\t"\
++  "dmtc1	$12, $f16			   \n\t"\
++  "ldc1		$f14, 40+" #A3 "       \n\t"/* 7    ; w23 w22 w19 w18*/\
++  "pshufh	$f4, $f4, $f16         \n\t"/* x3 x1 x3 x1*/\
++  "pmaddhw	$f12, $f12, $f4        \n\t"/* x3*w21+x1*w20 x3*w17+x1*w16*/\
++  "ldc1		$f18, " #A4 "          \n\t" \
++  "ldc1		$f20, 16+" #A3 "	   \n\t" \
++  "ldc1		$f22, 24+" #A3 "	   \n\t" \
++  "ldc1		$f24, 48+" #A3 "	   \n\t" \
++  "ldc1		$f26, 56+" #A3 "	   \n\t" \
++  "pshufh	$f10, $f10, $f16       \n\t"/* x7 x5 x7 x5*/\
++  "pmaddhw	$f14, $f14, $f10       \n\t"/* x7*w23+x5*w22 x7*w19+x5*w18*/\
++  "paddw	$f6, $f6, $f18         \n\t"/* +%4*/\
++  "pmaddhw	$f0, $f0, $f20         \n\t"/* x2*w13+x0*w12 x2*w09+x0*w08*/\
++  "paddw	$f6, $f6, $f8	       \n\t"/* 4     ; a1=sum(even1) a0=sum(even0)*/\
++  "pmaddhw	$f2, $f2, $f22         \n\t"/* x6*w15+x4*w14 x6*w11+x4*w10*/\
++  "mov.d	$f8, $f6               \n\t"/* 4     ; a1 a0*/\
++  "li		$12, 11				   \n\t"\
++  "dmtc1	$12, $f16			   \n\t"\
++  "pmaddhw	$f4, $f4, $f24		   \n\t"/* x3*w29+x1*w28 x3*w25+x1*w24*/\
++  "paddw	$f12, $f12, $f14       \n\t"/* 7     ; b1=sum(odd1) b0=sum(odd0)*/\
++  "pmaddhw	$f10, $f10, $f26	   \n\t"/* x7*w31+x5*w30 x7*w27+x5*w26*/\
++  "paddw	$f6, $f6, $f12         \n\t"/* a1+b1 a0+b0*/\
++  "paddw	$f0, $f0, $f18         \n\t"/* +%4*/\
++  "psraw	$f6, $f6, $f16		   \n\t"/* y1=a1+b1 y0=a0+b0*/\
++  "paddw	$f0, $f0, $f2          \n\t"/* 1     ; a3=sum(even3) a2=sum(even2)*/\
++  "psubw	$f8, $f8, $f12         \n\t"/* 6     ; a1-b1 a0-b0*/\
++  "mov.d	$f14, $f0              \n\t"/* 7     ; a3 a2*/\
++  "paddw	$f4, $f4, $f10         \n\t"/* 5     ; b3=sum(odd3) b2=sum(odd2)*/\
++  "paddw	$f0, $f0, $f4          \n\t"/* a3+b3 a2+b2*/\
++  "psraw	$f8, $f8, $f16	       \n\t"/* y6=a1-b1 y7=a0-b0*/\
++  "psubw 	$f14, $f14, $f4        \n\t"/* 2     ; a3-b3 a2-b2*/\
++  "psraw	$f0, $f0, $f16     	   \n\t"/* y3=a3+b3 y2=a2+b2*/\
++  "psraw	$f14, $f14, $f16	   \n\t"/* y4=a3-b3 y5=a2-b2*/\
++  "li		$12, 0xb1			   \n\t"\
++  "dmtc1	$12, $f20			   \n\t"\
++  "packsswh $f6, $f6, $f0          \n\t"/* 0     ; y3 y2 y1 y0*/\
++  "packsswh $f14, $f14, $f8        \n\t"/* 4     ; y6 y7 y4 y5*/\
++  "sdc1		$f6, " #A2 "           \n\t"/* 3     ; save y3 y2 y1 y0*/\
++  "pshufh	$f14, $f14, $f20      \n\t"/* y7 y6 y5 y4*/\
++  "sdc1		$f14, 8 +" #A2 "	   \n\t"/* 7     ; save y7 y6 y5 y4*/\
++
++
++#define DCT_8_INV_COL(A1,A2)\
++  "ldc1		$f0, 2*8(%3)			\n\t"/* */\
++  "ldc1		$f6, 16*3+" #A1 "		\n\t"/* x3 */\
++  "mov.d	$f2, $f0				\n\t"/* tg_3_16*/\
++  "ldc1		$f10, 16*5+" #A1 "		\n\t"/* x5 */\
++  "pmulhh 	$f0, $f0, $f6 			\n\t"/* x3*(tg_3_16-1)*/\
++  "ldc1 	$f8, (%3)				\n\t"\
++  "pmulhh	$f2, $f2, $f10			\n\t"/* x5*(tg_3_16-1)*/\
++  "ldc1 	$f14, 16*7+" #A1 "		\n\t"/* x7 */\
++  "mov.d	$f4, $f8				\n\t"/* tg_1_16*/\
++  "ldc1		$f12, 16*1+" #A1 "		\n\t"/* x1 */\
++  "pmulhh 	$f8, $f8, $f14			\n\t"/* x7*tg_1_16*/\
++  "paddsh	$f0, $f0, $f6			\n\t"/* x3*tg_3_16*/\
++  "pmulhh	$f4, $f4, $f12			\n\t"/* x1*tg_1_16*/\
++  "paddsh	$f2, $f2, $f6			\n\t"/* x3+x5*(tg_3_16-1)*/\
++  "psubsh	$f0, $f0, $f10			\n\t"/* x3*tg_3_16-x5 = tm35*/\
++  "ldc1		$f6, 3*8(%3)			\n\t"\
++  "paddsh	$f2, $f2, $f10			\n\t"/* x3+x5*tg_3_16 = tp35*/\
++  "paddsh	$f8, $f8, $f12			\n\t"/* x1+tg_1_16*x7 = tp17*/\
++  "psubsh	$f4, $f4, $f14			\n\t"/* x1*tg_1_16-x7 = tm17*/\
++  "mov.d	$f10, $f8				\n\t"/* tp17*/\
++  "mov.d	$f12, $f4				\n\t"/* tm17*/\
++  "paddsh	$f10, $f10, $f2			\n\t"/* tp17+tp35 = b0*/\
++  "psubsh	$f12, $f12, $f0			\n\t"/* tm17-tm35 = b3*/\
++  "psubsh	$f8, $f8, $f2			\n\t"/* tp17-tp35 = t1*/\
++  "paddsh	$f4, $f4, $f0			\n\t"/* tm17+tm35 = t2*/\
++  "ldc1		$f14, 1*8(%3)			\n\t"\
++  "mov.d	$f2, $f8				\n\t"/* t1*/\
++  "sdc1		$f10, 3*16+" #A2 "		\n\t"/* save b0*/\
++  "paddsh	$f2, $f2, $f4			\n\t"/* t1+t2*/\
++  "sdc1		$f12, 5*16+" #A2 "		\n\t"/* save b3*/\
++  "psubsh	$f8, $f8, $f4			\n\t"/* t1-t2*/\
++  "ldc1		$f10, 2*16+" #A1 "		\n\t"\
++  "mov.d	$f0, $f14				\n\t"/* tg_2_16*/\
++  "ldc1		$f12, 6*16+" #A1 "		\n\t"\
++  "pmulhh	$f0, $f0, $f10			\n\t"/* x2*tg_2_16*/\
++  "pmulhh	$f14, $f14, $f12		\n\t"/* x6*tg_2_16*/\
++  "pmulhh	$f2, $f2, $f6			\n\t"/* ocos_4_16*(t1+t2) = b1/2*/\
++  "ldc1		$f4, 0*16+" #A1 "		\n\t"\
++  "pmulhh 	$f8, $f8, $f6			\n\t"/* ocos_4_16*(t1-t2) = b2/2*/\
++  "psubsh	$f0, $f0, $f12			\n\t"/* t2*tg_2_16-x6 = tm26*/\
++  "mov.d 	$f6, $f4				\n\t"/* x0*/\
++  "ldc1		$f12, 4*16+" #A1 "		\n\t"\
++  "paddsh 	$f14, $f14, $f10		\n\t"/* x2+x6*tg_2_16 = tp26*/\
++  "paddsh 	$f4, $f4, $f12			\n\t"/* x0+x4 = tp04*/\
++  "psubsh 	$f6, $f6, $f12			\n\t"/* x0-x4 = tm04*/\
++  "mov.d	$f10, $f4				\n\t"/* tp04*/\
++  "mov.d 	$f12, $f6				\n\t"/* tm04*/\
++  "psubsh 	$f4, $f4, $f14			\n\t"/* tp04-tp26 = a3*/\
++  "paddsh 	$f6, $f6, $f0			\n\t"/* tm04+tm26 = a1*/\
++  "paddsh 	$f2, $f2, $f2			\n\t"/* b1*/\
++  "paddsh 	$f8, $f8, $f8			\n\t"/* b2*/\
++  "paddsh	$f10, $f10, $f14		\n\t"/* tp04+tp26 = a0*/\
++  "psubsh	$f12, $f12, $f0			\n\t"/* tm04-tm26 = a2*/\
++  "li		$12, 6					\n\t"\
++  "dmtc1	$12, $f18				\n\t"\
++  "mov.d	$f14, $f6				\n\t"/* a1*/\
++  "mov.d	$f0, $f12				\n\t"/* a2*/\
++  "paddsh 	$f6, $f6, $f2			\n\t"/* a1+b1*/\
++  "paddsh 	$f12, $f12, $f8			\n\t"/* a2+b2*/\
++  "psrah 	$f6, $f6, $f18			\n\t"/* dst1*/\
++  "psubsh 	$f14, $f14, $f2			\n\t"/* a1-b1*/\
++  "psrah 	$f12, $f12, $f18		\n\t"/* dst2*/\
++  "psubsh 	$f0, $f0, $f8			\n\t"/* a2-b2*/\
++  "ldc1		$f2, 3*16+" #A2 "		\n\t"/* load b0*/\
++  "psrah 	$f14, $f14, $f18		\n\t"/* dst6*/\
++  "mov.d	$f8, $f10				\n\t"/* a0*/\
++  "psrah 	$f0, $f0, $f18			\n\t"/* dst5*/\
++  "sdc1		$f6, 1*16+" #A2 "		\n\t"\
++  "paddsh 	$f10, $f10, $f2			\n\t"/* a0+b0*/\
++  "sdc1		$f12, 2*16+" #A2 "		\n\t"\
++  "psubsh 	$f8, $f8, $f2			\n\t"/* a0-b0*/\
++  "ldc1		$f6, 5*16+" #A2 "		\n\t"/* load b3*/\
++  "psrah	$f10, $f10, $f18		\n\t"/* dst0*/\
++  "mov.d	$f12, $f4				\n\t"/* a3*/\
++  "psrah 	$f8, $f8, $f18			\n\t"/* dst7*/\
++  "sdc1		$f0, 5*16+" #A2 "		\n\t"\
++  "paddsh 	$f4, $f4, $f6			\n\t"/* a3+b3*/\
++  "sdc1		$f14, 6*16+" #A2 "		\n\t"\
++  "psubsh 	$f12, $f12, $f6			\n\t"/* a3-b3*/\
++  "sdc1		$f10, 0*16+" #A2 "		\n\t"\
++  "psrah 	$f4, $f4, $f18 			\n\t"/* dst3*/\
++  "sdc1		$f8, 7*16+" #A2 "		\n\t"\
++  "psrah 	$f12, $f12, $f18		\n\t"/* dst4*/\
++  "sdc1		$f4, 3*16+" #A2 "		\n\t"\
++  "sdc1		$f12, 4*16+" #A2 "		\n\t"
++
++
++
++void ff_idct_xvid_godson2(short *block){
++asm volatile(
++	//# Process each row
++    DCT_8_INV_ROW_GODSON2(0*16(%0), 0*16(%0), 64*0(%2), 8*0(%1))
++    DCT_8_INV_ROW_GODSON2(1*16(%0), 1*16(%0), 64*1(%2), 8*1(%1))
++    DCT_8_INV_ROW_GODSON2(2*16(%0), 2*16(%0), 64*2(%2), 8*2(%1))
++    DCT_8_INV_ROW_GODSON2(3*16(%0), 3*16(%0), 64*3(%2), 8*3(%1))
++    DCT_8_INV_ROW_GODSON2(4*16(%0), 4*16(%0), 64*0(%2), 8*4(%1))
++    DCT_8_INV_ROW_GODSON2(5*16(%0), 5*16(%0), 64*3(%2), 8*5(%1))
++    DCT_8_INV_ROW_GODSON2(6*16(%0), 6*16(%0), 64*2(%2), 8*6(%1))
++    DCT_8_INV_ROW_GODSON2(7*16(%0), 7*16(%0), 64*1(%2), 8*7(%1))
++
++	//# Process the columns (4 at a time)
++    DCT_8_INV_COL(0(%0), 0(%0))
++    DCT_8_INV_COL(8(%0), 8(%0))
++    :: "r"(block), "r"(rounder_0), "r"(tab_i_04_xmm), "r"(tg_1_16));
++}
++
+diff -Nur mplayer-29544/libavcodec/godson2/motion_est_godson2.c mplayer-29544-godson2/libavcodec/godson2/motion_est_godson2.c
+--- mplayer-29544/libavcodec/godson2/motion_est_godson2.c	1970-01-01 07:00:00.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/godson2/motion_est_godson2.c	2009-08-22 16:12:47.000000000 +0700
+@@ -0,0 +1,354 @@
++/*
++ * Godson2E MMI optimized motion estimation
++ * Copyright (c) 2007 comcat <jiankemeng@gmail.com>.
++ *
++ * based on Michael Niedermayer <michaelni@gmx.at>
++ *
++ */
++
++#include "../dsputil.h"
++#include "../avcodec.h"
++
++static const __attribute__ ((aligned(8))) uint64_t round_tab[3]={
++	0x0000000000000000ULL,
++	0x0001000100010001ULL,
++	0x0002000200020002ULL,
++};
++
++static attribute_used __attribute__ ((aligned(8))) uint64_t bone= 0x0101010101010101LL;
++
++static inline void sad8_1_godson2(uint8_t *blk1, uint8_t *blk2, int stride, int h)
++{
++    long len= -(stride*h);
++    asm volatile(
++        
++		".align 4						\n\t"
++
++		"move	$8, %0					\n\t"
++		"move	$21, %1					\n\t"
++		"move	$22, %2					\n\t"
++		"move	$23, %3					\n\t"
++
++        "1:                             \n\t"
++
++		"add	$9, $8, $21				\n\t"
++		"add	$10, $8, $22				\n\t"
++        
++		"uld	$11, ($9)				\n\t"
++		"dmtc1	$11, $f0				\n\t"
++
++		"uld	$12, ($9)				\n\t"
++		"dmtc1	$12, $f4				\n\t"
++        
++		"pasubub $f10, $f0, $f4			\n\t"
++		"biadd	 $f0, $f10				\n\t"
++
++		"add	$8, $8, $23				\n\t"
++
++		"add	$9, $8, $21				\n\t"
++		"add	$10, $8, $22				\n\t"
++        
++		"uld	$11, ($9)				\n\t"
++		"dmtc1	$11, $f2				\n\t"
++		
++		"uld	$12, ($10)				\n\t"
++		"dmtc1	$12, $f6				\n\t"
++
++		"pasubub $f16, $f2, $f6			\n\t"
++		"biadd	 $f6, $f16				\n\t"
++        
++		"paddh	 $f0, $f0, $f6			\n\t"
++        
++		"paddh	 $f12, $f12, $f0		\n\t"
++		
++		"bltz	$8, 1b					\n\t"		
++		"add	$8, $8, $23				\n\t" 
++
++        : "+r" (len)
++        : "r" (blk1 - len), "r" (blk2 - len), "r" ((long)stride)
++		: "$8", "$9", "$10", "$21", "$22", "$23", "$f0", "$f2", "$f4", "$f6", "$f10", "$f16"
++    );
++}
++
++static inline void sad8_2_godson2(uint8_t *blk1a, uint8_t *blk1b, uint8_t *blk2, int stride, int h)
++{
++    long len= -(stride*h);
++    asm volatile(
++        
++		".align 4						\n\t"
++
++		"move	$8, %0					\n\t"
++
++        "1:                             \n\t"
++		"add	$9, $8, %1				\n\t"
++		"add	$10, $8, %2				\n\t"
++		"add	$11, $8, %3				\n\t"
++
++		"uld	$12, ($9)				\n\t"
++		"dmtc1	$12, $f0				\n\t"
++		"uld	$13, ($10)				\n\t"
++		"dmtc1	$13, $f4				\n\t"
++
++		"pavgb	$f0, $f0, $f4			\n\t"
++		
++		"uld	$12, ($11)				\n\t"
++		"dmtc1	$12, $f4				\n\t"
++
++		"pasubub $f10, $f0, $f4			\n\t"
++		"biadd	 $f0, $f10				\n\t"
++        
++		"add	$8, $8, %4				\n\t"
++
++		"add	$9, $8, %1				\n\t"
++		"add	$10, $8, %2				\n\t"
++		"add	$11, $8, %3				\n\t"
++
++		"uld	$12, ($9)				\n\t"
++		"dmtc1	$12, $f2				\n\t"
++		"uld	$13, ($10)				\n\t"
++		"dmtc1	$13, $f6				\n\t"
++        
++		"pavgb	$f6, $f6, $f2			\n\t"
++		
++		"uld	$12, ($11)				\n\t"
++		"dmtc1	$12, $f2				\n\t"
++        
++		"pasubub $f16, $f6, $f2			\n\t"
++		"biadd	 $f6, $f16				\n\t"
++        
++		"paddh	 $f0, $f0, $f6			\n\t"
++		"paddh	 $f12, $f12, $f0		\n\t"
++
++		"bltz	$8, 1b					\n\t"
++		"add	$8, $8, %4				\n\t"
++        : "+r" (len)
++        : "r" (blk1a - len), "r" (blk1b -len), "r" (blk2 - len), "r" ((long)stride)
++		: "$8", "$9", "$10", "$11", "$12", "$13", "$f0", "$f2", "$f4", "$f6", "$f10", "$f16"
++    );
++}
++
++static inline void sad8_4_godson2(uint8_t *blk1, uint8_t *blk2, int stride, int h)
++{ 
++    long len= -(stride*h);
++    asm volatile(
++        
++        
++		".align 4						\n\t"
++
++		"ldc1	$f10, "MANGLE(bone)"	\n\t"
++
++		"move	$8, %0					\n\t"
++
++        "1:                             \n\t"
++		"add	$9, $8, %1				\n\t"
++		"add	$10, $8, %2				\n\t"
++		"add	$11, $8, %3				\n\t"
++        
++		"uld	$12, ($9)				\n\t"
++		"dmtc1	$12, $f0				\n\t"
++		
++		"uld	$13, ($10)				\n\t"
++		"dmtc1	$13, $f4				\n\t"
++		
++		"uld	$12, 1($9)				\n\t"
++		"dmtc1	$12, $f2				\n\t"
++		
++		"uld	$13, 1($10)				\n\t"
++		"dmtc1	$13, $f6				\n\t"
++
++		"pavgb	$f0, $f0, $f4			\n\t"
++		"pavgb	$f6, $f6, $f2			\n\t"
++        
++		"psubusb $f6, $f6, $f10			\n\t"
++		"pavgb	 $f0, $f0, $f6			\n\t"
++
++		"uld	$13, 1($11)				\n\t"
++		"dmtc1	$13, $f4				\n\t"
++        
++		"pasubub $f16, $f0, $f4			\n\t"
++		"biadd	 $f0, $f16				\n\t"
++
++		"add	 $8, $8, %4				\n\t"
++
++		"add	$9, $8, %1				\n\t"
++		"add	$10, $8, %2				\n\t"
++		"add	$11, $8, %3				\n\t"
++
++		"uld	$12, ($9)				\n\t"
++		"dmtc1	$12, $f2				\n\t"
++		"uld	$13, ($10)				\n\t"
++		"dmtc1	$12, $f6				\n\t"
++		"uld	$12, 1($9)				\n\t"
++		"dmtc1	$12, $f4				\n\t"
++		"uld	$13, 1($10)				\n\t"
++		"dmtc1	$12, $f8				\n\t"
++
++		"pavgb	$f2, $f2, $f6			\n\t"
++		"pavgb	$f4, $f4, $f8			\n\t"
++        
++		"psubusb $f4, $f4, $f10			\n\t"
++		"pavgb	 $f4, $f4, $f2			\n\t"
++
++		"uld	$13, ($11)				\n\t"
++		"dmtc1	$13, $f2				\n\t"
++
++		"pasubub $f18, $f4, $f2			\n\t"
++		"biadd	 $f4, $f18				\n\t"
++        
++		"paddh	 $f0, $f0, $f4			\n\t"
++		"paddh	 $f12, $f12, $f0		\n\t"
++        
++		"bltz	 $8, 1b					\n\t"
++		"add	 $8, $8, %4				\n\t"
++        : "+r" (len)
++        : "r" (blk1 - len), "r" (blk1 - len + stride), "r" (blk2 - len), "r" ((long)stride)
++		: "$8", "$9", "$10", "$11", "$12", "$13", "$f0", "$f2", "$f4", "$f6", "$f8", "$f10", "$f16", "$f18"
++    );
++}
++
++static inline int sum_godson2(void)
++{
++    int ret;
++    asm volatile(
++		"dmfc1	%0, $f12				\n\t"
++        : "=r" (ret)
++    );
++    return ret;
++}
++
++
++static int sad8_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    assert(h==8);
++    asm volatile(
++			"xor	$f14, $f14, $f14 \n\t"
++			"xor	$f12, $f12, $f12 \n\t"
++			:
++	);
++
++    sad8_1_godson2(blk1, blk2, stride, 8);
++
++    return sum_godson2();
++}
++
++static int sad8_x2_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    assert(h==8);
++    asm volatile(
++			"xor	$f14, $f14, $f14	\n\t"
++			"xor	$f12, $f12, $f12	\n\t"
++            
++			"ldc1	$f10, %0		 \n\t"
++            :: "m"(round_tab[1]) 
++    );
++
++    sad8_2_godson2(blk1, blk1+1, blk2, stride, 8);
++
++    return sum_godson2();
++}
++
++static int sad8_y2_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    assert(h==8);
++    asm volatile(
++				 "xor	$f14, $f14, $f14	\n\t"
++				 "xor	$f12, $f12, $f12	\n\t"
++                 
++				 "ldc1	$f10, %0		 \n\t"
++                 :: "m"(round_tab[1]) 
++                 );
++
++    sad8_2_godson2(blk1, blk1+stride, blk2, stride, 8);
++
++    return sum_godson2();
++}
++
++static int sad8_xy2_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    assert(h==8);
++    asm volatile(
++				 "xor	$f14, $f14, $f14	\n\t"
++				 "xor	$f12, $f12, $f12	\n\t"
++				 "ldc1	$f10, %0		 \n\t"
++                 :: "m"(round_tab[2]) 
++                 );
++
++    sad8_4_godson2(blk1, blk2, stride, 8);
++
++    return sum_godson2();
++}
++
++static int sad16_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    asm volatile(
++				 "xor	$f14, $f14, $f14	\n\t"
++				 "xor	$f12, $f12, $f12	\n\t":);
++
++    sad8_1_godson2(blk1  , blk2  , stride, h);
++    sad8_1_godson2(blk1+8, blk2+8, stride, h);
++
++    return sum_godson2();
++}
++
++static int sad16_x2_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    asm volatile(
++				 "xor	$f14, $f14, $f14	\n\t"
++				 "xor	$f12, $f12, $f12	\n\t"
++				 "ldc1	$f10, %0		 \n\t"
++                 :: "m"(round_tab[1]) 
++                 );
++
++    sad8_2_godson2(blk1  , blk1+1, blk2  , stride, h);
++    sad8_2_godson2(blk1+8, blk1+9, blk2+8, stride, h);
++
++    return sum_godson2();
++}
++
++static int sad16_y2_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    asm volatile(
++				 "xor	$f14, $f14, $f14	\n\t"
++				 "xor	$f12, $f12, $f12	\n\t"
++				 "ldc1	$f10, %0		 \n\t"
++                 :: "m"(round_tab[1]) 
++                 );
++
++    sad8_2_godson2(blk1  , blk1+stride,  blk2  , stride, h);
++    sad8_2_godson2(blk1+8, blk1+stride+8,blk2+8, stride, h);
++
++    return sum_godson2();
++}
++
++static int sad16_xy2_godson2(void *v, uint8_t *blk2, uint8_t *blk1, int stride, int h)
++{
++    asm volatile(
++				 "xor	$f14, $f14, $f14	\n\t"
++				 "xor	$f12, $f12, $f12	\n\t"
++				 "ldc1	$f10, %0		 \n\t"
++                 :: "m"(round_tab[2]) 
++                 );
++
++    sad8_4_godson2(blk1  , blk2  , stride, h);
++    sad8_4_godson2(blk1+8, blk2+8, stride, h);
++
++    return sum_godson2();
++}
++
++
++void dsputil_init_pix_godson2(DSPContext* c, AVCodecContext *avctx)
++{
++        c->pix_abs[0][0] = sad16_godson2;
++        c->pix_abs[0][1] = sad16_x2_godson2;
++        c->pix_abs[0][2] = sad16_y2_godson2;
++        c->pix_abs[0][3] = sad16_xy2_godson2;
++        c->pix_abs[1][0] = sad8_godson2;
++        c->pix_abs[1][1] = sad8_x2_godson2;
++        c->pix_abs[1][2] = sad8_y2_godson2;
++        c->pix_abs[1][3] = sad8_xy2_godson2;
++
++        c->sad[0]= sad16_godson2;
++        c->sad[1]= sad8_godson2;
++
++	av_log(NULL, AV_LOG_INFO, "dsputil_init_pix_godson2()\n");
++}
+diff -Nur mplayer-29544/libavcodec/godson2/mpegvideo_godson2.c mplayer-29544-godson2/libavcodec/godson2/mpegvideo_godson2.c
+--- mplayer-29544/libavcodec/godson2/mpegvideo_godson2.c	1970-01-01 07:00:00.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/godson2/mpegvideo_godson2.c	2009-08-22 16:12:29.000000000 +0700
+@@ -0,0 +1,220 @@
++/*
++ * The simplest mpeg encoder (well, it was the simplest!)
++ * Copyright (c) 2007-2010 comcat <jiankemeng@gmail.com>.
++ *
++ * Optimized for Godson2 CPUs by comcat <jiankemeng@gmail.com>
++ * 
++ * Based on i386
++ */
++
++#include "../dsputil.h"
++#include "../mpegvideo.h"
++#include "../avcodec.h"
++
++extern uint8_t zigzag_direct_noperm[64];
++extern uint16_t inv_zigzag_direct16[64];
++
++static const unsigned long long int mm_wabs __attribute__ ((aligned(8))) = 0xffffffffffffffffULL;
++static const unsigned long long int mm_wone __attribute__ ((aligned(8))) = 0x0001000100010001ULL;
++
++
++static void dct_unquantize_h263_intra_godson2(MpegEncContext *s,
++                                  DCTELEM *block, int n, int qscale)
++{
++    long level, qmul, qadd, nCoeffs;
++
++    qmul = qscale << 1;
++
++    assert(s->block_last_index[n]>=0 || s->h263_aic); 
++    if (!s->h263_aic) {
++        if (n < 4)
++            level = block[0] * s->y_dc_scale;
++        else
++            level = block[0] * s->c_dc_scale;
++        qadd = (qscale - 1) | 1;
++    }else{
++        qadd = 0;
++        level= block[0];
++    }
++    if(s->ac_pred)
++        nCoeffs=63;
++    else
++        nCoeffs= s->inter_scantable.raster_end[ s->block_last_index[n] ];
++
++
++	asm volatile(
++			"#.set mips3						\n\t"
++			
++			"xor		$f12, $f12, $f12	\n\t"
++			"lwc1		$f12, %1			\n\t"
++			
++			"xor		$f10, $f10, $f10	\n\t"
++			
++			"packsswh	$f12, $f12, $f12	\n\t"
++			
++			"lwc1		$f10, %2			\n\t"
++			
++			"packsswh	$f10, $f10, $f10	\n\t"
++			
++			"packsswh	$f12, $f12, $f12	\n\t"
++			
++			"xor 		$f14, $f14, $f14	\n\t"
++			
++			"packsswh	$f10, $f10, $f10	\n\t"
++			
++			"xor		$f8, $f8, $f8		\n\t"
++			
++			"psubh		$f14, $f14, $f10	\n\t"
++
++			
++			"1:                             \n\t"
++			"add		$12, %0, %3			\n\t"
++			
++			"ldc1		$f0, ($12)			\n\t"
++			
++			"ldc1		$f2, 8($12)			\n\t"
++
++			"mov.d		$f4, $f0			\n\t"
++			"mov.d		$f6, $f2			\n\t"
++			
++			"pmullh		$f0, $f0, $f12		\n\t"
++			"pmullh		$f2, $f2, $f12		\n\t"
++
++			"pcmpgth	$f4, $f4, $f8		\n\t"
++			"pcmpgth	$f6, $f6, $f8		\n\t"
++			
++			"xor		$f0, $f0, $f4		\n\t"
++			"xor		$f2, $f2, $f6		\n\t"
++
++			
++			"paddh		$f0, $f0, $f14      \n\t"
++			
++			"paddh		$f2, $f2, $f14		\n\t"
++
++			
++			"xor		$f4, $f4, $f0		\n\t"
++			
++			"xor		$f6, $f6, $f2		\n\t"
++
++			
++			"pcmpeqh	$f0, $f0, $f14		\n\t"
++			
++			"pcmpeqh	$f2, $f2, $f14		\n\t"
++
++			
++			"pandn		$f0, $f0, $f4		\n\t"	
++			
++			"pandn		$f2, $f2, $f6		\n\t"
++
++			
++			"sdc1		$f0, ($12)			\n\t"
++			
++			"sdc1		$f2, 8($12)			\n\t"
++
++			
++			"addiu		%3, %3, 16			\n\t"
++			
++			"blez		%3, 1b				\n\t"
++			"nop							\n\t"
++			::"r" (block+nCoeffs), "m"(qmul), "m" (qadd), "r" (2*(-nCoeffs))
++			: "memory"
++        );
++        block[0]= level;
++}
++
++
++static void dct_unquantize_h263_inter_godson2(MpegEncContext *s,
++                                  DCTELEM *block, int n, int qscale)
++{
++    long qmul, qadd, nCoeffs;
++
++    qmul = qscale << 1;
++    qadd = (qscale - 1) | 1;
++
++    assert(s->block_last_index[n]>=0 || s->h263_aic);
++
++    nCoeffs= s->inter_scantable.raster_end[ s->block_last_index[n] ];
++
++asm volatile(
++				"#.set mips3						\n\t"
++                
++				"xor		$f12, $f12, $f12	\n\t"
++				"lwc1		$f12, %1			\n\t"
++                
++				"xor		$f10, $f10, $f10	\n\t"
++                
++				"packsswh	$f12, $f12, $f12	\n\t"
++
++				"lwc1		$f10, %2			\n\t"
++                
++				"packsswh	$f10, $f10, $f10	\n\t"
++                
++				"xor		$f14, $f14, $f14	\n\t"
++                
++				"packsswh	$f12, $f12, $f12	\n\t"
++                
++				"packsswh	$f10, $f10, $f10	\n\t"
++                
++				"xor		$f8, $f8, $f8		\n\t"
++
++				"psubh		$f14, $f14, $f10	\n\t"
++                
++
++                "1:                             \n\t"
++				"add		$12, %0, %3			\n\t"
++                
++				"ldc1		$f0, ($12)			\n\t"
++                
++				"ldc1		$f2, 8($12)			\n\t"
++
++				"mov.d		$f4, $f0			\n\t"
++				"mov.d		$f6, $f2			\n\t"
++                
++				"pmullh		$f0, $f0, $f12		\n\t"
++                
++				"pmullh		$f2, $f2, $f12		\n\t"
++
++				"pcmpgth	$f4, $f4, $f8		\n\t"
++                
++				"pcmpgth	$f6, $f6, $f8		\n\t"
++                
++				"xor		$f0, $f0, $f4		\n\t"
++                
++				"xor		$f2, $f2, $f6		\n\t"
++                
++				"paddh		$f0, $f0, $f14		\n\t"
++                
++				"paddh		$f2, $f2, $f14		\n\t"
++                
++				"xor		$f4, $f4, $f0		\n\t"
++                
++				"xor		$f6, $f6, $f2		\n\t"
++                
++				"pcmpeqh	$f0, $f0, $f14		\n\t"
++                
++				"pcmpeqh	$f2, $f2, $f14		\n\t"
++                
++				"pandn		$f0, $f0, $f4		\n\t"
++                
++				"pandn		$f2, $f2, $f6		\n\t"
++                
++				"sdc1		$f0, ($12)			\n\t"
++                
++				"sdc1		$f2, 8($12)			\n\t"
++
++                
++				"addiu		%3, %3, 16			\n\t"
++                
++				"blez		%3, 1b				\n\t"
++				"nop							\n\t"
++                ::"r" (block+nCoeffs), "m"(qmul), "m" (qadd), "r" (2*(-nCoeffs))
++                : "memory"
++        );
++}
++
++void MPV_common_init_godson2(MpegEncContext *s)
++{
++	s->dct_unquantize_h263_intra = dct_unquantize_h263_intra_godson2;
++	s->dct_unquantize_h263_inter = dct_unquantize_h263_inter_godson2;
++	av_log(NULL, AV_LOG_INFO, "common_init_godson2()\n");
++}
+diff -Nur mplayer-29544/libavcodec/Makefile mplayer-29544-godson2/libavcodec/Makefile
+--- mplayer-29544/libavcodec/Makefile	2009-08-22 13:14:53.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/Makefile	2009-08-22 14:47:14.000000000 +0700
+@@ -535,6 +535,12 @@
+ 
+ OBJS-$(CONFIG_MLIB)                    += mlib/dsputil_mlib.o           \
+ 
++OBJS-$(HAVE_LOONGSON)               += godson2/idct_godson2.o        \
++                                          godson2/dsputil_godson2.o     \
++                                          godson2/idct_godson2_xvid.o   \
++                                          godson2/mpegvideo_godson2.o   \
++                                          godson2/motion_est_godson2.o
++
+ OBJS-$(HAVE_MMI)                       += ps2/dsputil_mmi.o             \
+                                           ps2/idct_mmi.o                \
+                                           ps2/mpegvideo_mmi.o           \
+diff -Nur mplayer-29544/libavcodec/mpegvideo.c mplayer-29544-godson2/libavcodec/mpegvideo.c
+--- mplayer-29544/libavcodec/mpegvideo.c	2009-08-22 13:14:52.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/mpegvideo.c	2009-08-22 14:50:49.000000000 +0700
+@@ -134,6 +134,8 @@
+     MPV_common_init_axp(s);
+ #elif CONFIG_MLIB
+     MPV_common_init_mlib(s);
++#elif HAVE_LOONGSON
++    MPV_common_init_godson2(s);
+ #elif HAVE_MMI
+     MPV_common_init_mmi(s);
+ #elif ARCH_ARM
+diff -Nur mplayer-29544/libavcodec/mpegvideo.h mplayer-29544-godson2/libavcodec/mpegvideo.h
+--- mplayer-29544/libavcodec/mpegvideo.h	2009-08-22 13:14:52.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/mpegvideo.h	2009-08-22 14:41:24.000000000 +0700
+@@ -691,6 +691,7 @@
+ void MPV_common_init_mmi(MpegEncContext *s);
+ void MPV_common_init_arm(MpegEncContext *s);
+ void MPV_common_init_altivec(MpegEncContext *s);
++void MPV_common_init_godson2(MpegEncContext *s);
+ void ff_clean_intra_table_entries(MpegEncContext *s);
+ void ff_draw_horiz_band(MpegEncContext *s, int y, int h);
+ void ff_mpeg_flush(AVCodecContext *avctx);
+diff -Nur mplayer-29544/libavcodec/options.c mplayer-29544-godson2/libavcodec/options.c
+--- mplayer-29544/libavcodec/options.c	2009-08-22 13:14:52.000000000 +0700
++++ mplayer-29544-godson2/libavcodec/options.c	2009-08-22 14:42:15.000000000 +0700
+@@ -203,6 +203,8 @@
+ {"simple", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_SIMPLE, INT_MIN, INT_MAX, V|E|D, "idct"},
+ {"simplemmx", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_SIMPLEMMX, INT_MIN, INT_MAX, V|E|D, "idct"},
+ {"libmpeg2mmx", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_LIBMPEG2MMX, INT_MIN, INT_MAX, V|E|D, "idct"},
++{"libmpeg2godson2", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_LIBMPEG2GODSON2, INT_MIN, INT_MAX, V|E|D, "idct"},
++{"xvidgodson2", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_XVIDGODSON2, INT_MIN, INT_MAX, V|E|D, "idct"},
+ {"ps2", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_PS2, INT_MIN, INT_MAX, V|E|D, "idct"},
+ {"mlib", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_MLIB, INT_MIN, INT_MAX, V|E|D, "idct"},
+ {"arm", NULL, 0, FF_OPT_TYPE_CONST, FF_IDCT_ARM, INT_MIN, INT_MAX, V|E|D, "idct"},

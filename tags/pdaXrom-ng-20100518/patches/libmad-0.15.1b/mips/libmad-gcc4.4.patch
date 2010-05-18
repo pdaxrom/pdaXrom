@@ -1,0 +1,18 @@
+diff --git a/fixed.h b/fixed.h
+index 4b58abf..1764290 100644
+--- a/fixed.h
++++ b/fixed.h
+@@ -304,9 +304,10 @@ mad_fixed_t mad_f_mul_inline(mad_fixed_t x, mad_fixed_t y)
+  * significant bit depends on OPT_ACCURACY via mad_f_scale64().
+  */
+ #  define MAD_F_MLX(hi, lo, x, y)  \
+-    asm ("mult	%2,%3"  \
+-	 : "=l" (lo), "=h" (hi)  \
+-	 : "%r" (x), "r" (y))
++    do { \
++       hi = ((long long) x * y) >> 32; \
++       lo = x * y; \
++    } while (0)
+ 
+ # if defined(HAVE_MADD_ASM)
+ #  define MAD_F_MLA(hi, lo, x, y)  \

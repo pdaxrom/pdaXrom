@@ -1,0 +1,132 @@
+Subject: Re: [patch] powerpc/ps3: Use hard coded values for LV1 device type
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: michael@ellerman.id.au, Geoff Levand <geoffrey.levand@am.sony.com>,
+        Mel Gorman <mel@csn.ul.ie>, linuxppc-dev@ozlabs.org,
+        Kamalesh Babulal <kamalesh@linux.vnet.ibm.com>,
+        Jens Axboe <jens.axboe@oracle.com>,
+        linux-scsi <linux-scsi@vger.kernel.org>
+
+On Mon, 2009-02-09 at 11:11 +1100, Benjamin Herrenschmidt wrote:
+> On Sun, 2009-02-08 at 22:29 +1100, Michael Ellerman wrote:
+> > On Fri, 2009-02-06 at 18:42 -0800, Geoff Levand wrote:
+> > > Change the PS3 platform code to use hard coded numbers for its
+> > > LV1 device types.
+> > > 
+> > > The PS3 platform code was incorrectly using some scsi block
+> > > constants for the device type returned from the LV1 hypervisor.
+> > > 
+> > > Fixes build errors like these when CONFIG_BLOCK=n:
+> > > 
+> > >   In file included from include/scsi/scsi.h:12,
+> > >                    from arch/powerpc/platforms/ps3/platform.h:25,
+> > >                    from arch/powerpc/platforms/ps3/setup.c:36:
+> > >   include/scsi/scsi_cmnd.h:27:25: warning: "BLK_MAX_CDB" is not defined
+> > >   include/scsi/scsi_cmnd.h:28:3: error: #error MAX_COMMAND_SIZE can not be bigger than BLK_MAX_CDB
+> 
+> Adding Jens and James on CC since I think a proper fix lies in blkdev.h
+> or scsi*.h
+
+And cc'd linux-scsi
+
+> So basically, the whole of blkdev.h is inside a big ifdef
+> CONFIG_BLOCK... which means that scsi_cmnd.h can't build which in turn
+> makes scsi.h fail.
+
+Well, look at it from our point of view; it's impossible to build SCSI
+without block, so a little interdependence is easy to get.
+
+> The PS3 platform code wants to use some of the standard SCSI types from
+> there though, as they are part of the hypervisor ABI. (And in fact it
+> can be argued that non-block devices using SCSI do exist, such as
+> scanners, no ?)
+> 
+> Any reason other than pre-historical to have blkdev.h shielded like
+> that ?
+
+Actually, I think the fix lies in scsi.h ... we can make that into a
+nicely independent protocol header file.  Your current woes come because
+it pulls in scsi_cmnd.h ... perhaps just getting rid of this will fix
+it.
+
+Can the rest of linux-scsi verify that the fix below doesn't break
+something else?
+
+I found one cockup: block/cmd-filter.c is apparently not including
+linuc/blkdev.h directly but via scsi/scsi.h ... I fixed this up.
+
+---
+
+---
+ block/cmd-filter.c       |    1 +
+ include/scsi/scsi.h      |   19 ++-----------------
+ include/scsi/scsi_cmnd.h |   15 +++++++++++++++
+ 3 files changed, 18 insertions(+), 17 deletions(-)
+
+--- a/block/cmd-filter.c
++++ b/block/cmd-filter.c
+@@ -22,6 +22,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/capability.h>
+ #include <linux/bitops.h>
++#include <linux/blkdev.h>
+ 
+ #include <scsi/scsi.h>
+ #include <linux/cdrom.h>
+--- a/include/scsi/scsi.h
++++ b/include/scsi/scsi.h
+@@ -9,7 +9,8 @@
+ #define _SCSI_SCSI_H
+ 
+ #include <linux/types.h>
+-#include <scsi/scsi_cmnd.h>
++
++struct scsi_cmnd;
+ 
+ /*
+  * The maximum number of SG segments that we will put inside a
+@@ -449,22 +450,6 @@ static inline int scsi_is_wlun(unsigned 
+ #define driver_byte(result) (((result) >> 24) & 0xff)
+ #define suggestion(result)  (driver_byte(result) & SUGGEST_MASK)
+ 
+-static inline void set_msg_byte(struct scsi_cmnd *cmd, char status)
+-{
+-	cmd->result |= status << 8;
+-}
+-
+-static inline void set_host_byte(struct scsi_cmnd *cmd, char status)
+-{
+-	cmd->result |= status << 16;
+-}
+-
+-static inline void set_driver_byte(struct scsi_cmnd *cmd, char status)
+-{
+-	cmd->result |= status << 24;
+-}
+-
+-
+ #define sense_class(sense)  (((sense) >> 4) & 0x7)
+ #define sense_error(sense)  ((sense) & 0xf)
+ #define sense_valid(sense)  ((sense) & 0x80);
+--- a/include/scsi/scsi_cmnd.h
++++ b/include/scsi/scsi_cmnd.h
+@@ -291,4 +291,19 @@ static inline struct scsi_data_buffer *s
+ #define scsi_for_each_prot_sg(cmd, sg, nseg, __i)		\
+ 	for_each_sg(scsi_prot_sglist(cmd), sg, nseg, __i)
+ 
++static inline void set_msg_byte(struct scsi_cmnd *cmd, char status)
++{
++	cmd->result |= status << 8;
++}
++
++static inline void set_host_byte(struct scsi_cmnd *cmd, char status)
++{
++	cmd->result |= status << 16;
++}
++
++static inline void set_driver_byte(struct scsi_cmnd *cmd, char status)
++{
++	cmd->result |= status << 24;
++}
++
+ #endif /* _SCSI_SCSI_CMND_H */

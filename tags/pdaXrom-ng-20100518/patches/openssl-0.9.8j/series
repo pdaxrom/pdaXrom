@@ -1,0 +1,5 @@
+Configure.diff
+conf-linux-mipsel.patch
+Makefile.shared.diff
+configure-cross-mingw32-static.patch
+openssl-x86_64-bintuils-2.20.51.patch

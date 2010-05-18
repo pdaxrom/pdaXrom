@@ -1,0 +1,20 @@
+--- s/devices/kboot-parser.c-	2009-01-16 04:32:56.000000000 +0600
++++ s/devices/kboot-parser.c	2009-01-16 04:35:48.000000000 +0600
+@@ -248,8 +248,15 @@
+ 	filepath = resolve_path("/etc/kboot.conf", devpath);
+ 
+ 	fd = open(filepath, O_RDONLY);
+-	if (fd < 0)
+-		goto out_free_path;
++	if (fd < 0) {
++		free(filepath);
++		
++		filepath = resolve_path("/etc/kboot.cnf", devpath);
++
++		fd = open(filepath, O_RDONLY);
++		if (fd < 0)
++			goto out_free_path;
++	}
+ 
+ 	if (fstat(fd, &stat))
+ 		goto out_close;

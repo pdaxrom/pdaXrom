@@ -1,0 +1,11 @@
+--- gcc-3.4.4/configure-	2008-11-17 21:44:49.000000000 +0600
++++ gcc-3.4.4/configure	2008-11-17 21:48:08.000000000 +0600
+@@ -1313,7 +1313,7 @@
+     ;;    
+   *-*-cygwin*)
+     target_configdirs="$target_configdirs target-libtermcap target-winsup"
+-    noconfigdirs="$noconfigdirs target-gperf target-libgloss ${libgcj}"
++    noconfigdirs="$noconfigdirs target-gperf target-libstdc++-v3 target-libgloss ${libgcj}"
+     # always build newlib.
+     skipdirs=`echo " ${skipdirs} " | sed -e 's/ target-newlib / /'`
+ 

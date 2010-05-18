@@ -1,0 +1,29 @@
+--- s/src/skipdownload.c-	2008-04-14 13:10:18.000000000 +0700
++++ s/src/skipdownload.c	2008-12-29 04:28:52.000000000 +0600
+@@ -245,7 +245,7 @@
+      		quit_download();
+        	} else {
+      	
+-     		DownloadData *nextdata = g_slist_nth_data(file_list,0);     	     	
++     		DownloadData *nextdata = (DownloadData *) g_slist_nth_data(file_list,0);     	     	
+ 	     	refresh_list();
+      		progress(bar,entry,size_lbl,bps_lbl,nextdata);
+ 	}
+@@ -538,7 +538,7 @@
+ 	}
+      	
+      	row = (gint) g_list_nth_data(selection,0);
+-     	data = gtk_clist_get_row_data(GTK_CLIST(clist),row);
++     	data = (DownloadData *) gtk_clist_get_row_data(GTK_CLIST(clist),row);
+      	gtk_clist_remove(GTK_CLIST(clist), row);
+      	file_list = g_slist_remove(file_list,data);
+      	g_free(data->url);
+@@ -598,7 +598,7 @@
+      
+      	gtk_clist_clear(GTK_CLIST(clist));
+      	for (l = file_list; l; l = l->next) {
+-	     	DownloadData *data = l->data;		
++	     	DownloadData *data = (DownloadData *) l->data;		
+ 		gchar *temp[] = { data->url, data->location };
+ 	     	row = gtk_clist_append(GTK_CLIST(clist), temp);
+ 		gtk_clist_set_row_data(GTK_CLIST(clist),row,data);

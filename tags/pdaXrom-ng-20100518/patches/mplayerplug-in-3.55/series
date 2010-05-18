@@ -1,0 +1,4 @@
+01_mp4-audio.patch
+mozilla-headers.patch
+plugin-list.cpp.diff
+plugin-support.cpp.diff

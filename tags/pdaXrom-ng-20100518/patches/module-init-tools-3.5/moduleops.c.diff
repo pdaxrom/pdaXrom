@@ -1,0 +1,17 @@
+--- s/moduleops.c.orig	2008-10-13 15:40:19.000000000 +0700
++++ s/moduleops.c	2008-12-09 01:34:01.000000000 +0600
+@@ -1,9 +1,14 @@
+ /* The nasty work of reading 32 and 64-bit modules is in here. */
++#ifndef __APPLE__
+ #include <elf.h>
++#endif
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <string.h>
++#ifdef __APPLE__
++#include "_elf.h"
++#endif
+ #include <errno.h>
+ #include "depmod.h"
+ #include "logging.h"

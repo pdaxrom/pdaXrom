@@ -1,0 +1,13 @@
+--- s/src/emu/video/rgbvmx.h-	2009-08-11 02:22:46.000000000 +0700
++++ s/src/emu/video/rgbvmx.h	2009-08-11 02:22:36.000000000 +0700
+@@ -12,9 +12,8 @@
+ #ifndef __RGBVMX__
+ #define __RGBVMX__
+ 
+-#ifndef __APPLE_ALTIVEC__
++#include <stdbool.h>
+ #include <altivec.h>
+-#endif
+ 
+ 
+ /***************************************************************************

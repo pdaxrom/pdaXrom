@@ -1,0 +1,5 @@
+cross_genstrings.patch
+no_mans.patch
+configure.diff
+Makedefs.in.diff
+Makefile.diff

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=On-Screen Keyboard
+Categories=Utility;GTK;
+Exec=mb-keyboard-switcher
+Icon=gnome-dev-keyboard
+Type=Application
+Terminal=false
+Comment=Show/Hide on-screen keyboard

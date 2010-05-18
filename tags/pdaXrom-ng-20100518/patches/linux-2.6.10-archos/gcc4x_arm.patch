@@ -1,0 +1,204 @@
+diff -ruN linux-2.6.10.orig/arch/arm/mach-davinci/ck-davinci.c linux-2.6.10/arch/arm/mach-davinci/ck-davinci.c
+--- linux-2.6.10.orig/arch/arm/mach-davinci/ck-davinci.c	2009-02-11 20:16:07.000000000 +0100
++++ linux-2.6.10/arch/arm/mach-davinci/ck-davinci.c	2009-02-11 18:39:53.000000000 +0100
+@@ -231,7 +231,8 @@
+ 	platform_set_core_voltage(NULL, voltage_milli);
+ }
+ 
+-static inline int ck_get_core_voltage()
++// static inline int ck_get_core_voltage()
++inline int ck_get_core_voltage()
+ {
+ 	return platform_get_core_voltage(NULL);
+ }
+diff -ruN linux-2.6.10.orig/arch/arm/mach-davinci/clock.c linux-2.6.10/arch/arm/mach-davinci/clock.c
+--- linux-2.6.10.orig/arch/arm/mach-davinci/clock.c	2009-02-11 20:16:07.000000000 +0100
++++ linux-2.6.10/arch/arm/mach-davinci/clock.c	2009-02-11 18:37:07.000000000 +0100
+@@ -383,17 +383,17 @@
+ 			.lpsc = DAVINCI_LPSC_USB,
+ 		},
+ 		{
+-			.name "WDOG",
++			.name = "WDOG",
+ 			.rate = &fixedrate,
+ 			.lpsc = DAVINCI_LPSC_TIMER2,
+ 		},
+ 		{
+-			.name "MDIOCLK",
++			.name = "MDIOCLK",
+ 			.rate = &commonrate,
+ 			.lpsc = DAVINCI_LPSC_MDIO,
+ 		},
+ 		{
+-			.name "EMACMCCLK",
++			.name = "EMACMCCLK",
+ 			.rate = &commonrate,
+ 			.lpsc = DAVINCI_LPSC_EMAC_WRAPPER,
+ 		}
+diff -ruN linux-2.6.10.orig/drivers/usb/musb/musb_host.c linux-2.6.10/drivers/usb/musb/musb_host.c
+--- linux-2.6.10.orig/drivers/usb/musb/musb_host.c	2009-02-11 20:16:18.000000000 +0100
++++ linux-2.6.10/drivers/usb/musb/musb_host.c	2009-02-11 19:16:50.000000000 +0100
+@@ -82,7 +82,8 @@
+ struct list_head	tx_completion_list;	/* host tx completion list head */
+ 
+ #ifndef CONFIG_PREEMPT_RT
+-static spinlock_t		txReqListLock;	/* lock for global host tx completion request list */
++// static spinlock_t		txReqListLock;	/* lock for global host tx completion request list */
++spinlock_t		txReqListLock;	/* lock for global host tx completion request list */
+ #else
+ struct semaphore		txReqListLock;
+ #endif
+diff -ruN linux-2.6.10.orig/include/asm-arm/uaccess.h linux-2.6.10/include/asm-arm/uaccess.h
+--- linux-2.6.10.orig/include/asm-arm/uaccess.h	2004-12-24 22:35:00.000000000 +0100
++++ linux-2.6.10/include/asm-arm/uaccess.h	2009-02-11 18:52:59.000000000 +0100
+@@ -119,7 +119,7 @@
+ #define get_user(x,p)							\
+ 	({								\
+ 		const register typeof(*(p)) __user *__p asm("r0") = (p);\
+-		register typeof(*(p)) __r2 asm("r2");			\
++		register unsigned int __r2 asm("r2");			\
+ 		register int __e asm("r0");				\
+ 		switch (sizeof(*(__p))) {				\
+ 		case 1:							\
+@@ -131,12 +131,9 @@
+ 		case 4:							\
+ 	       		__get_user_x(__r2, __p, __e, 4, "lr");		\
+ 			break;						\
+-		case 8:							\
+-			__get_user_x(__r2, __p, __e, 8, "lr");		\
+-	       		break;						\
+ 		default: __e = __get_user_bad(); break;			\
+ 		}							\
+-		x = __r2;						\
++		x = (typeof(*(p))) __r2;				\
+ 		__e;							\
+ 	})
+ 
+diff -ruN linux-2.6.10.orig/include/asm-arm/unaligned.h linux-2.6.10/include/asm-arm/unaligned.h
+--- linux-2.6.10.orig/include/asm-arm/unaligned.h	2004-12-24 22:34:45.000000000 +0100
++++ linux-2.6.10/include/asm-arm/unaligned.h	2009-02-11 19:04:23.000000000 +0100
+@@ -3,7 +3,7 @@
+ 
+ #include <asm/types.h>
+ 
+-extern int __bug_unaligned_x(void *ptr);
++extern int __bug_unaligned_x(const void *ptr);
+ 
+ /*
+  * What is the most efficient way of loading/storing an unaligned value?
+@@ -51,47 +51,34 @@
+ #define __get_unaligned_4_be(__p)					\
+ 	(__p[0] << 24 | __p[1] << 16 | __p[2] << 8 | __p[3])
+ 
+-#define __get_unaligned_le(ptr)					\
+-	({							\
+-		__typeof__(*(ptr)) __v;				\
+-		__u8 *__p = (__u8 *)(ptr);			\
+-		switch (sizeof(*(ptr))) {			\
+-		case 1:	__v = *(ptr);			break;	\
+-		case 2: __v = __get_unaligned_2_le(__p);	break;	\
+-		case 4: __v = __get_unaligned_4_le(__p);	break;	\
+-		case 8: {					\
+-				unsigned int __v1, __v2;	\
+-				__v2 = __get_unaligned_4_le((__p+4)); \
+-				__v1 = __get_unaligned_4_le(__p);	\
+-				__v = ((unsigned long long)__v2 << 32 | __v1);	\
+-			}					\
+-			break;					\
+-		default: __v = __bug_unaligned_x(__p);	break;	\
+-		}						\
+-		__v;						\
++#define __get_unaligned_8_le(__p)					\
++	((unsigned long long)__get_unaligned_4_le((__p+4)) << 32 |	\
++		__get_unaligned_4_le(__p))
++
++#define __get_unaligned_8_be(__p)					\
++	((unsigned long long)__get_unaligned_4_le(__p) << 32 |		\
++		__get_unaligned_4_le((__p+4)))
++
++#define __get_unaligned_le(ptr)						\
++	({								\
++		const __u8 *__p = (const __u8 *)(ptr);			\
++		sizeof(*(ptr)) == 1 ? *__p :				\
++		  sizeof(*(ptr)) == 2 ? __get_unaligned_2_le(__p) :	\
++		  sizeof(*(ptr)) == 4 ? __get_unaligned_4_le(__p) :	\
++		  sizeof(*(ptr)) == 8 ? __get_unaligned_8_le(__p) :	\
++		    __bug_unaligned_x(__p);				\
+ 	})
+ 
+-#define __get_unaligned_be(ptr)					\
+-	({							\
+-		__typeof__(*(ptr)) __v;				\
+-		__u8 *__p = (__u8 *)(ptr);			\
+-		switch (sizeof(*(ptr))) {			\
+-		case 1:	__v = *(ptr);			break;	\
+-		case 2: __v = __get_unaligned_2_be(__p);	break;	\
+-		case 4: __v = __get_unaligned_4_be(__p);	break;	\
+-		case 8: {					\
+-				unsigned int __v1, __v2;	\
+-				__v2 = __get_unaligned_4_be(__p); \
+-				__v1 = __get_unaligned_4_be((__p+4));	\
+-				__v = ((unsigned long long)__v2 << 32 | __v1);	\
+-			}					\
+-			break;					\
+-		default: __v = __bug_unaligned_x(__p);	break;	\
+-		}						\
+-		__v;						\
++#define __get_unaligned_be(ptr)						\
++	({								\
++		const __u8 *__p = (const __u8 *)(ptr);			\
++		sizeof(*(ptr)) == 1 ? *__p :				\
++		  sizeof(*(ptr)) == 2 ? __get_unaligned_2_be(__p) :	\
++		  sizeof(*(ptr)) == 4 ? __get_unaligned_4_be(__p) :	\
++		  sizeof(*(ptr)) == 8 ? __get_unaligned_8_be(__p) :	\
++		    __bug_unaligned_x(__p);				\
+ 	})
+ 
+-
+ static inline void __put_unaligned_2_le(__u32 __v, register __u8 *__p)
+ {
+ 	*__p++ = __v;
+-#undef CONFIG_NET_ETHERNET
++#define CONFIG_NET_ETHERNET 1
+--- linux-2.6.10.orig/include/linux/i2c.h	2009-02-11 20:38:40.000000000 +0100
++++ linux-2.6.10/include/linux/i2c.h	2009-02-11 20:56:33.000000000 +0100
+@@ -55,7 +55,7 @@
+ 
+ /* Transfer num messages.
+  */
+-extern int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],int num);
++extern int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msg,int num);
+ 
+ /*
+  * Some adapter types (i.e. PCF 8584 based ones) may support slave behaviuor. 
+@@ -194,7 +194,7 @@
+ 	   to NULL. If an adapter algorithm can do SMBus access, set 
+ 	   smbus_xfer. If set to NULL, the SMBus protocol is simulated
+ 	   using common I2C messages */
+-	int (*master_xfer)(struct i2c_adapter *adap,struct i2c_msg msgs[], 
++	int (*master_xfer)(struct i2c_adapter *adap,struct i2c_msg *msgs, 
+ 	                   int num);
+ 	int (*smbus_xfer) (struct i2c_adapter *adap, u16 addr, 
+ 	                   unsigned short flags, char read_write,
+--- linux-2.6.10.orig/include/linux/fb.h	2009-02-11 20:16:22.000000000 +0100
++++ linux-2.6.10/include/linux/fb.h	2009-02-11 20:58:58.000000000 +0100
+@@ -858,7 +858,7 @@
+ 
+ /* drivers/video/modedb.c */
+ #define VESA_MODEDB_SIZE 34
+-extern const struct fb_videomode vesa_modes[];
++extern const struct fb_videomode *vesa_modes;
+ extern void fb_var_to_videomode(struct fb_videomode *mode,
+ 				struct fb_var_screeninfo *var);
+ extern void fb_videomode_to_var(struct fb_var_screeninfo *var,
+--- linux-2.6.10.orig/drivers/usb/core/hub.c	2009-02-11 20:16:18.000000000 +0100
++++ linux-2.6.10/drivers/usb/core/hub.c	2009-02-12 00:05:51.000000000 +0100
+@@ -1225,7 +1225,7 @@
+ 		 * (Includes HNP test device.)
+ 		 */
+ 		if (udev->bus->b_hnp_enable || udev->bus->is_b_host) {
+-			static int __usb_suspend_device (struct usb_device *,
++			int __usb_suspend_device (struct usb_device *,
+ 						int port, u32 state);
+ 			err = __usb_suspend_device(udev,
+ 					udev->bus->otg_port - 1,

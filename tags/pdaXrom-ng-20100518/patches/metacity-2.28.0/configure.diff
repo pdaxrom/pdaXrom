@@ -1,0 +1,11 @@
+--- s/configure-	2009-12-14 16:18:08.796416856 +0600
++++ s/configure	2009-12-14 16:18:17.235801024 +0600
+@@ -15716,7 +15716,7 @@
+ else
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+-	as_fn_error "gnome-doc-utils >= $gdu_cv_version_required not found" "$LINENO" 5
++	#as_fn_error "gnome-doc-utils >= $gdu_cv_version_required not found" "$LINENO" 5
+ fi
+ 
+ 

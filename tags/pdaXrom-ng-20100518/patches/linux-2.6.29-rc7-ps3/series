@@ -1,0 +1,76 @@
+# Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git
+# BASE fec6c6fec3e20637bee5d276fb61dd8b49a3f9cc
+#
+
+ps3-stable/ps3-defconfig-update.patch
+
+# -- cut for 2.6.29 --
+
+# NEXT_PATCHES_START
+
+other/scsi-fix-no-blkdev.diff
+other/16-16-powerpc-ps3-use-smp_request_message_ipi.patch
+ps3-stable/convert-gelic-to-net_device_ops.patch
+ps3-stable/convert-gelic-wireless-to-net_device_ops.patch
+ps3-stable/powrpc-add-missing-dabr-flags.patch
+ps3-stable/ps3-print-mem-errors.patch
+ps3-stable/ps3-ps3av_set_video_mode-make-id-signed.patch
+
+# NEXT_PATCHES_END
+
+other/ftrace-graph.diff
+ps3-wip/ps3vram-ng.patch
+
+# -- cut for 2.6.30 --
+
+ps3-wip/usb-fix-ps3-ehci-suspend.patch
+ps3-hacks/debug-usb-handshake-warn.patch
+ps3-wip/ps3-os-area-ds-fix.patch
+other/block-fix-comment.patch
+
+ps3-wip/cell-pmu-fix-order.patch
+ps3-wip/cell-pmu-add-pmu-opts.patch
+ps3-wip/ps3-lpm-fix-order.patch
+ps3-wip/ps3-lpm-add-pmu-opts.patch
+
+ps3-wip/ps3-oprofile-1.patch
+#ps3-wip/cell-oprofile-add-opts.patch
+#ps3-wip/ps3-oprofile-2.patch
+ps3-hacks/ps3-oprofile-test-script.patch
+
+#perfmon/perfmon-core.diff
+#perfmon/do-not-include-asm-perfmon_kern-h-if-not-CONFIG_PERFMON.diff
+#ps3-wip/perfmon-use-pmu-ops.patch
+#ps3-wip/perfmon/spe-follow/cell-add-create-free-ctx-func.patch
+#ps3-wip/perfmon/spe-follow/cell-add-spe-follow-flag.patch
+#ps3-wip/perfmon/spe-follow/cell-add-ctxsw-notifier.patch
+#ps3-wip/perfmon/spe-follow/export-pfm_ctxsw.patch
+#ps3-wip/perfmon/spe-follow/cell-spe-follow.patch
+#ps3-wip/perfmon/spe-follow/cell-change_read_pmds.patch
+#ps3-wip/perfmon/spe-follow/cell-forced-close-in-spe-follow.patch
+#ps3-wip/perfmon/spe-follow/powerpc-add-ctx-param.patch
+#ps3-wip/perfmon/spe-follow/cell-spe-follow-smp-support.patch
+#perfmon/perfmon-2.6.27-fixes.diff
+
+other/powerpc-warn-on-emulation.diff
+other/powerpc-warn-on-emulation-ppc32-fixes.diff
+#spe-logo/logo-extern-in-header.diff
+#other/MERGE_BLITS.diff
+
+# debugging junk
+ps3-hacks/ps3-limit-boot-mem-size.diff
+ps3-hacks/ps3-limit-hot-plug-mem-size.diff
+ps3-hacks/ps3-setup-dabr.diff
+ps3-wip/ps3-system-bus-status.diff
+ps3-hacks/ps3-free-irq-check.patch
+ps3-hacks/ps3-disk-remove-checks.diff
+
+other/rtc-parisc-Add-missing-module-alias.patch
+other/pa-risc-Rename-rtc-parisc-to-rtc-generic.patch
+other/m68k-Enable-rtc-generic.patch
+other/powerpc-Enable-rtc-generic-and-kill-rtc-ppc.patch
+other/rtc-Kill-genrtc-as-all-its-users-have-been-convert.patch
+ps3-wip/Create-a-real-RTC-driver-for-PS3-called-rtc-ps3.patch
+
+ps3-wip/ps3-wip-defconfig-updates.patch
+

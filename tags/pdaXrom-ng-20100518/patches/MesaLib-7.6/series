@@ -1,0 +1,17 @@
+dri.pc.in.diff
+gl.pc.in.diff
+glu.pc.in.diff
+glw.pc.in.diff
+mklib.diff
+Makefile.diff
+default.diff
+Makefile-gallium.diff
+Makefile-egl-xlib.diff
+xlib_brw_context.c.diff
+xlib_brw_screen.c.diff
+no-gallium-i915.patch
+linux-dri-ppc.diff
+linux-ppc.diff
+linux-dri.diff
+no_host_includes.patch
+linux-dri-x86.diff
