@@ -336,6 +336,11 @@ build_gcc() {
 	error "Unknown arch"
 	;;
     esac
+    case "$LIBGCC_STATIC" in
+    y|yes|Y|YES)
+	CONF_ARGS="$CONF_ARGS --disable-shared"
+	;;
+    esac
     echo "configure"
     pushd $TOP_DIR
     mkdir -p "$GCC_DIR/build2"
