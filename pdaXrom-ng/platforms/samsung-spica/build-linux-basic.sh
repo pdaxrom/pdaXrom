@@ -4,8 +4,8 @@ TARGET_ARCH="armle-spica-linux-gnueabi"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
-export KERNEL_VERSION=2.6.27
-export KERNEL_CONFIG=spica-pdaXrom-2.6.27
+export KERNEL_VERSION=2.6.29
+export KERNEL_CONFIG=spica-pdaXrom-2.6.29
 
 TARGET_KERNEL_IMAGE=zImage
 TARGET_VENDOR_PATCH=samsung-spica
