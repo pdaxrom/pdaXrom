@@ -9,8 +9,8 @@
 # see the README file.
 #
 
-PEKWM_VERSION=0.1.11
-PEKWM=pekwm-${PEKWM_VERSION}.tar.bz2
+PEKWM_VERSION=0.1.12
+PEKWM=pekwm-${PEKWM_VERSION}.tar.gz
 PEKWM_MIRROR=http://pekwm.org/projects/pekwm/files
 PEKWM_DIR=$BUILD_DIR/pekwm-${PEKWM_VERSION}
 PEKWM_ENV="$CROSS_ENV_AC"
