@@ -10,10 +10,23 @@ create_initramfs() {
 
     cd $BUILD_DIR
     cd $INITRAMFS_DIR
-    tar jxf ${BSP_GENERICFS_DIR}/initramfs.tar.bz2 || error "unpack initramfs"
+    tar jxf ${BSP_GENERICFS_DIR}/initramfs-${KERNEL_VERSION}.tar.bz2 || error "unpack initramfs"
 
-    cp -a ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/extra/* ${INITRAMFS_DIR}/lib/modules/
-    cp -a ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/kernel/drivers/video/console/* ${INITRAMFS_DIR}/lib/modules/
+    if [ -d ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/extra ]; then
+	cp -a ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/extra/* ${INITRAMFS_DIR}/lib/modules/
+    fi
+
+    if [ -d ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/kernel/drivers/video/console ]; then
+	cp -a ${ROOTFS_DIR}/lib/modules/`ls ${ROOTFS_DIR}/lib/modules`/kernel/drivers/video/console/* ${INITRAMFS_DIR}/lib/modules/
+    fi
+
+    if [ ${ROOTFS_DIR}/usr/sbin/iptables-multi ]; then
+	$INSTALL -D -m 755 ${ROOTFS_DIR}/usr/sbin/iptables-multi ${INITRAMFS_DIR}/sbin/iptables-multi
+	ln -sf iptables-multi ${INITRAMFS_DIR}/sbin/iptables
+	ln -sf iptables-multi ${INITRAMFS_DIR}/sbin/iptables-restore
+	ln -sf iptables-multi ${INITRAMFS_DIR}/sbin/iptables-save
+	ln -sf iptables-multi ${INITRAMFS_DIR}/sbin/iptables-xml
+    fi
 
     $INSTALL -D -m 4755 ${ROOTFS_DIR}/bin/su ${INITRAMFS_DIR}/sbin/su
     test "$INCLUDE_KEXEC" = "yes" && $INSTALL -D -m 755 ${ROOTFS_DIR}/sbin/kexec ${INITRAMFS_DIR}/sbin/kexec
@@ -47,9 +60,9 @@ ro.debuggable=1
 persist.service.adb.enable=1
 EOF
 
-    rm -f ${INITRAMFS_DIR}/init
+#    rm -f ${INITRAMFS_DIR}/init
 
-    $INSTALL -D -m 755 ${BSP_GENERICFS_DIR}/android-init ${INITRAMFS_DIR}/init
+#    $INSTALL -D -m 755 ${BSP_GENERICFS_DIR}/android-init ${INITRAMFS_DIR}/init
 
     #echo "root::0:0:root:/:/sbin/ash" > ${INITRAMFS_DIR}/sbin/passwd.txt
 

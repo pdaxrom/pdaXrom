@@ -2,7 +2,7 @@
 
 #export BINUTILS_VERSION=2.19.1
 #export GCC_VERSION=4.4.1
-export KERNEL_VERSION=2.6.27
+export KERNEL_VERSION=2.6.29
 
 #export KERNEL_CONFIG=i686-kernel-2.6.30
 
