@@ -22,7 +22,7 @@ create_x86cd() {
 	    cp -f $GENERICFS_DIR/isolinux/isolinux.cfg $T/isolinux/isolinux.cfg
 	fi
     fi
-    printf "pdaXrom NG x86\n" > $T/isolinux/isolinux.txt
+    printf "${X86CD_TITLE}\n" > $T/isolinux/isolinux.txt
 
     pushd $TOP_DIR
     cd $T
