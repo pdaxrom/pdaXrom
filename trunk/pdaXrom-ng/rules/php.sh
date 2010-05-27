@@ -58,6 +58,8 @@ build_php() {
 	    --without-iconv \
 	    --disable-cli \
 	    --disable-phar \
+	    --with-gd=${TARGET_BIN_DIR} \
+	    --enable-gd-native-ttf \
 	    || error
     ) || error "configure"
 
