@@ -20,7 +20,8 @@ create_x86bootfat() {
 	    cp -f $GENERICFS_DIR/isolinux/syslinux.cfg $T/syslinux.cfg
 	fi
     fi
-    printf "pdaXrom NG x86\n" > $T/syslinux.txt
+
+    printf "${X86CD_TITLE-pdaXrom NG x86}\n" > $T/syslinux.txt
 
     pushd $TOP_DIR
 
