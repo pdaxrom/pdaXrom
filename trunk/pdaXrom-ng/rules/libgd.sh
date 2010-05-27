@@ -37,10 +37,10 @@ build_libgd() {
 
     install_sysroot_files || error
 
+    ln -sf ${TARGET_BIN_DIR}/bin/gdlib-config ${HOST_BIN_DIR}/bin/gdlib-config
+
     install_fakeroot_init
-
-    error "update install"
-
+    rm fakeroot/usr/bin/gdlib-config
     install_fakeroot_finish || error
 
     popd
