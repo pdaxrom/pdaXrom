@@ -7,4 +7,5 @@
 . ${RULES_DIR}/gamin.sh
 #. ${RULES_DIR}/memcached.sh
 . ${RULES_DIR}/lighttpd.sh
+. ${RULES_DIR}/libgd.sh
 . ${RULES_DIR}/php.sh
