@@ -70,6 +70,8 @@ TOP_DIR="$PWD"
 
 if [ -f "platforms/$c" ]; then
     SETS_DIR="$TOP_DIR/sets" bash "${TOP_DIR}/platforms/$c" $@
+elif [ -f "$c" ]; then
+    SETS_DIR="$TOP_DIR/sets" bash "`realpath $c`" $@
 else
-    SETS_DIR="$TOP_DIR/sets" bash "$c" $@
+    echo "No such rules file!"
 fi
