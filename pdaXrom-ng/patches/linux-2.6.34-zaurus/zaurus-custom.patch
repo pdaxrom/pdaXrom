@@ -1,15 +1,5 @@
 --- linux-2.6.34/arch/arm/mach-pxa/spitz.c~	2010-05-26 22:01:01.440705740 -0400
 +++ linux-2.6.34/arch/arm/mach-pxa/spitz.c	2010-05-26 22:16:58.552706405 -0400
-@@ -350,7 +350,8 @@ static struct matrix_keypad_platform_dat
- };
- 
- static struct platform_device spitzkbd_device = {
--	.name		= "matrix-keypad",
-+//	.name		= "matrix-keypad",
-+	.name		= "spitz-keypad",
- 	.id		= -1,
- 	.dev		= {
- 		.platform_data = &spitzkbd_pdata,
 @@ -629,16 +630,13 @@ static struct pxafb_mach_info spitz_pxaf
  
  static struct mtd_partition sharpsl_nand_partitions[] = {
