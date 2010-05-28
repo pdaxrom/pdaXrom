@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-BAREBOX_VERSION=2010.04.0
+BAREBOX_VERSION=2010.05.0
 BAREBOX=barebox-${BAREBOX_VERSION}.tar.bz2
 BAREBOX_MIRROR=http://www.barebox.org/download
 BAREBOX_DIR=$BUILD_DIR/barebox-${BAREBOX_VERSION}
@@ -28,7 +28,7 @@ build_barebox() {
     pushd $TOP_DIR
     cd $BAREBOX_DIR
 
-    make ${BAREBOX_CONFIG}_config || error "configure barebox"
+#    make ${BAREBOX_CONFIG}_defconfig || error "configure barebox"
     make $MAKEARGS || error
 
     #install_sysroot_files || error
