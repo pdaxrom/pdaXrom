@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-ZIP=zip232.tar.gz
+ZIP=zip${ZIP_VERSION}.tar.gz
+ZIP_VERSION=232
 ZIP_MIRROR=ftp://tug.ctan.org/tex-archive/tools/zip/info-zip/src
-ZIP_DIR=$BUILD_DIR/zip-2.32
+ZIP_DIR=$BUILD_DIR/zip-${ZIP_VERSION}
 ZIP_ENV="$CROSS_ENV_AC"
 
 build_zip() {

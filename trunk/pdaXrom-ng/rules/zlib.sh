@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-ZLIB=zlib-1.2.3-ptx4.tar.bz2
+ZLIB=zlib-${ZLIB_VERSION}.tar.bz2
+ZLIB_VERSION=1.2.3-ptx4
 ZLIB_MIRROR=http://www.pengutronix.de/software/ptxdist/temporary-src
-ZLIB_DIR=$BUILD_DIR/zlib-1.2.3-ptx4
+ZLIB_DIR=$BUILD_DIR/zlib-${ZLIB_VERSION}
 ZLIB_ENV=
 
 build_zlib() {
