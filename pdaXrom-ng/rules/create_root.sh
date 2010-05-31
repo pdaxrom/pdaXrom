@@ -13,6 +13,8 @@ etc/network/if-pre-up.d
 etc/network/if-up.d
 etc/profile.d
 home/root
+lib
+lib/modules
 media
 mnt
 proc
