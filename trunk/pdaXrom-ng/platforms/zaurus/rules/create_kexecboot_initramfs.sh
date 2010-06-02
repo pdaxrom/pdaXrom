@@ -6,8 +6,10 @@ create_initramfs() {
     local d=
     for d in bin boot dev mnt sys proc rootfs sbin; do
 	mkdir -p $INITRAMFS_DIR/$d
-    done
+    done	
 
+#    $INSTALL -D -m 755 $BSP_GENERICFS_DIR/scripts/init_kexecboot $INITRAMFS_DIR/init || error
+#    $INSTALL -D -m 755 $ROOTFS_DIR/usr/bin/loadkeys $INITRAMFS_DIR/bin/loadkeys || error
     $INSTALL -D -m 755 $ROOTFS_DIR/usr/bin/kexecboot $INITRAMFS_DIR/init || error
 
     uuidgen > $INITRAMFS_DIR/uuid

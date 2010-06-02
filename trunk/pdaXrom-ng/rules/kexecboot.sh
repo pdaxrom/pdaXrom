@@ -9,7 +9,8 @@
 # see the README file.
 #
 
-KEXECBOOT_VERSION=HEAD
+#KEXECBOOT_VERSION=HEAD
+KEXECBOOT_VERSION=76f764cebe1fb0207b44850b52eb5f57ece6f363
 KEXECBOOT=kexecboot-${KEXECBOOT_VERSION}
 KEXECBOOT_MIRROR=git://git.linuxtogo.org/home/groups/kexecboot/kexecboot.git
 KEXECBOOT_DIR=$BUILD_DIR/kexecboot-${KEXECBOOT_VERSION}
@@ -23,12 +24,18 @@ build_kexecboot() {
     apply_patches $KEXECBOOT_DIR $KEXECBOOT
     pushd $TOP_DIR
     cd $KEXECBOOT_DIR
+if [ "$KEXECBOOT_ZAURUS" = "yes" ];then
+            --with-zaurus \
+            --with-static-linking
+fi
+
     (
 	./autogen.sh
     eval \
 	$CROSS_CONF_ENV \
 	$KEXECBOOT_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
+	    $KEXECBOOT_ZAURUS \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error
