@@ -20,6 +20,7 @@ KEXECBOOT_ZAURUS="yes"
 . $RULES_DIR/linux_kernel.sh
 . $RULES_DIR/install_libc.sh
 #. $RULES_DIR/kbd.sh
+. $RULES_DIR/kexec-tools.sh
 . $RULES_DIR/kexecboot.sh
 #. $BSP_RULES_DIR/spitz_custom.sh
 . $BSP_RULES_DIR/create_kexecboot_initramfs.sh
