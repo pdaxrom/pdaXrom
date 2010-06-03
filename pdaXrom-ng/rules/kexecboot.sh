@@ -25,8 +25,8 @@ build_kexecboot() {
     pushd $TOP_DIR
     cd $KEXECBOOT_DIR
 if [ "$KEXECBOOT_ZAURUS" = "yes" ];then
-            --with-zaurus \
-            --with-static-linking
+enable_kexecboot_zaurus="--with-zaurus \
+            --with-static-linking"
 fi
 
     (
@@ -35,7 +35,7 @@ fi
 	$CROSS_CONF_ENV \
 	$KEXECBOOT_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
-	    $KEXECBOOT_ZAURUS \
+	    $enable_kexecboot_zaurus \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
 	    || error
