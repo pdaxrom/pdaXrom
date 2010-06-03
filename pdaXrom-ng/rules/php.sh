@@ -23,6 +23,10 @@ build_php() {
     apply_patches $PHP_DIR $PHP
     pushd $TOP_DIR
     cd $PHP_DIR
+    local PHP_CONF=""
+    if [ ! "$PHP_LIBXPM" = "no" ]; then
+	PHP_CONF="--with-xpm-dir=${TARGET_BIN_DIR}"
+    fi
     (
     eval \
 	$CROSS_CONF_ENV \
@@ -45,7 +49,6 @@ build_php() {
 	    --with-jpeg-dir=${TARGET_BIN_DIR} \
 	    --with-png-dir=${TARGET_BIN_DIR} \
 	    --with-zlib-dir=${TARGET_BIN_DIR} \
-	    --with-xpm-dir=${TARGET_BIN_DIR} \
 	    --with-freetype-dir=${TARGET_BIN_DIR} \
 	    --without-ldap \
 	    --enable-mbstring \
@@ -60,6 +63,7 @@ build_php() {
 	    --disable-phar \
 	    --with-gd=${TARGET_BIN_DIR} \
 	    --enable-gd-native-ttf \
+	    $PHP_CONF \
 	    || error
     ) || error "configure"
 
