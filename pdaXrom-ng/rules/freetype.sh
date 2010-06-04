@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-FREETYPE=freetype-2.3.7.tar.bz2
+FREETYPE_VERSION=2.3.12
+FREETYPE=freetype-${FREETYPE_VERSION}.tar.bz2
 FREETYPE_MIRROR=http://download.savannah.gnu.org/releases/freetype
-FREETYPE_DIR=$BUILD_DIR/freetype-2.3.7
+FREETYPE_DIR=$BUILD_DIR/freetype-${FREETYPE_VERSION}
 FREETYPE_ENV=
 
 build_freetype() {
-    test -e "$STATE_DIR/freetype-2.3.7" && return
+    test -e "$STATE_DIR/freetype-${FREETYPE_VERSION}" && return
     banner "Build $FREETYPE"
     download $FREETYPE_MIRROR $FREETYPE
     extract $FREETYPE
@@ -33,16 +34,14 @@ build_freetype() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 objs/.libs/libfreetype.so.6.3.18 $ROOTFS_DIR/usr/lib/libfreetype.so.6.3.18 || error
-    ln -sf libfreetype.so.6.3.18 $ROOTFS_DIR/usr/lib/libfreetype.so.6
-    ln -sf libfreetype.so.6.3.18 $ROOTFS_DIR/usr/lib/libfreetype.so
-    $STRIP $ROOTFS_DIR/usr/lib/libfreetype.so.6.3.18
-
     ln -sf $TARGET_BIN_DIR/bin/freetype-config $HOST_BIN_DIR/bin/
 
+    install_fakeroot_init
+    rm -rf fakeroot/usr/bin
+    install_fakeroot_finish || error
+
     popd
-    touch "$STATE_DIR/freetype-2.3.7"
+    touch "$STATE_DIR/freetype-${FREETYPE_VERSION}"
 }
 
 build_freetype

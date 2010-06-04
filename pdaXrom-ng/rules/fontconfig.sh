@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-FONTCONFIG=fontconfig-2.6.0.tar.gz
+FONTCONFIG_VERSION=2.8.0
+FONTCONFIG=fontconfig-${FONTCONFIG_VERSION}.tar.gz
 FONTCONFIG_MIRROR=http://fontconfig.org/release
-FONTCONFIG_DIR=$BUILD_DIR/fontconfig-2.6.0
+FONTCONFIG_DIR=$BUILD_DIR/fontconfig-${FONTCONFIG_VERSION}
 FONTCONFIG_ENV=
 
 build_fontconfig() {
-    test -e "$STATE_DIR/fontconfig-2.6.0" && return
+    test -e "$STATE_DIR/fontconfig-${FONTCONFIG_VERSION}" && return
     banner "Build $FONTCONFIG"
     download $FONTCONFIG_MIRROR $FONTCONFIG
     extract $FONTCONFIG
@@ -39,15 +40,13 @@ build_fontconfig() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 src/.libs/libfontconfig.so.1.3.0 $ROOTFS_DIR/usr/lib/libfontconfig.so.1.3.0 || error
-    ln -sf libfontconfig.so.1.3.0 $ROOTFS_DIR/usr/lib/libfontconfig.so.1
-    ln -sf libfontconfig.so.1.3.0 $ROOTFS_DIR/usr/lib/libfontconfig.so
-    $STRIP $ROOTFS_DIR/usr/lib/libfontconfig.so.1.3.0
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
-    $INSTALL -D -m 644 fonts.conf $ROOTFS_DIR/etc/fonts/fonts.conf || error
+    #$INSTALL -D -m 644 fonts.conf $ROOTFS_DIR/etc/fonts/fonts.conf || error
 
     popd
-    touch "$STATE_DIR/fontconfig-2.6.0"
+    touch "$STATE_DIR/fontconfig-${FONTCONFIG_VERSION}"
 }
 
 build_fontconfig
