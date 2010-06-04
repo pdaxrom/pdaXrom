@@ -1,0 +1,30 @@
+--- s/configure-	2010-06-04 15:44:37.007835056 +0700
++++ s/configure	2010-06-04 15:46:00.776595627 +0700
+@@ -2336,18 +2336,6 @@
+     enabled $1 || { enabled $2 && die "$2 is $1 and --enable-$1 is not specified."; }
+ }
+ 
+-die_license_disabled gpl libfaad2
+-die_license_disabled gpl libx264
+-die_license_disabled gpl libxvid
+-die_license_disabled gpl postproc
+-die_license_disabled gpl x11grab
+-
+-die_license_disabled nonfree libfaac
+-die_license_disabled nonfree libvpx
+-
+-die_license_disabled version3 libopencore_amrnb
+-die_license_disabled version3 libopencore_amrwb
+-
+ enabled version3 && { enabled gpl && enable gplv3 || enable lgplv3; }
+ 
+ check_deps $ARCH_EXT_LIST
+@@ -2454,6 +2442,8 @@
+ EOF
+     fi
+ 
++    add_cflags -fPIC
++
+ elif enabled sparc; then
+ 
+     enabled vis && check_asm vis '"pdist %f0, %f0, %f0"' -mcpu=ultrasparc &&
