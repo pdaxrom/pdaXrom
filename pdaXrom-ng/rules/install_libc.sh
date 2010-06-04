@@ -41,6 +41,7 @@ libm
 libdl
 "
 LIBC_GCONV_MODULES="
+$LIBC_GCONV_MODULES
 UNICODE.so
 "
     ;;
@@ -87,6 +88,7 @@ install_libc() {
     if [ -d $TOOLCHAIN_SYSROOT/usr/lib/gconv ]; then
 	$INSTALL -D -m 644 $TOOLCHAIN_SYSROOT/usr/lib/gconv/gconv-modules $ROOTFS_DIR/usr/lib/gconv/gconv-modules || error
         for f in ISO8859-1.so $LIBC_GCONV_MODULES; do
+	    echo "Installing $f"
 	    $INSTALL -D -m 644 $TOOLCHAIN_SYSROOT/usr/lib/gconv/$f $ROOTFS_DIR/usr/lib/gconv/$f || error
 	    $STRIP $ROOTFS_DIR/usr/lib/gconv/$f
 	done
