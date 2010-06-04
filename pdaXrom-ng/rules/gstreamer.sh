@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GSTREAMER_VERSION=0.10.24
+GSTREAMER_VERSION=0.10.29
 GSTREAMER=gstreamer-${GSTREAMER_VERSION}.tar.bz2
 GSTREAMER_MIRROR=http://gstreamer.freedesktop.org/src/gstreamer
 GSTREAMER_DIR=$BUILD_DIR/gstreamer-${GSTREAMER_VERSION}
