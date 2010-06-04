@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GST_FFMPEG_VERSION=0.10.8
+GST_FFMPEG_VERSION=0.10.10
 GST_FFMPEG=gst-ffmpeg-${GST_FFMPEG_VERSION}.tar.bz2
 GST_FFMPEG_MIRROR=http://gstreamer.freedesktop.org/src/gst-ffmpeg
 GST_FFMPEG_DIR=$BUILD_DIR/gst-ffmpeg-${GST_FFMPEG_VERSION}

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GST_PLUGINS_GOOD_VERSION=0.10.15
+GST_PLUGINS_GOOD_VERSION=0.10.23
 GST_PLUGINS_GOOD=gst-plugins-good-${GST_PLUGINS_GOOD_VERSION}.tar.bz2
 GST_PLUGINS_GOOD_MIRROR=http://gstreamer.freedesktop.org/src/gst-plugins-good
 GST_PLUGINS_GOOD_DIR=$BUILD_DIR/gst-plugins-good-${GST_PLUGINS_GOOD_VERSION}

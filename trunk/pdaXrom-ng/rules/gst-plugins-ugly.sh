@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GST_PLUGINS_UGLY_VERSION=0.10.12
+GST_PLUGINS_UGLY_VERSION=0.10.15
 GST_PLUGINS_UGLY=gst-plugins-ugly-${GST_PLUGINS_UGLY_VERSION}.tar.bz2
 GST_PLUGINS_UGLY_MIRROR=http://gstreamer.freedesktop.org/src/gst-plugins-ugly
 GST_PLUGINS_UGLY_DIR=$BUILD_DIR/gst-plugins-ugly-${GST_PLUGINS_UGLY_VERSION}

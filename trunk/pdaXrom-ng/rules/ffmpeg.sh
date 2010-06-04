@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-FFMPEG_VERSION=19678
+FFMPEG_VERSION=23467
 FFMPEG=ffmpeg-${FFMPEG_VERSION}.tar.bz2
 FFMPEG_MIRROR=http://mail.pdaxrom.org/downloads/src
 FFMPEG_DIR=$BUILD_DIR/ffmpeg-${FFMPEG_VERSION}
@@ -70,9 +70,11 @@ build_ffmpeg() {
 	    --disable-static \
 	    --enable-nonfree \
 	    --enable-cross-compile \
+	    --target-os=linux \
 	    --cc=${CROSS}gcc \
 	    --as=${CROSS}as \
 	    --nm=${CROSS}nm \
+	    --ld=${CROSS}gcc \
 	    --arch=`get_ffmpeg_arch ${TARGET_ARCH}` \
 	    --disable-stripping \
 	    --enable-libspeex \

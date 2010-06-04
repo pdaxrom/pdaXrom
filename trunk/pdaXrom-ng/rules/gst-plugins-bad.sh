@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GST_PLUGINS_BAD_VERSION=0.10.13
+GST_PLUGINS_BAD_VERSION=0.10.19
 GST_PLUGINS_BAD=gst-plugins-bad-${GST_PLUGINS_BAD_VERSION}.tar.bz2
 GST_PLUGINS_BAD_MIRROR=http://gstreamer.freedesktop.org/src/gst-plugins-bad
 GST_PLUGINS_BAD_DIR=$BUILD_DIR/gst-plugins-bad-${GST_PLUGINS_BAD_VERSION}

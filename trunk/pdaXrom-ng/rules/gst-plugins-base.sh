@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GST_PLUGINS_BASE_VERSION=0.10.24
+GST_PLUGINS_BASE_VERSION=0.10.29
 GST_PLUGINS_BASE=gst-plugins-base-${GST_PLUGINS_BASE_VERSION}.tar.bz2
 GST_PLUGINS_BASE_MIRROR=http://gstreamer.freedesktop.org/src/gst-plugins-base
 GST_PLUGINS_BASE_DIR=$BUILD_DIR/gst-plugins-base-${GST_PLUGINS_BASE_VERSION}
