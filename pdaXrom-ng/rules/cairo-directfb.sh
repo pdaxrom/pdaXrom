@@ -38,6 +38,7 @@ build_cairo() {
 	    --enable-xlib=no \
 	    --enable-xlib-xrender=no \
 	    --enable-xcb=no \
+	    --enable-svg \
 	    --without-x \
 	    --disable-win32 \
 	    --enable-png \
