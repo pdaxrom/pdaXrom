@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-OPAL_VERSION=3.6.6
+OPAL_VERSION=3.6.8
 OPAL=opal-${OPAL_VERSION}.tar.gz
-OPAL_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.6
+OPAL_MIRROR=http://ftp.gnome.org/pub/gnome/sources/opal/3.6
 OPAL_DIR=$BUILD_DIR/opal-${OPAL_VERSION}
 OPAL_ENV="$CROSS_ENV_AC"
 

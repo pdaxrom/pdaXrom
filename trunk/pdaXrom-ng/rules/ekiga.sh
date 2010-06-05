@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-EKIGA_VERSION=3.2.6
+EKIGA_VERSION=3.2.7
 EKIGA=ekiga-${EKIGA_VERSION}.tar.gz
-EKIGA_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.6
+EKIGA_MIRROR=http://ftp.gnome.org/pub/gnome/sources/ekiga/3.2
 EKIGA_DIR=$BUILD_DIR/ekiga-${EKIGA_VERSION}
 EKIGA_ENV="$CROSS_ENV_AC"
 

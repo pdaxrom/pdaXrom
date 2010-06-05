@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-PTLIB_VERSION=2.6.5
+PTLIB_VERSION=2.6.7
 PTLIB=ptlib-${PTLIB_VERSION}.tar.gz
-PTLIB_MIRROR=http://www.ekiga.org/admin/downloads/latest/sources/ekiga_3.2.6
+PTLIB_MIRROR=http://ftp.gnome.org/pub/gnome/sources/ptlib/2.6
 PTLIB_DIR=$BUILD_DIR/ptlib-${PTLIB_VERSION}
 PTLIB_ENV="$CROSS_ENV_AC"
 
