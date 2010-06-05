@@ -36,7 +36,13 @@ create_x86bootfat() {
     mkfs.ext3 -F $T/boot/writable.img
 
     local IMG_SIZE=`du -sh $T | awk '{ sub(/M$/,"",$1); print $1+2 }'`
-    dd if=/dev/zero of=${OUT_FILE} bs=1M count=${IMG_SIZE} || error "Can't create empty image file!"
+    for f in $BOOTFAT_IMAGE_SIZE 64 128 256 512 1024 2048 4096 8192 16384 32768; do
+	if [ $IMG_SIZE -le $f ]; then
+	    IMG_SIZE=$f
+	    break
+	fi
+    done
+    dd if=/dev/zero of=${OUT_FILE} bs=1MB count=${IMG_SIZE} || error "Can't create empty image file!"
 
     makebootfat -v -o ${OUT_FILE} -Y \
 	-b ${HOST_SYSLINUX_DIR}/core/ldlinux.bss \
