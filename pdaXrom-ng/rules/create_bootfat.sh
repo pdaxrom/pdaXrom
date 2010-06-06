@@ -42,7 +42,7 @@ create_x86bootfat() {
 	    break
 	fi
     done
-    IMG_SIZE=$((IMG_SIZE * 1000 / 1024))
+    IMG_SIZE=$((IMG_SIZE * 1000 / 1024 - 1))
     dd if=/dev/zero of=${OUT_FILE} bs=1M count=${IMG_SIZE} || error "Can't create empty image file!"
 
     makebootfat -v -o ${OUT_FILE} -Y \
