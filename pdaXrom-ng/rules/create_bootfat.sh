@@ -43,7 +43,7 @@ create_x86bootfat() {
 	fi
     done
     IMG_SIZE=$((IMG_SIZE * 1000 / 1024))
-    dd if=/dev/zero of=${OUT_FILE} bs=1MB count=${IMG_SIZE} || error "Can't create empty image file!"
+    dd if=/dev/zero of=${OUT_FILE} bs=1M count=${IMG_SIZE} || error "Can't create empty image file!"
 
     makebootfat -v -o ${OUT_FILE} -Y \
 	-b ${HOST_SYSLINUX_DIR}/core/ldlinux.bss \
