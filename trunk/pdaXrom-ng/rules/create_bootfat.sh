@@ -36,7 +36,7 @@ create_x86bootfat() {
     mkfs.ext3 -F $T/boot/writable.img
 
     local IMG_SIZE=`du -sh $T | awk '{ sub(/M$/,"",$1); print $1+2 }'`
-    for f in $BOOTFAT_IMAGE_SIZE 64 128 256 512 1024 2048 4096 8192 16384 32768; do
+    for f in $BOOTFAT_IMAGE_SIZE 60 120 250 500 1000 2000 4000 8000 16000 32000; do
 	if [ $IMG_SIZE -le $f ]; then
 	    IMG_SIZE=$f
 	    break
