@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-ABIWORD_VERSION=2.8.0
+ABIWORD_VERSION=2.8.5
 ABIWORD=abiword-${ABIWORD_VERSION}.tar.gz
 ABIWORD_MIRROR=http://www.abisource.com/downloads/abiword/${ABIWORD_VERSION}/source
 ABIWORD_DIR=$BUILD_DIR/abiword-${ABIWORD_VERSION}
