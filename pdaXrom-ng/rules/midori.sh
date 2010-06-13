@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-MIDORI_VERSION=0.2.1
+MIDORI_VERSION=0.2.6
 MIDORI=midori-${MIDORI_VERSION}.tar.bz2
 MIDORI_MIRROR=http://archive.xfce.org/src/apps/midori/0.2
 MIDORI_DIR=$BUILD_DIR/midori-${MIDORI_VERSION}
@@ -38,6 +38,8 @@ build_midori() {
     find fakeroot/ -name "*.la" | xargs rm -f
 
     find fakeroot/ -type f -executable | xargs $STRIP
+
+    $STRIP fakeroot/usr/lib/midori/*.so
 
     install_fakeroot_finish || error
 
