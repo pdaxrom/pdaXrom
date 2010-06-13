@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GNUMERIC_VERSION=1.8.4
+GNUMERIC_VERSION=1.10.5
 GNUMERIC=gnumeric-${GNUMERIC_VERSION}.tar.bz2
-GNUMERIC_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/gnumeric/1.8
+GNUMERIC_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/gnumeric/1.10
 GNUMERIC_DIR=$BUILD_DIR/gnumeric-${GNUMERIC_VERSION}
 GNUMERIC_ENV="$CROSS_ENV_AC"
 
@@ -42,19 +42,11 @@ build_gnumeric() {
 	    --without-python \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make $MAKEARGS DESTDIR=$GNUMERIC_DIR/fakeroot install || error
-
-    rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig/ fakeroot/usr/lib/gnumeric/1.8.4/include
-    rm -rf fakeroot/usr/share/gnome fakeroot/usr/share/locale fakeroot/usr/share/man
-
-    find fakeroot/ -name "*.la" | xargs rm -f
-    
-    find fakeroot/ -type f -executable | xargs $STRIP
-
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error "copy target binaries"
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/gnumeric.installed"

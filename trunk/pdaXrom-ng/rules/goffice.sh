@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GOFFICE_VERSION=0.6.6
+GOFFICE_VERSION=0.8.5
 GOFFICE=goffice-${GOFFICE_VERSION}.tar.bz2
-GOFFICE_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/goffice/0.6
+GOFFICE_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/goffice/0.8
 GOFFICE_DIR=$BUILD_DIR/goffice-${GOFFICE_VERSION}
 GOFFICE_ENV="$CROSS_ENV_AC"
 
@@ -39,15 +39,10 @@ build_goffice() {
 
     install_sysroot_files || error
 
-    make DESTDIR=$GOFFICE_DIR/fakeroot install || error "destdir installation"
+    sed -i -e 's|PluginDir=${libdir}|PluginDir=/usr/lib|' ${TARGET_LIB}/pkgconfig/libgoffice-0.8.pc
 
-    rm -rf fakeroot/usr/include fakeroot/usr/lib/pkgconfig fakeroot/usr/share/gtk-doc fakeroot/usr/share/locale
-
-    find fakeroot/ -name "*.la" | xargs rm -f
-    
-    find fakeroot/ -type f -executable | xargs $STRIP
-
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error "copy target binaries"
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/goffice.installed"

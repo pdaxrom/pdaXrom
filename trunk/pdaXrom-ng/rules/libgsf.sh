@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LIBGSF=libgsf-1.14.10.tar.bz2
+LIBGSF_VERSION=1.14.18
+LIBGSF=libgsf-${LIBGSF_VERSION}.tar.bz2
 LIBGSF_MIRROR=http://ftp.gnome.org/pub/gnome/sources/libgsf/1.14
-LIBGSF_DIR=$BUILD_DIR/libgsf-1.14.10
+LIBGSF_DIR=$BUILD_DIR/libgsf-${LIBGSF_VERSION}
 LIBGSF_ENV="$CROSS_ENV_AC"
 
 build_libgsf() {
@@ -38,11 +39,9 @@ build_libgsf() {
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 gsf/.libs/libgsf-1.so.114.0.10 $ROOTFS_DIR/usr/lib/libgsf-1.so.114.0.10 || error
-    ln -sf libgsf-1.so.114.0.10 $ROOTFS_DIR/usr/lib/libgsf-1.so.114
-    ln -sf libgsf-1.so.114.0.10 $ROOTFS_DIR/usr/lib/libgsf-1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgsf-1.so.114.0.10
+
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libgsf.installed"
