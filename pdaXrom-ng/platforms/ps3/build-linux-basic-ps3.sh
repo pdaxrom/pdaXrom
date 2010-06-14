@@ -8,8 +8,6 @@ KERNEL_VERSION="2.6.32"
 KERNEL_CONFIG=ps3_kernel_2.6.32
 TARGET_VENDOR_PATCH=ps3
 
-USE_SPLASH="yes"
-
 . $SETS_DIR/packages-basic.inc
 
 . $RULES_DIR/ps3-utils.sh
