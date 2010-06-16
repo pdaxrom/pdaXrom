@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export BINUTILS_VERSION=2.20.51.0.9
+export GCC_VERSION=4.4.4
 #export BINUTILS_VERSION=2.19.1
 #export GCC_VERSION=4.4.1
 
