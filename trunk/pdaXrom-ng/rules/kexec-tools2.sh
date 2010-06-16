@@ -23,6 +23,12 @@ build_kexec_tools2() {
     apply_patches $KEXEC_TOOLS2_DIR $KEXEC_TOOLS2
     pushd $TOP_DIR
     cd $KEXEC_TOOLS2_DIR
+    local M_ARGS=
+    case $TARGET_ARCH in
+    powerpc*-ps3-*|ppc*-ps3-*)
+	M_ARGS="ARCH=ppc64"
+	;;
+    esac
     (
     eval \
 	$CROSS_CONF_ENV \
@@ -34,11 +40,11 @@ build_kexec_tools2() {
 	    || error
     ) || error "configure"
 
-    make $MAKEARGS || error
+    make $MAKEARGS $M_ARGS || error
 
     #install_sysroot_files || error
 
-    install_fakeroot_init
+    install_fakeroot_init $M_ARGS
 
     install_fakeroot_finish || error
 
