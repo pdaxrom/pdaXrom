@@ -1,6 +1,6 @@
-BINUTILS="binutils-2.19.50.0.1.tar.bz2"
+BINUTILS="binutils-${BINUTILS_VERSION-2.19.50.0.1}.tar.bz2"
 BINUTILS_MIRROR="ftp://ftp.kernel.org/pub/linux/devel/binutils"
-BINUTILS_DIR="$BUILD_DIR/binutils-2.19.50.0.1"
+BINUTILS_DIR="$BUILD_DIR/binutils-${BINUTILS_VERSION-2.19.50.0.1}"
 
 build_binutils() {
     test -e "$STATE_DIR/binutils" && return
@@ -188,9 +188,9 @@ build_uClibc() {
     touch "$STATE_DIR/uClibc.installed"
 }
 
-GCC="gcc-4.3.2.tar.bz2"
-GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.3.2"
-GCC_DIR="$BUILD_DIR/gcc-4.3.2"
+GCC="gcc-${GCC_VERSION-4.3.2}.tar.bz2"
+GCC_MIRROR="ftp://gcc.gnu.org/pub/gcc/releases/gcc-${GCC_VERSION-4.3.2}"
+GCC_DIR="$BUILD_DIR/gcc-${GCC_VERSION-4.3.2}"
 
 build_gcc_stage1() {
     test -e "$STATE_DIR/gcc-stage1" && return
@@ -244,6 +244,10 @@ build_gcc_stage1() {
 	error "Unknown arch"
 	;;
     esac
+    if [ ! "$GCC_ENABLE_TLS" = "yes" ]; then
+	CONF_ARGS="$CONF_ARGS --disable-tls"
+    fi
+    CONF_ARGS="$CONF_ARGS $GCC_EXTRA_CONF_ARGS"
     echo "configure"
     pushd $TOP_DIR
     mkdir "$GCC_DIR/build"
@@ -341,6 +345,10 @@ build_gcc() {
 	CONF_ARGS="$CONF_ARGS --disable-shared"
 	;;
     esac
+    if [ ! "$GCC_ENABLE_TLS" = "yes" ]; then
+	CONF_ARGS="$CONF_ARGS --disable-tls"
+    fi
+    CONF_ARGS="$CONF_ARGS $GCC_EXTRA_CONF_ARGS"
     echo "configure"
     pushd $TOP_DIR
     mkdir -p "$GCC_DIR/build2"

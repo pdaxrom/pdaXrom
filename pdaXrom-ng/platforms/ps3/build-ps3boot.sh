@@ -28,7 +28,7 @@ BLUEZ_UTILS3_BIN_FILES="tools/hciconfig"
 . $RULES_DIR/dropbear.sh
 . $RULES_DIR/figlet.sh
 . $RULES_DIR/ps3-utils.sh
-. $RULES_DIR/kexec-tools.sh
+. $RULES_DIR/kexec-tools2.sh
 . $RULES_DIR/libjpeg.sh
 . $RULES_DIR/libpng.sh
 . $RULES_DIR/freetype.sh
