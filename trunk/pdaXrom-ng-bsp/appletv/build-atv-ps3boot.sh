@@ -20,6 +20,8 @@ TARGET_KERNEL_IMAGE=bzImage
 . $RULES_DIR/create_root.sh
 . $RULES_DIR/linux_kernel.sh
 . $RULES_DIR/busybox.sh
+. $RULES_DIR/host_ncurses.sh
+. $RULES_DIR/ncurses.sh
 . $RULES_DIR/udev.sh
 . $RULES_DIR/wireless_tools.sh
 . $RULES_DIR/dhcpcd.sh
@@ -35,6 +37,8 @@ TARGET_KERNEL_IMAGE=bzImage
 
 . $RULES_DIR/openssl.sh
 . $BSP_RULES_DIR/diskdev-cmds.sh
+. $RULES_DIR/libuuid.sh
+. $RULES_DIR/libblkid.sh
 . $RULES_DIR/e2fsprogs.sh
 . $BSP_RULES_DIR/parted.sh
 . $RULES_DIR/gdisk.sh
