@@ -31,7 +31,7 @@ build_util_linux_ng_libblkid() {
 	../configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --disable-libuuid \
+	    --enable-libuuid \
 	    --enable-libblkid \
 	    || error
     ) || error "configure"
