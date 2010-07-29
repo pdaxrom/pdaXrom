@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-HAL_VERSION=0.5.14
+HAL_VERSION=0.5.12rc1
 HAL=hal-${HAL_VERSION}.tar.gz
 HAL_MIRROR=http://hal.freedesktop.org/releases
 HAL_DIR=$BUILD_DIR/hal-${HAL_VERSION}
@@ -41,15 +41,12 @@ build_hal() {
 	    --disable-policy-kit \
 	    --disable-pnp-ids \
 	    --with-hwdata=/usr/share/hwdata \
-	    --with-udev-prefix=/lib \
+	    --with-linux-input-header=$KERNEL_DIR/include/linux/input.h \
 	    --disable-static \
 	    --enable-shared \
 	    || error
     ) || error "configure"
-
-#	    --with-linux-input-header=$KERNEL_DIR/include/linux/input.h \
-
-
+    
     make $MAKEARGS || error
 
     install_sysroot_files || error
