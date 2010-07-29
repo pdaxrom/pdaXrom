@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-ALSA_UTILS=alsa-utils-1.0.19.tar.bz2
+ALSA_UTILS_VERSION=1.0.23
+ALSA_UTILS=alsa-utils-${ALSA_UTILS_VERSION}.tar.bz2
 ALSA_UTILS_MIRROR=ftp://ftp.alsa-project.org/pub/utils
-ALSA_UTILS_DIR=$BUILD_DIR/alsa-utils-1.0.19
+ALSA_UTILS_DIR=$BUILD_DIR/alsa-utils-${ALSA_UTILS_VERSION}
 ALSA_UTILS_ENV=
 
 build_alsa_utils() {
-    test -e "$STATE_DIR/alsa_utils-1.0.18" && return
+    test -e "$STATE_DIR/alsa_utils-${ALSA_UTILS_VERSION}" && return
     banner "Build $ALSA_UTILS"
     download $ALSA_UTILS_MIRROR $ALSA_UTILS
     extract $ALSA_UTILS
@@ -34,22 +35,8 @@ build_alsa_utils() {
     )
     make $MAKEARGS || error
 
-    $INSTALL -m 755 alsactl/alsactl $ROOTFS_DIR/usr/sbin/
-    $STRIP $ROOTFS_DIR/usr/sbin/alsactl
-    
-    for f in alsamixer/alsamixer amidi/amidi amixer/amixer aplay/aplay \
-	    iecset/iecset seq/aconnect/aconnect seq/aplaymidi/aplaymidi \
-	    seq/aplaymidi/arecordmidi seq/aseqdump/aseqdump seq/aseqnet/aseqnet; do
-	$STRIP $f
-	$INSTALL -m 755 $f $ROOTFS_DIR/usr/bin/
-    done
-    ln -sf aplay $ROOTFS_DIR/usr/bin/arecord
-
-    for f in 00main default help info test hda; do
-	$INSTALL -D -m 644 alsactl/init/$f $ROOTFS_DIR/usr/share/alsa/init/$f
-    done
-
-    mkdir -p $ROOTFS_DIR/var/lib/alsa
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/alsa-utils $ROOTFS_DIR/etc/init.d/alsa-utils
     if [ "$USE_FASTBOOT" = "yes" ]; then
@@ -60,7 +47,7 @@ build_alsa_utils() {
     install_rc_stop  alsa-utils 10
 
     popd
-    touch "$STATE_DIR/alsa_utils-1.0.18"
+    touch "$STATE_DIR/alsa_utils-${ALSA_UTILS_VERSION}"
 }
 
 build_alsa_utils
