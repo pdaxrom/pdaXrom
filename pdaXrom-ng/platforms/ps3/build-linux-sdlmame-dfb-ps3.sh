@@ -76,6 +76,5 @@ install_rc_start sdlmame 95
 . $RULES_DIR/tweak-ps3.sh
 
 . $SETS_DIR/packages-host-squashfs.inc
-. $RULES_DIR/create_initramfs.sh
 . $RULES_DIR/create_squashfs.sh
 . $RULES_DIR/create_ps3cd.sh
