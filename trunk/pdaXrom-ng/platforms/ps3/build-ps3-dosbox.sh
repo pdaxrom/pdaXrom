@@ -61,12 +61,7 @@ LIBC_GCONV_MODULES="CP1252.so"
 . $RULES_DIR/boolstuff.sh
 . $RULES_DIR/halevt.sh
 
-. $SETS_DIR/packages-netsurf.inc
-
-
-
 . $RULES_DIR/dosbox.sh
-
 
 . $SETS_DIR/packages-bluetooth.inc
 . $RULES_DIR/sixaxisdmouse.sh
