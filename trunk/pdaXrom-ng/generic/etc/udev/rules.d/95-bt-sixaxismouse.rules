@@ -1,0 +1,2 @@
+SUBSYSTEM=="bluetooth" ACTION=="add" RUN+="/etc/init.d/sixaxismouse start"
+SUBSYSTEM=="bluetooth" ACTION=="remove" RUN+="/etc/init.d/sixaxismouse stop"

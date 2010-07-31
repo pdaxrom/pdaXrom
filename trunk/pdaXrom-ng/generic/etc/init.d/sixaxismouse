@@ -7,12 +7,14 @@ test -f /usr/bin/sixaxisd || exit 0
 DAEMON=/usr/bin/sixaxisd
 DAEMON_ARGS="-mouse"
 
+export PATH=$PATH:/usr/bin:/usr/sbin
+
 case "$1" in
   start)
 	log_begin_msg -n "Starting sixaxis bluetooth mouse emulator"
-	/usr/sbin/hciconfig hci0 up
-	/usr/sbin/hciconfig hci0 lm master
-	/usr/sbin/hciconfig hci0 piscan
+	hciconfig hci0 up
+	hciconfig hci0 lm master
+	hciconfig hci0 piscan
 
 	start-stop-daemon -S -q -b -x "$DAEMON" -- $DAEMON_ARGS
 
@@ -21,7 +23,7 @@ case "$1" in
   stop)
 	log_begin_msg -n "Stopping sixaxis bluetooth mouse emulator"
 	start-stop-daemon -K -q -x "$DAEMON"
-	/usr/sbin/hciconfig hci0 down 2>/dev/null >/dev/null
+	hciconfig hci0 down 2>/dev/null >/dev/null
 	true
 	log_end_msg $?
 	;;
