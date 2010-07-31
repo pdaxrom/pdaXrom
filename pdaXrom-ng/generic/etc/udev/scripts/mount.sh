@@ -11,9 +11,16 @@ DEVICE=/dev/disk/by-uuid/$ID_FS_UUID
 
 VOL_ID="/lib/udev/vol_id"
 
-echo "$ACTION device $DEVICE" >> /var/log/mounts.log
+echo "$ACTION device $DEVICE [$ID_FS_LABEL] [$ID_FS_TYPE]" >> /var/log/mounts.log
 
-if [ "$ACTION" = "add" ] && [ "$ID_FS_UUID" ]; then
+MOUNTDIR=""
+if [ "$ID_FS_LABEL" ]; then
+    MOUNTDIR="$ID_FS_LABEL"
+elif [ "$ID_FS_UUID" ]; then
+    MOUNTDIR="$ID_FS_UUID"
+fi
+
+if [ "$ACTION" = "add" ] && [ "$MOUNTDIR" ]; then
     if [ ! -e /sys${DEVPATH}/device ]; then
 	DEVPATH=${DEVPATH}/..
     fi
@@ -23,16 +30,15 @@ if [ "$ACTION" = "add" ] && [ "$ID_FS_UUID" ]; then
     if [ "`cat /sys${DEVPATH}/removable`" = "0" ]; then
 	exit 0
     fi
-    FSTYPE="`$VOL_ID --type $DEVICE`"
-    if [ "x$FSTYPE" = "x" ]; then
+    if [ "x$ID_FS_TYPE" = "x" ]; then
 	exit 1
     fi
-    modprobe $FSTYPE || exit 1
+    modprobe $ID_FS_TYPE || exit 1
 
-    mkdir /media/disk-$ID_FS_UUID
-    mount $DEVICE /media/disk-$ID_FS_UUID
+    mkdir "/media/$MOUNTDIR"
+    mount $DEVICE "/media/$MOUNTDIR"
 fi
 
-if [ "$ACTION" = "remove" ] && [ "$ID_FS_UUID" ]; then
-    umount -l $DEVICE && rmdir /media/disk-$ID_FS_UUID
+if [ "$ACTION" = "remove" ] && [ "$MOUNTDIR" ]; then
+    umount -l "/media/$MOUNTDIR" && rmdir "/media/$MOUNTDIR"
 fi
