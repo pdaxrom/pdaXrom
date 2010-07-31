@@ -29,7 +29,7 @@ build_sixaxisd() {
     $STRIP $ROOTFS_DIR/usr/bin/sixaxisd || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/sixaxismouse $ROOTFS_DIR/etc/init.d/sixaxismouse || error
-    install_rc_start sixaxismouse 71
+    $INSTALL -D -m 644 $GENERICFS_DIR/etc/udev/rules.d/95-bt-sixaxismouse.rules $ROOTFS_DIR/etc/udev/rules.d/95-bt-sixaxismouse.rules || error
     install_rc_stop  sixaxismouse 19
 
     rm -f $ROOTFS_DIR/etc/rc.d/*_bluetooth
