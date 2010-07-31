@@ -1,0 +1,17 @@
+Index: Makefile
+===================================================================
+--- s/Makefile	(revision 10672)
++++ s/Makefile	(working copy)
+@@ -10,10 +10,10 @@
+ ARFLAGS = -cru
+ CFLAGS = -g -Wall -Wextra -Wundef -Wpointer-arith -Wcast-align \
+ 	-Wwrite-strings -Wstrict-prototypes \
+-	-Wnested-externs -Werror -pedantic -std=c99 \
++	-Wnested-externs -pedantic -std=c99 \
+ 	-Wno-format-zero-length -Wformat-security -Wstrict-aliasing=2 \
+ 	-Wmissing-format-attribute -Wunused -Wunreachable-code \
+-	-Wformat=2 -Werror-implicit-function-declaration \
++	-Wformat=2 \
+ 	-Wmissing-declarations -Wmissing-prototypes
+ LDFLAGS = -g -L./
+ 
