@@ -9,15 +9,23 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
 ACTION=$1
 DEVICE=$2
+MEDIA=$3
 
-echo "$ACTION device $DEVICE [$ID_FS_LABEL] [$ID_FS_TYPE]" >> /var/log/minimount.log
+VOL_ID="/lib/udev/vol_id"
 
 MOUNTDIR=""
+
+[ "$ID_FS_LABEL" ] || ID_FS_LABEL=`$VOL_ID --label $DEVICE`
+[ "$ID_FS_UUID" ] || ID_FS_UUID=`$VOL_ID --uuid $DEVICE`
+[ "$ID_FS_TYPE" ] || ID_FS_TYPE=`$VOL_ID --type $DEVICE`
+
 if [ "$ID_FS_LABEL" ]; then
     MOUNTDIR="$ID_FS_LABEL"
 elif [ "$ID_FS_UUID" ]; then
     MOUNTDIR="$ID_FS_UUID"
 fi
+
+echo "$ACTION device $DEVICE [$ID_FS_LABEL] [$ID_FS_UUID] [$ID_FS_TYPE] [$MOUNTDIR] [$DEVPATH] [$MEDIA]" >> /var/log/minimount.log
 
 if [ "$ACTION" = "add" ] && [ "$MOUNTDIR" ]; then
     if [ ! -e /sys${DEVPATH}/device ]; then
@@ -34,10 +42,16 @@ if [ "$ACTION" = "add" ] && [ "$MOUNTDIR" ]; then
     fi
     modprobe $ID_FS_TYPE || exit 1
 
+    if [ "$MEDIA" = "CD" ]; then
+	sysctl -w dev.cdrom.lock=0
+    fi
+
     mkdir "/media/$MOUNTDIR"
     mount $DEVICE "/media/$MOUNTDIR"
 fi
 
 if [ "$ACTION" = "remove" ] && [ "$MOUNTDIR" ]; then
     umount -l "/media/$MOUNTDIR" && rmdir "/media/$MOUNTDIR"
+elif [ "$ACTION" = "remove" ] && [ "$MEDIA" = "CD" ]; then
+    umount -l "$DEVICE"
 fi
