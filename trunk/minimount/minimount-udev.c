@@ -113,9 +113,9 @@ int send_action(const char *action, const char *dev_path)
 
     if (streq(action, "add")) {
 	const char *icon = get_icon();
-	sprintf(buf, MOUNT_UTIL " %s,%s,%s", action, dev_path, icon);
+	sprintf(buf, MOUNT_UTIL " %s %s %s", action, dev_path, icon);
     } else if (streq(action, "remove")) {
-	sprintf(buf, MOUNT_UTIL " %s,%s", action, dev_path);
+	sprintf(buf, MOUNT_UTIL " %s %s", action, dev_path);
     } else
 	return 1;
 

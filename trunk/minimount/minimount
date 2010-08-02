@@ -1,5 +1,6 @@
 #!/bin/sh
 
-echo "$0 $1 $2 $3" >> /tmp/minimount.txt
+#echo "$0 $1 $2 $3" >> /tmp/minimount.txt
+echo "$1 device $2 [$ID_FS_LABEL] [$ID_FS_TYPE]" >> /tmp/minimount.txt
 
 exit 0
