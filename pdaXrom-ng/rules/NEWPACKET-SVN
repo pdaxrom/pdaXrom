@@ -20,7 +20,7 @@ $PACKET = uc($packet);
 $LPACKET = lc($packet);
 
 open(INFILE,  "template-svn") || die "Can't open template";
-open(OUTFILE, ">$name\.sh") || die "Can't open new file";
+open(OUTFILE, ">$name-svn\.sh") || die "Can't open new file";
 
 while (<INFILE>) {
 	s,\@LPACKET@,$LPACKET,g;

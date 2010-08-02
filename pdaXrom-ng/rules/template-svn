@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-@PACKET@_VERSION=@VERSION@
-@PACKET@=@name@-${@PACKET@_VERSION}
-@PACKET@_SVN=@URL@
-@PACKET@_DIR=$BUILD_DIR/@name@-${@PACKET@_VERSION}
-@PACKET@_ENV="$CROSS_ENV_AC"
+@PACKET@_SVN_VERSION=@VERSION@
+@PACKET@_SVN=@name@-${@PACKET@_SVN_VERSION}
+@PACKET@_SVN_URL=@URL@
+@PACKET@_SVN_DIR=$BUILD_DIR/@name@-${@PACKET@_SVN_VERSION}
+@PACKET@_SVN_ENV="$CROSS_ENV_AC"
 
-build_@packet@() {
-    test -e "$STATE_DIR/@packet@.installed" && return
+build_@packet@_svn() {
+    test -e "$STATE_DIR/@packet@_svn.installed" && return
     banner "Build @name@"
-    download_svn $@PACKET@_SVN $@PACKET@
-    cp -R $SRC_DIR/$@PACKET@ $@PACKET@_DIR
-    apply_patches $@PACKET@_DIR $@PACKET@
+    download_svn $@PACKET@_SVN_URL $@PACKET@_SVN
+    cp -R $SRC_DIR/$@PACKET@_SVN $@PACKET@_SVN_DIR
+    apply_patches $@PACKET@_SVN_DIR $@PACKET@_SVN
     pushd $TOP_DIR
-    cd $@PACKET@_DIR
+    cd $@PACKET@_SVN_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$@PACKET@_ENV \
+	$@PACKET@_SVN_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -44,7 +44,7 @@ build_@packet@() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/@packet@.installed"
+    touch "$STATE_DIR/@packet@_svn.installed"
 }
 
-build_@packet@
+build_@packet@_svn
