@@ -13,7 +13,7 @@ clean:
 	rm -f $(HELPER) $(HELPER_OBJS)
 
 install:
-	install -D -m 755 $(HELPER) $(DESTDIR)/usr/sbin/$(HELPER)
+	install -D -m 755 $(HELPER) $(DESTDIR)/usr/lib/minimount/$(HELPER)
 	install -D -m 644 95-minimount.rules $(DESTDIR)/etc/udev/rules.d/95-minimount.rules
 	install -D -m 755 minimount $(DESTDIR)/usr/sbin/minimount
 
