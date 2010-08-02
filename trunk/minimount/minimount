@@ -50,8 +50,10 @@ if [ "$ACTION" = "add" ] && [ "$MOUNTDIR" ]; then
     mount $DEVICE "/media/$MOUNTDIR"
 fi
 
-if [ "$ACTION" = "remove" ] && [ "$MOUNTDIR" ]; then
-    umount -l "/media/$MOUNTDIR" && rmdir "/media/$MOUNTDIR"
-elif [ "$ACTION" = "remove" ] && [ "$MEDIA" = "CD" ]; then
-    umount -l "$DEVICE"
+if [ "$ACTION" = "remove" ]; then
+    DEVICE=`echo "$DEVICE" | sed 's/^\/\//\//'`
+    MOUNTDIR=`grep -q "${DEVICE} " /proc/mounts | awk { print $2; }`
+    if [ "$MOUNTDIR" ]; then
+	umount -l "/media/$MOUNTDIR" && rmdir "/media/$MOUNTDIR"
+    fi
 fi
