@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISOIMAGE_NAME="ps3-netsurf"
+ISOIMAGE_NAME="ps3-gamebox"
 
 TARGET_ARCH="powerpc-ps3-linux"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
@@ -44,11 +44,7 @@ LIBC_GCONV_MODULES="CP1252.so"
 . $RULES_DIR/freetype.sh
 . $RULES_DIR/fontconfig.sh
 . $RULES_DIR/libxml2.sh
-. $RULES_DIR/host_gettext.sh
-. $RULES_DIR/host_glib2.sh
-. $RULES_DIR/glib2.sh
 
-. $RULES_DIR/atk.sh
 . $RULES_DIR/DirectFB.sh
 . $RULES_DIR/SDL-directfb.sh
 
@@ -57,9 +53,13 @@ LIBC_GCONV_MODULES="CP1252.so"
 . $RULES_DIR/unrar.sh
 . $RULES_DIR/nano.sh
 
+. $RULES_DIR/dropbear.sh
+
 . $SETS_DIR/packages-netsurf.inc
 
-. $SETS_DIR/packages-bluetooth.inc
+. $RULES_DIR/dosbox.sh
+
+. $SETS_DIR/packages-bluez3.inc
 . $RULES_DIR/sixaxisdmouse.sh
 
 . $RULES_DIR/minimount-svn.sh
