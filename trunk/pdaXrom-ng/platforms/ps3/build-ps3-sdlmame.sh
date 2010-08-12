@@ -42,11 +42,7 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/freetype.sh
 . $RULES_DIR/fontconfig.sh
 . $RULES_DIR/libxml2.sh
-. $RULES_DIR/host_gettext.sh
-. $RULES_DIR/host_glib2.sh
-. $RULES_DIR/glib2.sh
 
-. $RULES_DIR/atk.sh
 . $RULES_DIR/DirectFB.sh
 . $RULES_DIR/SDL-directfb.sh
 
@@ -55,10 +51,6 @@ TARGET_VENDOR_PATCH=ps3
 . $RULES_DIR/unrar.sh
 . $RULES_DIR/nano.sh
 
-. $SETS_DIR/packages-hal.inc
-. $RULES_DIR/boolstuff.sh
-. $RULES_DIR/halevt.sh
-
 SDLMAME_MAKE_ARGS="NO_OPENGL=1"
 
 . $RULES_DIR/host_sdlmame.sh
@@ -66,6 +58,8 @@ SDLMAME_MAKE_ARGS="NO_OPENGL=1"
 
 . $SETS_DIR/packages-bluez3.inc
 . $RULES_DIR/sixaxisd.sh
+
+. $RULES_DIR/minimount-svn.sh
 
 $INSTALL -D -m 644 $GENERICFS_DIR/sdlmame/default.cfg $ROOTFS_DIR/var/games/sdlmame/cfg/default.cfg || error
 $INSTALL -D -m 755 $GENERICFS_DIR/sdlmame/sdlmame.init $ROOTFS_DIR/etc/init.d/sdlmame || error
