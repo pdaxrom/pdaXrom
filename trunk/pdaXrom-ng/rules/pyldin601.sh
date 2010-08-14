@@ -19,6 +19,7 @@ build_pyldin601() {
     test -e "$STATE_DIR/pyldin601" && return
     banner "Build $PYLDIN601"
     download_svn $PYLDIN601_SVN $PYLDIN601
+    rm -rf $PYLDIN601_DIR
     cp -R $SRC_DIR/$PYLDIN601 $PYLDIN601_DIR/
     apply_patches $PYLDIN601_DIR $PYLDIN601
     
