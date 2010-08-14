@@ -1,0 +1,18 @@
+--- s/CPU/Makefile.in-	2010-08-13 19:37:52.600088590 +0300
++++ s/CPU/Makefile.in	2010-08-13 19:40:14.220065685 +0300
+@@ -57,11 +57,11 @@
+ 	-rm -f Makefile config.cache config.log config.status include/sysconfig.h
+ 	-rm -f machdep osdep threaddep sounddep target.h
+ 
+-build68k: build68k.o
+-	$(CC) $(LDFLAGS) -o build68k build68k.o
++build68k:
++	$(HOST_CC) $(INCLUDES) $(LDFLAGS) -o build68k build68k.c
+ 
+-gencpu: gencpu.o readcpu.o cpudefs.o
+-	$(CC) $(LDFLAGS) -o gencpu gencpu.o readcpu.o cpudefs.o
++gencpu:
++	$(HOST_CC) $(INCLUDES) $(LDFLAGS) -o gencpu gencpu.c readcpu.c cpudefs.c
+ 
+ cpudefs.c: build68k table68k
+ 	./build68k >cpudefs.c

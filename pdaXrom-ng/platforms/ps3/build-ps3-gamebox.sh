@@ -59,6 +59,11 @@ LIBC_GCONV_MODULES="CP1252.so"
 
 . $RULES_DIR/dosbox.sh
 
+. $RULES_DIR/SDL_image.sh
+. $RULES_DIR/pyldin601.sh
+
+. $RULES_DIR/vMac.sh
+
 . $SETS_DIR/packages-bluez3.inc
 . $RULES_DIR/sixaxisdmouse.sh
 

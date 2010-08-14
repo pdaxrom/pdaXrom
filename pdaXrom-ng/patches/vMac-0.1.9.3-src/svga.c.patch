@@ -1,0 +1,20 @@
+--- s/Linux/svga.c-	2010-08-13 19:57:22.265660694 +0300
++++ s/Linux/svga.c	2010-08-13 19:57:28.228162420 +0300
+@@ -132,7 +132,7 @@
+     int x, y, x2;
+     unsigned char *buf;
+     int scanline = 0;
+-    ULONG *baseaddr;
++//    ULONG *baseaddr;
+ #define BUFLEN 512
+     unsigned char cvtbuf[BUFLEN];
+ 
+@@ -141,7 +141,7 @@
+     } else {
+ 	buf = (unsigned char *) RAM_Xlate(kAlternate_Buffer);
+     }
+-    (ULONG)baseaddr = RAM_GetB(kMain_Buffer);
++//    (ULONG)baseaddr = RAM_GetB(kMain_Buffer);
+ //    if ((Draw_Count % thePrefs.FrameRate) == 0) {
+ 	for (y = 0; y < 342; y++, buf += 64, scanline += 80) {
+ 	    /* Bytesex and inversion */

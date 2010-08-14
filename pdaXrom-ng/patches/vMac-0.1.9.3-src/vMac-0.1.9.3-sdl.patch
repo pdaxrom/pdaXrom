@@ -1,0 +1,533 @@
+diff -Nur vMac-0.1.9.3/configure.in vMac-0.1.9.3-sdl/configure.in
+--- vMac-0.1.9.3/configure.in	2010-08-14 20:39:09.873909901 +0300
++++ vMac-0.1.9.3-sdl/configure.in	2010-08-14 15:28:31.000000000 +0300
+@@ -54,6 +54,9 @@
+ AC_CHECK_SIZEOF(long long, 8)
+ 
+ AC_CHECK_LIB(vga, vga_setmode, HAVE_SVGA=yes, HAVE_SVGA=no)
++dnl Check for SDL
++SDL_VERSION=1.2.10
++AM_PATH_SDL($SDL_VERSION, HAVE_SDL=yes, HAVE_SDL=no)
+ 
+ HAVE_GTK=no
+ 
+@@ -63,6 +66,7 @@
+ WANT_MITSHM=no
+ WANT_SCAN=no
+ WANT_SVGA=no
++WANT_SDL=no
+ WANT_NEXTSTEP=no
+ 
+ AC_ARG_ENABLE(gtkgui,
+@@ -75,6 +79,8 @@
+   [  --enable-scanline       compile to use Scanline redraw.],[WANT_SCAN=$enableval],[])
+ AC_ARG_ENABLE(mitshm,
+   [  --enable-mitshm         compile to use MITSHM in Scanline redraw.],[WANT_MITSHM=$enableval],[])
++AC_ARG_WITH(sdl,
++  [  --with-sdl              compile SDL version.],[WANT_SDL=$withval],[])
+ AC_ARG_WITH(svga,
+   [  --with-svga             compile SVGALib version.],[WANT_SVGA=$withval],[])
+ AC_ARG_WITH(nextstep,
+@@ -144,6 +150,15 @@
+   fi
+ fi
+ 
++if [[ "x$WANT_SDL" = "xyes" ]]; then
++  if [[ "x$HAVE_SDL" = "xno" ]]; then
++    echo "Can't find SDL libraries; SDL disabled."
++    WANT_SDL=no
++  else
++    WANT_NOGUI=no
++  fi
++fi
++
+ if [[ "x$WANT_NEXTSTEP" = "xyes" ]]; then
+   WANT_NOGUI=no
+   if [[ "x$WANT_SVGA" = "xyes" -o "x$WANT_MOTIF" = "xyes" -o "x$WANT_NOGUI" = "xyes" -o "x$WANT_GTKGUI" = "xyes" ]]; then
+@@ -189,6 +204,18 @@
+   fi
+ fi
+ 
++if [[ "x$WANT_SDL" = "xyes" ]]; then
++  if [[ "x$HAVE_SDL" = "xno" ]]; then
++    WANT_SDL=no
++    echo "Can't find SDL libraries; SDL disabled."
++  else
++    WANT_MOTIFGUI=no
++    WANT_NOGUI=no
++    WANT_GTKGUI=no
++    WANT_SVGA=no
++ fi
++fi
++
+ LIBRARIES="$X_LIBS $X_PRE_LIBS"
+ MATHLIB="-lm"
+ 
+@@ -201,6 +228,10 @@
+     AC_MSG_RESULT(no)
+     WANT_SCAN=no
+     echo "Sorry, scanline screen draw doesn't work in the SVGALib port."
++else if [[ "x$WANT_SDL" = "xyes" -a "x$WANT_SCAN" = "xyes" ]]; then
++    AC_MSG_RESULT(no)
++    WANT_SCAN=no
++    echo "Sorry, scanline screen draw doesn't work in the SDL port."
+ else if [[ "x$WANT_MOTIFGUI" = "xyes" -a "x$WANT_SCAN" = "xyes" ]]; then
+     AC_MSG_RESULT(yes)   
+     WANT_SCAN=yes
+@@ -220,6 +251,7 @@
+ fi
+ fi
+ fi
++fi
+ 
+ AC_MSG_CHECKING(using MIT-SHM in scanline)
+ if [[ "x$WANT_MITSHM" != "xno" -a "x$WANT_SCAN" = "xyes" ]]; then
+@@ -257,7 +289,14 @@
+ rm -f conftest*
+ 
+ AC_MSG_CHECKING(which target to use)
+-if [[ "x$WANT_MOTIFGUI" = "xyes" ]]; then
++if [[ "x$WANT_SDL" = "xyes" ]]; then
++    AC_MSG_RESULT(SDL)
++    TARGET=sdl
++    GFXOBJS=Linux/sdl.o
++    LIBRARIES="`sdl-config --libs`"
++    LDFLAGS="$LDFLAGS"
++    CFLAGS="$CFLAGS `sdl-config --cflags`"
++else if [[ "x$WANT_MOTIFGUI" = "xyes" ]]; then
+     AC_MSG_RESULT(MotifGui)   
+     TARGET=motif
+     GFXOBJS=Unix/Screen-Motif.o
+@@ -298,6 +337,7 @@
+ fi
+ fi
+ fi
++fi
+ 
+ AC_SUBST(ac_cv_c_inline)
+ AC_SUBST(ac_cv_c_bigendian)
+diff -Nur vMac-0.1.9.3/Hardware/Sony.c vMac-0.1.9.3-sdl/Hardware/Sony.c
+--- vMac-0.1.9.3/Hardware/Sony.c	1998-02-12 01:36:15.000000000 +0200
++++ vMac-0.1.9.3-sdl/Hardware/Sony.c	2010-08-14 18:21:33.427933524 +0300
+@@ -326,7 +326,8 @@
+     put_byte(SonyVars + kDrive1 + kWriteProt, 0x00);   // Drive 1 Writeable
+     put_byte(SonyVars + kDrive1 + kDiskInPlace, 0x00); // Drive 1 No Disk
+     put_byte(SonyVars + kDrive1 + kTwoSideFmt, 0x00);  // Drive 1 Single Format (Initially)
+-    fclose(Drive1);
++    if (Drive1)
++	fclose(Drive1);
+     Drive1 = NULL;
+     return;
+   }
+@@ -335,7 +336,8 @@
+     put_byte(SonyVars + kDrive2 + kWriteProt, 0x00);   // Drive 2 Writeable
+     put_byte(SonyVars + kDrive2 + kDiskInPlace, 0x00); // Drive 2 No Disk
+     put_byte(SonyVars + kDrive2 + kTwoSideFmt, 0x00);  // Drive 2 Single Format (Initially)
+-    fclose(Drive2);
++    if (Drive2)
++	fclose(Drive2);
+     Drive2 = NULL;
+     return;
+   }
+@@ -344,7 +346,8 @@
+     put_byte(SonyVars + kDrive3 + kWriteProt, 0x00);   // Drive 2 Writeable
+     put_byte(SonyVars + kDrive3 + kDiskInPlace, 0x00); // Drive 2 No Disk
+     put_byte(SonyVars + kDrive3 + kTwoSideFmt, 0x00);  // Drive 2 Single Format (Initially)
+-    fclose(Drive3);
++    if (Drive3)
++	fclose(Drive3);
+     Drive3 = NULL;
+     return;
+   }
+diff -Nur vMac-0.1.9.3/Linux/sdl.c vMac-0.1.9.3-sdl/Linux/sdl.c
+--- vMac-0.1.9.3/Linux/sdl.c	1970-01-01 03:00:00.000000000 +0300
++++ vMac-0.1.9.3-sdl/Linux/sdl.c	2010-08-14 20:32:02.414023758 +0300
+@@ -0,0 +1,352 @@
++/*
++ * vMac - sdl.c
++ * SDL Interface for vMac by Alexander Chukov <sash@pdaXrom.org>
++ *
++ *
++ * vMac - SVGA-Linux.c
++ * Linux SVGA Interface for vMac
++ * Copyright 1997 Matt Gischer (matt@mlmicro.com) and 
++ * Phil Rutschman (machack@rsnsoft.com)
++ *
++ */
++
++/*
++ * Modifications by Michael Hanni (1998) (mhanni@sprintmail.com)
++ */
++ 
++
++#include "sysconfig.h"
++#include "sysdeps.h"
++#include "Screen.h"
++#include "Sony.h"
++#include "RAM.h"
++#include "VIA.h"
++#include "prefs.h"
++#include "Keyboard.h"
++#include "Mouse.h"
++
++#include <ncurses.h>
++#include <SDL.h>
++#include <stdio.h>
++
++#define PIXEL_ON	0xFFFF
++#define PIXEL_OFF	0x0
++
++
++UBYTE vPage2 = 1;
++UBYTE Draw_Count = 0;		/* PC - Counter for Drawing Screen */
++
++volatile int buttonstate;
++volatile int mouse_x, mouse_y;
++volatile int lastmx, lastmy;
++
++static SDL_Surface *screen;
++
++static int macDisplayHeight = 342;
++static int macDisplayWidth = 512;
++int oldscan, oldstate;
++int VIDMODE;
++int KeyState[256];
++
++int Shift, Command, Option, CapsLock;
++
++void kb_handle(int ScanCode, int NewState);
++void Quit_vMac(void);
++
++#define SC_ESC 0xFFFE
++#define SC_CTR 0xFFFD
++#define SC_ALT 0xFFFC
++#define SC_SFT 0xFFFB
++#define SC_CLK 0xFFFA
++
++static int vscr_width = 0;
++static int vscr_height = 0;
++static int vscr_scale = 1;
++
++int Screen_Init(int argc, char** argv)
++{
++    Uint32 sys_flags;
++    Uint32 vid_flags;
++
++    extern char *optarg;
++    extern int optind, optopt, opterr;
++    int c;
++
++    while ((c = getopt(argc, argv, "hits:d:p:g:")) != -1)
++    {
++        switch (c)
++        {
++			case 's':
++	  			vscr_scale = atoi(optarg);
++	  			fprintf(stderr, "scale %d\n", vscr_scale);
++	  			break;
++			case 'g':
++	  			sscanf(optarg, "%dx%d", &vscr_width, &vscr_height);
++	  			break;
++        }
++	}
++
++    sys_flags = 0;
++    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | sys_flags) < 0) {
++		fprintf(stderr, "Couldn't load SDL: %s\n", SDL_GetError());
++		return 1;
++    }
++
++    vscr_width = (vscr_width < macDisplayWidth)?macDisplayWidth:vscr_width;
++    vscr_height = (vscr_height < macDisplayHeight)?macDisplayHeight:vscr_height;
++
++    while (((vscr_width < (macDisplayWidth * vscr_scale)) || (vscr_height < (macDisplayHeight * vscr_scale))) && (vscr_scale > 1))
++	  vscr_scale--;
++
++    printf("Set screen geometry to %dx%d, scale %d\n", vscr_width, vscr_height, vscr_scale);
++
++    vid_flags = SDL_HWSURFACE;
++    vid_flags |= SDL_DOUBLEBUF;
++    screen = SDL_SetVideoMode(vscr_width, vscr_height, 16, vid_flags);
++
++    thePrefs.FrameRate = 1; 
++    printf("Drawing Every %i frames\n", thePrefs.FrameRate);
++
++    return 0;
++}
++
++#if 1
++void Screen_Draw(void)
++{
++    int x, y, x2;
++    unsigned char *buf;
++    int scanline = 0;
++#define BUFLEN 512
++    unsigned short *vscr = (unsigned short *)screen->pixels;
++
++    SDL_Flip(screen);
++
++    if (vPage2 == 1) {
++		buf = (unsigned char *) RAM_Xlate(kMain_Buffer);
++    } else {
++		buf = (unsigned char *) RAM_Xlate(kAlternate_Buffer);
++    }
++    for (y = 0; y < macDisplayHeight; y++, buf += 64) {
++		int s;
++		for (s = 0; s < vscr_scale; s++) {
++			unsigned short *cvtbuf = vscr + ((vscr_width - macDisplayWidth * vscr_scale) >> 1) +
++	  							  ((vscr_height - macDisplayHeight * vscr_scale) >> 1) * vscr_width;
++	  		/* Bytesex and inversion */
++	  		for (x = x2 = 0; x2 < 64; x2 += 2) {
++				unsigned short px = (buf[x2] << 8) | buf[x2 + 1];
++				int i;
++				for (i = 0; i < 16; i++) {
++					int s;
++					unsigned short pp = (px & 0x8000)?PIXEL_ON:PIXEL_OFF;
++					for (s = 0; s < vscr_scale; s++)
++						cvtbuf[x++] = pp;
++					px <<= 1;
++				}
++	  		}
++	  		vscr += vscr_width;
++	    }
++    }
++}
++#else
++void Screen_Draw(void)
++{
++    int x, y, x2;
++    unsigned char *buf;
++    int scanline = 0;
++#define BUFLEN 512
++    unsigned short *vscr = (unsigned short *)screen->pixels;
++
++    SDL_Flip(screen);
++
++    if (vPage2 == 1) {
++	buf = (unsigned char *) RAM_Xlate(kMain_Buffer);
++    } else {
++	buf = (unsigned char *) RAM_Xlate(kAlternate_Buffer);
++    }
++    for (y = 0; y < 342; y++, buf += 64, scanline += 80) {
++	    unsigned short *cvtbuf = vscr + ((vscr_width - macDisplayWidth * vscr_scale) >> 1) + 
++	  							  ((vscr_height - macDisplayHeight * vscr_scale) >> 1) * vscr_width;
++	    /* Bytesex and inversion */
++	    for (x = x2 = 0; x < BUFLEN; x += 16) {
++		cvtbuf[x + 0] = (buf[x2] & 0x80)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 1] = (buf[x2] & 0x40)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 2] = (buf[x2] & 0x20)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 3] = (buf[x2] & 0x10)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 4] = (buf[x2] & 0x08)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 5] = (buf[x2] & 0x04)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 6] = (buf[x2] & 0x02)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 7] = (buf[x2++] & 0x01)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 8] = (buf[x2] & 0x80)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 9] = (buf[x2] & 0x40)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 10] = (buf[x2] & 0x20)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 11] = (buf[x2] & 0x10)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 12] = (buf[x2] & 0x08)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 13] = (buf[x2] & 0x04)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 14] = (buf[x2] & 0x02)?PIXEL_ON:PIXEL_OFF;
++		cvtbuf[x + 15] = (buf[x2++] & 0x01)?PIXEL_ON:PIXEL_OFF;
++	    }
++	    vscr += vscr_width;
++	    //vga_drawscansegment((unsigned char *) cvtbuf, 64, 69 + y, BUFLEN);
++    }
++}
++#endif
++
++void Screen_Reset()
++{
++    printf("Screen Reset\n");
++    return;			/* need to write refresh, but first need to get Draw to work */
++}
++
++
++void Process_Screen_Events()
++{
++	int Key2 = 0x01C, Key3 = 0x01D, Key4 = 0x01E, Key5 = 0x01F;
++	int Modifier;
++    SDL_Event event;
++
++    if(SDL_PollEvent(&event) > 0){
++	  switch(event.type) {
++	    case SDL_QUIT:
++			Quit_vMac();
++			break;
++	    case SDL_MOUSEBUTTONDOWN:
++			lastmx = (event.button.x - ((vscr_width - macDisplayWidth * vscr_scale) >> 1)) / vscr_scale;
++			lastmy = (event.button.y - ((vscr_height - macDisplayHeight * vscr_scale) >> 1)) / vscr_scale;
++			buttonstate = 1;
++			break;
++	    case SDL_MOUSEBUTTONUP:
++			lastmx = (event.button.x - ((vscr_width - macDisplayWidth * vscr_scale) >> 1)) / vscr_scale;
++			lastmy = (event.button.y - ((vscr_height - macDisplayHeight * vscr_scale) >> 1)) / vscr_scale;
++			buttonstate = 0;
++			break;
++	    case SDL_MOUSEMOTION:
++			lastmx = (event.motion.x - ((vscr_width - macDisplayWidth * vscr_scale) >> 1)) / vscr_scale;
++			lastmy = (event.motion.y - ((vscr_height - macDisplayHeight * vscr_scale) >> 1)) / vscr_scale;
++			break;
++	    case SDL_KEYDOWN: {
++			SDLKey sdlkey=event.key.keysym.sym;
++			switch (sdlkey) {
++		    case SDLK_F7:
++      			Call_ATrap(0xA94C);
++				break;
++		    case SDLK_F12:
++				Quit_vMac();
++				break;
++		    case SDLK_LEFT:
++				Keyboard_Down(Key2);
++				break;
++		    case SDLK_RIGHT:
++			    Keyboard_Down(Key3);
++				break;
++		    case SDLK_UP:
++				Keyboard_Down(Key4);
++				break;
++			case SDLK_DOWN:
++				Keyboard_Down(Key5);
++				break;
++		    case SDLK_RMETA:
++		    case SDLK_LMETA:
++		    case SDLK_RALT:
++            case SDLK_LALT:
++			case SDLK_RCTRL:
++			case SDLK_LCTRL:
++			case SDLK_RSHIFT:
++			case SDLK_LSHIFT:
++			case SDLK_CAPSLOCK:
++				break;
++			default:
++				if (event.key.keysym.mod & KMOD_SHIFT) {
++					Modifier = 0x0200;
++					sdlkey -= 32;
++				} else if (event.key.keysym.mod & KMOD_CTRL)
++					Modifier = 0x0800;
++                else if (event.key.keysym.mod & KMOD_ALT)
++                    Modifier = 0x0100;
++				else if (event.key.keysym.mod & KMOD_CAPS)
++					Modifier = 0x0400;
++				else
++					Modifier = 0x0000;
++				PC_PostEvent (3, sdlkey, Modifier);
++				break;
++			}
++			break;
++	    }
++	    case SDL_KEYUP: {
++			SDLKey sdlkey=event.key.keysym.sym;
++			switch (sdlkey) {
++			case SDLK_LEFT:
++				Keyboard_Up(Key2);
++				break;
++			case SDLK_RIGHT:
++				Keyboard_Up(Key3);
++				break;
++			case SDLK_UP:
++				Keyboard_Up(Key4);
++				break;
++			case SDLK_DOWN:
++				Keyboard_Up(Key5);
++				break;
++		    case SDLK_RMETA:
++		    case SDLK_LMETA:
++		    case SDLK_RALT:
++            case SDLK_LALT:
++			case SDLK_RCTRL:
++			case SDLK_LCTRL:
++			case SDLK_RSHIFT:
++			case SDLK_LSHIFT:
++			case SDLK_CAPSLOCK:
++				break;
++			default:
++				if (event.key.keysym.mod & KMOD_SHIFT) {
++					Modifier = 0x0200;
++					sdlkey -= 32;
++				} else if (event.key.keysym.mod & KMOD_CTRL)
++					Modifier = 0x0800;
++                else if (event.key.keysym.mod & KMOD_ALT)
++                    Modifier = 0x0100;
++				else if (event.key.keysym.mod & KMOD_CAPS)
++					Modifier = 0x0400;
++				else
++					Modifier = 0x0000;
++				PC_PostEvent (4, sdlkey, Modifier);
++				break;
++			}
++			break;
++		}
++	  }
++	  lastmx = (lastmx > macDisplayWidth)?(macDisplayWidth - 1):lastmx;
++	  lastmx = (lastmx < 0)?0:lastmx;
++	  lastmy = (lastmy > macDisplayHeight)?(macDisplayHeight - 1):lastmy;
++	  lastmy = (lastmy < 0)?0:lastmy;
++    }
++}
++
++// VIA Interface Functions
++
++UBYTE
++VIA_GORA6(void)			// Main/Alternate Screen Buffer
++ {
++#ifdef _VIA_Interface_Debug
++    printf("VIA ORA6 attempts to be an input\n");
++#endif
++    return 0;
++}
++
++void VIA_PORA6(UBYTE Data)
++{
++    vPage2 = Data;
++}
++
++UBYTE
++VIA_GORB6(void)			// Video Beam in Display
++ {
++    return 0;			// Assume it is
++
++}
++
++void VIA_PORB6(UBYTE Data)
++{
++#ifdef _VIA_Interface_Debug
++    printf("VIA ORB6 attempts to be an output\n");
++#endif
++}
+diff -Nur vMac-0.1.9.3/main.c vMac-0.1.9.3-sdl/main.c
+--- vMac-0.1.9.3/main.c	1999-04-27 05:36:46.000000000 +0300
++++ vMac-0.1.9.3-sdl/main.c	2010-08-14 19:24:21.595453308 +0300
+@@ -49,14 +49,14 @@
+ 
+ 	PrefsLoad(".vmacrc");
+ 
+-        if (argc > 1)
++    if (argc > 1)
++    {
++        if (strcasecmp(argv[1], "-v") == 0)
+         {
+-                if (strcasecmp(argv[1], "-v") == 0)
+-                {
+-                        Show_Version();
+-                        exit(0);
+-                }
++            Show_Version();
++          	exit(0);
+         }
++    }
+ 
+ 	vMac_Install_SignalHandler();
+ 
+diff -Nur vMac-0.1.9.3/Makefile.in vMac-0.1.9.3-sdl/Makefile.in
+--- vMac-0.1.9.3/Makefile.in	2010-08-14 20:39:09.873909901 +0300
++++ vMac-0.1.9.3-sdl/Makefile.in	2010-08-14 15:10:25.000000000 +0300
+@@ -37,6 +37,8 @@
+ 
+ svgalib: vMac
+ 
++sdl: vMac
++
+ nextstep: NeXTvMac
+ 
+ cpu:
