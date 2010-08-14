@@ -39,6 +39,7 @@ build_vMac() {
 
     $INSTALL -D -m 755 vMac ${ROOTFS_DIR}/usr/bin/vMac || error
     $STRIP ${ROOTFS_DIR}/usr/bin/vMac
+    $INSTALL -D -m 755 ${GENERICFS_DIR}/vMac/vMac-fb ${ROOTFS_DIR}/usr/bin/vMac-fb
 
     popd
     touch "$STATE_DIR/vMac.installed"
