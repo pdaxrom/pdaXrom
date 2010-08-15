@@ -7,22 +7,37 @@ create_ps3cd() {
     mkdir -p $T/boot
     mkdir -p $T/etc
 
-    if [ -e $IMAGES_DIR/uuid ]; then
-	if [ "$USE_SPLASH" = "yes" ]; then
-	    cp -f $GENERICFS_DIR/kboot/kboot.conf.initramfs.splash $T/etc/kboot.conf
-	else
-	    cp -f $GENERICFS_DIR/kboot/kboot.conf.initramfs $T/etc/kboot.conf
+    if [ -e "$KBOOT_CONFIG" ]; then
+	cp -f $KBOOT_CONFIG $T/etc/kboot.conf
+	if [ -e $IMAGES_DIR/uuid ]; then
+	    cp -f $IMAGES_DIR/uuid       $T/boot/
 	fi
-	test -f $IMAGES_DIR/initrd.img && cp -f $IMAGES_DIR/initrd.img $T/boot/
-	cp -f $IMAGES_DIR/uuid       $T/boot/
     else
-	if [ "$USE_SPLASH" = "yes" ]; then
-	    cp -f $GENERICFS_DIR/kboot/kboot.conf.splash $T/etc/kboot.conf
+	if [ -e $IMAGES_DIR/uuid ]; then
+	    if [ "$USE_SPLASH" = "yes" ]; then
+		cp -f $GENERICFS_DIR/kboot/kboot.conf.initramfs.splash $T/etc/kboot.conf
+	    else
+		cp -f $GENERICFS_DIR/kboot/kboot.conf.initramfs $T/etc/kboot.conf
+	    fi
+	    test -f $IMAGES_DIR/initrd.img && cp -f $IMAGES_DIR/initrd.img $T/boot/
+	    cp -f $IMAGES_DIR/uuid       $T/boot/
 	else
-	    cp -f $GENERICFS_DIR/kboot/kboot.conf $T/etc/
+	    if [ "$USE_SPLASH" = "yes" ]; then
+		cp -f $GENERICFS_DIR/kboot/kboot.conf.splash $T/etc/kboot.conf
+	    else
+		cp -f $GENERICFS_DIR/kboot/kboot.conf $T/etc/
+	    fi
 	fi
     fi
-    cp -f $GENERICFS_DIR/kboot/kboot.msg  $T/etc/
+
+    if [ -e "$KBOOT_MESSAGE" ]; then
+	# custom kboot.msg
+	cp -f $KBOOT_MESSAGE $T/etc/kboot.msg
+    else
+	# default kboot.msg
+	cp -f $GENERICFS_DIR/kboot/kboot.msg  $T/etc/
+    fi
+
     cp -f $IMAGES_DIR/rootfs.img $T/boot/
     cp -f $IMAGES_DIR/zImage     $T/boot/
 

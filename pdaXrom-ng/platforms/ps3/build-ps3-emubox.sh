@@ -75,4 +75,8 @@ LIBC_GCONV_MODULES="CP1252.so"
 
 . $SETS_DIR/packages-host-squashfs.inc
 . $RULES_DIR/create_squashfs.sh
+
+KBOOT_CONFIG=${BSP_GENERICFS_DIR}/emubox/kboot.conf
+KBOOT_MESSAGE=${BSP_GENERICFS_DIR}/emubox/kboot.msg
+
 . $RULES_DIR/create_ps3cd.sh
