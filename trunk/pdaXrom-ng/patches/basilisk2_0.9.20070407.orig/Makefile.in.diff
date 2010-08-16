@@ -1,0 +1,21 @@
+--- s/src/Unix/Makefile.in-	2010-08-13 23:57:23.169748512 +0300
++++ s/src/Unix/Makefile.in	2010-08-14 00:16:09.512251889 +0300
+@@ -175,12 +175,12 @@
+ $(OBJ_DIR)/%.o: %.rc
+ 	windres --include-dir ../Windows -i $< -o $@
+ 
+-$(OBJ_DIR)/build68k$(EXEEXT): $(OBJ_DIR)/build68k.o
+-	$(CC) $(LDFLAGS) -o $(OBJ_DIR)/build68k$(EXEEXT) $(OBJ_DIR)/build68k.o
+-$(OBJ_DIR)/gencpu$(EXEEXT): $(OBJ_DIR)/gencpu.o $(OBJ_DIR)/readcpu.o $(OBJ_DIR)/cpudefs.o
+-	$(CXX) $(LDFLAGS) -o $(OBJ_DIR)/gencpu$(EXEEXT) $(OBJ_DIR)/gencpu.o $(OBJ_DIR)/readcpu.o $(OBJ_DIR)/cpudefs.o
+-$(OBJ_DIR)/gencomp$(EXEEXT): $(OBJ_DIR)/gencomp.o $(OBJ_DIR)/readcpu.o $(OBJ_DIR)/cpudefs.o
+-	$(CXX) $(LDFLAGS) -o $(OBJ_DIR)/gencomp$(EXEEXT) $(OBJ_DIR)/gencomp.o $(OBJ_DIR)/readcpu.o $(OBJ_DIR)/cpudefs.o
++$(OBJ_DIR)/build68k$(EXEEXT):
++	$(HOST_CC) $(CPPFLAGS) $(LDFLAGS) -o $(OBJ_DIR)/build68k$(EXEEXT) ../uae_cpu/build68k.c
++$(OBJ_DIR)/gencpu$(EXEEXT): cpudefs.cpp
++	$(HOST_CXX) $(CPPFLAGS) $(LDFLAGS) -o $(OBJ_DIR)/gencpu$(EXEEXT) ../uae_cpu/gencpu.c ../uae_cpu/readcpu.cpp cpudefs.cpp
++$(OBJ_DIR)/gencomp$(EXEEXT): cpudefs.cpp
++	$(HOST_CXX) $(CPPFLAGS) $(LDFLAGS) -o $(OBJ_DIR)/gencomp$(EXEEXT) ../uae_cpu/gencomp.c ../uae_cpu/readcpu.cpp cpudefs.cpp
+ 
+ cpudefs.cpp: $(OBJ_DIR)/build68k$(EXEEXT) ../uae_cpu/table68k
+ 	$(OBJ_DIR)/build68k$(EXEEXT) <../uae_cpu/table68k >cpudefs.cpp
