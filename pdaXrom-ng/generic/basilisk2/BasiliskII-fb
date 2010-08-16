@@ -1,0 +1,3 @@
+#!/bin/sh
+
+BasiliskII --screen `fbset | grep geom | awk '{ print "dga/" $2 "/" $3; }'` $@
