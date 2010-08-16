@@ -64,6 +64,8 @@ build_basilisk2() {
 
     install_fakeroot_finish || error
 
+	$INSTALL -D -m 755 ${GENERICFS_DIR}/basilisk2/BasiliskII-fb ${ROOTFS_DIR}/usr/bin/BasiliskII-fb
+
     popd
     touch "$STATE_DIR/basilisk2.installed"
 }
