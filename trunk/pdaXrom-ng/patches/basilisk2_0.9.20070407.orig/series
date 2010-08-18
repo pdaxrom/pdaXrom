@@ -2,3 +2,4 @@ basilisk2-debian.patch
 sys_unix.cpp.diff
 sigsegv.cpp.diff
 Makefile.in.diff
+config.sub-uclibc.patch
