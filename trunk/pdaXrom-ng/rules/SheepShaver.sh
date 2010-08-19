@@ -36,6 +36,9 @@ build_SheepShaver() {
     pushd $TOP_DIR
     local C_ARGS=
     case $TARGET_ARCH in
+    powerpc*-uclibc*|ppc*-uclibc*)
+		C_ARGS=
+		;;
     powerpc*|ppc*)
 		C_ARGS="--enable-jit=no --enable-ppc-emulator"
 		SHEEPSHAVER_ENV="$SHEEPSHAVER_ENV CFLAGS='-O3 -fomit-frame-pointer -mtune=cell' CXXFLAGS='-O3 -fomit-frame-pointer -mtune=cell'"
@@ -61,7 +64,7 @@ build_SheepShaver() {
 	# fixme
 	echo "#define HAVE_SIGINFO_T 1" >> config.h
 
-    make $MAKEARGS || error
+    make $MAKEARGS AS=${CROSS}as || error
 
     #install_sysroot_files || error
 

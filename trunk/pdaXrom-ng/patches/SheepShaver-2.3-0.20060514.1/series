@@ -1,2 +1,5 @@
 SheepShaver-2.2-nostrip.patch
 SheepShaver-2.3-gcc4.3.patch
+config.sub-uclibc.patch
+sheepthreads.c.patch
+sheepthreads-uclibc-clone.patch
