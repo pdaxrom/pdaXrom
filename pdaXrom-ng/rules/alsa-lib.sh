@@ -23,14 +23,20 @@ build_alsa_lib() {
     apply_patches $ALSA_LIB_DIR $ALSA_LIB
     pushd $TOP_DIR
     cd $ALSA_LIB_DIR
+    local C_ARGS=
+    case $TARGET_ARCH in
+    *uclibc*)
+	C_ARGS="--without-versioned"
+	;;
+    esac
     (
-    #autoreconf -i
     eval \
 	$CROSS_CONF_ENV \
 	$ALSA_LIB_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	     $C_ARGS \
 	    --disable-python || error
     )
     make $MAKEARGS || error
