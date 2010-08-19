@@ -1,5 +1,5 @@
 BINUTILS="binutils-${BINUTILS_VERSION-2.19.50.0.1}.tar.bz2"
-BINUTILS_MIRROR="ftp://ftp.kernel.org/pub/linux/devel/binutils"
+BINUTILS_MIRROR="http://www.kernel.org/pub/linux/devel/binutils"
 BINUTILS_DIR="$BUILD_DIR/binutils-${BINUTILS_VERSION-2.19.50.0.1}"
 
 build_binutils() {

@@ -1,0 +1,195 @@
+From 5640e49c2ed3f0523a20e99d4ae73822e201d73a Mon Sep 17 00:00:00 2001
+From: Heihaier <admin@heihaier.org>
+Date: Wed, 28 Oct 2009 10:57:49 +0800
+Subject: [PATCH] fix loongson2f bug.
+
+---
+ gas/config/tc-mips.c  |   57 +++++++++++++++++++++++++++++++++++++++++++++++-
+ include/opcode/mips.h |    4 +++
+ opcodes/mips-opc.c    |    6 ++++-
+ 3 files changed, 64 insertions(+), 3 deletions(-)
+
+diff --git a/gas/config/tc-mips.c b/gas/config/tc-mips.c
+index 1c96480..a6f4182 100644
+--- a/gas/config/tc-mips.c
++++ b/gas/config/tc-mips.c
+@@ -772,6 +772,9 @@ static int mips_fix_vr4120;
+ /* ...likewise -mfix-vr4130.  */
+ static int mips_fix_vr4130;
+ 
++/* True if -mfix-ls2f-kernel. */
++static int mips_fix_ls2f_kernel;
++
+ /* ...likewise -mfix-24k.  */
+ static int mips_fix_24k;
+ 
+@@ -3926,6 +3929,24 @@ normalize_address_expr (expressionS *ex)
+ }
+ 
+ /*
++ * Eliminate instruction fetch from outside 256M region.
++ * jr target pc &= 'hffff_ffff_cfff_ffff
++ * FOR KERNEL ONLY
++ */
++static void
++macro_build_jrpatch (expressionS *ex, unsigned int sreg)
++{
++  if (mips_fix_ls2f_kernel && AT && sreg != 26 && sreg != 27) {
++    ex->X_op = O_constant;
++    ex->X_add_number = 0xcfff0000;
++    macro_build (ex, "lui", "t,u", ATREG, BFD_RELOC_HI16);
++    ex->X_add_number = 0xffff;
++    macro_build (ex, "ori", "t,r,i", ATREG, ATREG, BFD_RELOC_LO16);
++    macro_build (NULL, "and", "d,v,t", sreg, sreg, ATREG);
++  } 
++}
++
++/*
+  * Generate a "jalr" instruction with a relocation hint to the called
+  * function.  This occurs in NewABI PIC code.
+  */
+@@ -3939,6 +3960,7 @@ macro_build_jalr (expressionS *ep)
+       frag_grow (8);
+       f = frag_more (0);
+     }
++  macro_build_jrpatch (ep, PIC_CALL_REG);
+   macro_build (NULL, "jalr", "d,s", RA, PIC_CALL_REG);
+   if (MIPS_JALR_HINT_P (ep))
+     fix_new_exp (frag_now, f - frag_now->fr_literal,
+@@ -6084,6 +6106,26 @@ macro (struct mips_cl_insn *ip)
+ 	macro_build (NULL, ADDRESS_ADD_INSN, "d,v,t", treg, tempreg, breg);
+       break;
+ 
++    case M_JR_S:
++	macro_build_jrpatch (&expr1, sreg);	
++        macro_build (NULL, "jr", "s", sreg);
++    	break;
++
++    case M_J_S:
++	macro_build_jrpatch (&expr1, sreg);	
++	macro_build (NULL, "j", "s", sreg);
++    	break; 
++
++    case M_JALR_S:
++	macro_build_jrpatch (&expr1, sreg);	
++	macro_build (NULL, "jalr", "s", sreg);
++    	break;
++
++    case M_JALR_DS:
++	macro_build_jrpatch (&expr1, sreg);	
++        macro_build (NULL, "jalr", "d,s", dreg, sreg);
++    	break;
++
+     case M_MSGSND:
+       {
+ 	unsigned long temp = (treg << 16) | (0x01);
+@@ -6139,12 +6181,16 @@ macro (struct mips_cl_insn *ip)
+       /* Fall through.  */
+     case M_JAL_2:
+       if (mips_pic == NO_PIC)
+-	macro_build (NULL, "jalr", "d,s", dreg, sreg);
++ 	{
++ 	  macro_build_jrpatch (&expr1, sreg);	
++ 	  macro_build (NULL, "jalr", "d,s", dreg, sreg);
++ 	}
+       else
+ 	{
+ 	  if (sreg != PIC_CALL_REG)
+ 	    as_warn (_("MIPS PIC call to register other than $25"));
+ 
++	  macro_build_jrpatch (&expr1, sreg);
+ 	  macro_build (NULL, "jalr", "d,s", dreg, sreg);
+ 	  if (mips_pic == SVR4_PIC && !HAVE_NEWABI)
+ 	    {
+@@ -11224,6 +11270,7 @@ enum options
+     OPTION_NO_FIX_VR4120,
+     OPTION_FIX_VR4130,
+     OPTION_NO_FIX_VR4130,
++	OPTION_FIX_LS2F_KERNEL,
+     OPTION_TRAP,
+     OPTION_BREAK,
+     OPTION_EB,
+@@ -11312,6 +11359,7 @@ struct option md_longopts[] =
+   {"mno-fix-vr4120", no_argument, NULL, OPTION_NO_FIX_VR4120},
+   {"mfix-vr4130",    no_argument, NULL, OPTION_FIX_VR4130},
+   {"mno-fix-vr4130", no_argument, NULL, OPTION_NO_FIX_VR4130},
++  {"mfix-ls2f-kernel", no_argument, NULL, OPTION_FIX_LS2F_KERNEL},
+   {"mfix-24k",    no_argument, NULL, OPTION_FIX_24K},
+   {"mno-fix-24k", no_argument, NULL, OPTION_NO_FIX_24K},
+ 
+@@ -11590,6 +11638,10 @@ md_parse_option (int c, char *arg)
+     case OPTION_NO_FIX_VR4130:
+       mips_fix_vr4130 = 0;
+       break;
++	
++	case OPTION_FIX_LS2F_KERNEL:
++	  mips_fix_ls2f_kernel = 1;
++	  break;
+ 
+     case OPTION_RELAX_BRANCH:
+       mips_relax_branch = 1;
+@@ -12845,7 +12897,8 @@ s_mipsset (int x ATTRIBUTE_UNUSED)
+     {
+       if (mips_opts.noreorder == 0)
+ 	as_bad (_("`noreorder' must be set before `nomacro'"));
+-      mips_opts.warn_about_macros = 1;
++	  if(!mips_fix_ls2f_kernel)
++		mips_opts.warn_about_macros = 1;
+     }
+   else if (strcmp (name, "move") == 0 || strcmp (name, "novolatile") == 0)
+     {
+diff --git a/include/opcode/mips.h b/include/opcode/mips.h
+index 27d10e6..41fdf67 100644
+--- a/include/opcode/mips.h
++++ b/include/opcode/mips.h
+@@ -766,7 +766,11 @@ enum
+   M_DSUB_I,
+   M_DSUBU_I,
+   M_DSUBU_I_2,
++  M_JR_S,
++  M_J_S,
+   M_J_A,
++  M_JALR_S,
++  M_JALR_DS,
+   M_JAL_1,
+   M_JAL_2,
+   M_JAL_A,
+diff --git a/opcodes/mips-opc.c b/opcodes/mips-opc.c
+index 6278a20..64555a2 100644
+--- a/opcodes/mips-opc.c
++++ b/opcodes/mips-opc.c
+@@ -184,7 +184,7 @@
+ /* name,    args,	match,	    mask,	pinfo,          	pinfo2,		membership */
+ {"pref",    "k,o(b)",   0xcc000000, 0xfc000000, RD_b,           	0,		I4_32|G3	},
+ {"prefx",   "h,t(b)",	0x4c00000f, 0xfc0007ff, RD_b|RD_t|FP_S,		0,		I4_33	},
+-{"nop",     "",         0x00000000, 0xffffffff, 0,              	INSN2_ALIAS,	I1      }, /* sll */
++{"nop",     "",         0x00000021, 0xffffffff, 0,              	INSN2_ALIAS,	I1      }, /* sll */
+ {"ssnop",   "",         0x00000040, 0xffffffff, 0,              	INSN2_ALIAS,	I1	}, /* sll */
+ {"ehb",     "",         0x000000c0, 0xffffffff, 0,              	INSN2_ALIAS,	I1	}, /* sll */
+ {"li",      "t,j",      0x24000000, 0xffe00000, WR_t,			INSN2_ALIAS,	I1	}, /* addiu */
+@@ -709,10 +709,12 @@
+ {"floor.w.s", "D,S",	0x4600000f, 0xffff003f, WR_D|RD_S|FP_S,		0,		I2	},
+ {"hibernate","",        0x42000023, 0xffffffff,	0, 			0,		V1	},
+ {"ins",     "t,r,+A,+B", 0x7c000004, 0xfc00003f, WR_t|RD_s,    		0,		I33	},
++{"jr",      "s",	0,     (int) M_JR_S,	INSN_MACRO,		0,		IL2F	},
+ {"jr",      "s",	0x00000008, 0xfc1fffff,	UBD|RD_s,		0,		I1	},
+ /* jr.hb is officially MIPS{32,64}R2, but it works on R1 as jr with
+    the same hazard barrier effect.  */
+ {"jr.hb",   "s",	0x00000408, 0xfc1fffff,	UBD|RD_s,		0,		I32	},
++{"j",       "s",	0,     (int) M_J_S,	INSN_MACRO,		0,		IL2F	}, /* jcx */
+ {"j",       "s",	0x00000008, 0xfc1fffff,	UBD|RD_s,		0,		I1	}, /* jr */
+ /* SVR4 PIC code requires special handling for j, so it must be a
+    macro.  */
+@@ -721,7 +723,9 @@
+    assembler, but will never match user input (because the line above
+    will match first).  */
+ {"j",       "a",	0x08000000, 0xfc000000,	UBD,			0,		I1	},
++{"jalr",    "s",	0,     (int) M_JALR_S,	INSN_MACRO,		0,		IL2F	},
+ {"jalr",    "s",	0x0000f809, 0xfc1fffff,	UBD|RD_s|WR_d,		0,		I1	},
++{"jalr",    "d,s",	0,     (int) M_JALR_DS,	INSN_MACRO,		0,		IL2F	},
+ {"jalr",    "d,s",	0x00000009, 0xfc1f07ff,	UBD|RD_s|WR_d,		0,		I1	},
+ /* jalr.hb is officially MIPS{32,64}R2, but it works on R1 as jalr
+    with the same hazard barrier effect.  */
+-- 
+1.6.5
+
