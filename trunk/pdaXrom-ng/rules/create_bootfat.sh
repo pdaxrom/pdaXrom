@@ -3,7 +3,6 @@ X86FAT_TITLE=${FAT_TITLE-"pdaXrom-ng"}
 create_x86bootfat() {
     local T=`echo /tmp/x86bootfat.$$`
     mkdir -p $T/boot
-    cp -f $IMAGES_DIR/rootfs.img $T/boot/
     cp -f $IMAGES_DIR/bzImage    $T/
 
     if [ "$USE_INITRAMFS" = "yes" ]; then
@@ -13,12 +12,17 @@ create_x86bootfat() {
 	    cp -f $GENERICFS_DIR/isolinux/initramfs/syslinux.cfg $T/syslinux.cfg
 	fi
 	cp -f $IMAGES_DIR/uuid       $T/boot/
+	cp -f $IMAGES_DIR/rootfs.img $T/boot/
+
+	dd if=/dev/zero of=$T/boot/writable.img bs=1M count=64 || error "Can't create writable.img file image!"
+	mkfs.ext3 -F $T/boot/writable.img
     else
 	if [ "$USE_SPLASH" = "yes" ]; then
 	    cp -f $GENERICFS_DIR/isolinux/syslinux.cfg.splash $T/syslinux.cfg
 	else
 	    cp -f $GENERICFS_DIR/isolinux/syslinux.cfg $T/syslinux.cfg
 	fi
+	cp -f $IMAGES_DIR/rootfs.img $T/
     fi
 
     printf "${X86CD_TITLE-pdaXrom NG x86}\n" > $T/syslinux.txt
@@ -31,9 +35,6 @@ create_x86bootfat() {
     fi
 
     local OUT_FILE="${IMAGES_DIR}/${FATNAME}-`date +%Y%m%d`.img"
-
-    dd if=/dev/zero of=$T/boot/writable.img bs=1M count=64 || error "Can't create writable.img file image!"
-    mkfs.ext3 -F $T/boot/writable.img
 
     local IMG_SIZE=`du -sh $T | awk '{ sub(/M$/,"",$1); print $1+2 }'`
     for f in $BOOTFAT_IMAGE_SIZE 60 120 250 500 1000 2000 4000 8000 16000 32000; do
@@ -48,7 +49,7 @@ create_x86bootfat() {
     makebootfat -v -o ${OUT_FILE} -Y \
 	-b ${HOST_SYSLINUX_DIR}/core/ldlinux.bss \
 	-m ${HOST_SYSLINUX_DIR}/mbr/mbr.bin \
-	-O ${X86FAT_TITLE} -L ${X86FAT_TITLE} \
+	-O "${X86FAT_TITLE}" -L "${X86FAT_TITLE}" \
 	-c ${HOST_SYSLINUX_DIR}/core/ldlinux.sys \
 	$T || error create x86 bootable fat image
 
