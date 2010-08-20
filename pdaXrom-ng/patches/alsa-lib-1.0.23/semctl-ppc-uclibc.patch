@@ -1,0 +1,18 @@
+--- s/src/pcm/pcm_direct.h-orig	2010-04-16 14:11:05.000000000 +0300
++++ s/src/pcm/pcm_direct.h	2010-08-20 11:27:26.982258214 +0300
+@@ -240,7 +240,14 @@
+ static inline int snd_pcm_direct_semaphore_discard(snd_pcm_direct_t *dmix)
+ {
+ 	if (dmix->semid >= 0) {
+-		if (semctl(dmix->semid, 0, IPC_RMID, NULL) < 0)
++		/* http://lists.ozlabs.org/pipermail/linuxppc-embedded/2003-December.txt
++		 * a) you always need four parameters, if you do not provide parameter #4 you
++		 *    get SIGSEGV !
++		 * b) "arg" needs to be a pointer, even for commands that do not really use
++		 *    parameter #4 !
++		 */
++		int dummy;
++		if (semctl(dmix->semid, 0, IPC_RMID, &dummy) < 0)
+ 			return -errno;
+ 		dmix->semid = -1;
+ 	}
