@@ -37,7 +37,7 @@ build_SheepShaver() {
     local C_ARGS=
     case $TARGET_ARCH in
     powerpc*-uclibc*|ppc*-uclibc*)
-		C_ARGS=
+		C_ARGS="--enable-jit=no --enable-ppc-emulator"
 		;;
     powerpc*|ppc*)
 		C_ARGS="--enable-jit=no --enable-ppc-emulator"
@@ -64,7 +64,7 @@ build_SheepShaver() {
 	# fixme
 	echo "#define HAVE_SIGINFO_T 1" >> config.h
 
-    make $MAKEARGS AS=${CROSS}as || error
+    make $MAKEARGS AS=${CROSS}as DYNGEN_CC=gcc || error
 
     #install_sysroot_files || error
 
