@@ -23,6 +23,7 @@ build_alsa_utils() {
     apply_patches $ALSA_UTILS_DIR $ALSA_UTILS
     pushd $TOP_DIR
     cd $ALSA_UTILS_DIR
+    autoreconf -i || error "autoreconfiguration"
     (
     eval \
 	$CROSS_CONF_ENV \
