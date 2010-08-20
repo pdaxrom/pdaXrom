@@ -25,6 +25,8 @@ ac_cv_mprotect_works=yes
 ac_cv_sigaction_need_reinstall=no
 ac_cv_signal_need_reinstall=no
 sigsegv_recovery=siginfo
+
+ac_cv_type_uintptr_t=no
 "
 
 build_SheepShaver() {
@@ -38,6 +40,7 @@ build_SheepShaver() {
     case $TARGET_ARCH in
     powerpc*-uclibc*|ppc*-uclibc*)
 		C_ARGS="--enable-jit=no --enable-ppc-emulator"
+		SHEEPSHAVER_ENV="$SHEEPSHAVER_ENV CFLAGS='-O3 -fomit-frame-pointer -mtune=cell' CXXFLAGS='-O3 -fomit-frame-pointer -mtune=cell'"
 		;;
     powerpc*|ppc*)
 		C_ARGS="--enable-jit=no --enable-ppc-emulator"
@@ -58,13 +61,13 @@ build_SheepShaver() {
 	    --with-gtk=no \
 	    --with-esd=no \
 	    $C_ARGS \
+	    -C \
 	    || error
     ) || error "configure"
 
-	# fixme
-	echo "#define HAVE_SIGINFO_T 1" >> config.h
-
-    make $MAKEARGS AS=${CROSS}as DYNGEN_CC=gcc || error
+    # fixme
+    echo "#define HAVE_SIGINFO_T 1" >> config.h
+    make $MAKEARGS AS=${CROSS}as DYNGEN_CC="g++ -m32" || error
 
     #install_sysroot_files || error
 
