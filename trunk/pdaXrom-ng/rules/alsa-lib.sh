@@ -23,6 +23,7 @@ build_alsa_lib() {
     apply_patches $ALSA_LIB_DIR $ALSA_LIB
     pushd $TOP_DIR
     cd $ALSA_LIB_DIR
+    autoreconf -i || error "autoreconfiguration"
     local C_ARGS=
     case $TARGET_ARCH in
     *uclibc*)
