@@ -20,6 +20,8 @@ create_squashfs() {
 
     echo "c 5 1" > $ROOTFS_DIR/dev/.squashfs_dev_node.console
     echo "c 1 3" > $ROOTFS_DIR/dev/.squashfs_dev_node.null
+    echo "c 1 1" > $ROOTFS_DIR/dev/.squashfs_dev_node.mem
+    echo "c 1 5" > $ROOTFS_DIR/dev/.squashfs_dev_node.zero
     if [ "$USE_FASTBOOT" = "yes" ]; then
 	echo "c 29 0" > $ROOTFS_DIR/dev/.squashfs_dev_node.fb0
 	echo "c 4 0" > $ROOTFS_DIR/dev/.squashfs_dev_node.tty0
