@@ -39,7 +39,7 @@ build_udev() {
     if [ "$USE_FASTBOOT" = "yes" ]; then
 	install_rc_start udev 04
     else
-	install_rc_start udev 00
+	install_rc_start udev 02
     fi
     install_rc_stop  udev 97
 
