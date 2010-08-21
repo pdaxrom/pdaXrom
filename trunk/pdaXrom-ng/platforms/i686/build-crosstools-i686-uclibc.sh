@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export BINUTILS_VERSION=2.20.51.0.9
+export BINUTILS_VERSION=2.20.51.0.11
 export GCC_VERSION=4.4.4
 #export BINUTILS_VERSION=2.19.1
 #export GCC_VERSION=4.4.1
@@ -12,6 +12,8 @@ export KERNEL_VERSION=2.6.30
 
 TARGET_ARCH="i686-linux-uclibc"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
+
+export UCLIBC_CONFIG=x86-config-wchar-locale
 
 test -e /opt/${TARGET_ARCH} && mkdir -p /opt/${TARGET_ARCH}
 

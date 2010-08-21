@@ -1,16 +1,14 @@
 #!/bin/bash
 
-ISOIMAGE_NAME="ps3-emubox"
+ISOIMAGE_NAME="ps3-emubox-uclibc"
 
-TARGET_ARCH="powerpc-ps3-linux"
+TARGET_ARCH="powerpc-ps3-linux-uclibc"
 TOOLCHAIN_PREFIX="/opt/${TARGET_ARCH}/toolchain"
 TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 KERNEL_VERSION="2.6.32"
 KERNEL_CONFIG=ps3_kernel_2.6.32
 TARGET_VENDOR_PATCH=ps3
-
-LIBC_GCONV_MODULES="CP1252.so"
 
 . ./rules/core.sh
 
@@ -64,7 +62,7 @@ LIBC_GCONV_MODULES="CP1252.so"
 
 . $RULES_DIR/vMac.sh
 . $RULES_DIR/basilisk2.sh
-. $RULES_DIR/SheepShaver.sh
+#. $RULES_DIR/SheepShaver.sh
 
 #. $RULES_DIR/gdb.sh
 #. $RULES_DIR/strace.sh
