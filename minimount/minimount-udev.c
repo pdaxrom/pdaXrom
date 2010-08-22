@@ -30,6 +30,8 @@
 
 #define MOUNT_UTIL "/usr/sbin/minimount"
 
+static int debug = 0;
+
 static int is_removable_device(const char *sysfs_path) 
 {
     char full_path[PATH_MAX];
@@ -38,7 +40,8 @@ static int is_removable_device(const char *sysfs_path)
 
     sprintf(full_path, "/sys/%s/removable", sysfs_path);
     fd = open(full_path, O_RDONLY);
-    syslog(LOG_INFO, " -> removable check on %s, fd=%d\n", full_path, fd);
+    if (debug)
+	syslog(LOG_INFO, " -> removable check on %s, fd=%d\n", full_path, fd);
     if (fd < 0)
     	return 0;
     buf_len = read(fd, buf, 79);
@@ -71,7 +74,8 @@ static const char *get_icon(void)
     char buf[128];
     int fd, buf_len;
 
-    syslog(LOG_INFO, "type=%s, bus=%s, path=%s\n", type, bus, sysfs_path);
+    if (debug)
+	syslog(LOG_INFO, "type=%s, bus=%s, path=%s\n", type, bus, sysfs_path);
 
     sprintf(full_path, "/sys/%s/../device/model", sysfs_path);
     fd = open(full_path, O_RDONLY);
@@ -135,7 +139,8 @@ static void detach_and_sleep(int sec)
 		return;
 
 	if (!forked) {
-		syslog(LOG_INFO, "running in background...");
+		if (debug)
+		    syslog(LOG_INFO, "running in background...");
 		rc = fork();
 		forked = 1;
 	}
@@ -235,8 +240,12 @@ static int poll_removable_device(const char *sysfs_path,
 
 int main(int argc, char *argv[])
 {
+    if (!strcmp(argv[1], "-d"))
+	debug = 1;
+
     openlog("minimount-udev", LOG_PID | LOG_CONS, LOG_DAEMON);
-    syslog(LOG_INFO, "Starting daemon");
+    if (debug)
+	syslog(LOG_INFO, "Starting daemon");
 
     char *action = getenv("ACTION");
 
@@ -257,7 +266,8 @@ int main(int argc, char *argv[])
     }
 
     char *sysfs_path = getenv("DEVPATH");
-    syslog(LOG_INFO, "ACTION=%s DEVNAME=%s DEVPATH=%s\n", action, dev_path, sysfs_path);
+    if (debug)
+	syslog(LOG_INFO, "ACTION=%s DEVNAME=%s DEVPATH=%s\n", action, dev_path, sysfs_path);
 
     if (!strcmp(action, "add")) {
 	if (sysfs_path && is_removable_device(sysfs_path))
