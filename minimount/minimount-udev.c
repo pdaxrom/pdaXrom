@@ -240,8 +240,10 @@ static int poll_removable_device(const char *sysfs_path,
 
 int main(int argc, char *argv[])
 {
-    if (!strcmp(argv[1], "-d"))
-	debug = 1;
+    if (argc > 1) {
+	if (!strcmp(argv[1], "-d"))
+	    debug = 1;
+    }
 
     openlog("minimount-udev", LOG_PID | LOG_CONS, LOG_DAEMON);
     if (debug)
