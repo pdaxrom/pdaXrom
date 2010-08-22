@@ -280,7 +280,8 @@ int main(int argc, char *argv[])
     } else if (!strcmp(action, "remove")) {
 	send_action(action, dev_path);
     } else {
-	syslog(LOG_ERR, "Unknown action %s", action);
+	if (debug)
+	    syslog(LOG_ERR, "Unknown action %s", action);
     }
     
     closelog();
