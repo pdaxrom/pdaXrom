@@ -263,7 +263,8 @@ int main(int argc, char *argv[])
     }
 
     if (is_ignored_device(dev_path)) {
-	syslog(LOG_ERR, "ignore %s", dev_path);
+	if (debug)
+	    syslog(LOG_INFO, "ignore %s", dev_path);
 	return EXIT_FAILURE;
     }
 
