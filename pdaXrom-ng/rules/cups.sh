@@ -57,6 +57,9 @@ build_cups() {
 
     install_fakeroot_finish || error
 
+    mkdir -p ${ROOTFS_DIR}/etc/modprobe.d
+    echo "blacklist usblp" > ${ROOTFS_DIR}/etc/modprobe.d/blacklist-usblp.conf
+
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/cups $ROOTFS_DIR/etc/init.d/cups || error
     install_rc_start cups 85
     install_rc_stop  cups 15
