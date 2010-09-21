@@ -18,6 +18,7 @@
 # epdfview
 #
 
+. $RULES_DIR/poppler-data.sh
 . $RULES_DIR/poppler.sh
 . $RULES_DIR/epdfview.sh
 
