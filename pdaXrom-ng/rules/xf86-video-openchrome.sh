@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-XF86_VIDEO_OPENCHROME=xf86-video-openchrome-0.2.903.tar.bz2
+XF86_VIDEO_OPENCHROME=xf86-video-openchrome-0.2.904.tar.bz2
 XF86_VIDEO_OPENCHROME_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_OPENCHROME_DIR=$BUILD_DIR/xf86-video-openchrome-0.2.903
+XF86_VIDEO_OPENCHROME_DIR=$BUILD_DIR/xf86-video-openchrome-0.2.904
 XF86_VIDEO_OPENCHROME_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_openchrome() {
