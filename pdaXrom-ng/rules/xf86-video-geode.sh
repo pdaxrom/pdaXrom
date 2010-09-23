@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_GEODE_VERSION=2.11.7
+XF86_VIDEO_GEODE_VERSION=2.11.9
 XF86_VIDEO_GEODE=xf86-video-geode-${XF86_VIDEO_GEODE_VERSION}.tar.bz2
 XF86_VIDEO_GEODE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_GEODE_DIR=$BUILD_DIR/xf86-video-geode-${XF86_VIDEO_GEODE_VERSION}
