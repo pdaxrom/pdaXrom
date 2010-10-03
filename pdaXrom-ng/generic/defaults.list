@@ -139,3 +139,5 @@ application/x-zip=xarchiver.desktop
 application/x-zoo=xarchiver.desktop
 application/zip=xarchiver.desktop
 multipart/x-zip=xarchiver.desktop
+
+application/x-ms-dos-executable=wine.desktop
