@@ -1,0 +1,13 @@
+--- s/Makefile.in-	2010-10-17 19:33:20.398368282 -0200
++++ s/Makefile.in	2010-10-17 19:33:35.250869348 -0200
+@@ -236,9 +236,7 @@
+ top_srcdir = @top_srcdir@
+ SUBDIRS = \
+ 	src	\
+-	po	\
+-	data	\
+-	help
++	data
+ 
+ EXTRA_DIST = \
+ 	autogen.sh		\
