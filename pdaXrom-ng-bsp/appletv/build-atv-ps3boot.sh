@@ -29,7 +29,7 @@ TARGET_KERNEL_IMAGE=bzImage
 . $RULES_DIR/zlib.sh
 . $RULES_DIR/dropbear.sh
 . $RULES_DIR/figlet.sh
-. $RULES_DIR/kexec-tools.sh
+. $RULES_DIR/kexec-tools2.sh
 . $RULES_DIR/libjpeg.sh
 . $RULES_DIR/libpng.sh
 . $RULES_DIR/freetype.sh
