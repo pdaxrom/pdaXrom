@@ -2,8 +2,8 @@
 
 export BINUTILS_VERSION=2.20.51.0.9
 export GCC_VERSION=4.4.4
-export KERNEL_VERSION=2.6.32
 
+export KERNEL_VERSION=2.6.29
 export TARGET_VENDOR_PATCH=ps3
 
 export CROSS_OPT_ARCH="-mtune=cell"

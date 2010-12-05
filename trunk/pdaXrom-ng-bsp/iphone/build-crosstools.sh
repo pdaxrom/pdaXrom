@@ -2,7 +2,7 @@
 
 export BINUTILS_VERSION=2.20.51.0.9
 export GCC_VERSION=4.4.4
-export KERNEL_VERSION=2.6.32
+export KERNEL_VERSION=2.6.29
 
 export DEFAULT_CPU="armv6"
 export DEFAULT_FPU="vfp"
