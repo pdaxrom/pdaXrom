@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PIDGIN_VERSION=2.7.1
+PIDGIN_VERSION=2.7.7
 PIDGIN=pidgin-${PIDGIN_VERSION}.tar.bz2
 PIDGIN_MIRROR=http://downloads.sourceforge.net/pidgin
 PIDGIN_DIR=$BUILD_DIR/pidgin-${PIDGIN_VERSION}
