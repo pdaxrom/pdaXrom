@@ -1,1 +1,0 @@
-SUBSYSTEM=="block",RUN+="/usr/lib/minimount/minimount-udev"

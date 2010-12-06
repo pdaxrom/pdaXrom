@@ -1,6 +1,0 @@
-linux-2.6.32-iphone.diff
-iphone.c.diff
-remove_squashfs_4.patch
-add_squashfs_3.4.patch
-build_nonpreempt.patch
-s3c-hsotg.c.diff
