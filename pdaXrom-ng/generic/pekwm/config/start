@@ -1,5 +1,0 @@
-#!/bin/sh
-#
-# startup notification support - change cursor to busy during application startup
-#
-start-stop-daemon -S -b -q -x /usr/bin/sn-monitor

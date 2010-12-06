@@ -1,1 +1,0 @@
-SUBDIRS = netconfig pppconfig logout

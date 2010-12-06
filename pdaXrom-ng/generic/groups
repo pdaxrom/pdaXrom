@@ -1,3 +1,0 @@
-#!/bin/sh
-
-cat /etc/group | grep "${1-`whoami`}" | cut -f1 -d':' | xargs echo

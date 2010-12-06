@@ -1,9 +1,0 @@
-#!/bin/sh
-
-p=`pidof matchbox-keyboard`
-
-if [ "x$p" = "x" ]; then
-    matchbox-keyboard
-else
-    kill $p
-fi

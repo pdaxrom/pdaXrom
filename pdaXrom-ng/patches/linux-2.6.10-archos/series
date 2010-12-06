@@ -1,5 +1,0 @@
-linux-2.6.10_mvl401.patch
-enable_depmod.diff
-davinci-audio-wm8985_sound_level.patch
-usbnet_backport.patch
-gcc4x_arm.patch

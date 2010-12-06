@@ -1,5 +1,0 @@
-ACTION!="add", GOTO="ZTE_End"
-
-SUBSYSTEM=="usb", SYSFS{idProduct}=="2000", SYSFS{idVendor}=="19d2", RUN+="/usr/sbin/usb_modeswitch -W -c /etc/usb_modeswitch.conf"
-
-LABEL="ZTE_End"

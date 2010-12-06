@@ -1,9 +1,0 @@
-#!/bin/sh
-
-( while true; do
-    simplenx-gui
-done ) &
-
-while true; do
-    pekwm
-done
