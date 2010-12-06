@@ -1,0 +1,26 @@
+#!/xbin/ash
+
+/xbin/mknod /dev/loop0 b 7 0
+/xbin/mknod /dev/loop1 b 7 1
+/xbin/mknod /dev/mmcblk0 b 179 0
+/xbin/mknod /dev/mmcblk0p1 b 179 1
+/xbin/ls -l /dev/ >>/boot.log
+
+/xbin/sleep 5
+
+/xbin/mount -n -t proc none /proc
+/xbin/mount -n -t sysfs none /sys
+
+/xbin/mkdir /mnt
+
+/xbin/mount -n -o ro /dev/mmcblk0p1 /mnt 2>>/boot.log
+
+if test -f /mnt/boot/boot.cfg ; then
+    . /mnt/boot/boot.cfg
+fi
+
+/xbin/umount /mnt 2>>/boot.log
+/xbin/umount /sys 2>>/boot.log
+/xbin/umount /proc 2>>/boot.log
+
+exec /sbin/init
