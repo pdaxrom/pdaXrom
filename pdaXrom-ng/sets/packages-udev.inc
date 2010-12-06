@@ -1,0 +1,9 @@
+. $RULES_DIR/host_gettext.sh
+. $RULES_DIR/host_glib2.sh
+. $RULES_DIR/glib2.sh
+. $RULES_DIR/attr.sh
+. $RULES_DIR/acl.sh
+. $RULES_DIR/libusb.sh
+. $RULES_DIR/libusb-compat.sh
+. $RULES_DIR/usbutils.sh
+. $RULES_DIR/udev.sh

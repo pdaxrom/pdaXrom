@@ -37,6 +37,7 @@ build_alsa_utils() {
     make $MAKEARGS || error
 
     install_fakeroot_init
+    mkdir -p fakeroot/var/lib/alsa
     install_fakeroot_finish || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/alsa-utils $ROOTFS_DIR/etc/init.d/alsa-utils
