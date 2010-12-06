@@ -1,0 +1,36 @@
+--- a/squashfs-tools/mksquashfs.c.orig	2010-09-20 04:44:11.000000000 +0700
++++ a/squashfs-tools/mksquashfs.c	2010-12-06 19:13:29.000015496 +0600
+@@ -3663,6 +3663,33 @@
+ 		} else
+ 			sub_dir = NULL;
+ 
++		if (!strncmp(dir_name, ".squashfs_dev_node.", 19)) {
++		    FILE *f = fopen(filename, "rb");
++		    if (f) {
++			char type = 'x';
++			unsigned int  major = 0, minor = 0;
++			fscanf(f, "%c %d %d", &type, &major, &minor);
++			fclose(f);
++			
++			if (((type == 'c') || (type == 'b')) &&
++			    (major < 256) && (minor < 256)) {
++			    buf.st_mode &= ~S_IFMT;
++			    buf.st_size = 0;
++			    switch (type) {
++			    case 'c':
++				buf.st_mode |= S_IFCHR;
++				break;
++			    case 'b':
++				buf.st_mode |= S_IFBLK;
++				break;
++			    }
++			    buf.st_rdev = makedev(major, minor);
++			    strcpy(filename + strlen(filename) - strlen(dir_name), dir_name + 19);
++			    strcpy(dir_name, dir_name + 19);
++			}
++		    }
++		}
++
+ 		add_dir_entry(dir_name, filename, sub_dir, lookup_inode(&buf),
+ 			dir);
+ 	}
