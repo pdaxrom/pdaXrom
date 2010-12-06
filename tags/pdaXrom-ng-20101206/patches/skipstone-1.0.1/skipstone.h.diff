@@ -1,0 +1,11 @@
+--- s/src/skipstone.h-	2008-12-29 04:18:19.000000000 +0600
++++ s/src/skipstone.h	2008-12-29 04:19:33.000000000 +0600
+@@ -26,7 +26,7 @@
+ #ifndef WebKit
+ #include <gtkmozembed.h>
+ #else
+-#include <webkit.h>
++#include <webkit/webkit.h>
+ #endif
+ 
+ #include <gmodule.h>

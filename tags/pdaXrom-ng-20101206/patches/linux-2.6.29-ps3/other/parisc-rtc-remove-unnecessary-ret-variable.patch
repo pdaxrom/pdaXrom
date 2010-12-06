@@ -1,0 +1,31 @@
+From aa0fe881306a01624474cf4ef51bc5b2df411d35 Mon Sep 17 00:00:00 2001
+From: dann frazier <dannf@hp.com>
+Date: Thu, 15 Jan 2009 16:46:54 -0700
+Subject: [PATCH] parisc: rtc: remove unnecessary ret variable
+
+Signed-off-by: dann frazier <dannf@hp.com>
+Acked-by: Alessandro Zummo <a.zummo@towertech.it>
+Signed-off-by: Kyle McMartin <kyle@mcmartin.ca>
+---
+ arch/parisc/kernel/time.c |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
+
+diff --git a/arch/parisc/kernel/time.c b/arch/parisc/kernel/time.c
+index a479d08..e75cae6 100644
+--- a/arch/parisc/kernel/time.c
++++ b/arch/parisc/kernel/time.c
+@@ -223,10 +223,7 @@ static struct platform_device rtc_parisc_dev = {
+ 
+ static int __init rtc_init(void)
+ {
+-	int ret;
+-
+-	ret = platform_device_register(&rtc_parisc_dev);
+-	if (ret < 0)
++	if (platform_device_register(&rtc_parisc_dev) < 0)
+ 		printk(KERN_ERR "unable to register rtc device...\n");
+ 
+ 	/* not necessarily an error */
+-- 
+1.6.0.4
+

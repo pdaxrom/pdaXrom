@@ -1,0 +1,12 @@
+--- mtpaint-3.31/src/Makefile-	2009-08-12 15:40:38.000000000 +0700
++++ mtpaint-3.31/src/Makefile	2009-08-12 15:40:58.000000000 +0700
+@@ -1,7 +1,7 @@
+ include ../_conf.txt
+ 
+-CFLAGS = $(CFLAG)
+-LDFLAGS = $(LDFLAG) $(GLIB_LIB)
++CFLAGS = $(CFLAG) $(OPT_CFLAGS)
++LDFLAGS = $(LDFLAG) $(GLIB_LIB) $(OPT_LDFLAGS)
+ 
+ BIN = mtpaint
+ 

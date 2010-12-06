@@ -1,0 +1,26 @@
+--- diskdev_cmds-332.14/fsck_hfs.tproj/dfalib/SUtils.c-orig	2006-02-21 03:45:15.000000000 +0600
++++ diskdev_cmds-332.14/fsck_hfs.tproj/dfalib/SUtils.c	2009-12-08 15:33:37.566467412 +0600
+@@ -45,6 +45,23 @@
+ 								      BlockDescriptor * theBlockDescPtr );
+ static OSErr 	VolumeObjectFixPrimaryBlock( void );
+ 		
++
++#ifdef __UCLIBC__
++void bzero(void *s, size_t n)
++{
++    memset(s, 0, n);
++}
++
++void bcopy(const void *s2, void *s1, size_t n)
++{
++    memmove(s1, s2, n);
++}
++int bcmp(const void *s1, const void *s2, size_t n)
++{
++    return memcmp(s1, s2, n);
++}
++#endif
++
+ /*
+  * utf_encodestr
+  *

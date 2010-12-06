@@ -1,0 +1,33 @@
+--- s/configure-	2009-08-20 14:50:51.000000000 +0700
++++ s/configure	2009-08-20 14:51:31.000000000 +0700
+@@ -1736,22 +1736,6 @@
+ fi
+ 
+ 
+-if ! enabled gpl; then
+-    die_gpl_disabled(){
+-        name=$1
+-        shift
+-        enabled_any $@ && die "$name is under GPL and --enable-gpl is not specified."
+-    }
+-    die_gpl_disabled "The Postprocessing code" postproc
+-    die_gpl_disabled "libx264"                 libx264
+-    die_gpl_disabled "libxvidcore"             libxvid
+-    die_gpl_disabled "FAAD2"                   libfaad2
+-    die_gpl_disabled "The X11 grabber"         x11grab
+-fi
+-
+-if ! enabled nonfree && enabled_any libamr_nb libamr_wb; then
+-    die "libamr is nonfree and --enable-nonfree is not specified."
+-fi
+ 
+ check_deps $ARCH_EXT_LIST
+ 
+@@ -1894,6 +1894,7 @@
+ enabled ppc && check_asm dcbzl '"dcbzl 0, 1"'
+ enabled ppc && check_asm ppc4xx '"maclhw r10, r11, r12"'
+ enabled ppc && check_asm xform_asm '"lwzx 0, %y0" :: "Z"(*(int*)0)'
++enabled ppc && add_cflags -fPIC
+ 
+ # check for SIMD availability
+ 

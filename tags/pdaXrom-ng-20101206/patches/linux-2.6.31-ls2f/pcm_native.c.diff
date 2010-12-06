@@ -1,0 +1,14 @@
+--- linux-2.6.31/sound/core/pcm_native.c-	2009-11-09 13:48:44.000000000 +0600
++++ linux-2.6.31/sound/core/pcm_native.c	2009-11-09 13:49:13.000000000 +0600
+@@ -3102,7 +3102,11 @@
+ 			return VM_FAULT_SIGBUS;
+ 	} else {
+ 		vaddr = runtime->dma_area + offset;
++#if defined(__mips__) && defined(CONFIG_DMA_NONCOHERENT)
++		page = virt_to_page(CAC_ADDR(vaddr));
++#else
+ 		page = virt_to_page(vaddr);
++#endif
+ 	}
+ 	get_page(page);
+ 	vmf->page = page;

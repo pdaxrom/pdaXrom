@@ -1,0 +1,11 @@
+--- pekwm-0.1.11/data/scripts/pekwm_themeset.sh.in-	2009-12-15 18:26:39.496415885 +0600
++++ pekwm-0.1.11/data/scripts/pekwm_themeset.sh.in	2009-12-15 18:26:51.785310570 +0600
+@@ -46,7 +46,7 @@
+ 
+         # Get temporary file, not all platforms have mktemp though
+         if test -x "/bin/mktemp"; then
+-            tmp_file=$(mktemp -t pekwm_themeset.XXXXXX) || exit 1;
++	    tmp_file=$(mktemp -t) || exit 1;
+         else
+             tmp_file="/tmp/pekwm_themeset.${USER}"
+         fi

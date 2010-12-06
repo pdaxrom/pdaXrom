@@ -1,0 +1,9 @@
+#!/bin/sh
+
+test -f /usr/bin/elfspe-register || exit 0
+
+. /etc/init.d/functions
+
+log_begin_msg -n "Enable ELFSPE"
+/usr/bin/elfspe-register
+log_end_msg $?

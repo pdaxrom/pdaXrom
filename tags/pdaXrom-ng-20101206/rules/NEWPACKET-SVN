@@ -1,0 +1,39 @@
+#!/usr/bin/perl -w 
+
+print "\nCreate new rules file from template:\n";
+print "------------------------------------\n\n";
+
+print "Name of new packet..........: "; $name = <STDIN>;
+print "Revision number.............: "; $version = <STDIN>;
+print "URL of download repository..: "; $url = <STDIN>;
+print "Packet Author...............: "; $author = <STDIN>;
+
+chop ($name, $version, $url, $author);
+
+$_=$name;
+
+$n=tr/-/_/;
+
+$packet=$_;
+
+$PACKET = uc($packet);
+$LPACKET = lc($packet);
+
+open(INFILE,  "template-svn") || die "Can't open template";
+open(OUTFILE, ">$name-svn\.sh") || die "Can't open new file";
+
+while (<INFILE>) {
+	s,\@LPACKET@,$LPACKET,g;
+	s,\@PACKET@,$PACKET,g;
+	s,\@packet@,$packet,g;
+	s,\@name@,$name,g;
+	s,\@VERSION@,$version,g;
+	s,\@URL@,$url,g;
+	s,\@AUTHOR@,$author,g;
+	print OUTFILE $_;
+}
+
+close(OUTFILE);
+close(INFILE);
+
+print "\n";

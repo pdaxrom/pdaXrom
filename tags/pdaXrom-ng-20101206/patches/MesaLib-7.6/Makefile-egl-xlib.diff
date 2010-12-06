@@ -1,0 +1,11 @@
+--- s/src/gallium/winsys/egl_xlib/Makefile.orig	2009-09-23 08:15:03.000000000 +0700
++++ s/src/gallium/winsys/egl_xlib/Makefile	2009-10-04 11:54:51.000000000 +0700
+@@ -74,7 +74,7 @@
+ install: default
+ 	$(INSTALL) -d $(INSTALL_DIR)/$(LIB_DIR)
+ 	@if [ -e $(TOP)/$(LIB_DIR) ]; then \
+-		$(MINSTALL) $(TOP)/$(LIB_DIR)/$(DRIVER_NAME) $(INSTALL_DIR)/$(LIB_DIR); \
++		$(MINSTALL) $(TOP)/$(LIB_DIR)/$(DRIVER_NAME) $(DESTDIR)$(INSTALL_DIR)/$(LIB_DIR); \
+ 	fi
+ 
+ 

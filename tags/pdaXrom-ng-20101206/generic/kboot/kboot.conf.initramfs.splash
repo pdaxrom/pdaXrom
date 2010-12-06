@@ -1,0 +1,12 @@
+message=/etc/kboot.msg
+default=live720p
+live='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:0'
+live720p='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:3'
+live1080i='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:4'
+live1080p='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:5'
+live720pf='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:131'
+live1080if='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:132'
+live1080pf='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:133'
+liveWXGA='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:11'
+liveSXGA='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:12'
+liveWUXGA='/boot/zImage root=/dev/ram0 console=/dev/tty2 video=ps3fb:mode:13'

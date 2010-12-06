@@ -1,0 +1,11 @@
+--- s/usplash.h-	2009-08-12 05:09:52.000000000 +0700
++++ s/usplash.h	2009-08-12 05:10:16.000000000 +0700
+@@ -22,7 +22,7 @@
+ #define USPLASH_H
+ 
+ /* Directory of usplash control fifo */
+-#define USPLASH_DIR   "/dev/.initramfs"
++#define USPLASH_DIR   "/var/lib/usplash"
+ 
+ /* Filename of usplash control fifo within the USPLASH_DIR directory*/
+ #define USPLASH_FIFO  "usplash_fifo"

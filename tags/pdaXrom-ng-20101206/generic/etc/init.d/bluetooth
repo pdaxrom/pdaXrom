@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+# Start/stop the Bluetooth daemons
+#
+
+. /etc/init.d/functions
+
+set -e
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+NAME=bluetooth
+DESC="Bluetooth subsystem"
+
+DAEMON_NAME=bluetoothd
+HID2HCI_NAME=hid2hci
+
+DAEMON_EXEC="`which $DAEMON_NAME || true`"
+HID2HCI_EXEC="`which $HID2HCI_NAME || true`"
+
+DAEMON_ENABLE=true
+HID2HCI_ENABLE=false
+
+[ -e /etc/default/bluetooth ] && . /etc/default/bluetooth
+
+case "$1" in
+  start)
+	if $DAEMON_ENABLE && [ -x "$DAEMON_EXEC" ]; then
+		log_begin_msg -n "Starting bluetooth"
+		start-stop-daemon --start --quiet --exec $DAEMON_EXEC
+		log_end_msg $?
+	fi
+	if $HID2HCI_ENABLE && [ -x "$HID2HCI_EXEC" ] ; then
+		log_begin_msg -n "Starting hid2hci"
+		$HID2HCI_EXEC --tohci > /dev/null 2>&1 || true
+		log_end_msg $?
+	fi
+	;;
+  stop)
+	log_begin_msg -n "Stopping bluetooth"
+	if $DAEMON_ENABLE && [ -x "$DAEMON_EXEC" ]; then
+	    start-stop-daemon --stop --quiet --exec $DAEMON_EXEC
+	fi
+	log_end_msg $?
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

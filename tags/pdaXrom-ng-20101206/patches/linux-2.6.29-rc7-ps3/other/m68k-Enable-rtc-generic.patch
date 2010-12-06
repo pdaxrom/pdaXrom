@@ -1,0 +1,65 @@
+From 5401ab949b354825d450ce001ee0274c1027625e Mon Sep 17 00:00:00 2001
+From: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+Date: Thu, 19 Feb 2009 16:50:46 +0100
+Subject: [PATCH] m68k: Enable rtc-generic
+
+Signed-off-by: Geert Uytterhoeven <Geert.Uytterhoeven@sonycom.com>
+---
+ arch/m68k/Kconfig       |    4 ++++
+ arch/m68k/kernel/time.c |   21 +++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 0 deletions(-)
+
+diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
+index fb87c08..9d2565e 100644
+--- a/arch/m68k/Kconfig
++++ b/arch/m68k/Kconfig
+@@ -27,6 +27,10 @@ config ARCH_HAS_ILOG2_U64
+ 	bool
+ 	default n
+ 
++config ARCH_HAS_GENERIC_RTC
++	bool
++	default y
++
+ config GENERIC_HWEIGHT
+ 	bool
+ 	default y
+diff --git a/arch/m68k/kernel/time.c b/arch/m68k/kernel/time.c
+index 7db4159..b26933f 100644
+--- a/arch/m68k/kernel/time.c
++++ b/arch/m68k/kernel/time.c
+@@ -18,6 +18,7 @@
+ #include <linux/string.h>
+ #include <linux/mm.h>
+ #include <linux/rtc.h>
++#include <linux/platform_device.h>
+ 
+ #include <asm/machdep.h>
+ #include <asm/io.h>
+@@ -159,3 +160,23 @@ int do_settimeofday(struct timespec *tv)
+ }
+ 
+ EXPORT_SYMBOL(do_settimeofday);
++
++
++static struct platform_device rtc_generic_dev = {
++	.name = "rtc-generic",
++	.id = -1,
++};
++
++static int __init rtc_init(void)
++{
++	int ret;
++
++	ret = platform_device_register(&rtc_generic_dev);
++	if (ret < 0)
++		pr_err("Unable to register rtc device...\n");
++
++	/* not necessarily an error */
++	return 0;
++}
++
++module_init(rtc_init);
+-- 
+1.6.0.4
+

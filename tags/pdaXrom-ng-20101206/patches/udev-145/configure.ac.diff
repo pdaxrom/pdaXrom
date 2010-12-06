@@ -1,0 +1,26 @@
+--- udev-145/configure.ac-	2009-08-12 00:20:29.000000000 +0700
++++ udev-145/configure.ac	2009-08-12 00:43:50.000000000 +0700
+@@ -55,13 +55,6 @@
+ 		AC_MSG_ERROR([gperf is needed])
+ 	fi
+ 
+-	PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.7.0 gobject-2.0 >= 2.7.0])
+-	AC_SUBST([GLIB_CFLAGS])
+-	AC_SUBST([GLIB_LIBS])
+-
+-	AC_CHECK_LIB([acl], [acl_init], [:], AC_MSG_ERROR([libacl not found]))
+-	AC_CHECK_HEADER([acl/libacl.h], [:], AC_MSG_ERROR([libacl header not found]))
+-
+ 	PKG_CHECK_MODULES(LIBUSB, libusb >= 0.1.12)
+ 	AC_SUBST(LIBUSB_CFLAGS)
+ 	AC_SUBST(LIBUSB_LIBS)
+@@ -69,9 +62,6 @@
+ 	PKG_CHECK_MODULES(USBUTILS, usbutils >= 0.82)
+ 	AC_SUBST([USB_DATABASE], [$($PKG_CONFIG --variable=usbids usbutils)])
+ 
+-	AC_CHECK_FILES([/usr/share/pci.ids], [pciids=/usr/share/pci.ids])
+-	AC_CHECK_FILES([/usr/share/hwdata/pci.ids], [pciids=/usr/share/hwdata/pci.ids])
+-	AC_CHECK_FILES([/usr/share/misc/pci.ids], [pciids=/usr/share/misc/pci.ids])
+ 	AC_ARG_WITH(pci-ids-path,
+ 		AS_HELP_STRING([--pci-ids-path=DIR], [Path to pci.ids file]),
+ 		[PCI_DATABASE=${withval}],

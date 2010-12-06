@@ -1,0 +1,41 @@
+--- diskdev_cmds-332.14/newfs_hfs.tproj/makehfs.c-	2009-12-08 15:17:04.105903105 +0600
++++ diskdev_cmds-332.14/newfs_hfs.tproj/makehfs.c	2009-12-08 15:27:06.386467373 +0600
+@@ -175,6 +175,38 @@
+           ((e) == kCFStringEncodingMacUkrainian ? 48 :   \
+           ((e) == kCFStringEncodingMacFarsi ? 49 : 0)))
+ #endif
++
++#ifdef __UCLIBC__
++void bzero(void *s, size_t n)
++{
++    memset(s, 0, n);
++}
++
++void bcopy(const void *s2, void *s1, size_t n)
++{
++    memmove(s1, s2, n);
++}
++
++int getloadavg(double *list, int nelem)
++{
++    FILE *LOADAVG;
++    double avg[3] = { 0.0, 0.0, 0.0 };
++    int i, res = -1;;
++
++    if ((LOADAVG = fopen("/proc/loadavg", "r"))) {
++	fscanf(LOADAVG, "%lf %lf %lf", &avg[0], &avg[1], &avg[2]);
++	res = 0;
++	fclose(LOADAVG);
++    }
++
++    for (i = 0; (i < nelem) && (i < 3); i++) {
++	list[i] = avg[i];
++    }
++
++    return res;
++}
++#endif
++
+ /*
+  * make_hfs
+  *	

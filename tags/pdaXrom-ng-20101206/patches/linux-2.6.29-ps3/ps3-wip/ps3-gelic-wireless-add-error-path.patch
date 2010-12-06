@@ -1,0 +1,21 @@
+This patch fixes the bug that the driver tries to continue to
+connect(associate) to AP even if gelic_wl_do_{wpa,wep}_setup() fails,
+
+CC: Geoff Levand <geoffrey.levand@am.sony.com>
+Signed-off-by: Masakazu Mokuno <mokuno@sm.sony.co.jp>
+---
+ drivers/net/ps3_gelic_wireless.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/drivers/net/ps3_gelic_wireless.c
++++ b/drivers/net/ps3_gelic_wireless.c
+@@ -2101,6 +2101,9 @@ static int gelic_wl_associate_bss(struct
+ 	if (ret) {
+ 		pr_debug("%s: WEP/WPA setup failed %d\n", __func__,
+ 			 ret);
++		ret = -EPERM;
++		gelic_wl_send_iwap_event(wl, NULL);
++		goto out;
+ 	}
+ 
+ 	/* start association */

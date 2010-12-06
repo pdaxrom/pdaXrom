@@ -1,0 +1,62 @@
+diff -Nur opal-3.6.8-orig/plugins/video/common/dyna.h opal-3.6.8/plugins/video/common/dyna.h
+--- opal-3.6.8-orig/plugins/video/common/dyna.h	2010-05-27 13:52:47.000000000 +0700
++++ opal-3.6.8/plugins/video/common/dyna.h	2010-06-05 10:56:19.627846096 +0700
+@@ -63,6 +63,7 @@
+ #include "critsect.h"
+ #include "trace.h"
+ 
++#define __STDC_CONSTANT_MACROS
+ 
+ extern "C" {
+ #include LIBAVCODEC_HEADER
+diff -Nur opal-3.6.8-orig/plugins/video/H.263-1998/h263-1998.cxx opal-3.6.8/plugins/video/H.263-1998/h263-1998.cxx
+--- opal-3.6.8-orig/plugins/video/H.263-1998/h263-1998.cxx	2010-05-27 13:52:46.000000000 +0700
++++ opal-3.6.8/plugins/video/H.263-1998/h263-1998.cxx	2010-06-05 11:03:34.566595562 +0700
+@@ -65,6 +65,9 @@
+ 
+ DECLARE_TRACER
+ 
++#define UINT64_C
++#define __STDC_CONSTANT_MACROS
++
+ extern "C" {
+ #include LIBAVCODEC_HEADER
+ };
+diff -Nur opal-3.6.8-orig/plugins/video/H.263-1998/h263pframe.h opal-3.6.8/plugins/video/H.263-1998/h263pframe.h
+--- opal-3.6.8-orig/plugins/video/H.263-1998/h263pframe.h	2010-05-27 13:52:46.000000000 +0700
++++ opal-3.6.8/plugins/video/H.263-1998/h263pframe.h	2010-06-05 11:03:13.486595473 +0700
+@@ -30,6 +30,9 @@
+ #include <string.h>
+ #include "rtpframe.h"
+ 
++#define UINT64_C
++#define __STDC_CONSTANT_MACROS
++
+ extern "C" {
+ #include LIBAVCODEC_HEADER
+ };
+diff -Nur opal-3.6.8-orig/plugins/video/H.264/h264-x264.h opal-3.6.8/plugins/video/H.264/h264-x264.h
+--- opal-3.6.8-orig/plugins/video/H.264/h264-x264.h	2010-05-27 13:52:46.000000000 +0700
++++ opal-3.6.8/plugins/video/H.264/h264-x264.h	2010-06-05 11:02:17.497866465 +0700
+@@ -54,7 +54,8 @@
+ 
+ #include "shared/h264frame.h"
+ 
+-
++#define UINT64_C
++#define __STDC_CONSTANT_MACROS
+ 
+ extern "C" {
+ #ifdef _MSC_VER
+diff -Nur opal-3.6.8-orig/plugins/video/MPEG4-ffmpeg/mpeg4.cxx opal-3.6.8/plugins/video/MPEG4-ffmpeg/mpeg4.cxx
+--- opal-3.6.8-orig/plugins/video/MPEG4-ffmpeg/mpeg4.cxx	2010-05-27 13:52:47.000000000 +0700
++++ opal-3.6.8/plugins/video/MPEG4-ffmpeg/mpeg4.cxx	2010-06-05 10:56:29.356596049 +0700
+@@ -83,6 +83,8 @@
+ 
+ using namespace std;
+ 
++#define __STDC_CONSTANT_MACROS
++
+ // FFMPEG specific headers
+ extern "C" {
+ 

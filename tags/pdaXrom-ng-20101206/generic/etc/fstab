@@ -1,0 +1,12 @@
+#
+# /etc/fstab
+#
+
+proc	/proc		proc	defaults,noauto			0	0
+devpts	/dev/pts	devpts	defaults,noauto			0	0
+none	/tmp		tmpfs	defaults,mode=1777,noauto	0	0
+none	/var/tmp	tmpfs	defaults,mode=1777,noauto	0	0
+none	/sys		sysfs	defaults,noauto			0	0
+
+#
+

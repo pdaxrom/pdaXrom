@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+
+. /etc/init.d/functions
+
+NAME=slim
+DAEMON=/usr/bin/slim
+PIDDIR=/var/run
+PIDFILE=$PIDDIR/slim.pid
+
+test -e $DAEMON || exit 0
+
+case "$1" in
+  start)
+	log_begin_msg -n "Starting slim"
+	splash_finish
+	start-stop-daemon -S -q -b -x $DAEMON -- $DAEMON_OPTS
+	log_end_msg $?
+	sleep 2
+	;;
+  stop)
+	log_begin_msg -n "Stopping slim"
+	start-stop-daemon -K -q -x $DAEMON
+	log_end_msg $?
+	splash_start
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

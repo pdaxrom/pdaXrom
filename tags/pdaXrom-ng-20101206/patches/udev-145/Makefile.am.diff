@@ -1,0 +1,14 @@
+--- udev-145/extras/Makefile.am-	2009-08-12 00:15:53.000000000 +0700
++++ udev-145/extras/Makefile.am	2009-08-12 00:21:28.000000000 +0700
+@@ -16,10 +16,8 @@
+ 
+ if ENABLE_EXTRAS
+ SUBDIRS += \
+-	udev-acl \
+ 	usb-db \
+ 	hid2hci \
+ 	keymap \
+-	modem-modeswitch \
+-	gudev
++	modem-modeswitch
+ endif

@@ -1,0 +1,10 @@
+--- libjpeg-6b-ptx1/config/libjpeg.pc.in-	2008-12-10 02:23:48.000000000 +0600
++++ libjpeg-6b-ptx1/config/libjpeg.pc.in	2008-12-10 02:23:53.000000000 +0600
+@@ -7,6 +7,6 @@
+ Description: <description>
+ Requires: @REQUIRES_LIBRN@
+ Version: @VERSION@
+-Libs: -L${libdir} -llibjpeg
++Libs: -L${libdir} -ljpeg
+ #Libs.private: -lm -lpthread ...etc...
+ Cflags: -I${includedir}

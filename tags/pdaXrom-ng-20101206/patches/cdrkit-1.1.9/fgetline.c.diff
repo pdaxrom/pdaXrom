@@ -1,0 +1,11 @@
+--- cdrkit-1.1.9.orig/librols/stdio/fgetline.c
++++ cdrkit-1.1.9/librols/stdio/fgetline.c
+@@ -76,7 +76,7 @@
+ }
+ 
+ EXPORT int
+-getline(buf, len)
++get_line(buf, len)
+ 	char	*buf;
+ 	int	len;
+ {

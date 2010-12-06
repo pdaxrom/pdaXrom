@@ -1,0 +1,35 @@
+#!/bin/sh
+
+ROOT_PATH="/mnt/system"
+MEDIA_PATH="/mnt/data"
+NEWROOT_PATH="$ROOT_PATH/pdaxrom"
+
+AUID=/bin/auid
+AUI=/bin/aui
+
+#mount -t proc proc /proc
+#mount t sysfs sysfs /sys
+
+mount -t ext3 -o rw /dev/hda2 $ROOT_PATH 
+mount -t vfat -o rw,noatime,utf8,shortname=mixed /dev/hda1 $MEDIA_PATH 
+
+if [ -z "$init" ] ; then
+   init=/sbin/init
+fi
+
+#umount /sys
+#umount /proc
+
+#insmod /lib/modules/usbkbd.ko
+
+#echo "SWITCHING TO REAL ROOT  $NEWROOT_PATH $init $@"
+#exec run-init $NEWROOT_PATH $init "$@"
+
+echo "SWITCHING TO REAL ROOT"
+
+mount -t proc proc $NEWROOT_PATH/proc
+mount -t sysfs sysfs $NEWROOT_PATH/sys
+# mount --bind /dev $NEWROOT_PATH/dev
+
+
+exec chroot $NEWROOT_PATH/ /sbin/init
