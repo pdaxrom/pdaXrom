@@ -52,7 +52,7 @@ build_ffmpeg() {
     mips*)
 	case $TARGET_ARCH in
 	mips64*-ls2f-*)
-	    C_ARGS="--extra-cflags='-march=loongson2f -mtune=loongson2f' --enable-godson2"
+	    C_ARGS="--extra-cflags='-march=loongson2f -mtune=loongson2f'"
 	    ;;
 	*-ls2f-*)
 	    C_ARGS="--extra-cflags='-mtune=loongson2f' --enable-godson2"
