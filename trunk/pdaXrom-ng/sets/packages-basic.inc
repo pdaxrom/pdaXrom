@@ -16,7 +16,7 @@
 . $RULES_DIR/host_ncurses.sh
 . $RULES_DIR/ncurses.sh
 . $RULES_DIR/module-init-tools.sh
-. $RULES_DIR/udev.sh
+. $SETS_DIR/packages-udev.inc
 . $RULES_DIR/wireless_tools.sh
 . $RULES_DIR/dhcpcd.sh
 . $RULES_DIR/install_libc.sh
