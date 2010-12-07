@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_NEWPORT=xf86-video-newport-0.2.1.tar.bz2
+XF86_VIDEO_NEWPORT_VERSION=0.2.3
+XF86_VIDEO_NEWPORT=xf86-video-newport-${XF86_VIDEO_NEWPORT_VERSION}.tar.bz2
 XF86_VIDEO_NEWPORT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_NEWPORT_DIR=$BUILD_DIR/xf86-video-newport-0.2.1
+XF86_VIDEO_NEWPORT_DIR=$BUILD_DIR/xf86-video-newport-${XF86_VIDEO_NEWPORT_VERSION}
 XF86_VIDEO_NEWPORT_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_newport() {

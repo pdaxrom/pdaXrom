@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GTK2_VERSION=2.18.0
+GTK2_VERSION=2.23.2
 GTK2=gtk+-${GTK2_VERSION}.tar.bz2
-GTK2_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/gtk+/2.18
+GTK2_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/gtk+/2.23
 GTK2_DIR=$BUILD_DIR/gtk+-${GTK2_VERSION}
 GTK2_ENV="$CROSS_ENV_AC gio_can_sniff=yes"
 # ac_cv_path_CUPS_CONFIG=no

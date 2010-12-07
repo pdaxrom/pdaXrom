@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PIXMAN_VERSION=0.16.2
+PIXMAN_VERSION=0.21.2
 PIXMAN=pixman-${PIXMAN_VERSION}.tar.bz2
 PIXMAN_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 PIXMAN_DIR=$BUILD_DIR/pixman-${PIXMAN_VERSION}

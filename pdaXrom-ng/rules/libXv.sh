@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXV_VERSION=1.0.5
+LIBXV_VERSION=1.0.6
 LIBXV=libXv-${LIBXV_VERSION}.tar.bz2
 LIBXV_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXV_DIR=$BUILD_DIR/libXv-${LIBXV_VERSION}

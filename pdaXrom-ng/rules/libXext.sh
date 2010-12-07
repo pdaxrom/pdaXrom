@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXEXT_VERSION=1.0.5
+LIBXEXT_VERSION=1.2.0
 LIBXEXT=libXext-${LIBXEXT_VERSION}.tar.bz2
 LIBXEXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXEXT_DIR=$BUILD_DIR/libXext-${LIBXEXT_VERSION}

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXVMC_VERSION=1.0.4
+LIBXVMC_VERSION=1.0.6
 LIBXVMC=libXvMC-${LIBXVMC_VERSION}.tar.bz2
 LIBXVMC_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXVMC_DIR=$BUILD_DIR/libXvMC-${LIBXVMC_VERSION}

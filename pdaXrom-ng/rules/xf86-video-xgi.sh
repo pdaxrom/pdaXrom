@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_XGI=xf86-video-xgi-1.5.0.tar.bz2
+XF86_VIDEO_XGI_VERSION=1.6.0
+XF86_VIDEO_XGI=xf86-video-xgi-${XF86_VIDEO_XGI_VERSION}.tar.bz2
 XF86_VIDEO_XGI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_XGI_DIR=$BUILD_DIR/xf86-video-xgi-1.5.0
+XF86_VIDEO_XGI_DIR=$BUILD_DIR/xf86-video-xgi-${XF86_VIDEO_XGI_VERSION}
 XF86_VIDEO_XGI_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_xgi() {

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-CAIROMM_VERSION=1.8.2
+CAIROMM_VERSION=1.9.6
 CAIROMM=cairomm-${CAIROMM_VERSION}.tar.gz
 CAIROMM_MIRROR=http://cairographics.org/releases
 CAIROMM_DIR=$BUILD_DIR/cairomm-${CAIROMM_VERSION}

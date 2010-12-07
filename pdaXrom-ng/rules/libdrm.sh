@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBDRM_VERSION=2.4.14
+LIBDRM_VERSION=2.4.22
 LIBDRM=libdrm-${LIBDRM_VERSION}.tar.bz2
 LIBDRM_MIRROR=http://dri.freedesktop.org/libdrm
 LIBDRM_DIR=$BUILD_DIR/libdrm-${LIBDRM_VERSION}

@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_SIS=xf86-video-sis-0.10.1.tar.bz2
+XF86_VIDEO_SIS_VERSION=0.10.3
+XF86_VIDEO_SIS=xf86-video-sis-${XF86_VIDEO_SIS_VERSION}.tar.bz2
 XF86_VIDEO_SIS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_SIS_DIR=$BUILD_DIR/xf86-video-sis-0.10.1
+XF86_VIDEO_SIS_DIR=$BUILD_DIR/xf86-video-sis-${XF86_VIDEO_SIS_VERSION}
 XF86_VIDEO_SIS_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_sis() {

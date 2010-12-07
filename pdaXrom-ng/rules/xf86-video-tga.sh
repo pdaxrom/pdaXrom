@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_TGA=xf86-video-tga-1.2.0.tar.bz2
+XF86_VIDEO_TGA_VERSION=1.2.1
+XF86_VIDEO_TGA=xf86-video-tga-${XF86_VIDEO_TGA_VERSION}.tar.bz2
 XF86_VIDEO_TGA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_TGA_DIR=$BUILD_DIR/xf86-video-tga-1.2.0
+XF86_VIDEO_TGA_DIR=$BUILD_DIR/xf86-video-tga-${XF86_VIDEO_TGA_VERSION}
 XF86_VIDEO_TGA_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_tga() {

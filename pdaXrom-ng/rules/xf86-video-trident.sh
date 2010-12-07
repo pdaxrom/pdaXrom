@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_TRIDENT=xf86-video-trident-1.3.1.tar.bz2
+XF86_VIDEO_TRIDENT_VERSION=1.3.4
+XF86_VIDEO_TRIDENT=xf86-video-trident-${XF86_VIDEO_TRIDENT_VERSION}.tar.bz2
 XF86_VIDEO_TRIDENT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_TRIDENT_DIR=$BUILD_DIR/xf86-video-trident-1.3.1
+XF86_VIDEO_TRIDENT_DIR=$BUILD_DIR/xf86-video-trident-${XF86_VIDEO_TRIDENT_VERSION}
 XF86_VIDEO_TRIDENT_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_trident() {

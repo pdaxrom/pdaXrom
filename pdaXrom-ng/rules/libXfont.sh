@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXFONT_VERSION=1.4.0
+LIBXFONT_VERSION=1.4.3
 LIBXFONT=libXfont-${LIBXFONT_VERSION}.tar.bz2
 LIBXFONT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXFONT_DIR=$BUILD_DIR/libXfont-${LIBXFONT_VERSION}

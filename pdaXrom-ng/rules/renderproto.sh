@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-RENDERPROTO_VERSION=0.11
+RENDERPROTO_VERSION=0.11.1
 RENDERPROTO=renderproto-${RENDERPROTO_VERSION}.tar.bz2
 RENDERPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RENDERPROTO_DIR=$BUILD_DIR/renderproto-${RENDERPROTO_VERSION}

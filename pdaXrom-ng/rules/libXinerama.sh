@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXINERAMA_VERSION=1.0.3
+LIBXINERAMA_VERSION=1.1.1
 LIBXINERAMA=libXinerama-${LIBXINERAMA_VERSION}.tar.bz2
 LIBXINERAMA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXINERAMA_DIR=$BUILD_DIR/libXinerama-${LIBXINERAMA_VERSION}

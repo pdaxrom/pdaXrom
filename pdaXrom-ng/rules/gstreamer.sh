@@ -30,6 +30,7 @@ build_gstreamer() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --libexecdir=/usr/lib/gstreamer \
 	    --localstatedir=/var \
 	    --disable-debug \
 	    --disable-gst-debug \

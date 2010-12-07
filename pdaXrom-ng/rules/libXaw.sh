@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXAW_VERSION=1.0.6
+LIBXAW_VERSION=1.0.8
 LIBXAW=libXaw-${LIBXAW_VERSION}.tar.bz2
 LIBXAW_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXAW_DIR=$BUILD_DIR/libXaw-${LIBXAW_VERSION}

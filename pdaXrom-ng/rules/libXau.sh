@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXAU_VERSION=1.0.5
+LIBXAU_VERSION=1.0.6
 LIBXAU=libXau-${LIBXAU_VERSION}.tar.bz2
 LIBXAU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXAU_DIR=$BUILD_DIR/libXau-${LIBXAU_VERSION}

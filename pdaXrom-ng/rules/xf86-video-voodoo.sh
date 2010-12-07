@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_VOODOO_VERSION=1.2.1
+XF86_VIDEO_VOODOO_VERSION=1.2.4
 XF86_VIDEO_VOODOO=xf86-video-voodoo-${XF86_VIDEO_VOODOO_VERSION}.tar.bz2
 XF86_VIDEO_VOODOO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_VOODOO_DIR=$BUILD_DIR/xf86-video-voodoo-${XF86_VIDEO_VOODOO_VERSION}

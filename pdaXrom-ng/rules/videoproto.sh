@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-VIDEOPROTO_VERSION=2.3.0
+VIDEOPROTO_VERSION=2.3.1
 VIDEOPROTO=videoproto-${VIDEOPROTO_VERSION}.tar.bz2
 VIDEOPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 VIDEOPROTO_DIR=$BUILD_DIR/videoproto-${VIDEOPROTO_VERSION}

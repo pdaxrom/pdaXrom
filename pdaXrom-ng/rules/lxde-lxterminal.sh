@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LXDE_LXTERMINAL=lxterminal-0.1.4.tar.gz
+LXDE_LXTERMINAL_VERSION=0.1.9
+LXDE_LXTERMINAL=lxterminal-${LXDE_LXTERMINAL_VERSION}.tar.gz
 LXDE_LXTERMINAL_MIRROR=http://downloads.sourceforge.net/lxde
-LXDE_LXTERMINAL_DIR=$BUILD_DIR/lxterminal-0.1.4
+LXDE_LXTERMINAL_DIR=$BUILD_DIR/lxterminal-${LXDE_LXTERMINAL_VERSION}
 LXDE_LXTERMINAL_ENV="$CROSS_ENV_AC"
 
 build_lxde_lxterminal() {
@@ -31,14 +32,13 @@ build_lxde_lxterminal() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make -C data DESTDIR=$ROOTFS_DIR/ install || error
-    
-    $INSTALL -D -m 755 src/lxterminal $ROOTFS_DIR/usr/bin/lxterminal || error
-    $STRIP $ROOTFS_DIR/usr/bin/lxterminal
-    $INSTALL -D -m 644 $GENERICFS_DIR/lxterminal/lxterminal.conf $ROOTFS_DIR/usr/share/lxterminal/lxterminal.conf || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
+
+    #$INSTALL -D -m 644 $GENERICFS_DIR/lxterminal/lxterminal.conf $ROOTFS_DIR/usr/share/lxterminal/lxterminal.conf || error
 
     popd
     touch "$STATE_DIR/lxde_lxterminal.installed"

@@ -3,4 +3,5 @@
 . $RULES_DIR/glibmm.sh
 . $RULES_DIR/cairomm.sh
 . $RULES_DIR/pangomm.sh
+. $RULES_DIR/atkmm.sh
 . $RULES_DIR/gtkmm.sh

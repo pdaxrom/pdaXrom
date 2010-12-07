@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXT_VERSION=1.0.6
+LIBXT_VERSION=1.0.9
 LIBXT=libXt-${LIBXT_VERSION}.tar.bz2
 LIBXT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXT_DIR=$BUILD_DIR/libXt-${LIBXT_VERSION}

@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_ARK=xf86-video-ark-0.7.1.tar.bz2
+XF86_VIDEO_ARK_VERSION=0.7.3
+XF86_VIDEO_ARK=xf86-video-ark-${XF86_VIDEO_ARK_VERSION}.tar.bz2
 XF86_VIDEO_ARK_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_ARK_DIR=$BUILD_DIR/xf86-video-ark-0.7.1
+XF86_VIDEO_ARK_DIR=$BUILD_DIR/xf86-video-ark-${XF86_VIDEO_ARK_VERSION}
 XF86_VIDEO_ARK_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_ark() {

@@ -1,0 +1,26 @@
+--- s/configure-	2010-12-07 14:46:03.929357849 +0600
++++ s/configure	2010-12-07 14:48:06.509400273 +0600
+@@ -11706,7 +11706,6 @@
+   $as_echo_n "(cached) " >&6
+ else
+   test "$cross_compiling" = yes &&
+-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+ if test -r "${sdkdir}/dri.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -11729,7 +11728,6 @@
+   $as_echo_n "(cached) " >&6
+ else
+   test "$cross_compiling" = yes &&
+-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+ if test -r "${sdkdir}/sarea.h"; then
+   eval "$as_ac_File=yes"
+ else
+@@ -11752,7 +11750,6 @@
+   $as_echo_n "(cached) " >&6
+ else
+   test "$cross_compiling" = yes &&
+-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+ if test -r "${sdkdir}/dristruct.h"; then
+   eval "$as_ac_File=yes"
+ else

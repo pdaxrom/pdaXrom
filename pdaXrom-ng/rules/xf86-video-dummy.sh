@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_DUMMY_VERSION=0.3.1
+XF86_VIDEO_DUMMY_VERSION=0.3.4
 XF86_VIDEO_DUMMY=xf86-video-dummy-${XF86_VIDEO_DUMMY_VERSION}.tar.bz2
 XF86_VIDEO_DUMMY_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_DUMMY_DIR=$BUILD_DIR/xf86-video-dummy-${XF86_VIDEO_DUMMY_VERSION}

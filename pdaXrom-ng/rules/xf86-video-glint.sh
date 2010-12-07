@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_GLINT=xf86-video-glint-1.2.2.tar.bz2
+XF86_VIDEO_GLINT_VERSION=1.2.5
+XF86_VIDEO_GLINT=xf86-video-glint-${XF86_VIDEO_GLINT_VERSION}.tar.bz2
 XF86_VIDEO_GLINT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_GLINT_DIR=$BUILD_DIR/xf86-video-glint-1.2.2
+XF86_VIDEO_GLINT_DIR=$BUILD_DIR/xf86-video-glint-${XF86_VIDEO_GLINT_VERSION}
 XF86_VIDEO_GLINT_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_glint() {

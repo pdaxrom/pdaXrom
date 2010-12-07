@@ -9,11 +9,13 @@
 # see the README file.
 #
 
-LVM2_VERSION=2.02.52
+LVM2_VERSION=2.02.78
 LVM2=LVM2.${LVM2_VERSION}.tgz
 LVM2_MIRROR=ftp://sources.redhat.com/pub/lvm2
 LVM2_DIR=$BUILD_DIR/LVM2.${LVM2_VERSION}
-LVM2_ENV="$CROSS_ENV_AC LIBS=-L$TARGET_LIB"
+LVM2_ENV="$CROSS_ENV_AC LIBS=-L$TARGET_LIB \
+ac_cv_func_realloc_0_nonnull=yes \
+"
 
 build_LVM2() {
     test -e "$STATE_DIR/LVM2.installed" && return
@@ -30,10 +32,11 @@ build_LVM2() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --enable-pkgconfig \
 	    || error
     ) || error "configure"
 
-    make $MAKEARGS || error
+    make $MAKEARGS CC=${CROSS}gcc RANLIB=${CROSS}ranlib || error
 
     install_sysroot_files || error "install sysroot files"
 

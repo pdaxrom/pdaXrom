@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_S3=xf86-video-s3-0.6.1.tar.bz2
+XF86_VIDEO_S3_VERSION=0.6.3
+XF86_VIDEO_S3=xf86-video-s3-${XF86_VIDEO_S3_VERSION}.tar.bz2
 XF86_VIDEO_S3_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_S3_DIR=$BUILD_DIR/xf86-video-s3-0.6.1
+XF86_VIDEO_S3_DIR=$BUILD_DIR/xf86-video-s3-${XF86_VIDEO_S3_VERSION}
 XF86_VIDEO_S3_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_s3() {

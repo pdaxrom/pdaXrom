@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GLIB2_VERSION=2.22.0
+GLIB2_VERSION=2.27.4
 GLIB2=glib-${GLIB2_VERSION}.tar.bz2
-GLIB2_MIRROR=http://ftp.gtk.org/pub/glib/2.22
+GLIB2_MIRROR=http://ftp.gtk.org/pub/glib/2.27
 GLIB2_DIR=$BUILD_DIR/glib-${GLIB2_VERSION}
 GLIB2_ENV="$CROSS_ENV_AC glib_cv_uscore=no glib_cv_stack_grows=no"
 
@@ -40,6 +40,9 @@ build_glib2() {
     install_fakeroot_init
     rm -rf fakeroot/usr/lib/glib-2.0
     rm -rf fakeroot/usr/share/gdb fakeroot/usr/share/glib-2.0
+    for f in glib-compile-schemas glib-genmarshal glib-gettextize glib-mkenums gobject-query gtester gtester-report; do
+	rm -f fakeroot/usr/bin/$f
+    done
     install_fakeroot_finish || error
 
     popd

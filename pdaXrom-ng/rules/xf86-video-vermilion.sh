@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_VERMILION=xf86-video-vermilion-1.0.1.tar.bz2
+XF86_VIDEO_VERMILION_VERSION=1.0.1
+XF86_VIDEO_VERMILION=xf86-video-vermilion-${XF86_VIDEO_VERMILION_VERSION}.tar.bz2
 XF86_VIDEO_VERMILION_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_VERMILION_DIR=$BUILD_DIR/xf86-video-vermilion-1.0.1
+XF86_VIDEO_VERMILION_DIR=$BUILD_DIR/xf86-video-vermilion-${XF86_VIDEO_VERMILION_VERSION}
 XF86_VIDEO_VERMILION_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_vermilion() {

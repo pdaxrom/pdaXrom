@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBX11_VERSION=1.3
+LIBX11_VERSION=1.4.0
 LIBX11=libX11-${LIBX11_VERSION}.tar.bz2
 LIBX11_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBX11_DIR=$BUILD_DIR/libX11-${LIBX11_VERSION}

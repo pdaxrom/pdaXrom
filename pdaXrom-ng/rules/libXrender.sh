@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXRENDER_VERSION=0.9.5
+LIBXRENDER_VERSION=0.9.6
 LIBXRENDER=libXrender-${LIBXRENDER_VERSION}.tar.bz2
 LIBXRENDER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXRENDER_DIR=$BUILD_DIR/libXrender-${LIBXRENDER_VERSION}

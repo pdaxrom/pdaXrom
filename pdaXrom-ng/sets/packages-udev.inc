@@ -1,5 +1,6 @@
 . $RULES_DIR/host_gettext.sh
 . $RULES_DIR/host_glib2.sh
+. $RULES_DIR/zlib.sh
 . $RULES_DIR/glib2.sh
 . $RULES_DIR/attr.sh
 . $RULES_DIR/acl.sh

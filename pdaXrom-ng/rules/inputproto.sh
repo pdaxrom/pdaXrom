@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-INPUTPROTO_VERSION=1.5.0
+INPUTPROTO_VERSION=2.0.1
 INPUTPROTO=inputproto-${INPUTPROTO_VERSION}.tar.bz2
 INPUTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 INPUTPROTO_DIR=$BUILD_DIR/inputproto-${INPUTPROTO_VERSION}

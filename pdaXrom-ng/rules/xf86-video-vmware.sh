@@ -9,13 +9,14 @@
 # see the README file.
 #
 
-XF86_VIDEO_VMWARE=xf86-video-vmware-10.16.5.tar.bz2
+XF86_VIDEO_VMWARE_VERSION=11.0.3
+XF86_VIDEO_VMWARE=xf86-video-vmware-${XF86_VIDEO_VMWARE_VERSION}.tar.bz2
 XF86_VIDEO_VMWARE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_VMWARE_DIR=$BUILD_DIR/xf86-video-vmware-10.16.5
+XF86_VIDEO_VMWARE_DIR=$BUILD_DIR/xf86-video-vmware-${XF86_VIDEO_VMWARE_VERSION}
 XF86_VIDEO_VMWARE_ENV=
 
 build_xf86_video_vmware() {
-    test -e "$STATE_DIR/xf86_video_vmware-10.16.5" && return
+    test -e "$STATE_DIR/xf86_video_vmware-${XF86_VIDEO_VMWARE_VERSION}" && return
     banner "Build $XF86_VIDEO_VMWARE"
     download $XF86_VIDEO_VMWARE_MIRROR $XF86_VIDEO_VMWARE
     extract $XF86_VIDEO_VMWARE
@@ -37,7 +38,7 @@ build_xf86_video_vmware() {
     $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/vmware_drv.so
 
     popd
-    touch "$STATE_DIR/xf86_video_vmware-10.16.5"
+    touch "$STATE_DIR/xf86_video_vmware-${XF86_VIDEO_VMWARE_VERSION}"
 }
 
 build_xf86_video_vmware

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXFT_VERSION=2.1.13
+LIBXFT_VERSION=2.2.0
 LIBXFT=libXft-${LIBXFT_VERSION}.tar.bz2
 LIBXFT_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXFT_DIR=$BUILD_DIR/libXft-${LIBXFT_VERSION}

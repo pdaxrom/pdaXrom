@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XORG_SERVER_VERSION=1.6.3
+XORG_SERVER_VERSION=1.9.2
 XORG_SERVER=xorg-server-${XORG_SERVER_VERSION}.tar.bz2
 XORG_SERVER_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/xserver
 XORG_SERVER_DIR=$BUILD_DIR/xorg-server-${XORG_SERVER_VERSION}
@@ -60,39 +60,33 @@ build_xorg_server() {
 	    --enable-freetype \
 	    $XORG_SERVER_GLXDRI_CONF \
 	    --enable-xorg \
+	    --disable-dmx \
+	    --disable-xvfb \
+	    --disable-xnest \
+	    --disable-kdrive \
+	    --disable-xephyr \
+	    --disable-xfake \
+	    --enable-xfbdev \
 	    --with-fontdir=/usr/share/fonts \
 	    --without-dtrace \
 	    --with-xkb-output=/var/lib/xkb/compiled \
 	    || error
-#	    --disable-glx
-#	    --disable-dri
     ) || error
 
     make $MAKEARGS || error
 
     install_sysroot_files || error
 
-#
-#
-    cp -f hw/xfree86/parser/xf86Optrec.h ${TARGET_INC}/xorg/ || error "workaround 1.6.2"
-    cp -f hw/xfree86/parser/xf86Parser.h ${TARGET_INC}/xorg/ || error "workaround 1.6.2"
-#
-#
-    
-    make DESTDIR=$XORG_SERVER_DIR/fakeroot install || error
-    
-    cd $XORG_SERVER_DIR/fakeroot
-    
-    find ./usr/lib/xorg/modules -name "*.so" | while read f; do
-	$INSTALL -D -m 644 $f $ROOTFS_DIR/$f || error "install modules"
-	$STRIP $ROOTFS_DIR/$f
-    done
+    install_fakeroot_init
 
-    mkdir -p $ROOTFS_DIR/var/lib/xkb/compiled || error
+    install_fakeroot_finish || error
 
-    $INSTALL -D -m 755 ./usr/bin/Xorg $ROOTFS_DIR/usr/bin/Xorg || error
-    ln -sf Xorg $ROOTFS_DIR/usr/bin/X
-    $STRIP $ROOTFS_DIR/usr/bin/Xorg
+#
+#
+#    cp -f hw/xfree86/parser/xf86Optrec.h ${TARGET_INC}/xorg/ || error "workaround 1.6.2"
+#    cp -f hw/xfree86/parser/xf86Parser.h ${TARGET_INC}/xorg/ || error "workaround 1.6.2"
+#
+#
 
     popd
     touch "$STATE_DIR/xorg_server-${XORG_SERVER_VERSION}"

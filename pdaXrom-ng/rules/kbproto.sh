@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-KBPROTO_VERSION=1.0.3
+KBPROTO_VERSION=1.0.5
 KBPROTO=kbproto-${KBPROTO_VERSION}.tar.bz2
 KBPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 KBPROTO_DIR=$BUILD_DIR/kbproto-${KBPROTO_VERSION}

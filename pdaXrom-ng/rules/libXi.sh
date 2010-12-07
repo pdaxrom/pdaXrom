@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXI_VERSION=1.2.1
+LIBXI_VERSION=1.4.0
 LIBXI=libXi-${LIBXI_VERSION}.tar.bz2
 LIBXI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXI_DIR=$BUILD_DIR/libXi-${LIBXI_VERSION}

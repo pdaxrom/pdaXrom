@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-GAMIN=gamin-0.1.10.tar.bz2
+GAMIN_VERSION=0.1.10
+GAMIN=gamin-${GAMIN_VERSION}.tar.bz2
 GAMIN_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/gamin/0.1
-GAMIN_DIR=$BUILD_DIR/gamin-0.1.10
+GAMIN_DIR=$BUILD_DIR/gamin-${GAMIN_VERSION}
 GAMIN_ENV="$CROSS_ENV_AC"
 
 build_gamin() {
@@ -43,18 +44,8 @@ build_gamin() {
 
     install_sysroot_files || error
 
-    $INSTALL -D -m 644 libgamin/.libs/libfam.so.0.0.0 $ROOTFS_DIR/usr/lib/libfam.so.0.0.0 || error
-    ln -sf libfam.so.0.0.0 $ROOTFS_DIR/usr/lib/libfam.so.0
-    ln -sf libfam.so.0.0.0 $ROOTFS_DIR/usr/lib/libfam.so
-    $STRIP $ROOTFS_DIR/usr/lib/libfam.so.0.0.0
-    
-    $INSTALL -D -m 644 libgamin/.libs/libgamin-1.so.0.1.10 $ROOTFS_DIR/usr/lib/libgamin-1.so.0.1.10 || error
-    ln -sf libgamin-1.so.0.1.10 $ROOTFS_DIR/usr/lib/libgamin-1.so.0
-    ln -sf libgamin-1.so.0.1.10 $ROOTFS_DIR/usr/lib/libgamin-1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libgamin-1.so.0.1.10
-    
-    $INSTALL -D -m 755 server/gam_server $ROOTFS_DIR/usr/lib/gamin/gam_server || error
-    $STRIP $ROOTFS_DIR/usr/lib/gamin/gam_server
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/gamin.installed"

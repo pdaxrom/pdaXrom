@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXTST_VERSION=1.0.3
+LIBXTST_VERSION=1.2.0
 LIBXTST=libXtst-${LIBXTST_VERSION}.tar.bz2
 LIBXTST_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXTST_DIR=$BUILD_DIR/libXtst-${LIBXTST_VERSION}

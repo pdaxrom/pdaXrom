@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXEVIE_VERSION=1.0.2
+LIBXEVIE_VERSION=1.0.3
 LIBXEVIE=libXevie-${LIBXEVIE_VERSION}.tar.bz2
 LIBXEVIE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXEVIE_DIR=$BUILD_DIR/libXevie-${LIBXEVIE_VERSION}

@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LXDE_LXRANDR=lxrandr-0.1.tar.gz
+LXDE_LXRANDR_VERSION=0.1.1
+LXDE_LXRANDR=lxrandr-${LXDE_LXRANDR_VERSION}.tar.gz
 LXDE_LXRANDR_MIRROR=http://downloads.sourceforge.net/lxde
-LXDE_LXRANDR_DIR=$BUILD_DIR/lxrandr-0.1
+LXDE_LXRANDR_DIR=$BUILD_DIR/lxrandr-${LXDE_LXRANDR_VERSION}
 LXDE_LXRANDR_ENV="$CROSS_ENV_AC"
 
 build_lxde_lxrandr() {
@@ -31,13 +32,12 @@ build_lxde_lxrandr() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    $INSTALL -D -m 755 src/lxrandr $ROOTFS_DIR/usr/bin/lxrandr || error
-    $STRIP $ROOTFS_DIR/usr/bin/lxrandr || error
-    
-    $INSTALL -D -m 644 data/lxrandr.desktop $ROOTFS_DIR/usr/share/applications/lxrandr.desktop || error
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/lxde_lxrandr.installed"

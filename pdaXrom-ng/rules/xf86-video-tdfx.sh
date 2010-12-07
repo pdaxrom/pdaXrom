@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_TDFX=xf86-video-tdfx-1.4.1.tar.bz2
+XF86_VIDEO_TDFX_VERSION=1.4.3
+XF86_VIDEO_TDFX=xf86-video-tdfx-${XF86_VIDEO_TDFX_VERSION}.tar.bz2
 XF86_VIDEO_TDFX_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_TDFX_DIR=$BUILD_DIR/xf86-video-tdfx-1.4.1
+XF86_VIDEO_TDFX_DIR=$BUILD_DIR/xf86-video-tdfx-${XF86_VIDEO_TDFX_VERSION}
 XF86_VIDEO_TDFX_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_tdfx() {

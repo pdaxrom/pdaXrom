@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_SAVAGE=xf86-video-savage-2.2.1.tar.bz2
+XF86_VIDEO_SAVAGE_VERSION=2.3.2
+XF86_VIDEO_SAVAGE=xf86-video-savage-${XF86_VIDEO_SAVAGE_VERSION}.tar.bz2
 XF86_VIDEO_SAVAGE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_SAVAGE_DIR=$BUILD_DIR/xf86-video-savage-2.2.1
+XF86_VIDEO_SAVAGE_DIR=$BUILD_DIR/xf86-video-savage-${XF86_VIDEO_SAVAGE_VERSION}
 XF86_VIDEO_SAVAGE_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_savage() {

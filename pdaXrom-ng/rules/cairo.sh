@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-CAIRO_VERSION=1.8.8
+CAIRO_VERSION=1.10.0
 CAIRO=cairo-${CAIRO_VERSION}.tar.gz
 CAIRO_MIRROR=http://cairographics.org/releases
 CAIRO_DIR=$BUILD_DIR/cairo-${CAIRO_VERSION}

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XPROTO_VERSION=7.0.16
+XPROTO_VERSION=7.0.19
 XPROTO=xproto-${XPROTO_VERSION}.tar.bz2
 XPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XPROTO_DIR=$BUILD_DIR/xproto-${XPROTO_VERSION}

@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-PCMANFM_VERSION=0.5
+PCMANFM_VERSION=0.9.8
 PCMANFM=pcmanfm-${PCMANFM_VERSION}.tar.gz
-PCMANFM_MIRROR=http://downloads.sourceforge.net/pcmanfm
+PCMANFM_MIRROR=http://ovh.dl.sourceforge.net/project/pcmanfm/PCManFM%20%2B%20Libfm%20%28tarball%20release%29/PCManFM
 PCMANFM_DIR=$BUILD_DIR/pcmanfm-${PCMANFM_VERSION}
 PCMANFM_ENV="$CROSS_ENV_AC"
 
@@ -45,15 +45,15 @@ build_pcmanfm() {
 
     make $MAKEARGS || error
 
-    install_rootfs_usr_bin src/pcmanfm
+    install_fakeroot_init
 
-    make DESTDIR=$ROOTFS_DIR install-data-am || error
+    install_fakeroot_finish || error
 
     update-mime-database $ROOTFS_DIR/usr/share/mime
 
-    $INSTALL -D -m 644 $GENERICFS_DIR/pcmanfm/main $ROOTFS_DIR/etc/xdg/pcmanfm/main || error
-    $INSTALL -D -m 644 $GENERICFS_DIR/wallpapers/ng-13.02.2009/3.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/3.jpg || error
-    ln -sf 3.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/default.jpg
+    #$INSTALL -D -m 644 $GENERICFS_DIR/pcmanfm/main $ROOTFS_DIR/etc/xdg/pcmanfm/main || error
+    #$INSTALL -D -m 644 $GENERICFS_DIR/wallpapers/ng-13.02.2009/3.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/3.jpg || error
+    #ln -sf 3.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/default.jpg
 
     $INSTALL -D -m 644 $GENERICFS_DIR/defaults.list $ROOTFS_DIR/usr/share/applications/defaults.list || error
 
