@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XCHAT=xchat-2.8.6.tar.bz2
+XCHAT_VERSION=2.8.8
+XCHAT=xchat-${XCHAT_VERSION}.tar.bz2
 XCHAT_MIRROR=http://downloads.sourceforge.net/xchat
-XCHAT_DIR=$BUILD_DIR/xchat-2.8.6
+XCHAT_DIR=$BUILD_DIR/xchat-${XCHAT_VERSION}
 XCHAT_ENV="$CROSS_ENV_AC"
 
 build_xchat() {
@@ -38,13 +39,13 @@ build_xchat() {
 	    || error
     ) || error "configure"
 
-    sed -i 's/GtkType/GType/' src/fe-gtk/xtext.{c,h}
-    
+#    sed -i 's/GtkType/GType/' src/fe-gtk/xtext.{c,h}
+
     make $MAKEARGS || error
 
     $INSTALL -D -m 755 src/fe-gtk/xchat $ROOTFS_DIR/usr/bin/xchat || error
     $STRIP $ROOTFS_DIR/usr/bin/xchat
-    
+
     $INSTALL -D -m 644 xchat.desktop $ROOTFS_DIR/usr/share/applications/xchat.desktop || error
     $INSTALL -D -m 644 xchat.png     $ROOTFS_DIR/usr/share/pixmaps/xchat.png || error
 

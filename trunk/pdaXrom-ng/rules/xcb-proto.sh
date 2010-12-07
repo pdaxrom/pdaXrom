@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XCB_PROTO_VERSION=1.4
+XCB_PROTO_VERSION=1.6
 XCB_PROTO=xcb-proto-${XCB_PROTO_VERSION}.tar.bz2
 XCB_PROTO_MIRROR=http://xcb.freedesktop.org/dist
 XCB_PROTO_DIR=$BUILD_DIR/xcb-proto-${XCB_PROTO_VERSION}

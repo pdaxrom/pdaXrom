@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-DRI2PROTO_VERSION=2.1
+DRI2PROTO_VERSION=2.3
 DRI2PROTO=dri2proto-${DRI2PROTO_VERSION}.tar.bz2
 DRI2PROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 DRI2PROTO_DIR=$BUILD_DIR/dri2proto-${DRI2PROTO_VERSION}

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXFIXES_VERSION=4.0.3
+LIBXFIXES_VERSION=4.0.5
 LIBXFIXES=libXfixes-${LIBXFIXES_VERSION}.tar.bz2
 LIBXFIXES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXFIXES_DIR=$BUILD_DIR/libXfixes-${LIBXFIXES_VERSION}

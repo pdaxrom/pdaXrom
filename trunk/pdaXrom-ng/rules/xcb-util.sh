@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XCB_UTIL_VERSION=0.3.3
+XCB_UTIL_VERSION=0.3.6
 XCB_UTIL=xcb-util-${XCB_UTIL_VERSION}.tar.bz2
 XCB_UTIL_MIRROR=http://xcb.freedesktop.org/dist
 XCB_UTIL_DIR=$BUILD_DIR/xcb-util-${XCB_UTIL_VERSION}

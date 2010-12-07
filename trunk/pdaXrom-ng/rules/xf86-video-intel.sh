@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_INTEL_VERSION=2.9.0
+XF86_VIDEO_INTEL_VERSION=2.13.0
 XF86_VIDEO_INTEL=xf86-video-intel-${XF86_VIDEO_INTEL_VERSION}.tar.bz2
 XF86_VIDEO_INTEL_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_INTEL_DIR=$BUILD_DIR/xf86-video-intel-${XF86_VIDEO_INTEL_VERSION}
@@ -32,11 +32,12 @@ build_xf86_video_intel() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    $INSTALL -D -m 644 src/.libs/intel_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/intel_drv.so || error
-    $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/intel_drv.so
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/xf86_video_intel-${XF86_VIDEO_INTEL_VERSION}.installed"

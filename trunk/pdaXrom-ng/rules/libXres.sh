@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXRES_VERSION=1.0.3
+LIBXRES_VERSION=1.0.5
 LIBXRES=libXres-${LIBXRES_VERSION}.tar.bz2
 LIBXRES_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXRES_DIR=$BUILD_DIR/libXres-${LIBXRES_VERSION}

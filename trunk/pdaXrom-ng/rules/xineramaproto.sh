@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XINERAMAPROTO_VERSION=1.1.2
+XINERAMAPROTO_VERSION=1.2
 XINERAMAPROTO=xineramaproto-${XINERAMAPROTO_VERSION}.tar.bz2
 XINERAMAPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XINERAMAPROTO_DIR=$BUILD_DIR/xineramaproto-${XINERAMAPROTO_VERSION}

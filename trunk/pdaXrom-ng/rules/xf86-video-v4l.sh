@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_V4L=xf86-video-v4l-0.2.0.tar.bz2
+XF86_VIDEO_V4L_VERSION=0.2.0
+XF86_VIDEO_V4L=xf86-video-v4l-${XF86_VIDEO_V4L_VERSION}.tar.bz2
 XF86_VIDEO_V4L_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_V4L_DIR=$BUILD_DIR/xf86-video-v4l-0.2.0
+XF86_VIDEO_V4L_DIR=$BUILD_DIR/xf86-video-v4l-${XF86_VIDEO_V4L_VERSION}
 XF86_VIDEO_V4L_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_v4l() {

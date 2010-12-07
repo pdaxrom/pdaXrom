@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_VIA=xf86-video-via-0.2.2.tar.bz2
+XF86_VIDEO_VIA_VERSION=0.2.2
+XF86_VIDEO_VIA=xf86-video-via-${XF86_VIDEO_VIA_VERSION}.tar.bz2
 XF86_VIDEO_VIA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_VIA_DIR=$BUILD_DIR/xf86-video-via-0.2.2
+XF86_VIDEO_VIA_DIR=$BUILD_DIR/xf86-video-via-${XF86_VIDEO_VIA_VERSION}
 XF86_VIDEO_VIA_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_via() {

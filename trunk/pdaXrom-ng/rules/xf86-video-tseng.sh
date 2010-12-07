@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_TSENG=xf86-video-tseng-1.2.1.tar.bz2
+XF86_VIDEO_TSENG_VERSION=1.2.4
+XF86_VIDEO_TSENG=xf86-video-tseng-${XF86_VIDEO_TSENG_VERSION}.tar.bz2
 XF86_VIDEO_TSENG_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_TSENG_DIR=$BUILD_DIR/xf86-video-tseng-1.2.1
+XF86_VIDEO_TSENG_DIR=$BUILD_DIR/xf86-video-tseng-${XF86_VIDEO_TSENG_VERSION}
 XF86_VIDEO_TSENG_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_tseng() {

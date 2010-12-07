@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-FIXESPROTO_VERSION=4.0
+FIXESPROTO_VERSION=4.1.2
 FIXESPROTO=fixesproto-${FIXESPROTO_VERSION}.tar.bz2
 FIXESPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 FIXESPROTO_DIR=$BUILD_DIR/fixesproto-${FIXESPROTO_VERSION}

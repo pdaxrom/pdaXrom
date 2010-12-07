@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_S3VIRGE=xf86-video-s3virge-1.10.2.tar.bz2
+XF86_VIDEO_S3VIRGE_VERSION=1.10.4
+XF86_VIDEO_S3VIRGE=xf86-video-s3virge-${XF86_VIDEO_S3VIRGE_VERSION}.tar.bz2
 XF86_VIDEO_S3VIRGE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_S3VIRGE_DIR=$BUILD_DIR/xf86-video-s3virge-1.10.2
+XF86_VIDEO_S3VIRGE_DIR=$BUILD_DIR/xf86-video-s3virge-${XF86_VIDEO_S3VIRGE_VERSION}
 XF86_VIDEO_S3VIRGE_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_s3virge() {

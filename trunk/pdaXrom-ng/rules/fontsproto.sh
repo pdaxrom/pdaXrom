@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-FONTSPROTO_VERSION=2.1.0
+FONTSPROTO_VERSION=2.1.1
 FONTSPROTO=fontsproto-${FONTSPROTO_VERSION}.tar.bz2
 FONTSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 FONTSPROTO_DIR=$BUILD_DIR/fontsproto-${FONTSPROTO_VERSION}

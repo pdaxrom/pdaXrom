@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBICE_VERSION=1.0.6
+LIBICE_VERSION=1.0.7
 LIBICE=libICE-${LIBICE_VERSION}.tar.bz2
 LIBICE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBICE_DIR=$BUILD_DIR/libICE-${LIBICE_VERSION}

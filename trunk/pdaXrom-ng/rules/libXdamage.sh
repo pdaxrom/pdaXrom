@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXDAMAGE_VERSION=1.1.1
+LIBXDAMAGE_VERSION=1.1.3
 LIBXDAMAGE=libXdamage-${LIBXDAMAGE_VERSION}.tar.bz2
 LIBXDAMAGE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXDAMAGE_DIR=$BUILD_DIR/libXdamage-${LIBXDAMAGE_VERSION}

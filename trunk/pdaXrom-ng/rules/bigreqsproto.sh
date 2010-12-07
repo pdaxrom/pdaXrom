@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-BIGREQSPROTO_VERSION=1.1.0
+BIGREQSPROTO_VERSION=1.1.1
 BIGREQSPROTO=bigreqsproto-${BIGREQSPROTO_VERSION}.tar.bz2
 BIGREQSPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 BIGREQSPROTO_DIR=$BUILD_DIR/bigreqsproto-${BIGREQSPROTO_VERSION}

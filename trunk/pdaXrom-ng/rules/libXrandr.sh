@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXRANDR_VERSION=1.3.0
+LIBXRANDR_VERSION=1.3.1
 LIBXRANDR=libXrandr-${LIBXRANDR_VERSION}.tar.bz2
 LIBXRANDR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXRANDR_DIR=$BUILD_DIR/libXrandr-${LIBXRANDR_VERSION}

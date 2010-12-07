@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_RADEONHD=xf86-video-radeonhd-1.2.4.tar.bz2
+XF86_VIDEO_RADEONHD_VERSION=1.3.0
+XF86_VIDEO_RADEONHD=xf86-video-radeonhd-${XF86_VIDEO_RADEONHD_VERSION}.tar.bz2
 XF86_VIDEO_RADEONHD_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_RADEONHD_DIR=$BUILD_DIR/xf86-video-radeonhd-1.2.4
+XF86_VIDEO_RADEONHD_DIR=$BUILD_DIR/xf86-video-radeonhd-${XF86_VIDEO_RADEONHD_VERSION}
 XF86_VIDEO_RADEONHD_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_radeonhd() {
@@ -34,8 +35,12 @@ build_xf86_video_radeonhd() {
     
     make $MAKEARGS || error
 
-    $INSTALL -D -m 644 src/.libs/radeonhd_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/radeonhd_drv.so || error
-    $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/radeonhd_drv.so
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
+
+    #$INSTALL -D -m 644 src/.libs/radeonhd_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/radeonhd_drv.so || error
+    #$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/radeonhd_drv.so
 
     popd
     touch "$STATE_DIR/xf86_video_radeonhd.installed"

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXPM_VERSION=3.5.7
+LIBXPM_VERSION=3.5.9
 LIBXPM=libXpm-${LIBXPM_VERSION}.tar.bz2
 LIBXPM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXPM_DIR=$BUILD_DIR/libXpm-${LIBXPM_VERSION}

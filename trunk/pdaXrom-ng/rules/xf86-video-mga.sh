@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_MGA=xf86-video-mga-1.4.9.tar.bz2
+XF86_VIDEO_MGA_VERSION=1.4.13
+XF86_VIDEO_MGA=xf86-video-mga-${XF86_VIDEO_MGA_VERSION}.tar.bz2
 XF86_VIDEO_MGA_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_MGA_DIR=$BUILD_DIR/xf86-video-mga-1.4.9
+XF86_VIDEO_MGA_DIR=$BUILD_DIR/xf86-video-mga-${XF86_VIDEO_MGA_VERSION}
 XF86_VIDEO_MGA_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_mga() {

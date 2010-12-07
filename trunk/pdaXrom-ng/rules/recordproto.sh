@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-RECORDPROTO_VERSION=1.13.2
+RECORDPROTO_VERSION=1.14.1
 RECORDPROTO=recordproto-${RECORDPROTO_VERSION}.tar.bz2
 RECORDPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 RECORDPROTO_DIR=$BUILD_DIR/recordproto-${RECORDPROTO_VERSION}

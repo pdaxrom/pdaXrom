@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_AST_VERSION=0.88.8
+XF86_VIDEO_AST_VERSION=0.91.10
 XF86_VIDEO_AST=xf86-video-ast-${XF86_VIDEO_AST_VERSION}.tar.bz2
 XF86_VIDEO_AST_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_AST_DIR=$BUILD_DIR/xf86-video-ast-${XF86_VIDEO_AST_VERSION}

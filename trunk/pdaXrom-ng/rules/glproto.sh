@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-GLPROTO_VERSION=1.4.9
+GLPROTO_VERSION=1.4.12
 GLPROTO=glproto-${GLPROTO_VERSION}.tar.bz2
 GLPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 GLPROTO_DIR=$BUILD_DIR/glproto-${GLPROTO_VERSION}

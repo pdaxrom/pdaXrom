@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export BINUTILS_VERSION=2.20.51.0.9
-export GCC_VERSION=4.4.4
+export GCC_VERSION=4.4.5
 export KERNEL_VERSION=2.6.30
 
 #export DEFAULT_CPU="i686"

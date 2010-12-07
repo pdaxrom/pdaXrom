@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_CYRIX=xf86-video-cyrix-1.1.0.tar.bz2
+XF86_VIDEO_CYRIX_VERSION=1.1.0
+XF86_VIDEO_CYRIX=xf86-video-cyrix-${XF86_VIDEO_CYRIX_VERSION}.tar.bz2
 XF86_VIDEO_CYRIX_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_CYRIX_DIR=$BUILD_DIR/xf86-video-cyrix-1.1.0
+XF86_VIDEO_CYRIX_DIR=$BUILD_DIR/xf86-video-cyrix-${XF86_VIDEO_CYRIX_VERSION}
 XF86_VIDEO_CYRIX_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_cyrix() {

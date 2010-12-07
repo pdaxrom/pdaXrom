@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBSM_VERSION=1.1.1
+LIBSM_VERSION=1.2.0
 LIBSM=libSM-${LIBSM_VERSION}.tar.bz2
 LIBSM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBSM_DIR=$BUILD_DIR/libSM-${LIBSM_VERSION}

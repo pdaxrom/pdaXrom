@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_VIDEO_ATI_VERSION=6.11.0
+XF86_VIDEO_ATI_VERSION=6.13.2
 XF86_VIDEO_ATI=xf86-video-ati-$XF86_VIDEO_ATI_VERSION.tar.bz2
 XF86_VIDEO_ATI_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_VIDEO_ATI_DIR=$BUILD_DIR/xf86-video-ati-$XF86_VIDEO_ATI_VERSION
@@ -36,12 +36,17 @@ build_xf86_video_ati() {
     
     make $MAKEARGS || error
 
-    cd src/.libs
-    
-    for f in *_drv.so; do
-	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/lib/xorg/modules/drivers/$f || error
-	$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/$f
-    done
+
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
+
+    #cd src/.libs
+
+    #for f in *_drv.so; do
+#	$INSTALL -D -m 644 $f $ROOTFS_DIR/usr/lib/xorg/modules/drivers/$f || error
+#	$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/$f
+    #done
 
     popd
     touch "$STATE_DIR/xf86_video_ati.installed"

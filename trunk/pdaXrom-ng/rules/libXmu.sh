@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXMU_VERSION=1.0.5
+LIBXMU_VERSION=1.1.0
 LIBXMU=libXmu-${LIBXMU_VERSION}.tar.bz2
 LIBXMU_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXMU_DIR=$BUILD_DIR/libXmu-${LIBXMU_VERSION}

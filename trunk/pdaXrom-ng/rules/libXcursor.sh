@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXCURSOR_VERSION=1.1.10
+LIBXCURSOR_VERSION=1.1.11
 LIBXCURSOR=libXcursor-${LIBXCURSOR_VERSION}.tar.bz2
 LIBXCURSOR_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXCURSOR_DIR=$BUILD_DIR/libXcursor-${LIBXCURSOR_VERSION}

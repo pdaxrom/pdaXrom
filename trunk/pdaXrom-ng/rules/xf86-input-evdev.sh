@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_INPUT_EVDEV_VERSION=2.2.2
+XF86_INPUT_EVDEV_VERSION=2.5.0
 XF86_INPUT_EVDEV=xf86-input-evdev-${XF86_INPUT_EVDEV_VERSION}.tar.bz2
 XF86_INPUT_EVDEV_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_INPUT_EVDEV_DIR=$BUILD_DIR/xf86-input-evdev-${XF86_INPUT_EVDEV_VERSION}

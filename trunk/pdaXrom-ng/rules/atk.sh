@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-ATK_VERSION=1.28.0
+ATK_VERSION=1.32.0
 ATK=atk-${ATK_VERSION}.tar.bz2
-ATK_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.28
+ATK_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.32
 ATK_DIR=$BUILD_DIR/atk-${ATK_VERSION}
 ATK_ENV="$CROSS_ENV_AC"
 

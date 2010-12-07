@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_CHIPS=xf86-video-chips-1.2.1.tar.bz2
+XF86_VIDEO_CHIPS_VERSION=1.2.3
+XF86_VIDEO_CHIPS=xf86-video-chips-${XF86_VIDEO_CHIPS_VERSION}.tar.bz2
 XF86_VIDEO_CHIPS_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_CHIPS_DIR=$BUILD_DIR/xf86-video-chips-1.2.1
+XF86_VIDEO_CHIPS_DIR=$BUILD_DIR/xf86-video-chips-${XF86_VIDEO_CHIPS_VERSION}
 XF86_VIDEO_CHIPS_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_chips() {

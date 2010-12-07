@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_INPUT_MOUSE_VERSION=1.4.0
+XF86_INPUT_MOUSE_VERSION=1.6.0
 XF86_INPUT_MOUSE=xf86-input-mouse-${XF86_INPUT_MOUSE_VERSION}.tar.bz2
 XF86_INPUT_MOUSE_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_INPUT_MOUSE_DIR=$BUILD_DIR/xf86-input-mouse-${XF86_INPUT_MOUSE_VERSION}

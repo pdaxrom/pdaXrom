@@ -1,0 +1,50 @@
+#
+# packet template
+#
+# Copyright (C) 2010 by @AUTHOR@
+#
+# See CREDITS for details about who has contributed to this project.
+#
+# For further information about the pdaXrom project and license conditions
+# see the README file.
+#
+
+@PACKET@_GIT_VERSION=@VERSION@
+@PACKET@_GIT=@name@-${@PACKET@_GIT_VERSION}
+@PACKET@_GIT_URL=@URL@
+@PACKET@_GIT_DIR=$BUILD_DIR/@name@-${@PACKET@_GIT_VERSION}
+@PACKET@_GIT_ENV="$CROSS_ENV_AC"
+
+build_@packet@_git() {
+    test -e "$STATE_DIR/@packet@_git.installed" && return
+    banner "Build @name@"
+    download_git $@PACKET@_GIT_URL $@PACKET@_GIT $@PACKET@_GIT_VERSION
+    cp -R $SRC_DIR/$@PACKET@_GIT $@PACKET@_GIT_DIR
+    apply_patches $@PACKET@_GIT_DIR $@PACKET@_GIT
+    pushd $TOP_DIR
+    cd $@PACKET@_GIT_DIR
+    (
+    eval \
+	$CROSS_CONF_ENV \
+	$@PACKET@_GIT_ENV \
+	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
+	    --prefix=/usr \
+	    --sysconfdir=/etc \
+	    || error
+    ) || error "configure"
+
+    make $MAKEARGS || error
+
+    #install_sysroot_files || error
+
+    install_fakeroot_init
+
+    error "update install"
+
+    install_fakeroot_finish || error
+
+    popd
+    touch "$STATE_DIR/@packet@_git.installed"
+}
+
+build_@packet@_git

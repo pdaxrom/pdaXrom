@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GLIBMM_VERSION=2.22.1
+GLIBMM_VERSION=2.27.4
 GLIBMM=glibmm-${GLIBMM_VERSION}.tar.bz2
-GLIBMM_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.22
+GLIBMM_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.27
 GLIBMM_DIR=$BUILD_DIR/glibmm-${GLIBMM_VERSION}
 GLIBMM_ENV="$CROSS_ENV_AC"
 

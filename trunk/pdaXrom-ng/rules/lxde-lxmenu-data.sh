@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LXDE_LXMENU_DATA=lxmenu-data-0.1.tar.gz
+LXDE_LXMENU_DATA_VERSION=0.1.1
+LXDE_LXMENU_DATA=lxmenu-data-${LXDE_LXMENU_DATA_VERSION}.tar.gz
 LXDE_LXMENU_DATA_MIRROR=http://downloads.sourceforge.net/lxde
-LXDE_LXMENU_DATA_DIR=$BUILD_DIR/lxmenu-data-0.1
+LXDE_LXMENU_DATA_DIR=$BUILD_DIR/lxmenu-data-${LXDE_LXMENU_DATA_VERSION}
 LXDE_LXMENU_DATA_ENV="$CROSS_ENV_AC"
 
 build_lxde_lxmenu_data() {
@@ -32,10 +33,11 @@ build_lxde_lxmenu_data() {
 	    --x-includes=$TARGET_INC \
 	    --x-libraries=$TARGET_LIB
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make $MAKEARGS DESTDIR=$ROOTFS_DIR install || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/lxde_lxmenu_data.installed"

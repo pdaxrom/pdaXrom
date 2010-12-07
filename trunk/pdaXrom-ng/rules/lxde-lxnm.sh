@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LXDE_LXNM=lxnm-0.2.2.tar.gz
+LXDE_LXNM_VERSION=0.2.2
+LXDE_LXNM=lxnm-${LXDE_LXNM_VERSION}.tar.gz
 LXDE_LXNM_MIRROR=http://downloads.sourceforge.net/lxde
-LXDE_LXNM_DIR=$BUILD_DIR/lxnm-0.2.2
+LXDE_LXNM_DIR=$BUILD_DIR/lxnm-${LXDE_LXNM_VERSION}
 LXDE_LXNM_ENV="$CROSS_ENV_AC"
 
 build_lxde_lxnm() {
@@ -31,13 +32,12 @@ build_lxde_lxnm() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make -C data DESTDIR=$ROOTFS_DIR/ install || error
-    chmod 755 $ROOTFS_DIR/usr/share/lxnm/*.sh
-    $INSTALL -D -m 755 src/lxnm $ROOTFS_DIR/usr/sbin/lxnm || error
-    $STRIP $ROOTFS_DIR/usr/sbin/lxnm
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/lxde_lxnm.installed"

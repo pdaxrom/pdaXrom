@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-DAMAGEPROTO_VERSION=1.2.0
+DAMAGEPROTO_VERSION=1.2.1
 DAMAGEPROTO=damageproto-${DAMAGEPROTO_VERSION}.tar.bz2
 DAMAGEPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 DAMAGEPROTO_DIR=$BUILD_DIR/damageproto-${DAMAGEPROTO_VERSION}

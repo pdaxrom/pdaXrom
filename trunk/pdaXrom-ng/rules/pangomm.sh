@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-PANGOMM_VERSION=2.26.0
+PANGOMM_VERSION=2.26.2
 PANGOMM=pangomm-${PANGOMM_VERSION}.tar.bz2
 PANGOMM_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pangomm/2.26
 PANGOMM_DIR=$BUILD_DIR/pangomm-${PANGOMM_VERSION}

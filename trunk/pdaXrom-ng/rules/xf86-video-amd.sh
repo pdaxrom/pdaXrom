@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_AMD=xf86-video-amd-2.7.7.7.tar.bz2
+XF86_VIDEO_AMD_VERSION=2.7.7.7
+XF86_VIDEO_AMD=xf86-video-amd-${XF86_VIDEO_AMD_VERSION}.tar.bz2
 XF86_VIDEO_AMD_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_AMD_DIR=$BUILD_DIR/xf86-video-amd-2.7.7.7
+XF86_VIDEO_AMD_DIR=$BUILD_DIR/xf86-video-amd-${XF86_VIDEO_AMD_VERSION}
 XF86_VIDEO_AMD_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_amd() {
@@ -34,11 +35,15 @@ build_xf86_video_amd() {
     
     make $MAKEARGS || error
 
-    $INSTALL -D -m 644 src/.libs/amd_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/amd_drv.so || error
-    $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/amd_drv.so
+    install_fakeroot_init
 
-    $INSTALL -D -m 644 src/.libs/ztv_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/ztv_drv.so || error
-    $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/ztv_drv.so
+    install_fakeroot_finish || error
+
+    #$INSTALL -D -m 644 src/.libs/amd_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/amd_drv.so || error
+    #$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/amd_drv.so
+
+    #$INSTALL -D -m 644 src/.libs/ztv_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/ztv_drv.so || error
+    #$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/ztv_drv.so
 
     popd
     touch "$STATE_DIR/xf86_video_amd.installed"

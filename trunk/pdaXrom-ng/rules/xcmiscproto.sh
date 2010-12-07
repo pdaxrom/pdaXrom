@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XCMISCPROTO_VERSION=1.2.0
+XCMISCPROTO_VERSION=1.2.1
 XCMISCPROTO=xcmiscproto-${XCMISCPROTO_VERSION}.tar.bz2
 XCMISCPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XCMISCPROTO_DIR=$BUILD_DIR/xcmiscproto-${XCMISCPROTO_VERSION}

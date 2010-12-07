@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXXF86VM_VERSION=1.0.2
+LIBXXF86VM_VERSION=1.1.1
 LIBXXF86VM=libXxf86vm-${LIBXXF86VM_VERSION}.tar.bz2
 LIBXXF86VM_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXXF86VM_DIR=$BUILD_DIR/libXxf86vm-${LIBXXF86VM_VERSION}

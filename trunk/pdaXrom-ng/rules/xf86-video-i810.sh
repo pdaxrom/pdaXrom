@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_I810=xf86-video-i810-1.7.4.tar.bz2
+XF86_VIDEO_I810_VERSION=1.7.4
+XF86_VIDEO_I810=xf86-video-i810-${XF86_VIDEO_I810_VERSION}.tar.bz2
 XF86_VIDEO_I810_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_I810_DIR=$BUILD_DIR/xf86-video-i810-1.7.4
+XF86_VIDEO_I810_DIR=$BUILD_DIR/xf86-video-i810-${XF86_VIDEO_I810_VERSION}
 XF86_VIDEO_I810_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_i810() {

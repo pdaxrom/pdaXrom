@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-PANGO_VERSION=1.26.0
+PANGO_VERSION=1.28.3
 PANGO=pango-${PANGO_VERSION}.tar.bz2
-PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.26
+PANGO_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/pango/1.28
 PANGO_DIR=$BUILD_DIR/pango-${PANGO_VERSION}
 PANGO_ENV="$CROSS_ENV_AC CC=${CROSS}gcc CXX=${CROSS}g++ AS=${CROSS}as LD=${CROSS}ld AR=${CROSS}ar RANLIB=${CROSS}ranlib"
 PANGO_MODULES="basic-x,basic-fc"

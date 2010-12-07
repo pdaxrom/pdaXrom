@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_OPENCHROME=xf86-video-openchrome-0.2.904.tar.bz2
+XF86_VIDEO_OPENCHROME_VERSION=0.2.904
+XF86_VIDEO_OPENCHROME=xf86-video-openchrome-${XF86_VIDEO_OPENCHROME_VERSION}.tar.bz2
 XF86_VIDEO_OPENCHROME_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_OPENCHROME_DIR=$BUILD_DIR/xf86-video-openchrome-0.2.904
+XF86_VIDEO_OPENCHROME_DIR=$BUILD_DIR/xf86-video-openchrome-${XF86_VIDEO_OPENCHROME_VERSION}
 XF86_VIDEO_OPENCHROME_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_openchrome() {
@@ -34,18 +35,22 @@ build_xf86_video_openchrome() {
     
     make $MAKEARGS || error
 
-    $INSTALL -D -m 644 src/.libs/openchrome_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/openchrome_drv.so || error
-    $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/openchrome_drv.so
+    install_fakeroot_init
 
-    $INSTALL -D -m 644 libxvmc/.libs/libchromeXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMC.so.1.0.0 || error
-    ln -sf libchromeXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMC.so.1
-    ln -sf libchromeXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMC.so
-    $STRIP $ROOTFS_DIR/usr/lib/libchromeXvMC.so.1.0.0
-    
-    $INSTALL -D -m 644 libxvmc/.libs/libchromeXvMCPro.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so.1.0.0 || error
-    ln -sf libchromeXvMCPro.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so.1
-    ln -sf libchromeXvMCPro.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so
-    $STRIP $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so.1.0.0
+    install_fakeroot_finish || error
+
+    #$INSTALL -D -m 644 src/.libs/openchrome_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/openchrome_drv.so || error
+    #$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/openchrome_drv.so
+
+    #$INSTALL -D -m 644 libxvmc/.libs/libchromeXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMC.so.1.0.0 || error
+    #ln -sf libchromeXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMC.so.1
+    #ln -sf libchromeXvMC.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMC.so
+    #$STRIP $ROOTFS_DIR/usr/lib/libchromeXvMC.so.1.0.0
+
+    #$INSTALL -D -m 644 libxvmc/.libs/libchromeXvMCPro.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so.1.0.0 || error
+    #ln -sf libchromeXvMCPro.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so.1
+    #ln -sf libchromeXvMCPro.so.1.0.0 $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so
+    #$STRIP $ROOTFS_DIR/usr/lib/libchromeXvMCPro.so.1.0.0
 
     popd
     touch "$STATE_DIR/xf86_video_openchrome.installed"

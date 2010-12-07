@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_I128=xf86-video-i128-1.3.1.tar.bz2
+XF86_VIDEO_I128_VERSION=1.3.4
+XF86_VIDEO_I128=xf86-video-i128-${XF86_VIDEO_I128_VERSION}.tar.bz2
 XF86_VIDEO_I128_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_I128_DIR=$BUILD_DIR/xf86-video-i128-1.3.1
+XF86_VIDEO_I128_DIR=$BUILD_DIR/xf86-video-i128-${XF86_VIDEO_I128_VERSION}
 XF86_VIDEO_I128_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_i128() {

@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XF86_INPUT_VOID_VERSION=1.2.0
+XF86_INPUT_VOID_VERSION=1.3.1
 XF86_INPUT_VOID=xf86-input-void-${XF86_INPUT_VOID_VERSION}.tar.bz2
 XF86_INPUT_VOID_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
 XF86_INPUT_VOID_DIR=$BUILD_DIR/xf86-input-void-${XF86_INPUT_VOID_VERSION}

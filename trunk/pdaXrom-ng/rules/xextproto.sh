@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-XEXTPROTO_VERSION=7.0.5
+XEXTPROTO_VERSION=7.1.2
 XEXTPROTO=xextproto-${XEXTPROTO_VERSION}.tar.bz2
 XEXTPROTO_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/proto
 XEXTPROTO_DIR=$BUILD_DIR/xextproto-${XEXTPROTO_VERSION}

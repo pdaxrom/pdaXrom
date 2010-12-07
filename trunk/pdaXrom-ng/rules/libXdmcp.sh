@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBXDMCP_VERSION=1.0.3
+LIBXDMCP_VERSION=1.1.0
 LIBXDMCP=libXdmcp-${LIBXDMCP_VERSION}.tar.bz2
 LIBXDMCP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/lib
 LIBXDMCP_DIR=$BUILD_DIR/libXdmcp-${LIBXDMCP_VERSION}

@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-GTKMM_VERSION=2.18.1
+GTKMM_VERSION=2.22.0
 GTKMM=gtkmm-${GTKMM_VERSION}.tar.bz2
-GTKMM_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/gtkmm/2.18
+GTKMM_MIRROR=http://ftp.gnome.org/pub/GNOME/sources/gtkmm/2.22
 GTKMM_DIR=$BUILD_DIR/gtkmm-${GTKMM_VERSION}
 GTKMM_ENV="$CROSS_ENV_AC"
 

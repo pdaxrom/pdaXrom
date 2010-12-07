@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-XF86_VIDEO_XGIXP=xf86-video-xgixp-1.7.99.3.tar.bz2
+XF86_VIDEO_XGIXP_VERSION=1.8.0
+XF86_VIDEO_XGIXP=xf86-video-xgixp-${XF86_VIDEO_XGIXP_VERSION}.tar.bz2
 XF86_VIDEO_XGIXP_MIRROR=ftp://ftp.freedesktop.org/pub/xorg/individual/driver
-XF86_VIDEO_XGIXP_DIR=$BUILD_DIR/xf86-video-xgixp-1.7.99.3
+XF86_VIDEO_XGIXP_DIR=$BUILD_DIR/xf86-video-xgixp-${XF86_VIDEO_XGIXP_VERSION}
 XF86_VIDEO_XGIXP_ENV="$CROSS_ENV_AC"
 
 build_xf86_video_xgixp() {
