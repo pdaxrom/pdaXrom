@@ -1,6 +1,6 @@
 . $SETS_DIR/packages-gconf.inc
 
-if [ "$USE_LOGINMANAGER" = "yes" ]; then
+if [ "$USE_LOGINMANAGER" = "slim" ]; then
     . $RULES_DIR/target-bash.sh
     . $RULES_DIR/slim.sh
 fi

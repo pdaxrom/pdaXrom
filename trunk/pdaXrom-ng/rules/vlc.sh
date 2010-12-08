@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-VLC_VERSION=1.0.4
+VLC_VERSION=1.1.5
 VLC=vlc-${VLC_VERSION}.tar.bz2
-VLC_MIRROR=http://download.videolan.org/pub/videolan/vlc/1.0.4
+VLC_MIRROR=http://download.videolan.org/pub/videolan/vlc/1.1.5
 VLC_DIR=$BUILD_DIR/vlc-${VLC_VERSION}
 VLC_ENV="$CROSS_ENV_AC"
 
@@ -38,6 +38,7 @@ build_vlc() {
 	    --disable-jack \
 	    --enable-skins2 \
 	    --enable-qt4 \
+	    --disable-lua \
 	    || error
     ) || error "configure"
 

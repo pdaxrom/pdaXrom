@@ -1,0 +1,14 @@
+--- s/src/Makefile.in-	2010-12-08 17:38:59.439360066 +0600
++++ s/src/Makefile.in	2010-12-08 17:45:58.559760007 +0600
+@@ -371,9 +371,9 @@
+ pcmanfm$(EXEEXT): $(pcmanfm_OBJECTS) $(pcmanfm_DEPENDENCIES) 
+ 	@rm -f pcmanfm$(EXEEXT)
+ 	$(pcmanfm_LINK) $(pcmanfm_OBJECTS) $(pcmanfm_LDADD) $(LIBS)
+-xml-purge$(EXEEXT): $(xml_purge_OBJECTS) $(xml_purge_DEPENDENCIES) 
++xml-purge$(EXEEXT):
+ 	@rm -f xml-purge$(EXEEXT)
+-	$(xml_purge_LINK) $(xml_purge_OBJECTS) $(xml_purge_LDADD) $(LIBS)
++	unset PKG_CONFIG_PATH; gcc xml-purge.c -o xml-purge$(EXEEXT) `pkg-config glib-2.0 --cflags --libs`
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)

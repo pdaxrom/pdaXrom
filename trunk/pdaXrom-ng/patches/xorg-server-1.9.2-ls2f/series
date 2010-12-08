@@ -1,0 +1,5 @@
+xorg-server-loongson-fix-smi-16bpp.patch
+xorg-server-1.9.0-loongson.patch
+xorg-server-disable-acpi.patch
+xorg-server-1.9-nouveau-default.patch
+1.7.5.902-fix-tslib-1.0-check.patch
