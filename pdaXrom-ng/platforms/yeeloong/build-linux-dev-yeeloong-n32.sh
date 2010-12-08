@@ -17,7 +17,7 @@ KERNEL_CONFIG=lemote2f_2.6.36
 CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
 
 USE_AUFS2="yes"
-USE_LOGINMANAGER="yes"
+USE_INITRAMFS="yes"
 USE_VLC_PLAYER="yes"
 
 . $SETS_DIR/packages-basic.inc
@@ -30,7 +30,7 @@ USE_VLC_PLAYER="yes"
 . $SETS_DIR/packages-xorg-xlib.inc
 . $SETS_DIR/packages-x-gtk2.inc
 
-. $SETS_DIR/packages-hal.inc
+. $SETS_DIR/packages-devicekit.inc
 
 . $SETS_DIR/packages-xorg-xserver.inc
 

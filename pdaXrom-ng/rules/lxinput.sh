@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-GPICVIEW_VERSION=0.2.1
-GPICVIEW=gpicview-${GPICVIEW_VERSION}.tar.gz
-GPICVIEW_MIRROR=http://downloads.sourceforge.net/project/lxde/GPicView%20%28image%20Viewer%29/GPicView%200.2.1
-GPICVIEW_DIR=$BUILD_DIR/gpicview-${GPICVIEW_VERSION}
-GPICVIEW_ENV="$CROSS_ENV_AC"
+LXINPUT_VERSION=0.3.0
+LXINPUT=lxinput-${LXINPUT_VERSION}.tar.gz
+LXINPUT_MIRROR=http://downloads.sourceforge.net/project/lxde/LXInput%20%28Kbd%20and%20amp_%20mouse%20config%29/LXInput%200.3
+LXINPUT_DIR=$BUILD_DIR/lxinput-${LXINPUT_VERSION}
+LXINPUT_ENV="$CROSS_ENV_AC"
 
-build_gpicview() {
-    test -e "$STATE_DIR/gpicview.installed" && return
-    banner "Build gpicview"
-    download $GPICVIEW_MIRROR $GPICVIEW
-    extract $GPICVIEW
-    apply_patches $GPICVIEW_DIR $GPICVIEW
+build_lxinput() {
+    test -e "$STATE_DIR/lxinput.installed" && return
+    banner "Build lxinput"
+    download $LXINPUT_MIRROR $LXINPUT
+    extract $LXINPUT
+    apply_patches $LXINPUT_DIR $LXINPUT
     pushd $TOP_DIR
-    cd $GPICVIEW_DIR
+    cd $LXINPUT_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$GPICVIEW_ENV \
+	$LXINPUT_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_gpicview() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/gpicview.installed"
+    touch "$STATE_DIR/lxinput.installed"
 }
 
-build_gpicview
+build_lxinput

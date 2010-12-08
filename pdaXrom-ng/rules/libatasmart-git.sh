@@ -34,6 +34,7 @@ build_libatasmart_git() {
 	    || error
     ) || error "configure"
 
+    make strpool CC=gcc || error
     make $MAKEARGS || error
 
     install_sysroot_files || error

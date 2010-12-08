@@ -7,8 +7,20 @@
 . $RULES_DIR/lxde-lxnm.sh
 . $RULES_DIR/lxde-lxrandr.sh
 . $RULES_DIR/lxde-lxsession.sh
+. $RULES_DIR/lxsession-edit.sh
 . $RULES_DIR/libvte.sh
 . $RULES_DIR/lxde-lxterminal.sh
+
+. $RULES_DIR/lxinput.sh
+. $RULES_DIR/lxappearance.sh
+. $RULES_DIR/lxshortcut.sh
+. $RULES_DIR/lxtask.sh
+. $RULES_DIR/lxde-common.sh
+. $RULES_DIR/lxde-icon-theme.sh
+
+if [ "$USE_LOGINMANAGER" = "lxdm" ]; then
+    . $RULES_DIR/lxdm.sh
+fi
 
 . $RULES_DIR/minidesk-utils.sh
 . $SETS_DIR/packages-net-addons.inc
@@ -23,5 +35,5 @@
 
 . $RULES_DIR/dancesplash.sh
 
-. $RULES_DIR/lxde-tweaks.sh
+#. $RULES_DIR/lxde-tweaks.sh
 

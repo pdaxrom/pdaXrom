@@ -1,0 +1,11 @@
+--- xorg-server-1.7.3.902/fb/fb.h.orig	2010-02-27 11:45:17.000000000 +0800
++++ xorg-server-1.7.3.902/fb/fb.h	2010-02-27 10:29:09.000000000 +0800
+@@ -75,7 +75,7 @@
+ #define FBPREFIX(x) fb##x
+ #define WRITE(ptr, val) (*(ptr) = (val))
+ #define READ(ptr) (*(ptr))
+-#define MEMCPY_WRAPPED(dst, src, size) memcpy((dst), (src), (size))
++#define MEMCPY_WRAPPED(dst, src, size) memmove((dst), (src), (size))
+ #define MEMSET_WRAPPED(dst, val, size) memset((dst), (val), (size))
+ 
+ #endif

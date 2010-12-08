@@ -15,7 +15,7 @@ KERNEL_VERSION=2.6.36
 KERNEL_CONFIG=lemote2f_2.6.36
 
 USE_AUFS2="yes"
-USE_LOGINMANAGER="yes"
+USE_LOGINMANAGER="lxdm"
 USE_VLC_PLAYER="yes"
 
 . $SETS_DIR/packages-basic.inc

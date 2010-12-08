@@ -17,6 +17,7 @@ TARGET_BINUTILS_VERSION=2.20.51.0.9
 USE_SPLASH="yes"
 USE_INITRAMFS="yes"
 USE_AUFS2="yes"
+USE_LOGINMANAGER="lxdm"
 
 . $SETS_DIR/packages-basic.inc
 

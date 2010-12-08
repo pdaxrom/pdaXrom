@@ -1,0 +1,14 @@
+--- s/src/Makefile.in-	2010-12-08 17:50:56.549420701 +0600
++++ s/src/Makefile.in	2010-12-08 17:51:21.069338870 +0600
+@@ -345,9 +345,9 @@
+ lxappearance$(EXEEXT): $(lxappearance_OBJECTS) $(lxappearance_DEPENDENCIES) 
+ 	@rm -f lxappearance$(EXEEXT)
+ 	$(lxappearance_LINK) $(lxappearance_OBJECTS) $(lxappearance_LDADD) $(LIBS)
+-xml-purge$(EXEEXT): $(xml_purge_OBJECTS) $(xml_purge_DEPENDENCIES) 
++xml-purge$(EXEEXT):
+ 	@rm -f xml-purge$(EXEEXT)
+-	$(xml_purge_LINK) $(xml_purge_OBJECTS) $(xml_purge_LDADD) $(LIBS)
++	unset PKG_CONFIG_PATH; gcc xml-purge.c -o xml-purge$(EXEEXT) `pkg-config glib-2.0 --cflags --libs`
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)

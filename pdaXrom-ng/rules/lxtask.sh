@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-GPICVIEW_VERSION=0.2.1
-GPICVIEW=gpicview-${GPICVIEW_VERSION}.tar.gz
-GPICVIEW_MIRROR=http://downloads.sourceforge.net/project/lxde/GPicView%20%28image%20Viewer%29/GPicView%200.2.1
-GPICVIEW_DIR=$BUILD_DIR/gpicview-${GPICVIEW_VERSION}
-GPICVIEW_ENV="$CROSS_ENV_AC"
+LXTASK_VERSION=0.1.3
+LXTASK=lxtask-${LXTASK_VERSION}.tar.gz
+LXTASK_MIRROR=http://downloads.sourceforge.net/project/lxde/LXTask%20%28task%20manager%29/LXTask%200.1.3
+LXTASK_DIR=$BUILD_DIR/lxtask-${LXTASK_VERSION}
+LXTASK_ENV="$CROSS_ENV_AC"
 
-build_gpicview() {
-    test -e "$STATE_DIR/gpicview.installed" && return
-    banner "Build gpicview"
-    download $GPICVIEW_MIRROR $GPICVIEW
-    extract $GPICVIEW
-    apply_patches $GPICVIEW_DIR $GPICVIEW
+build_lxtask() {
+    test -e "$STATE_DIR/lxtask.installed" && return
+    banner "Build lxtask"
+    download $LXTASK_MIRROR $LXTASK
+    extract $LXTASK
+    apply_patches $LXTASK_DIR $LXTASK
     pushd $TOP_DIR
-    cd $GPICVIEW_DIR
+    cd $LXTASK_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$GPICVIEW_ENV \
+	$LXTASK_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_gpicview() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/gpicview.installed"
+    touch "$STATE_DIR/lxtask.installed"
 }
 
-build_gpicview
+build_lxtask

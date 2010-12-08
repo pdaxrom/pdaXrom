@@ -9,9 +9,10 @@
 # see the README file.
 #
 
-LXDE_LXMUSIC=lxmusic-0.2.3.tar.gz
+LXDE_LXMUSIC_VERSION=0.4.4
+LXDE_LXMUSIC=lxmusic-${LXDE_LXMUSIC_VERSION}.tar.gz
 LXDE_LXMUSIC_MIRROR=http://downloads.sourceforge.net/lxde
-LXDE_LXMUSIC_DIR=$BUILD_DIR/lxmusic-0.2.3
+LXDE_LXMUSIC_DIR=$BUILD_DIR/lxmusic-${LXDE_LXMUSIC_VERSION}
 LXDE_LXMUSIC_ENV="$CROSS_ENV_AC"
 
 build_lxde_lxmusic() {
@@ -31,10 +32,12 @@ build_lxde_lxmusic() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    error "update install"
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/lxde_lxmusic.installed"

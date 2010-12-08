@@ -23,6 +23,11 @@ build_libdrm() {
     apply_patches $LIBDRM_DIR $LIBDRM
     pushd $TOP_DIR
     cd $LIBDRM_DIR
+    local C_ARGS=
+    case $TARGET_ARCH in
+    mips*)
+	C_ARGS="--disable-intel --disable-radeon"
+    esac
     (
     eval \
 	$CROSS_CONF_ENV \
@@ -30,6 +35,7 @@ build_libdrm() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    $C_ARGS \
 	    || error
     )
     make $MAKEARGS || error

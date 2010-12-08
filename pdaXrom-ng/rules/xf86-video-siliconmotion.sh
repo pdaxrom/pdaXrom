@@ -32,11 +32,14 @@ build_xf86_video_siliconmotion() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    $INSTALL -D -m 644 src/.libs/siliconmotion_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/siliconmotion_drv.so || error
-    $STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/siliconmotion_drv.so
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
+    #$INSTALL -D -m 644 src/.libs/siliconmotion_drv.so $ROOTFS_DIR/usr/lib/xorg/modules/drivers/siliconmotion_drv.so || error
+    #$STRIP $ROOTFS_DIR/usr/lib/xorg/modules/drivers/siliconmotion_drv.so
 
     popd
     touch "$STATE_DIR/xf86_video_siliconmotion.installed"
