@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-DBUS_GLIB_VERSION=0.82
+DBUS_GLIB_VERSION=0.92
 DBUS_GLIB=dbus-glib-${DBUS_GLIB_VERSION}.tar.gz
 DBUS_GLIB_MIRROR=http://dbus.freedesktop.org/releases/dbus-glib
 DBUS_GLIB_DIR=$BUILD_DIR/dbus-glib-${DBUS_GLIB_VERSION}
@@ -39,17 +39,14 @@ build_dbus_glib() {
     ) || error "configure"
 
     #sed -i "s| /usr/bin/dbus-daemon| dbus-daemon|" tools/Makefile
-    
+
     make $MAKEARGS DBUS_BINDING_TOOL=dbus-binding-tool || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 755 dbus/.libs/dbus-binding-tool $ROOTFS_DIR/usr/bin/dbus-binding-tool || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-binding-tool
-    $INSTALL -D -m 644 dbus/.libs/libdbus-glib-1.so.2.1.0 $ROOTFS_DIR/usr/lib/libdbus-glib-1.so.2.1.0 || error
-    ln -sf libdbus-glib-1.so.2.1.0 $ROOTFS_DIR/usr/lib/libdbus-glib-1.so.2
-    ln -sf libdbus-glib-1.so.2.1.0 $ROOTFS_DIR/usr/lib/libdbus-glib-1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libdbus-glib-1.so.2.1.0
+
+    install_fakeroot_init
+
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/dbus_glib.installed"

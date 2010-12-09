@@ -39,6 +39,8 @@ build_lxde_common() {
 
     install_fakeroot_init
 
+    $INSTALL -D -m 644 lxde-logout.desktop fakeroot/usr/share/applications/lxde-logout.desktop || error "install desktop file"
+
     install_fakeroot_finish || error
 
     popd

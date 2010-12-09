@@ -8,8 +8,8 @@ TOOLCHAIN_SYSROOT="/opt/${TARGET_ARCH}/sysroot"
 
 TARGET_VENDOR_PATCH=ls2f
 
-KERNEL_VERSION="2.6.32"
-KERNEL_CONFIG=yeeloong2f_2.6.32
+KERNEL_VERSION="2.6.36"
+KERNEL_CONFIG=yeeloong2f_2.6.36
 
 . $SETS_DIR/packages-basic.inc
 . $SETS_DIR/packages-acpi.inc
@@ -21,7 +21,7 @@ KERNEL_CONFIG=yeeloong2f_2.6.32
 . $SETS_DIR/packages-xorg-xlib.inc
 . $SETS_DIR/packages-x-gtk2.inc
 
-. $SETS_DIR/packages-hal.inc
+. $SETS_DIR/packages-devicekit.inc
 
 . $SETS_DIR/packages-xorg-xserver.inc
 

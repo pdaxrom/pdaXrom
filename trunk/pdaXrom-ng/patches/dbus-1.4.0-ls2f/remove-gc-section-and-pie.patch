@@ -1,0 +1,38 @@
+--- s/configure.orig	2010-09-06 19:52:24.000000000 +0700
++++ s/configure	2010-12-09 00:03:31.750025354 +0600
+@@ -19954,19 +19954,6 @@
+      ;;
+   esac
+ 
+-  case " $CFLAGS " in
+-  *[\ \	]-fPIE[\ \	]*) ;;
+-  *) if test x$dbus_win = xno && cc_supports_flag -fPIE; then
+-        PIE_CFLAGS="-fPIE"
+-        if ld_supports_flag -z,relro; then
+-           PIE_LDFLAGS="-pie -Wl,-z,relro"
+-        else
+-           PIE_LDFLAGS="-pie"
+-        fi
+-     fi
+-     ;;
+-  esac
+-
+   ### Disabled warnings, and compiler flag overrides
+ 
+   # Let's just ignore unused for now
+@@ -20041,15 +20028,6 @@
+ 
+ 
+ 
+-
+-
+-
+-if ld_supports_flag --gc-sections; then
+-  SECTION_LDFLAGS="-Wl,--gc-sections $SECTION_LDFLAGS"
+-  CFLAGS="-ffunction-sections -fdata-sections $CFLAGS"
+-fi
+-
+-
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_gcsections" >&5
+ $as_echo "$ac_gcsections" >&6; }
+ 

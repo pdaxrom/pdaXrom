@@ -35,5 +35,5 @@ fi
 
 . $RULES_DIR/dancesplash.sh
 
-#. $RULES_DIR/lxde-tweaks.sh
+. $RULES_DIR/lxde-tweaks.sh
 

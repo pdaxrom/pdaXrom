@@ -19,9 +19,17 @@ build_lxde_tweaks() {
     test -e "$STATE_DIR/lxde_tweaks.installed" && return
     banner "Build lxde-tweaks"
 
+    echo "startlxde" > ${ROOTFS_DIR}/etc/X11/Xsession.d/90_startlxde
+
     cp -a $GENERICFS_DIR/themes/gnome $ROOTFS_DIR/usr/share/icons/ || error "install addon lxde icons"
 
     find $ROOTFS_DIR/usr/share/icons/ -type d -name ".svn" | xargs rm -rf
+
+    $INSTALL -D -m 644 $GENERICFS_DIR/wallpapers/clouds.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/clouds.jpg || error
+    ln -sf clouds.jpg $ROOTFS_DIR/usr/share/pixmaps/wallpapers/default.jpg
+
+    $INSTALL -D -m 644 $GENERICFS_DIR/lxpanel/panel $ROOTFS_DIR/usr/share/lxpanel/profile/default/panels/panel || error
+    $INSTALL -D -m 644 $GENERICFS_DIR/lxpanel/panel $ROOTFS_DIR/usr/share/lxpanel/profile/LXDE/panels/panel || error
 
     $INSTALL -D -m 644 $GENERICFS_DIR/default-apps/config/default $ROOTFS_DIR/etc/default/applications/default || error "install wrappers default config"
 

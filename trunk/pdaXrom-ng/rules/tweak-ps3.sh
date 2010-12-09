@@ -44,15 +44,17 @@ build_tweak_ps3() {
 	    $INSTALL -D -m 644 $GENERICFS_DIR/mb-keyboard/lxde-panel $ROOTFS_DIR/usr/share/lxpanel/profile/default/panels/panel || error
 	fi
     fi
-    
-    $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
-    if [ "$USE_FASTBOOT" = "yes" ]; then
-	install_rc_start xstart 03
-	$INSTALL -D -m 644 $GENERICFS_DIR/modules.PS3 $ROOTFS_DIR/etc/modules || error
-    else
-	install_rc_start xstart 99
+
+    if [ ! "$USE_LOGINMANAGER" = "" ]; then
+	$INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
+	if [ "$USE_FASTBOOT" = "yes" ]; then
+	    install_rc_start xstart 03
+	    $INSTALL -D -m 644 $GENERICFS_DIR/modules.PS3 $ROOTFS_DIR/etc/modules || error
+	else
+	    install_rc_start xstart 99
+	fi
+	install_rc_stop  xstart 01
     fi
-    install_rc_stop  xstart 01
 
     touch "$STATE_DIR/tweak_ps3-1.0"
 }
