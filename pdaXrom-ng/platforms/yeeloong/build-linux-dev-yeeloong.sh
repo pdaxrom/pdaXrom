@@ -15,6 +15,7 @@ KERNEL_VERSION=2.6.36
 KERNEL_CONFIG=lemote2f_2.6.36
 
 USE_AUFS2="yes"
+USE_INITRAMFS="yes"
 USE_LOGINMANAGER="lxdm"
 USE_VLC_PLAYER="yes"
 
@@ -28,7 +29,7 @@ USE_VLC_PLAYER="yes"
 . $SETS_DIR/packages-xorg-xlib.inc
 . $SETS_DIR/packages-x-gtk2.inc
 
-. $SETS_DIR/packages-hal.inc
+. $SETS_DIR/packages-devicekit.inc
 
 . $SETS_DIR/packages-xorg-xserver.inc
 

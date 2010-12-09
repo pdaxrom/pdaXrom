@@ -13,13 +13,15 @@ build_tweak_i686cd() {
     test -e "$STATE_DIR/tweak_i686cd-1.0" && return
     banner "Tweaking i686 rootfs"
 
-    $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
-    if [ "$USE_FASTBOOT" = "yes" ]; then
-	install_rc_start xstart 03
-    else
-	install_rc_start xstart 99
+    if [ ! "$USE_LOGINMANAGER" = "" ]; then
+	$INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
+	if [ "$USE_FASTBOOT" = "yes" ]; then
+	    install_rc_start xstart 03
+	else
+	    install_rc_start xstart 99
+	fi
+	install_rc_stop  xstart 01
     fi
-    install_rc_stop  xstart 01
 
     if [ -e $ROOTFS_DIR/usr/bin/matchbox-keyboard ]; then
 	$INSTALL -D -m 755 $GENERICFS_DIR/mb-keyboard/mb-keyboard-switcher $ROOTFS_DIR/usr/bin/mb-keyboard-switcher || error

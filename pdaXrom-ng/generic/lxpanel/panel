@@ -10,7 +10,7 @@ Global {
     height=26
     transparent=0
     tintcolor=#000000
-    alpha=202
+    alpha=0
     autohide=0
     heightwhenhidden=2
     setdocktype=1
@@ -32,7 +32,7 @@ Plugin {
 Plugin {
     type = menu
     Config {
-        image=/usr/share/lxpanel/images/my-computer.png
+        image=/usr/share/lxde/images/lxde-icon.png
         system {
         }
         separator {
@@ -42,11 +42,6 @@ Plugin {
         }
         separator {
         }
-	item {
-	    image=system-lock-screen
-	    name=Lock computer
-	    action=xtrlock
-	}
         item {
             image=gnome-logout
             command=logout
@@ -61,10 +56,7 @@ Plugin {
             id=pcmanfm.desktop
         }
         Button {
-            id=webbrowser.desktop
-        }
-        Button {
-            id=xterminal.desktop
+            id=mozilla-firefox.desktop
         }
     }
 }
@@ -113,10 +105,10 @@ Plugin {
         ShowAllDesks=0
         UseMouseWheel=1
         UseUrgencyHint=1
-        FlatButton=1
+        FlatButton=0
         MaxTaskWidth=150
         spacing=1
-        GroupedTasks=1
+        GroupedTasks=0
     }
 }
 
@@ -125,11 +117,36 @@ Plugin {
 }
 
 Plugin {
+    type = xkb
+    Config {
+        DisplayType=1
+        PerAppLayout=1
+        DefaultGroup=0
+    }
+}
+
+Plugin {
     type = cpu
 }
 
 Plugin {
-    type = netstat
+    type = cpufreq
+}
+
+Plugin {
+    type = batt
+    Config {
+        HideIfNoBattery=0
+        AlarmCommand=xmessage Battery low
+        AlarmTime=5
+        BackgroundColor=black
+        BorderWidth=1
+        ChargingColor1=#28f200
+        ChargingColor2=#22cc00
+        DischargingColor1=#ffee00
+        DischargingColor2=#d9ca00
+        Size=8
+    }
 }
 
 Plugin {
@@ -139,8 +156,19 @@ Plugin {
 Plugin {
     type = dclock
     Config {
-        BoldFont=1
+        ClockFmt=%R
+        TooltipFmt=%A %x
+        BoldFont=0
         IconOnly=0
+    }
+}
+
+Plugin {
+    type = launchbar
+    Config {
+        Button {
+            id=lxde-logout.desktop
+        }
     }
 }
 

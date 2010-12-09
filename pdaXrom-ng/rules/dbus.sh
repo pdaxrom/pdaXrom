@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-DBUS_VERSION=1.2.16
+DBUS_VERSION=1.4.0
 DBUS=dbus-${DBUS_VERSION}.tar.gz
 DBUS_MIRROR=http://dbus.freedesktop.org/releases/dbus
 DBUS_DIR=$BUILD_DIR/dbus-${DBUS_VERSION}
@@ -51,43 +51,16 @@ build_dbus() {
     	    $C_ARGS \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
 
-    $INSTALL -d $ROOTFS_DIR/etc/dbus-1/session.d || error
-    $INSTALL -d $ROOTFS_DIR/etc/dbus-1/system.d  || error
-    $INSTALL -D -m 644 bus/session.conf $ROOTFS_DIR/etc/dbus-1/session.conf || error
-    $INSTALL -D -m 644 bus/system.conf  $ROOTFS_DIR/etc/dbus-1/system.conf  || error
-    
-    $INSTALL -D -m 755 tools/dbus-cleanup-sockets $ROOTFS_DIR/usr/bin/dbus-cleanup-sockets || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-cleanup-sockets
-    $INSTALL -D -m 755 tools/dbus-launch $ROOTFS_DIR/usr/bin/dbus-launch || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-launch
-    $INSTALL -D -m 755 tools/.libs/dbus-monitor $ROOTFS_DIR/usr/bin/dbus-monitor || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-monitor
-    $INSTALL -D -m 755 tools/.libs/dbus-send $ROOTFS_DIR/usr/bin/dbus-send || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-send
-    $INSTALL -D -m 755 tools/.libs/dbus-uuidgen $ROOTFS_DIR/usr/bin/dbus-uuidgen || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-uuidgen
+    install_fakeroot_init
+    rm -rf fakeroot/usr/lib/dbus-1.0/include
+    install_fakeroot_finish || error
 
-    $INSTALL -D -m 755 bus/dbus-daemon $ROOTFS_DIR/usr/bin/dbus-daemon || error
-    $STRIP $ROOTFS_DIR/usr/bin/dbus-daemon
-
-    $INSTALL -d $ROOTFS_DIR/usr/lib/dbus-1.0/dbus-1
-    $INSTALL -D -m 755 bus/dbus-daemon-launch-helper $ROOTFS_DIR/usr/lib/dbus-1.0/dbus-daemon-launch-helper || error
-    $STRIP $ROOTFS_DIR/usr/lib/dbus-1.0/dbus-daemon-launch-helper
-    $INSTALL -D dbus/.libs/libdbus-1.so.3.4.0 $ROOTFS_DIR/usr/lib/libdbus-1.so.3.4.0 || error
-    ln -sf libdbus-1.so.3.4.0 $ROOTFS_DIR/usr/lib/libdbus-1.so.3
-    ln -sf libdbus-1.so.3.4.0 $ROOTFS_DIR/usr/lib/libdbus-1.so
-    $STRIP $ROOTFS_DIR/usr/lib/libdbus-1.so.3.4.0
-
-    $INSTALL -d $ROOTFS_DIR/usr/share/dbus-1/services || error
-    $INSTALL -d $ROOTFS_DIR/usr/share/dbus-1/system-services || error
-    
-    $INSTALL -d $ROOTFS_DIR/var/lib/dbus || error
-    $INSTALL -d $ROOTFS_DIR/var/run/dbus || error
+    chmod 4755 ${ROOTFS_DIR}/usr/lib/dbus-1.0/dbus-daemon-launch-helper
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/dbus $ROOTFS_DIR/etc/init.d/dbus || error
     if [ "$USE_FASTBOOT" = "yes" ]; then

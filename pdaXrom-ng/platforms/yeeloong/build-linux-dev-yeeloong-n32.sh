@@ -18,6 +18,7 @@ CROSS_OPT_ARCH="-march=loongson2f -mtune=loongson2f"
 
 USE_AUFS2="yes"
 USE_INITRAMFS="yes"
+USE_LOGINMANAGER="lxdm"
 USE_VLC_PLAYER="yes"
 
 . $SETS_DIR/packages-basic.inc

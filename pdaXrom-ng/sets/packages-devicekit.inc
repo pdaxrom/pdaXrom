@@ -10,3 +10,4 @@
 . $RULES_DIR/parted.sh
 . $RULES_DIR/libatasmart-git.sh
 . $RULES_DIR/udisks.sh
+. $RULES_DIR/upower.sh
