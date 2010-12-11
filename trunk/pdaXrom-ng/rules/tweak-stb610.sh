@@ -15,7 +15,7 @@ build_tweak_stb610() {
 
     grep -q 'ttyS0' $ROOTFS_DIR/etc/inittab || echo 'ttyS0::respawn:/sbin/getty -L 115200 /dev/ttyS0 linux' >> $ROOTFS_DIR/etc/inittab
 
-    if [ ! "$USE_LOGINMANAGER" = "" ]; then
+    if [ "$USE_LOGINMANAGER" = "" ]; then
 	$INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
 	if [ "$USE_FASTBOOT" = "yes" ]; then
 	    install_rc_start xstart 03

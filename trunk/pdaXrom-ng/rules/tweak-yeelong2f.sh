@@ -15,7 +15,7 @@ build_tweak_yeelong2f() {
 
     $INSTALL -D -m 644 $GENERICFS_DIR/yeelong2f/yeelong-xorg.conf $ROOTFS_DIR/etc/X11/xorg.conf || error
 
-    if [ ! "$USE_LOGINMANAGER" = "" ]; then
+    if [ "$USE_LOGINMANAGER" = "" ]; then
 	$INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
 	if [ "$USE_FASTBOOT" = "yes" ]; then
 	    install_rc_start xstart 03

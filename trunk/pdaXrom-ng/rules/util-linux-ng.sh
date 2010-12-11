@@ -40,6 +40,8 @@ build_util_linux_ng() {
     #install_sysroot_files || error
 
     install_rootfs_exec /sbin disk-utils/mkswap
+    install_rootfs_exec /bin mount/mount
+    install_rootfs_exec /bin mount/umount
 
     #install_fakeroot_init
     #error "asd"

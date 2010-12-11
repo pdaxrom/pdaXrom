@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+XFCE_UTILS_VERSION=4.7.3
+XFCE_UTILS=xfce-utils-${XFCE_UTILS_VERSION}.tar.bz2
+XFCE_UTILS_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE_UTILS_DIR=$BUILD_DIR/xfce-utils-${XFCE_UTILS_VERSION}
+XFCE_UTILS_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_xfce_utils() {
+    test -e "$STATE_DIR/xfce_utils.installed" && return
+    banner "Build xfce-utils"
+    download $XFCE_UTILS_MIRROR $XFCE_UTILS
+    extract $XFCE_UTILS
+    apply_patches $XFCE_UTILS_DIR $XFCE_UTILS
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $XFCE_UTILS_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$XFCE_UTILS_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -38,11 +38,11 @@ build_eina() {
     install_sysroot_files || error
 
     install_fakeroot_init
-
+    rm -rf fakeroot/usr/lib/xfce4
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/xfce_utils.installed"
 }
 
-build_eina
+build_xfce_utils

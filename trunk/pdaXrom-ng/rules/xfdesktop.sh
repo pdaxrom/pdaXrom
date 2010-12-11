@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+XFDESKTOP_VERSION=4.7.4
+XFDESKTOP=xfdesktop-${XFDESKTOP_VERSION}.tar.bz2
+XFDESKTOP_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFDESKTOP_DIR=$BUILD_DIR/xfdesktop-${XFDESKTOP_VERSION}
+XFDESKTOP_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_xfdesktop() {
+    test -e "$STATE_DIR/xfdesktop.installed" && return
+    banner "Build xfdesktop"
+    download $XFDESKTOP_MIRROR $XFDESKTOP
+    extract $XFDESKTOP
+    apply_patches $XFDESKTOP_DIR $XFDESKTOP
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $XFDESKTOP_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$XFDESKTOP_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/xfdesktop.installed"
 }
 
-build_eina
+build_xfdesktop

@@ -1,8 +1,21 @@
 . $RULES_DIR/tint2.sh
+
 #. $RULES_DIR/bmpanel.sh
 
-. $RULES_DIR/gamin.sh
+#. $RULES_DIR/gamin.sh
+. $RULES_DIR/host_dbus.sh
+. $RULES_DIR/host_dbus-glib.sh
+. $RULES_DIR/dbus.sh
+. $RULES_DIR/dbus-glib.sh
+. $RULES_DIR/lxde-menu-cache.sh
+. $RULES_DIR/libfm.sh
 . $RULES_DIR/pcmanfm.sh
+
+. $RULES_DIR/sn-monitor.sh
+. $RULES_DIR/pekwm.sh
+. $RULES_DIR/pekwm-themes.sh
+
+. $RULES_DIR/xtrlock.sh
 
 . $RULES_DIR/mrxvt05utf8.sh
 

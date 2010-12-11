@@ -1,7 +1,7 @@
 #
 # packet template
 #
-# Copyright (C) 2009 by Alexander Chukov <sash@pdaXrom.org>
+# Copyright (C) 2010 by Alexander Chukov <sash@pdaXrom.org>
 #
 # See CREDITS for details about who has contributed to this project.
 #
@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-LIBCANBERRA_VERSION=0.22
+LIBCANBERRA_VERSION=0.26
 LIBCANBERRA=libcanberra-${LIBCANBERRA_VERSION}.tar.gz
 LIBCANBERRA_MIRROR=http://0pointer.de/lennart/projects/libcanberra
 LIBCANBERRA_DIR=$BUILD_DIR/libcanberra-${LIBCANBERRA_VERSION}
@@ -32,6 +32,8 @@ build_libcanberra() {
 	    --sysconfdir=/etc \
 	    --disable-oss \
 	    --disable-pulse \
+	    --disable-gstreamer \
+	    --disable-gtk3 \
 	    || error
     ) || error "configure"
 
@@ -40,7 +42,6 @@ build_libcanberra() {
     install_sysroot_files || error
 
     install_fakeroot_init
-    rm -rf fakeroot/usr/share/gdm
     rm -rf fakeroot/usr/share/gnome
     rm -rf fakeroot/usr/share/vala
     install_fakeroot_finish || error

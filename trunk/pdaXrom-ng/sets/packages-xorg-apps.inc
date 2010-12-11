@@ -16,6 +16,7 @@
 . $RULES_DIR/xorg-xset.sh
 . $RULES_DIR/xorg-xrdb.sh
 . $RULES_DIR/xorg-xauth.sh
+. $RULES_DIR/xorg-iceauth.sh
 . $RULES_DIR/xorg-xprop.sh
 . $RULES_DIR/xorg-xrandr.sh
 . $RULES_DIR/xorg-mkfontdir.sh

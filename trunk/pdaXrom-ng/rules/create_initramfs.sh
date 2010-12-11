@@ -67,7 +67,7 @@ create_initramfs() {
     fi
 
     for f in bin/busybox bin/ash bin/ls bin/cat bin/cp bin/dd bin/echo \
-	    sbin/mkfs.minix bin/mount bin/umount bin/mkdir sbin/insmod sbin/modprobe sbin/depmod \
+	    sbin/mkfs.minix bin/mkdir sbin/insmod sbin/modprobe sbin/depmod \
 	    sbin/init sbin/pivot_root sbin/rmmod bin/sleep bin/dmesg sbin/switch_root \
 	    sbin/lsmod sbin/swapon sbin/swapoff sbin/mkswap sbin/losetup ; do
 	cp -a $ROOTFS_DIR/$f $INITRAMFS_DIR/$f || error
@@ -76,6 +76,8 @@ create_initramfs() {
     ln -sf ../bin/busybox $INITRAMFS_DIR/bin/sh || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/mkswap || error
+    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/mount || error
+    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/umount || error
 
     for f in [ test mknod tr cut cmp grep awk wc sort uname mountpoint; do
 	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error

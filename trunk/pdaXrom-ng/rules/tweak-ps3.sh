@@ -45,7 +45,7 @@ build_tweak_ps3() {
 	fi
     fi
 
-    if [ ! "$USE_LOGINMANAGER" = "" ]; then
+    if [ "$USE_LOGINMANAGER" = "" ]; then
 	$INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/xstart $ROOTFS_DIR/etc/init.d/xstart || error
 	if [ "$USE_FASTBOOT" = "yes" ]; then
 	    install_rc_start xstart 03

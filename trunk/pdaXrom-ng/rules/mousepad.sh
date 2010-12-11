@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+MOUSEPAD_VERSION=0.2.16
+MOUSEPAD=mousepad-${MOUSEPAD_VERSION}.tar.bz2
+MOUSEPAD_MIRROR=http://mocha.xfce.org/archive/xfce/4.6.0/src
+MOUSEPAD_DIR=$BUILD_DIR/mousepad-${MOUSEPAD_VERSION}
+MOUSEPAD_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_mousepad() {
+    test -e "$STATE_DIR/mousepad.installed" && return
+    banner "Build mousepad"
+    download $MOUSEPAD_MIRROR $MOUSEPAD
+    extract $MOUSEPAD
+    apply_patches $MOUSEPAD_DIR $MOUSEPAD
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $MOUSEPAD_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$MOUSEPAD_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -35,14 +35,14 @@ build_eina() {
 
     make $MAKEARGS || error
 
-    install_sysroot_files || error
+    #install_sysroot_files || error
 
     install_fakeroot_init
 
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/mousepad.installed"
 }
 
-build_eina
+build_mousepad

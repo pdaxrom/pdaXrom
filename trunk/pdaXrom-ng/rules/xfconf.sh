@@ -9,27 +9,28 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+XFCONF_VERSION=4.7.4
+XFCONF=xfconf-${XFCONF_VERSION}.tar.bz2
+XFCONF_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCONF_DIR=$BUILD_DIR/xfconf-${XFCONF_VERSION}
+XFCONF_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_xfconf() {
+    test -e "$STATE_DIR/xfconf.installed" && return
+    banner "Build xfconf"
+    download $XFCONF_MIRROR $XFCONF
+    extract $XFCONF
+    apply_patches $XFCONF_DIR $XFCONF
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $XFCONF_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$XFCONF_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
+	    --disable-perl-bindings \
 	    || error
     ) || error "configure"
 
@@ -42,7 +43,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/xfconf.installed"
 }
 
-build_eina
+build_xfconf

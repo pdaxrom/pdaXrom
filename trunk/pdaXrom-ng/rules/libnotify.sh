@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+LIBNOTIFY_VERSION=0.5.2
+LIBNOTIFY=libnotify-${LIBNOTIFY_VERSION}.tar.bz2
+LIBNOTIFY_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/libnotify/0.5
+LIBNOTIFY_DIR=$BUILD_DIR/libnotify-${LIBNOTIFY_VERSION}
+LIBNOTIFY_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_libnotify() {
+    test -e "$STATE_DIR/libnotify.installed" && return
+    banner "Build libnotify"
+    download $LIBNOTIFY_MIRROR $LIBNOTIFY
+    extract $LIBNOTIFY
+    apply_patches $LIBNOTIFY_DIR $LIBNOTIFY
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $LIBNOTIFY_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$LIBNOTIFY_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/libnotify.installed"
 }
 
-build_eina
+build_libnotify
