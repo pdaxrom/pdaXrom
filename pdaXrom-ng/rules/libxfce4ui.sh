@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+LIBXFCE4UI_VERSION=4.7.5
+LIBXFCE4UI=libxfce4ui-${LIBXFCE4UI_VERSION}.tar.bz2
+LIBXFCE4UI_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+LIBXFCE4UI_DIR=$BUILD_DIR/libxfce4ui-${LIBXFCE4UI_VERSION}
+LIBXFCE4UI_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_libxfce4ui() {
+    test -e "$STATE_DIR/libxfce4ui.installed" && return
+    banner "Build libxfce4ui"
+    download $LIBXFCE4UI_MIRROR $LIBXFCE4UI
+    extract $LIBXFCE4UI
+    apply_patches $LIBXFCE4UI_DIR $LIBXFCE4UI
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $LIBXFCE4UI_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$LIBXFCE4UI_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/libxfce4ui.installed"
 }
 
-build_eina
+build_libxfce4ui

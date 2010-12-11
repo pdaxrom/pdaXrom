@@ -33,6 +33,8 @@ build_ht() {
 	    || error
     ) || error "configure"
 
+    make -C tools CC=gcc $MAKEARGS || error
+
     make $MAKEARGS || error
 
     #install_sysroot_files || error

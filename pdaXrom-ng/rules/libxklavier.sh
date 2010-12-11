@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+LIBXKLAVIER_VERSION=5.0
+LIBXKLAVIER=libxklavier-${LIBXKLAVIER_VERSION}.tar.bz2
+LIBXKLAVIER_MIRROR=http://ftp.acc.umu.se/pub/gnome/sources/libxklavier/5.0
+LIBXKLAVIER_DIR=$BUILD_DIR/libxklavier-${LIBXKLAVIER_VERSION}
+LIBXKLAVIER_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_libxklavier() {
+    test -e "$STATE_DIR/libxklavier.installed" && return
+    banner "Build libxklavier"
+    download $LIBXKLAVIER_MIRROR $LIBXKLAVIER
+    extract $LIBXKLAVIER
+    apply_patches $LIBXKLAVIER_DIR $LIBXKLAVIER
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $LIBXKLAVIER_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$LIBXKLAVIER_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/libxklavier.installed"
 }
 
-build_eina
+build_libxklavier

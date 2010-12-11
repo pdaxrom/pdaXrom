@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+GARCON_VERSION=0.1.4
+GARCON=garcon-${GARCON_VERSION}.tar.bz2
+GARCON_MIRROR=http://ftp.uni-erlangen.de/pub/mirrors/gentoo/distfiles
+GARCON_DIR=$BUILD_DIR/garcon-${GARCON_VERSION}
+GARCON_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_garcon() {
+    test -e "$STATE_DIR/garcon.installed" && return
+    banner "Build garcon"
+    download $GARCON_MIRROR $GARCON
+    extract $GARCON
+    apply_patches $GARCON_DIR $GARCON
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $GARCON_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$GARCON_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/garcon.installed"
 }
 
-build_eina
+build_garcon

@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+THUNAR_VFS_VERSION=1.1.1
+THUNAR_VFS=thunar-vfs-${THUNAR_VFS_VERSION}.tar.bz2
+THUNAR_VFS_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+THUNAR_VFS_DIR=$BUILD_DIR/thunar-vfs-${THUNAR_VFS_VERSION}
+THUNAR_VFS_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_thunar_vfs() {
+    test -e "$STATE_DIR/thunar_vfs.installed" && return
+    banner "Build thunar-vfs"
+    download $THUNAR_VFS_MIRROR $THUNAR_VFS
+    extract $THUNAR_VFS
+    apply_patches $THUNAR_VFS_DIR $THUNAR_VFS
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $THUNAR_VFS_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$THUNAR_VFS_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/thunar_vfs.installed"
 }
 
-build_eina
+build_thunar_vfs

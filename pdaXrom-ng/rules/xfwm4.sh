@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-EINA_VERSION=1.0.0.beta3
-EINA=eina-${EINA_VERSION}.tar.bz2
-EINA_MIRROR=http://download.enlightenment.org/releases
-EINA_DIR=$BUILD_DIR/eina-${EINA_VERSION}
-EINA_ENV="$CROSS_ENV_AC"
+XFWM4_VERSION=4.7.3
+XFWM4=xfwm4-${XFWM4_VERSION}.tar.bz2
+XFWM4_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFWM4_DIR=$BUILD_DIR/xfwm4-${XFWM4_VERSION}
+XFWM4_ENV="$CROSS_ENV_AC"
 
-build_eina() {
-    test -e "$STATE_DIR/eina.installed" && return
-    banner "Build eina"
-    download $EINA_MIRROR $EINA
-    extract $EINA
-    apply_patches $EINA_DIR $EINA
+build_xfwm4() {
+    test -e "$STATE_DIR/xfwm4.installed" && return
+    banner "Build xfwm4"
+    download $XFWM4_MIRROR $XFWM4
+    extract $XFWM4
+    apply_patches $XFWM4_DIR $XFWM4
     pushd $TOP_DIR
-    cd $EINA_DIR
+    cd $XFWM4_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$EINA_ENV \
+	$XFWM4_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_eina() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/eina.installed"
+    touch "$STATE_DIR/xfwm4.installed"
 }
 
-build_eina
+build_xfwm4

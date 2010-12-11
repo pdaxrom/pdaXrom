@@ -32,15 +32,16 @@ build_libglade() {
 	    --sysconfdir=/etc \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    $INSTALL -D -m 644 glade/.libs/libglade-2.0.so.0.0.7 $ROOTFS_DIR/usr/lib/libglade-2.0.so.0.0.7 || error
-    ln -sf libglade-2.0.so.0.0.7 $ROOTFS_DIR/usr/lib/libglade-2.0.so.0
-    ln -sf libglade-2.0.so.0.0.7 $ROOTFS_DIR/usr/lib/libglade-2.0.so
-    $STRIP $ROOTFS_DIR/usr/lib/libglade-2.0.so.0.0.7 || error
+    sed -i -e 's|moduledir=${libdir}|moduledir=/usr/lib|' ${TARGET_LIB}/pkgconfig/libglade-2.0.pc
+
+    install_fakeroot_init
+    rm -rf fakeroot/usr/bin
+    rm -rf fakeroot/usr/share/xml
+    install_fakeroot_finish || error
 
     popd
     touch "$STATE_DIR/libglade.installed"

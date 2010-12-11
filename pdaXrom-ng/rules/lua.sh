@@ -26,6 +26,13 @@ build_lua() {
 
     make linux $MAKEARGS CC="${CROSS}gcc -fPIC" AR="${CROSS}ar rcu" RANLIB=${CROSS}ranlib MYLDFLAGS="-Wl,-rpath,${TARGET_LIB} -L${TARGET_LIB}" || error
 
+    local PKG_CONFIG_FILE=lua.pc
+
+    echo "prefix=${TARGET_BIN_DIR}" > ${TARGET_LIB}/pkgconfig/${PKG_CONFIG_FILE}
+    echo "major_version=5.1" >> ${TARGET_LIB}/pkgconfig/${PKG_CONFIG_FILE}
+    echo "version=5.1.4"   >> ${TARGET_LIB}/pkgconfig/${PKG_CONFIG_FILE}
+    cat ${GENERICFS_DIR}/lua/${PKG_CONFIG_FILE}.in >> ${TARGET_LIB}/pkgconfig/${PKG_CONFIG_FILE}
+
     install_sysroot_files INSTALL_TOP=${TARGET_BIN_DIR} || error
 
     install_fakeroot_init INSTALL_TOP=${LUA_DIR}/fakeroot/usr
