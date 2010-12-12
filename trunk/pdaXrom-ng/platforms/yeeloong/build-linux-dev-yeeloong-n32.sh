@@ -31,7 +31,7 @@ USE_VLC_PLAYER="yes"
 . $SETS_DIR/packages-xorg-xlib.inc
 . $SETS_DIR/packages-x-gtk2.inc
 
-. $SETS_DIR/packages-devicekit.inc
+. $SETS_DIR/packages-hal.inc
 
 . $SETS_DIR/packages-xorg-xserver.inc
 

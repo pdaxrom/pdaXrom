@@ -11,7 +11,7 @@
 
 THUNAR_VFS_VERSION=1.1.1
 THUNAR_VFS=thunar-vfs-${THUNAR_VFS_VERSION}.tar.bz2
-THUNAR_VFS_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+THUNAR_VFS_MIRROR=http://archive.xfce.org/src/xfce/thunar-vfs/1.1
 THUNAR_VFS_DIR=$BUILD_DIR/thunar-vfs-${THUNAR_VFS_VERSION}
 THUNAR_VFS_ENV="$CROSS_ENV_AC"
 

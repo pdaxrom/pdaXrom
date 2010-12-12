@@ -11,7 +11,7 @@
 
 XFDESKTOP_VERSION=4.7.4
 XFDESKTOP=xfdesktop-${XFDESKTOP_VERSION}.tar.bz2
-XFDESKTOP_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFDESKTOP_MIRROR=http://archive.xfce.org/src/xfce/xfdesktop/4.7
 XFDESKTOP_DIR=$BUILD_DIR/xfdesktop-${XFDESKTOP_VERSION}
 XFDESKTOP_ENV="$CROSS_ENV_AC"
 

@@ -11,7 +11,7 @@
 
 XFCONF_VERSION=4.7.4
 XFCONF=xfconf-${XFCONF_VERSION}.tar.bz2
-XFCONF_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCONF_MIRROR=http://archive.xfce.org/src/xfce/xfconf/4.7
 XFCONF_DIR=$BUILD_DIR/xfconf-${XFCONF_VERSION}
 XFCONF_ENV="$CROSS_ENV_AC"
 

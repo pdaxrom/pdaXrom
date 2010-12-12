@@ -11,7 +11,7 @@
 
 XFWM4_VERSION=4.7.3
 XFWM4=xfwm4-${XFWM4_VERSION}.tar.bz2
-XFWM4_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFWM4_MIRROR=http://archive.xfce.org/src/xfce/xfwm4/4.7
 XFWM4_DIR=$BUILD_DIR/xfwm4-${XFWM4_VERSION}
 XFWM4_ENV="$CROSS_ENV_AC"
 

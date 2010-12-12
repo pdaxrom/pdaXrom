@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-GARCON_VERSION=0.1.4
-GARCON=garcon-${GARCON_VERSION}.tar.bz2
-GARCON_MIRROR=http://archive.xfce.org/src/libs/garcon/0.1
-GARCON_DIR=$BUILD_DIR/garcon-${GARCON_VERSION}
-GARCON_ENV="$CROSS_ENV_AC"
+TUMBLER_VERSION=0.1.5
+TUMBLER=tumbler-${TUMBLER_VERSION}.tar.bz2
+TUMBLER_MIRROR=http://archive.xfce.org/src/apps/tumbler/0.1
+TUMBLER_DIR=$BUILD_DIR/tumbler-${TUMBLER_VERSION}
+TUMBLER_ENV="$CROSS_ENV_AC"
 
-build_garcon() {
-    test -e "$STATE_DIR/garcon.installed" && return
-    banner "Build garcon"
-    download $GARCON_MIRROR $GARCON
-    extract $GARCON
-    apply_patches $GARCON_DIR $GARCON
+build_tumbler() {
+    test -e "$STATE_DIR/tumbler.installed" && return
+    banner "Build tumbler"
+    download $TUMBLER_MIRROR $TUMBLER
+    extract $TUMBLER
+    apply_patches $TUMBLER_DIR $TUMBLER
     pushd $TOP_DIR
-    cd $GARCON_DIR
+    cd $TUMBLER_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$GARCON_ENV \
+	$TUMBLER_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -35,14 +35,14 @@ build_garcon() {
 
     make $MAKEARGS || error
 
-    install_sysroot_files || error
+    #install_sysroot_files || error
 
     install_fakeroot_init
 
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/garcon.installed"
+    touch "$STATE_DIR/tumbler.installed"
 }
 
-build_garcon
+build_tumbler

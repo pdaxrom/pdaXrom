@@ -31,7 +31,6 @@ build_libfm() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --enable-udisks \
 	    || error
     ) || error "configure"
 

@@ -11,7 +11,7 @@
 
 XFCE4_PANEL_VERSION=4.7.6
 XFCE4_PANEL=xfce4-panel-${XFCE4_PANEL_VERSION}.tar.bz2
-XFCE4_PANEL_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE4_PANEL_MIRROR=http://archive.xfce.org/src/xfce/xfce4-panel/4.7
 XFCE4_PANEL_DIR=$BUILD_DIR/xfce4-panel-${XFCE4_PANEL_VERSION}
 XFCE4_PANEL_ENV="$CROSS_ENV_AC"
 

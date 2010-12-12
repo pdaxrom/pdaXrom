@@ -11,7 +11,7 @@
 
 XFCE4_DEV_TOOLS_VERSION=4.7.3
 XFCE4_DEV_TOOLS=xfce4-dev-tools-${XFCE4_DEV_TOOLS_VERSION}.tar.bz2
-XFCE4_DEV_TOOLS_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE4_DEV_TOOLS_MIRROR=http://archive.xfce.org/src/xfce/xfce4-dev-tools/4.7
 XFCE4_DEV_TOOLS_DIR=$BUILD_DIR/xfce4-dev-tools-${XFCE4_DEV_TOOLS_VERSION}
 XFCE4_DEV_TOOLS_ENV="$CROSS_ENV_AC"
 

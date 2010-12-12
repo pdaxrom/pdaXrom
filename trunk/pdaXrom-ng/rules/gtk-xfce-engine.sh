@@ -11,7 +11,7 @@
 
 GTK_XFCE_ENGINE_VERSION=2.6.0
 GTK_XFCE_ENGINE=gtk-xfce-engine-${GTK_XFCE_ENGINE_VERSION}.tar.bz2
-GTK_XFCE_ENGINE_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+GTK_XFCE_ENGINE_MIRROR=http://archive.xfce.org/src/xfce/gtk-xfce-engine/2.6
 GTK_XFCE_ENGINE_DIR=$BUILD_DIR/gtk-xfce-engine-${GTK_XFCE_ENGINE_VERSION}
 GTK_XFCE_ENGINE_ENV="$CROSS_ENV_AC"
 

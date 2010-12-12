@@ -11,7 +11,7 @@
 
 XFCE4_APPFINDER_VERSION=4.7.1
 XFCE4_APPFINDER=xfce4-appfinder-${XFCE4_APPFINDER_VERSION}.tar.bz2
-XFCE4_APPFINDER_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE4_APPFINDER_MIRROR=http://archive.xfce.org/src/xfce/xfce4-appfinder/4.7
 XFCE4_APPFINDER_DIR=$BUILD_DIR/xfce4-appfinder-${XFCE4_APPFINDER_VERSION}
 XFCE4_APPFINDER_ENV="$CROSS_ENV_AC"
 
