@@ -11,7 +11,7 @@
 
 XFCE4_SESSION_VERSION=4.7.2
 XFCE4_SESSION=xfce4-session-${XFCE4_SESSION_VERSION}.tar.bz2
-XFCE4_SESSION_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE4_SESSION_MIRROR=http://archive.xfce.org/src/xfce/xfce4-session/4.7
 XFCE4_SESSION_DIR=$BUILD_DIR/xfce4-session-${XFCE4_SESSION_VERSION}
 XFCE4_SESSION_ENV="$CROSS_ENV_AC"
 

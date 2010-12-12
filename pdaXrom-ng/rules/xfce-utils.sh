@@ -11,7 +11,7 @@
 
 XFCE_UTILS_VERSION=4.7.3
 XFCE_UTILS=xfce-utils-${XFCE_UTILS_VERSION}.tar.bz2
-XFCE_UTILS_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE_UTILS_MIRROR=http://archive.xfce.org/src/xfce/xfce-utils/4.7
 XFCE_UTILS_DIR=$BUILD_DIR/xfce-utils-${XFCE_UTILS_VERSION}
 XFCE_UTILS_ENV="$CROSS_ENV_AC"
 

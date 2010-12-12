@@ -51,3 +51,9 @@ if [ "$USE_LOGINMANAGER" = "slim" ]; then
     . $RULES_DIR/target-bash.sh
     . $RULES_DIR/slim.sh
 fi
+
+. $RULES_DIR/thunar-volman.sh
+. $RULES_DIR/xfce4-power-manager.sh
+. $RULES_DIR/xfce4-mixer.sh
+#. $RULES_DIR/xfce4-volumed.sh
+. $RULES_DIR/tumbler.sh

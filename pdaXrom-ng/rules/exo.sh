@@ -11,7 +11,7 @@
 
 EXO_VERSION=0.5.5
 EXO=exo-${EXO_VERSION}.tar.bz2
-EXO_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+EXO_MIRROR=http://archive.xfce.org/src/xfce/exo/0.5
 EXO_DIR=$BUILD_DIR/exo-${EXO_VERSION}
 EXO_ENV="$CROSS_ENV_AC
 ac_cv_func_mmap_fixed_mapped=yes \

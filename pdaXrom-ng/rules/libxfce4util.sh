@@ -11,7 +11,7 @@
 
 LIBXFCE4UTIL_VERSION=4.7.4
 LIBXFCE4UTIL=libxfce4util-${LIBXFCE4UTIL_VERSION}.tar.bz2
-LIBXFCE4UTIL_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+LIBXFCE4UTIL_MIRROR=http://archive.xfce.org/src/xfce/libxfce4util/4.7
 LIBXFCE4UTIL_DIR=$BUILD_DIR/libxfce4util-${LIBXFCE4UTIL_VERSION}
 LIBXFCE4UTIL_ENV="$CROSS_ENV_AC"
 

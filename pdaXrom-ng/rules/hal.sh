@@ -1,16 +1,16 @@
 #
 # packet template
 #
-# Copyright (C) 2008 by Alexander Chukov <sash@pdaXrom.org>
-#          
+# Copyright (C) 2010 by Alexander Chukov <sash@pdaXrom.org>
+#
 # See CREDITS for details about who has contributed to this project.
 #
 # For further information about the pdaXrom project and license conditions
 # see the README file.
 #
 
-HAL_VERSION=0.5.12rc1
-HAL=hal-${HAL_VERSION}.tar.gz
+HAL_VERSION=0.5.14
+HAL=hal-${HAL_VERSION}.tar.bz2
 HAL_MIRROR=http://hal.freedesktop.org/releases
 HAL_DIR=$BUILD_DIR/hal-${HAL_VERSION}
 HAL_ENV="$CROSS_ENV_AC"
@@ -38,34 +38,21 @@ build_hal() {
 	    --disable-gtk-doc \
 	    --disable-smbios \
 	    --disable-pmu \
-	    --disable-policy-kit \
 	    --disable-pnp-ids \
+	    --disable-policy-kit \
+	    --disable-console-kit \
 	    --with-hwdata=/usr/share/hwdata \
-	    --with-linux-input-header=$KERNEL_DIR/include/linux/input.h \
-	    --disable-static \
-	    --enable-shared \
+	    --with-udev-prefix=/lib \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
     install_sysroot_files || error
-    
-    make DESTDIR=$HAL_DIR/fakeroot install || error
-    
-    rm -rf fakeroot/usr/include \
-	fakeroot/usr/lib/pkgconfig \
-	fakeroot/usr/lib/*.*a \
-	fakeroot/usr/share/gtk-doc \
-	fakeroot/usr/share/man
 
-    find fakeroot/ -executable -a ! -type d -a ! -type l | while read f; do
-	$STRIP $f
-    done
+    install_fakeroot_init
 
-    cp -R fakeroot/etc $ROOTFS_DIR/ || error
-    cp -R fakeroot/usr $ROOTFS_DIR/ || error
-    cp -R fakeroot/var $ROOTFS_DIR/ || error
+    install_fakeroot_finish || error
 
     $INSTALL -D -m 755 $GENERICFS_DIR/etc/init.d/hal $ROOTFS_DIR/etc/init.d/hal || error
     if [ "$USE_FASTBOOT" = "yes" ]; then
@@ -74,8 +61,6 @@ build_hal() {
 	install_rc_start hal 10
     fi
     install_rc_stop  hal 70
-
-    cp -a $GENERICFS_DIR/hal/20thirdparty/*.fdi $ROOTFS_DIR/usr/share/hal/fdi/policy/20thirdparty/ || error "can't install hal rules"
 
     popd
     touch "$STATE_DIR/hal.installed"

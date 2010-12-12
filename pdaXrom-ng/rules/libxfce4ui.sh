@@ -11,7 +11,7 @@
 
 LIBXFCE4UI_VERSION=4.7.5
 LIBXFCE4UI=libxfce4ui-${LIBXFCE4UI_VERSION}.tar.bz2
-LIBXFCE4UI_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+LIBXFCE4UI_MIRROR=http://archive.xfce.org/src/xfce/libxfce4ui/4.7
 LIBXFCE4UI_DIR=$BUILD_DIR/libxfce4ui-${LIBXFCE4UI_VERSION}
 LIBXFCE4UI_ENV="$CROSS_ENV_AC"
 

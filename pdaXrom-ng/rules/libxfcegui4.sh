@@ -11,7 +11,7 @@
 
 LIBXFCEGUI4_VERSION=4.7.0
 LIBXFCEGUI4=libxfcegui4-${LIBXFCEGUI4_VERSION}.tar.bz2
-LIBXFCEGUI4_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+LIBXFCEGUI4_MIRROR=http://archive.xfce.org/src/xfce/libxfcegui4/4.7
 LIBXFCEGUI4_DIR=$BUILD_DIR/libxfcegui4-${LIBXFCEGUI4_VERSION}
 LIBXFCEGUI4_ENV="$CROSS_ENV_AC"
 

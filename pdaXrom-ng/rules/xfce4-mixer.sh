@@ -9,24 +9,24 @@
 # see the README file.
 #
 
-HAL_INFO_VERSION=20091130
-HAL_INFO=hal-info-${HAL_INFO_VERSION}.tar.bz2
-HAL_INFO_MIRROR=http://hal.freedesktop.org/releases
-HAL_INFO_DIR=$BUILD_DIR/hal-info-${HAL_INFO_VERSION}
-HAL_INFO_ENV="$CROSS_ENV_AC"
+XFCE4_MIXER_VERSION=4.6.1
+XFCE4_MIXER=xfce4-mixer-${XFCE4_MIXER_VERSION}.tar.bz2
+XFCE4_MIXER_MIRROR=http://archive.xfce.org/src/apps/xfce4-mixer/4.6
+XFCE4_MIXER_DIR=$BUILD_DIR/xfce4-mixer-${XFCE4_MIXER_VERSION}
+XFCE4_MIXER_ENV="$CROSS_ENV_AC"
 
-build_hal_info() {
-    test -e "$STATE_DIR/hal_info.installed" && return
-    banner "Build hal-info"
-    download $HAL_INFO_MIRROR $HAL_INFO
-    extract $HAL_INFO
-    apply_patches $HAL_INFO_DIR $HAL_INFO
+build_xfce4_mixer() {
+    test -e "$STATE_DIR/xfce4_mixer.installed" && return
+    banner "Build xfce4-mixer"
+    download $XFCE4_MIXER_MIRROR $XFCE4_MIXER
+    extract $XFCE4_MIXER
+    apply_patches $XFCE4_MIXER_DIR $XFCE4_MIXER
     pushd $TOP_DIR
-    cd $HAL_INFO_DIR
+    cd $XFCE4_MIXER_DIR
     (
     eval \
 	$CROSS_CONF_ENV \
-	$HAL_INFO_ENV \
+	$XFCE4_MIXER_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
@@ -42,7 +42,7 @@ build_hal_info() {
     install_fakeroot_finish || error
 
     popd
-    touch "$STATE_DIR/hal_info.installed"
+    touch "$STATE_DIR/xfce4_mixer.installed"
 }
 
-build_hal_info
+build_xfce4_mixer

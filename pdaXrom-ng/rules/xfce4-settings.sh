@@ -11,7 +11,7 @@
 
 XFCE4_SETTINGS_VERSION=4.7.6
 XFCE4_SETTINGS=xfce4-settings-${XFCE4_SETTINGS_VERSION}.tar.bz2
-XFCE4_SETTINGS_MIRROR=http://mocha.xfce.org/archive/xfce/4.8pre2/src
+XFCE4_SETTINGS_MIRROR=http://archive.xfce.org/src/xfce/xfce4-settings/4.7
 XFCE4_SETTINGS_DIR=$BUILD_DIR/xfce4-settings-${XFCE4_SETTINGS_VERSION}
 XFCE4_SETTINGS_ENV="$CROSS_ENV_AC"
 
