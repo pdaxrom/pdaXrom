@@ -30,8 +30,6 @@ build_util_linux_ng() {
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
 	    --sysconfdir=/etc \
-	    --disable-libuuid \
-	    --disable-libblkid \
 	    || error
     ) || error "configure"
 
@@ -39,9 +37,15 @@ build_util_linux_ng() {
 
     #install_sysroot_files || error
 
-    install_rootfs_exec /sbin disk-utils/mkswap
-    install_rootfs_exec /bin mount/mount
-    install_rootfs_exec /bin mount/umount
+    install_fakeroot_init
+    #install_fakeroot_finish || error
+
+    install_rootfs_exec /sbin fakeroot/sbin/mkswap
+    install_rootfs_exec /sbin fakeroot/sbin/blkid
+    install_rootfs_exec /sbin fakeroot/sbin/findfs
+    install_rootfs_exec /bin  fakeroot/bin/mount
+    install_rootfs_exec /bin  fakeroot/bin/umount
+    install_rootfs_exec /usr/bin fakeroot/usr/bin/mcookie
 
     #install_fakeroot_init
     #error "asd"
