@@ -4,20 +4,26 @@
 # Attemp to mount any added removable block devices
 # and remove any removed devices
 #
-
+exec 2>&1
+exec 1>>/var/log/minimount.log
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
 ACTION=$1
 DEVICE=$2
 MEDIA=$3
 
-VOL_ID="/lib/udev/vol_id"
-
 MOUNTDIR=""
 
-[ "$ID_FS_LABEL" ] || ID_FS_LABEL=`$VOL_ID --label $DEVICE`
-[ "$ID_FS_UUID" ] || ID_FS_UUID=`$VOL_ID --uuid $DEVICE`
-[ "$ID_FS_TYPE" ] || ID_FS_TYPE=`$VOL_ID --type $DEVICE`
+VOL_ID="/lib/udev/vol_id"
+if [ -e $VOL_ID ]; then
+    [ "$ID_FS_LABEL" ] || ID_FS_LABEL=`$VOL_ID --label $DEVICE`
+    [ "$ID_FS_UUID" ] || ID_FS_UUID=`$VOL_ID --uuid $DEVICE`
+    [ "$ID_FS_TYPE" ] || ID_FS_TYPE=`$VOL_ID --type $DEVICE`
+else
+    [ "$ID_FS_LABEL" ] || ID_FS_LABEL=`blkid -o value -s LABEL $DEVICE`
+    [ "$ID_FS_UUID"  ] || ID_FS_UUID=`blkid -o value -s UUID $DEVICE`
+    [ "$ID_FS_TYPE"  ] || ID_FS_TYPE=`blkid -o value -s TYPE $DEVICE`
+fi
 
 if [ "$ID_FS_LABEL" ]; then
     MOUNTDIR="$ID_FS_LABEL"
@@ -25,35 +31,38 @@ elif [ "$ID_FS_UUID" ]; then
     MOUNTDIR="$ID_FS_UUID"
 fi
 
-echo "$ACTION device $DEVICE [$ID_FS_LABEL] [$ID_FS_UUID] [$ID_FS_TYPE] [$MOUNTDIR] [$DEVPATH] [$MEDIA]" >> /var/log/minimount.log
+echo "$ACTION device $DEVICE [$ID_FS_LABEL] [$ID_FS_UUID] [$ID_FS_TYPE] [$MOUNTDIR] [$DEVPATH] [$MEDIA]"
 
 if [ "$ACTION" = "add" ] && [ "$MOUNTDIR" ]; then
     if [ ! -e /sys${DEVPATH}/device ]; then
 	DEVPATH=${DEVPATH}/..
     fi
     if [ ! -e /sys${DEVPATH}/removable ]; then
+	echo "Device is not removable!"
 	exit 0
     fi
     if [ "`cat /sys${DEVPATH}/removable`" = "0" ]; then
+	echo "Media is not removable!"
 	exit 0
     fi
     if [ "x$ID_FS_TYPE" = "x" ]; then
+	echo "Unknown filesystem!"
 	exit 1
     fi
-    modprobe $ID_FS_TYPE || exit 1
+    modprobe $ID_FS_TYPE || echo "No loadable module for filesystem $ID_FS_TYPE!"
 
     if [ "$MEDIA" = "CD" ]; then
 	sysctl -w dev.cdrom.lock=0
     fi
 
     mkdir "/media/$MOUNTDIR"
-    mount $DEVICE "/media/$MOUNTDIR"
+    mount $DEVICE "/media/$MOUNTDIR" || rmdir "/media/$MOUNTDIR"
 fi
 
 if [ "$ACTION" = "remove" ]; then
     DEVICE=`echo "$DEVICE" | sed 's/^\/\//\//'`
     MOUNTDIR=`grep "${DEVICE} " /proc/mounts | awk '{ print $2; }'`
-    echo "Trying to unmount [$DEVICE] [$MOUNTDIR]" >> /var/log/minimount.log
+    echo "Trying to unmount [$DEVICE] [$MOUNTDIR]"
     if [ "$MOUNTDIR" ]; then
 	umount -l "$MOUNTDIR" && rmdir "$MOUNTDIR"
     fi
