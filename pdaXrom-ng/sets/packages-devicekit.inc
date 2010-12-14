@@ -4,7 +4,7 @@
 . $RULES_DIR/dbus-glib.sh
 . $RULES_DIR/sg3_utils.sh
 . $RULES_DIR/polkit.sh
-. $RULES_DIR/ConsoleKit.sh
+#. $RULES_DIR/ConsoleKit.sh
 . $RULES_DIR/LVM2.sh
 . $RULES_DIR/readline.sh
 . $RULES_DIR/libuuid.sh

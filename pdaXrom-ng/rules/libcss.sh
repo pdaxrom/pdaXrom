@@ -24,6 +24,8 @@ build_libcss() {
     pushd $TOP_DIR
     cd $LIBCSS_DIR
 
+    sed -i -e 's|-Werror||' Makefile
+
     make CC=${CROSS}gcc AR=${CROSS}ar PREFIX=/usr  || error
 
     install_sysroot_files CC=${CROSS}gcc AR=${CROSS}ar PREFIX=/usr || error

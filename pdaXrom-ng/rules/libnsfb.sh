@@ -24,6 +24,8 @@ build_libnsfb() {
     pushd $TOP_DIR
     cd $LIBNSFB_DIR
 
+    sed -i -e 's|-Werror||' Makefile
+
     make CC=${CROSS}gcc AR=${CROSS}ar PREFIX=/usr  || error
 
     install_sysroot_files CC=${CROSS}gcc AR=${CROSS}ar PREFIX=/usr || error

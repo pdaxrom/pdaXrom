@@ -9,9 +9,9 @@
 # see the README file.
 #
 
-SHARED_MIME_INFO=shared-mime-info-0.51.tar.bz2
+SHARED_MIME_INFO=shared-mime-info-0.90.tar.bz2
 SHARED_MIME_INFO_MIRROR=http://people.freedesktop.org/~hadess
-SHARED_MIME_INFO_DIR=$BUILD_DIR/shared-mime-info-0.51
+SHARED_MIME_INFO_DIR=$BUILD_DIR/shared-mime-info-0.90
 SHARED_MIME_INFO_ENV="$CROSS_ENV_AC"
 
 build_shared_mime_info() {
@@ -28,14 +28,20 @@ build_shared_mime_info() {
 	$SHARED_MIME_INFO_ENV \
 	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
 	    --prefix=/usr \
-	    --sysconfdir=/etc
+	    --sysconfdir=/etc \
+	    --disable-update-mimedb
     ) || error "configure"
     
-    make $MAKEARGS || error
+    make || error
+#    make $MAKEARGS || error
 
-    $INSTALL -D -m 644 freedesktop.org.xml $ROOTFS_DIR/usr/share/mime/packages/freedesktop.org.xml || error
-    $INSTALL -D -m 755 update-mime-database $ROOTFS_DIR/usr/bin/update-mime-database || error
-    $STRIP $ROOTFS_DIR/usr/bin/update-mime-database
+    install_fakeroot_init
+    rm -rf fakeroot/usr/share/pkgconfig
+    install_fakeroot_finish || error
+
+#    $INSTALL -D -m 644 freedesktop.org.xml $ROOTFS_DIR/usr/share/mime/packages/freedesktop.org.xml || error
+#    $INSTALL -D -m 755 update-mime-database $ROOTFS_DIR/usr/bin/update-mime-database || error
+#    $STRIP $ROOTFS_DIR/usr/bin/update-mime-database
 
     update-mime-database $ROOTFS_DIR/usr/share/mime
 
