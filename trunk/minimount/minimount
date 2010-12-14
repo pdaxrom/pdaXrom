@@ -61,7 +61,7 @@ fi
 
 if [ "$ACTION" = "remove" ]; then
     DEVICE=`echo "$DEVICE" | sed 's/^\/\//\//'`
-    MOUNTDIR=`grep "${DEVICE} " /proc/mounts | awk '{ print $2; }'`
+    MOUNTDIR=`grep "${DEVICE} " /proc/mounts | cut -f2 -d' '`
     echo "Trying to unmount [$DEVICE] [$MOUNTDIR]"
     if [ "$MOUNTDIR" ]; then
 	umount -l "$MOUNTDIR" && rmdir "$MOUNTDIR"
