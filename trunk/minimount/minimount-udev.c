@@ -17,7 +17,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include <asm/byteorder.h>
 #include <linux/cdrom.h>
 #include <linux/limits.h>
 #include <limits.h>
