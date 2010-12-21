@@ -1,0 +1,35 @@
+--- linux-2.6.30/fs/aufs/fstype.h-	2009-09-20 16:46:45.000000000 +0700
++++ linux-2.6.30/fs/aufs/fstype.h	2009-09-20 16:49:00.000000000 +0700
+@@ -30,6 +30,8 @@
+ #include <linux/magic.h>
+ #include <linux/romfs_fs.h>
+ #include <linux/aufs_type.h>
++#include <linux/squashfs_fs.h>
++#include <linux/sqmagic.h>
+ 
+ static inline int au_test_aufs(struct super_block *sb)
+ {
+@@ -275,6 +277,15 @@
+ #endif
+ }
+ 
++static inline int au_test_squashfs_lzma(struct super_block *sb __maybe_unused)
++{
++#if defined(CONFIG_SQUASHFS) || defined(CONFIG_SQUASHFS_MODULE)
++	return sb->s_magic == SQUASHFS_MAGIC_LZMA;
++#else
++	return 0;
++#endif
++}
++
+ static inline int au_test_btrfs(struct super_block *sb __maybe_unused)
+ {
+ #if defined(CONFIG_BTRFS_FS) || defined(CONFIG_BTRFS_FS_MODULE)
+@@ -465,6 +476,7 @@
+ static inline int au_test_fs_rr(struct super_block *sb)
+ {
+ 	return au_test_squashfs(sb)
++		|| au_test_squashfs_lzma(sb)
+ 		|| au_test_iso9660(sb)
+ 		|| au_test_cramfs(sb)
+ 		|| au_test_romfs(sb);
