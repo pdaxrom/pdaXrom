@@ -106,6 +106,9 @@ sleep 1
 mount -o noatime /dev/nand0p2 /mnt
 
 ENABLE_UNMOUNT="yes"
+TOTAL_MEMORY=`grep "MemTotal:" /proc/meminfo | awk '{ print $2 }'`
+echo "Total Memory: $((TOTAL_MEMORY / 1024))MB"
+TOTAL_MEMORY=$((TOTAL_MEMORY * 1024))
 
 if [ -e /mnt/linux/rootfs.img ]; then
     IMAGE_SIZE=`ls -l /mnt/linux/rootfs.img | awk '{ print $5 }'`
