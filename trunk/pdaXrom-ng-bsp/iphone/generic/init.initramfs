@@ -24,8 +24,71 @@ splash_finish() {
     fi
 }
 
+boot_aufs2() {
+    if [ -d /aufs2 ]; then
+	if [ -f /mnt/linux/writable.img ]; then
+	    echo "Mount local writable image"
+	    mount /mnt/linux/writable.img /dynamic -o loop
+	    ENABLE_UNMOUNT="no"
+	else
+	    mount -t tmpfs none /dynamic
+	fi
+	mount -t aufs -o br=/dynamic=rw:/rootfs=ro none /aufs2
+	mkdir -p /aufs2/mnt/dynamic
+	mkdir -p /aufs2/mnt/rootfs
+	mount -o move /dynamic /aufs2/mnt/dynamic
+	mount -o move /rootfs /aufs2/mnt/rootfs
+	if [ "$ENABLE_UNMOUNT" = "no" ]; then
+	    mkdir -p /aufs2/media/bootdisk
+	    mount -o move /mnt /aufs2/media/bootdisk
+	fi
+	cd /aufs2
+    fi
+}
+
+boot_rootfs() {
+    echo "Boooooting!!!"
+    cd /rootfs
+    boot_aufs2
+    if [ "$ENABLE_UNMOUNT" = "yes" ]; then
+	umount /mnt
+    fi
+    #/sbin/pivot_root /rootfs /rootfs/boot/initrd
+    umount /sys
+    umount /proc
+    #exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
+    rm -rf /lib/modules
+    rm -rf /usr
+    exec /sbin/switch_root . /sbin/init
+}
+
+upload_firmware_file() {
+    echo "Preparing firmware binary $2"
+    while [ ! -e "/sys/class/firmware/$1/loading" ]; do
+	/bin/sleep 1
+    done
+    echo "Uploading!"
+
+    echo 1 > "/sys/class/firmware/$1/loading"
+    /bin/cat "/lib/firmware/$2" > "/sys/class/firmware/$1/data"
+    echo 0 > "/sys/class/firmware/$1/loading"
+    echo "Done!"
+}
+
+upload_firmwares() {
+    upload_firmware_file "mmc0:0001:1" sd8686_helper.bin
+    upload_firmware_file "mmc0:0001:1" sd8686.bin
+    upload_firmware_file "iphone-multitouch" zephyr2.bin
+}
+
 /bin/mount -n -t proc none /proc
 /bin/mount -n -t sysfs none /sys
+
+echo "===================="
+echo " Install  firmwares "
+echo "===================="
+upload_firmwares
+sleep 1
 
 #echo "0 0 0 0" >/proc/sys/kernel/printk
 
@@ -34,32 +97,39 @@ echo " Preparing to start "
 echo "===================="
 sleep 1
 
-MODULES="@MODULES_LIST@"
-MODULES_REV=""
+for i in 7 6 5 4 3 2 1 0; do
+    mknod /dev/loop$i b 7 $i
+done
 
-#for f in $MODULES; do
-#    /sbin/modprobe $f && MODULES_REV="$f $MODULES_REV"
-#done
+mknod /dev/nand0p2 b `/bin/cat /sys/class/block/nand0p2/dev | /bin/tr ':' ' '`
+sleep 1
+mount -o noatime /dev/nand0p2 /mnt
 
-/sbin/lsmod | grep psfreedom > /dev/null
-if [ $? != 0 ]; then
-    /sbin/insmod /lib/modules/2.6.32.9/kernel/misc/psfreedom.ko
-    RC=$?
+ENABLE_UNMOUNT="yes"
+
+if [ -e /mnt/linux/rootfs.img ]; then
+    IMAGE_SIZE=`ls -l /mnt/linux/rootfs.img | awk '{ print $5 }'`
+    echo "Image size: $((IMAGE_SIZE / 1048576))MB"
+
+    if [ $(( IMAGE_SIZE * 2)) -gt $TOTAL_MEMORY ]; then
+	echo "Mount root image locally"
+	mount -n -o loop,ro -t squashfs /mnt/linux/rootfs.img /rootfs
+	ENABLE_UNMOUNT="no"
+    else
+	echo -n "Copy root image to ram ... "
+	cp /mnt/linux/rootfs.img /boot && echo "OK" || echo "failed"
+	mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs
+    fi
+fi
+if mountpoint -q /rootfs ; then
+    boot_rootfs
 fi
 
-while true
-do
-	cat /proc/psfreedom/status
-
-	if [ `cat /proc/psfreedom/status` == `echo DEVICE5_READY` ]; then
-		echo sleeping
-		busybox usleep 25000
-		echo rmmod
-		#rmmod -f psfreedom.ko
-		echo exiting
-		break
-	fi
-done
+/bin/busybox free
+ls -l /mnt/
+sleep 5
+umount /mnt
+sleep 1
 
 echo "===================="
 echo "      Shutdown"

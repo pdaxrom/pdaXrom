@@ -21,7 +21,7 @@ create_initramfs() {
 
     mkdir -p ${INITRAMFS_DIR}/lib/modules
 
-    $INSTALL -D -m 755 $BSP_GENERICFS_DIR/init.initramfs $INITRAMFS_DIR/init || error
+    $INSTALL -D -m 755 $BSP_GENERICFS_DIR/${INITRAMFS_INIT-init.initramfs} $INITRAMFS_DIR/init || error
 
     pushd $TOP_DIR
 
@@ -74,6 +74,7 @@ create_initramfs() {
     done
 
     ln -sf ../bin/busybox $INITRAMFS_DIR/bin/sh || error
+    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/tr || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
     ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/mkswap || error
 
@@ -132,6 +133,16 @@ create_initramfs() {
     if [ "$USE_AUFS2" = "yes" ]; then
 	mkdir -p $INITRAMFS_DIR/dynamic
 	mkdir -p $INITRAMFS_DIR/aufs2
+    fi
+
+    if [ "$ASBESTOS" = "yes" ]; then
+	cp -f ${BSP_GENERICFS_DIR}/asbestos_stage1.bin ${INITRAMFS_DIR}/lib/asbestos_stage1.bin
+	cp -f ${BSP_GENERICFS_DIR}/asbestos_stage2.bin ${INITRAMFS_DIR}/lib/asbestos_stage2.bin
+    fi
+
+    if [ -d ${BSP_SRC_DIR}/firmware ]; then
+	mkdir -p ${INITRAMFS_DIR}/lib/firmware
+	find ${BSP_SRC_DIR}/firmware -name "*.bin" -exec $INSTALL -m 644 {} ${INITRAMFS_DIR}/lib/firmware/ \;
     fi
 
     uuidgen > $INITRAMFS_DIR/uuid
