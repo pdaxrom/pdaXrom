@@ -79,6 +79,8 @@ upload_firmwares() {
     upload_firmware_file "mmc0:0001:1" sd8686_helper.bin
     upload_firmware_file "mmc0:0001:1" sd8686.bin
     upload_firmware_file "iphone-multitouch" zephyr2.bin
+    #upload_firmware_file "iphone-multitouch" zephyr_main.bin
+    #upload_firmware_file "iphone-multitouch" zephyr_aspeed.bin
 }
 
 /bin/mount -n -t proc none /proc
