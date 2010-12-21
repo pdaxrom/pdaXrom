@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export BINUTILS_VERSION=2.20.51.0.9
-export GCC_VERSION=4.4.4
+export GCC_VERSION=4.4.5
 export KERNEL_VERSION=2.6.29
 
 export DEFAULT_CPU="armv6"
@@ -18,3 +18,5 @@ if [ "x$1" = "xclean" ]; then
 else
    . ./build-crosstools.sh $TARGET_ARCH
 fi
+rm -f /opt/${TARGET_ARCH}/toolchain/${TARGET_ARCH}/lib/libgcc_s.so
+ln -sf libgcc_s.so.1 /opt/${TARGET_ARCH}/toolchain/${TARGET_ARCH}/lib/libgcc_s.so
