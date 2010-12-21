@@ -21,3 +21,5 @@ lzma/do_mounts_rd.c.diff
 
 aufs2_2.6.30.9.patch
 aufs2_squashfs_lzma.patch
+
+composite.c.diff
