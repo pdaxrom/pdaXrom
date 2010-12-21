@@ -40,6 +40,7 @@ build_alsa_lib() {
 	     $C_ARGS \
 	    --disable-python || error
     )
+    sed -i -e 's:add_dir="-L$libdir"::g' libtool
     make $MAKEARGS || error
 
     install_sysroot_files
