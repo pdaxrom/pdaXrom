@@ -72,7 +72,7 @@ build_ffmpeg() {
 	    --enable-cross-compile \
 	    --target-os=linux \
 	    --cc=${CROSS}gcc \
-	    --as=${CROSS}as \
+	    --as=${CROSS}gcc \
 	    --nm=${CROSS}nm \
 	    --ld=${CROSS}gcc \
 	    --arch=`get_ffmpeg_arch ${TARGET_ARCH}` \
