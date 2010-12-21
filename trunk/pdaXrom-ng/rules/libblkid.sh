@@ -36,6 +36,7 @@ build_util_linux_ng_libblkid() {
 	    || error
     ) || error "configure"
 
+    sed -i -e 's:add_dir="-L$libdir"::g' libtool
     make $MAKEARGS || error
 
     cd shlibs/blkid
