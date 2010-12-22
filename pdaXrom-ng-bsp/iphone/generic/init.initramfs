@@ -92,7 +92,7 @@ echo "===================="
 upload_firmwares
 sleep 1
 
-#echo "0 0 0 0" >/proc/sys/kernel/printk
+echo "0 0 0 0" >/proc/sys/kernel/printk
 
 echo "===================="
 echo " Preparing to start "
@@ -116,7 +116,7 @@ if [ -e /mnt/linux/rootfs.img ]; then
     IMAGE_SIZE=`ls -l /mnt/linux/rootfs.img | awk '{ print $5 }'`
     echo "Image size: $((IMAGE_SIZE / 1048576))MB"
 
-    if [ $(( IMAGE_SIZE * 2)) -gt $TOTAL_MEMORY ]; then
+    if [ $(( IMAGE_SIZE * 3)) -gt $TOTAL_MEMORY ]; then
 	echo "Mount root image locally"
 	mount -n -o loop,ro -t squashfs /mnt/linux/rootfs.img /rootfs
 	ENABLE_UNMOUNT="no"
