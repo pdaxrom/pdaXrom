@@ -34,11 +34,14 @@ build_matchbox_keyboard() {
 	    --enable-cairo \
 	    || error
     ) || error "configure"
-    
+
     make $MAKEARGS || error
 
-    make DESTDIR=$ROOTFS_DIR install || error
-    $STRIP $ROOTFS_DIR/usr/bin/matchbox-keyboard || error
+    install_fakeroot_init
+    install_fakeroot_finish || error
+
+    $INSTALL -D -m 755 $GENERICFS_DIR/mb-keyboard/mb-keyboard-switcher $ROOTFS_DIR/usr/bin/mb-keyboard-switcher || error
+    $INSTALL -D -m 644 $GENERICFS_DIR/mb-keyboard/mb-keyboard-switcher.desktop $ROOTFS_DIR/usr/share/applications/mb-keyboard-switcher.desktop || error
 
     popd
     touch "$STATE_DIR/matchbox_keyboard.installed"

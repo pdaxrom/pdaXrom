@@ -1,7 +1,7 @@
 #!/bin/sh
 
 test -e ${HOME}/Desktop || mkdir ${HOME}/Desktop
-pcmanfm &
+which pcmanfm >/dev/null && pcmanfm &
 if [ ! -e ${HOME}/.config/tint2 ]; then
     mkdir ${HOME}/.config
     cp -a /etc/xdg/tint2 ${HOME}/.config

@@ -61,6 +61,7 @@ udev_start() {
     $udevs --timeout=60 > /dev/null 2>/dev/null
     log_end_msg $?
     # We can only mount /dev/pts after initialising udev
+    mkdir -p /dev/pts
     if [ -d "/dev/pts" ]; then
     	mount /dev/pts
     fi

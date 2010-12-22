@@ -9,6 +9,10 @@ RootMenu = "Pekwm" {
 
 	Separator {}
 
+	Entry = "Keyboard" { Actions = "Exec mb-keyboard-switcher &" }
+
+	Separator {}
+
 INCLUDE = "appmenu"
 
 	Separator {}
