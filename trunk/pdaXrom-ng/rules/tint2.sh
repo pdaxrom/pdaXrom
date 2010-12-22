@@ -9,8 +9,8 @@
 # see the README file.
 #
 
-TINT2_VERSION=0.7.1
-TINT2=tint2-${TINT2_VERSION}.tar.gz
+TINT2_VERSION=0.11
+TINT2=tint2-${TINT2_VERSION}.tar.bz2
 TINT2_MIRROR=http://tint2.googlecode.com/files
 TINT2_DIR=$BUILD_DIR/tint2-${TINT2_VERSION}
 TINT2_ENV="$CROSS_ENV_AC"
@@ -22,16 +22,10 @@ build_tint2() {
     extract $TINT2
     apply_patches $TINT2_DIR $TINT2
     pushd $TOP_DIR
-    cd $TINT2_DIR
-    (
-    eval \
-	$CROSS_CONF_ENV \
-	$TINT2_ENV \
-	./configure --build=$BUILD_ARCH --host=$TARGET_ARCH \
-	    --prefix=/usr \
-	    --sysconfdir=/etc \
-	    || error
-    ) || error "configure"
+    mkdir $TINT2_DIR/build
+    cd $TINT2_DIR/build
+
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_TINT2CONF=no -DCMAKE_C_COMPILER=${CROSS}gcc ../
 
     make $MAKEARGS || error
 

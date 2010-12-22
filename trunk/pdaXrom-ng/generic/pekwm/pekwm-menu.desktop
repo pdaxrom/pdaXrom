@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=pekwm menu
+Categories=Utility;
+Exec=/usr/bin/xdotool key super+r
+Icon=apple-red.png
+Type=Application
+Terminal=false
+Comment=Show pekwm menu
