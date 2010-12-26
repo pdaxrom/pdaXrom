@@ -1,0 +1,153 @@
+#!/bin/sh
+
+/bin/mount -n -t proc none /proc
+/bin/mount -n -t sysfs none /sys
+
+#echo "0 0 0 0" >/proc/sys/kernel/printk
+
+MODULES="@MODULES_LIST@"
+MODULES_REV=""
+
+for f in $MODULES; do
+    echo "Loading $f"
+    /sbin/modprobe -q -s $f && MODULES_REV="$f $MODULES_REV"
+done
+
+echo "Waiting for usb devices "
+
+for i in 7 6 5 4 3 2 1 0; do
+    echo "."
+    /bin/sleep 1
+    mknod /dev/loop$i b 7 $i
+done
+
+#sleep 10
+
+#/bin/sh
+
+ENABLE_UNMOUNT="yes"
+
+cd /sys/block
+
+create_node() {
+    local MAJOR=${2/:*}
+    local MINOR=${2/*:}
+
+    mknod /dev/$1 b $MAJOR $MINOR
+}
+
+remove_modules() {
+    for f in $MODULES_REV; do
+	if [ "$f" = "ohci-hcd" -o \
+	     "$f" = "ehci-hcd" ]; then
+	     continue
+	fi
+	/sbin/modprobe -q -r $f
+    done
+}
+
+boot_aufs2() {
+    if [ -d /aufs2 ]; then
+	if [ -f /mnt/boot/writable.img ]; then
+	    echo "Mount local writable image"
+	    mount /mnt/boot/writable.img /dynamic -o loop
+	    ENABLE_UNMOUNT="no"
+	else
+	    mount -t tmpfs none /dynamic
+	fi
+	mount -t aufs -o br=/dynamic=rw:/rootfs=ro none /aufs2
+	mkdir -p /aufs2/mnt/dynamic
+	mkdir -p /aufs2/mnt/rootfs
+	mount -o move /dynamic /aufs2/mnt/dynamic
+	mount -o move /rootfs /aufs2/mnt/rootfs
+	if [ "$ENABLE_UNMOUNT" = "no" ]; then
+	    mkdir -p /aufs2/media/bootdisk
+	    mount -o move /mnt /aufs2/media/bootdisk
+	fi
+	cd /aufs2
+    fi
+}
+
+boot_rootfs() {
+    echo "Boooooting!!!"
+    cd /rootfs
+    boot_aufs2
+    if [ "$ENABLE_UNMOUNT" = "yes" ]; then
+	umount /mnt
+    fi
+    remove_modules
+    #/sbin/pivot_root /rootfs /rootfs/boot/initrd
+    umount /sys
+    umount /proc
+    #exec /sbin/chroot . /sbin/init </dev/console 2>/dev/console
+    rm -rf /lib/modules
+    rm -rf /usr
+    exec /sbin/switch_root . /sbin/init
+}
+
+check_rootfs() {
+    mount -n /dev/$1 /mnt 2>/dev/null || return
+
+    if [ -e /mnt/boot/rootfs.img ]; then
+	if cmp -s /uuid /mnt/boot/uuid ; then
+	    echo "Detected root image on /dev/$1!"
+	    IMAGE_SIZE=`ls -l /mnt/boot/rootfs.img | awk '{ print $5 }'`
+	    echo "Image size: $((IMAGE_SIZE / 1048576))MB"
+	    
+	    if [ -e /dev/ps3vram ]; then
+		/sbin/losetup -o 134217728 /dev/loop0 /dev/ps3vram && /sbin/mkswap /dev/loop0 >/dev/null 2>/dev/null && swapon /dev/loop0
+		echo -n "Copy root image to vram ... "
+		dd if=/mnt/boot/rootfs.img of=/dev/ps3vram bs=1M >/dev/null 2>/dev/null && echo "done!" || echo "error!"
+		mount -n -o loop,ro -t squashfs /dev/ps3vram /rootfs
+	    elif [ $(( IMAGE_SIZE * 2)) -gt $TOTAL_MEMORY ]; then
+		echo "Mount root image locally"
+		mount -n -o loop,ro -t squashfs /mnt/boot/rootfs.img /rootfs
+		ENABLE_UNMOUNT="no"
+	    else
+		echo -n "Copy root image to ram ... "
+		cp /mnt/boot/rootfs.img /boot && echo "done!" || echo "error!"
+		mount -n -o loop,ro -t squashfs /boot/rootfs.img /rootfs
+	    fi
+	    if mountpoint -q /rootfs ; then
+		boot_rootfs
+	    else
+		echo "Can't mount root :("
+		echo
+	    fi
+	fi
+    fi
+
+    umount /mnt
+}
+
+TOTAL_MEMORY=`grep "MemTotal:" /proc/meminfo | awk '{ print $2 }'`
+echo "Total Memory: $((TOTAL_MEMORY / 1024))MB"
+TOTAL_MEMORY=$((TOTAL_MEMORY * 1024))
+
+for d in *; do
+    case $d in
+	ram*|loop*)
+	    continue
+	    ;;
+    esac
+    
+    create_node $d `cat $d/dev`
+    check_rootfs $d
+    
+    cd $d
+    for f in *; do
+	case $f in
+	${d}*)
+	    create_node $f `cat $f/dev`
+	    check_rootfs $f
+	    ;;
+	esac
+    done
+    cd ..
+done
+
+ls -l /dev/
+
+echo "No bootable rootfs found!"
+
+/bin/sh
