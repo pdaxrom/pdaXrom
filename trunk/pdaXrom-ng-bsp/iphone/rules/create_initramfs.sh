@@ -70,18 +70,15 @@ create_initramfs() {
 	    sbin/mkfs.minix bin/mkdir sbin/insmod sbin/modprobe sbin/depmod \
 	    sbin/init sbin/pivot_root sbin/rmmod bin/sleep bin/dmesg sbin/switch_root \
 	    sbin/lsmod sbin/swapon sbin/swapoff sbin/mkswap sbin/losetup ; do
-	cp -a $ROOTFS_DIR/$f $INITRAMFS_DIR/$f || error
+	cp -a ${ROOTFS_DIR}/${f} ${INITRAMFS_DIR}/${f} || error
     done
 
-    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/mount || error
-    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/umount || error
-    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/sh || error
-    ln -sf ../bin/busybox $INITRAMFS_DIR/bin/tr || error
-    ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/chroot || error
-    ln -sf ../bin/busybox $INITRAMFS_DIR/sbin/mkswap || error
-
-    for f in [ test mknod tr cut cmp grep awk wc sort uname mountpoint; do
-	ln -sf ../bin/busybox $INITRAMFS_DIR/bin/$f || error
+    for f in /bin/mount /bin/umount /bin/sh /bin/tr \
+	    /bin/test /bin/mknod /bin/cut /bin/cmp /bin/grep \
+	    /bin/awk /bin/wc /bin/sort /bin/uname /bin/mountpoint \
+	    /bin/true /bin/false /bin/usleep /bin/kill \
+	    /sbin/chroot /sbin/mkswap ; do
+	ln -sf ../bin/busybox ${INITRAMFS_DIR}/${f} || error
     done
 
     if [ "x$INITRAMFS_MODULES" = "x" ]; then
@@ -135,11 +132,6 @@ create_initramfs() {
     if [ "$USE_AUFS2" = "yes" ]; then
 	mkdir -p $INITRAMFS_DIR/dynamic
 	mkdir -p $INITRAMFS_DIR/aufs2
-    fi
-
-    if [ "$ASBESTOS" = "yes" ]; then
-	cp -f ${BSP_GENERICFS_DIR}/asbestos_stage1.bin ${INITRAMFS_DIR}/lib/asbestos_stage1.bin
-	cp -f ${BSP_GENERICFS_DIR}/asbestos_stage2.bin ${INITRAMFS_DIR}/lib/asbestos_stage2.bin
     fi
 
     if [ -d ${BSP_SRC_DIR}/firmware ]; then
