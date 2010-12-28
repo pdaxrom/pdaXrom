@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <semaphore.h>
 #include <sys/time.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -16,10 +17,11 @@
 #include "readconf.h"
 
 #define SHM_BUF_SIZE	512
-static int shmid;
-static char *shared_buf;
 
-static char str_buf[SHM_BUF_SIZE];
+typedef struct {
+    sem_t	mutex;
+    char	data[SHM_BUF_SIZE];
+} dance_connector;
 
 static db_image *img_anim[16];
 
@@ -67,35 +69,28 @@ static db_image *load_wallpaper(db_image *desk, char *name)
     return ret;
 }
 
-static int shared_open(int create)
+static dance_connector *shared_open(int *shmid, int f)
 {
-    if((shmid = shmget(9999, SHM_BUF_SIZE, (create?IPC_CREAT:0) | 0666)) < 0) {
+    dance_connector *ret;
+    if ((*shmid = shmget(9999, SHM_BUF_SIZE, (f?IPC_CREAT:0) | 0666)) < 0) {
         printf("Error in shmget. errno is: %d\n", errno);
-        return -1;
+        return NULL;
     }
-    if ((shared_buf = shmat(shmid, NULL, 0)) < 0) {
+    if ((ret = shmat(*shmid, NULL, 0)) < 0) {
 	printf("Error in shm attach. errno is: %d\n", errno);
-	return -1;
+	shmctl(*shmid, IPC_RMID, NULL);
+	return NULL;
     }
-    return 0;
+    return ret;
 }
 
-static int shared_close(void)
+static int shared_close(int shmid, dance_connector *connector, int f)
 {
-    shmdt(shared_buf);
-    shmctl(shmid, IPC_RMID, NULL);
+    shmdt(connector);
+    if (!f)
+	shmctl(shmid, IPC_RMID, NULL);
 
     return 0;
-}
-
-void app_close(void)
-{
-    int i;
-    for (i = 0; i < 16; i++)
-	db_image_free(img_anim[i]);
-
-    db_ui_close();
-    shared_close();
 }
 
 int main(int argc, char *argv[])
@@ -107,6 +102,8 @@ int main(int argc, char *argv[])
     int font_size = 14;
     int fullscreen = 0;
     int rundaemon = 0;
+    int shmid = -1;
+    dance_connector *connector;
 
     wallp_name[0] = 0;
     font_name[0] = 0;
@@ -123,22 +120,16 @@ int main(int argc, char *argv[])
 	} else if (!strcmp(argv[i], "-b")) {
 	    rundaemon = 1;
 	} else if (!strcmp(argv[i], "-u")) {
-	    if (shared_open(1) == -1) {
+	    i++;
+	    if (!(connector = shared_open(&shmid, 1))) {
 		return -1;
 	    }
-
-	    i++;
-	    strcpy(shared_buf, argv[i]);
-
-	    int cnt = 5;
-	    while (cnt--) {
-		if (! *shared_buf)
-		    break;
-		usleep(10000);
-	    }
-
-	    shmdt(shared_buf);
-	    usleep(10000);
+	    while (*connector->data)
+		usleep(1000);
+	    sem_wait(&connector->mutex);
+	    strncpy(connector->data, argv[i], SHM_BUF_SIZE);
+	    sem_post(&connector->mutex);
+	    shared_close(shmid, connector, 1);
 	    return 0;
 	}
 	i++;
@@ -158,11 +149,11 @@ int main(int argc, char *argv[])
     if (!strlen(wallp_name))
 	strcpy(wallp_name, DATADIR "/artwork/eye.jpg");
 
-    if (shared_open(1) == -1) {
+    if (!(connector = shared_open(&shmid, 1))) {
 	return -1;
     }
-    str_buf[0] = 0;
-    *shared_buf = 0;
+    sem_init(&connector->mutex, 1, 1);
+    *connector->data = 0;
 
 #ifdef USE_X11
     if (fullscreen)
@@ -172,8 +163,6 @@ int main(int argc, char *argv[])
 #else
     db_ui_create();
 #endif
-
-    atexit(app_close);
 
     if (db_readconf(config_name, "fontsize", conf_val)) {
 	font_size = atoi(conf_val);
@@ -242,33 +231,42 @@ int main(int argc, char *argv[])
 	    break;
 	}
 #endif
-	if (*shared_buf) {
-	    fprintf(stderr, ">>> %s\n", shared_buf);
-	    if (!strncmp(shared_buf, "QUIT", 4))
+	if (*connector->data) {
+	    sem_wait(&connector->mutex);
+	    char str_buf[SHM_BUF_SIZE];
+	    fprintf(stderr, ">>> %s\n", connector->data);
+	    if (!strncmp(connector->data, "QUIT", 4))
 		break;
-	    if (!strncmp(shared_buf, "TEXT", 4)) {
+	    if (!strncmp(connector->data, "TEXT", 4)) {
 		int w = 0, h = 0;
-		strcpy(str_buf, shared_buf + 5);
+		strcpy(str_buf, connector->data + 5);
 		strcat(str_buf, " ... ");
 		db_image_put_image(img_desk, img_wallp, 0, 0);
 		db_font_get_string_box(font, str_buf, &w, &h);
 		db_image_put_string(img_desk, font, str_buf, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffffff);
 	    }
-	    if (!strncmp(shared_buf, "SUCCESS", 7)) {
+	    if (!strncmp(connector->data, "SUCCESS", 7)) {
 		int w = 0, h = 0;
-		strcat(str_buf, shared_buf + 8);
+		strcat(str_buf, connector->data + 8);
 		db_image_put_image(img_desk, img_wallp, 0, 0);
 		db_font_get_string_box(font, str_buf, &w, &h);
 		db_image_put_string(img_desk, font, str_buf, (img_desk->width - w) / 2, img_desk->height - 80, 0xffffff);
 	    }
-	    *shared_buf = 0;
+	    *connector->data = 0;
+	    sem_post(&connector->mutex);
 	}
+
 	int n = (i / 10) % 16;
 	db_image_put_image(img_desk, img_anim[n], (img_desk->width - img_anim[n]->width) / 2, img_desk->height - 40 - img_anim[n]->height / 2);
 	db_ui_update_screen();
 	usleep(10000);
 	i++;
     }
+
+    for (i = 0; i < 16; i++)
+	db_image_free(img_anim[i]);
+
+    shared_close(shmid, connector, 0);
 
     return 0;
 }
