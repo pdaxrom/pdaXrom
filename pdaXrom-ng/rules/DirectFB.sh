@@ -24,6 +24,7 @@ build_DirectFB() {
     pushd $TOP_DIR
     ln -sf $KERNEL_DIR/include/linux $TARGET_INC/linux || error
     ln -sf $KERNEL_DIR/include/asm $TARGET_INC/asm || error
+    test -e $KERNEL_DIR/include/generated/autoconf.h && ln -sf $KERNEL_DIR/include/generated/autoconf.h $TARGET_INC/linux/autoconf.h
     cd $DIRECTFB_DIR
     (
     eval \
