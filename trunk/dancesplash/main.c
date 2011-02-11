@@ -266,6 +266,8 @@ int main(int argc, char *argv[])
     for (i = 0; i < 16; i++)
 	db_image_free(img_anim[i]);
 
+    db_ui_close();
+
     shared_close(shmid, connector, 0);
 
     return 0;
