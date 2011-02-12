@@ -121,8 +121,9 @@ int main(int argc, char *argv[])
 	    rundaemon = 1;
 	} else if (!strcmp(argv[i], "-u")) {
 	    i++;
-	    if (!(connector = shared_open(&shmid, 1))) {
-		return -1;
+	    if (!(connector = shared_open(&shmid, 0))) {
+		/* no active splash */
+		return 0;
 	    }
 	    while (*connector->data)
 		usleep(1000);
