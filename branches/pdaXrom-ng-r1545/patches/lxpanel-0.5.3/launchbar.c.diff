@@ -1,0 +1,144 @@
+--- s/src/plugins/launchbar.c.orig	2009-09-08 13:26:23.000000000 +0700
++++ s/src/plugins/launchbar.c	2009-09-08 13:45:30.000000000 +0700
+@@ -32,6 +32,11 @@
+ #include <gdk-pixbuf/gdk-pixbuf.h>
+ #include <glib/gi18n.h>
+ 
++#ifdef USE_LIBSN
++#define SN_API_NOT_YET_FROZEN 1
++#include <libsn/sn.h>
++#endif
++
+ #include <menu-cache.h>
+ 
+ #include "panel.h"
+@@ -80,6 +85,9 @@
+     gchar * image;			/* Image icon (from Icon entry) */
+     gchar * action;			/* Action (from Exec entry) */
+     gchar * tooltip;			/* Tooltip (from Name entry) */
++#ifdef USE_LIBSN
++    int snFlag;
++#endif
+     guchar use_terminal : 1;		/* True if Terminal=true or from configuration file */
+     guchar customize_image : 1;		/* True if image icon from configuration file */
+     guchar customize_action : 1;	/* True if action from configuration file */
+@@ -122,6 +130,35 @@
+ static void launchbar_save_configuration(Plugin * p, FILE * fp);
+ static void launchbar_panel_configuration_changed(Plugin * p);
+ 
++#ifdef USE_LIBSN
++extern SnDisplay  *sn_display;
++
++static void sn_exec(gchar *name)
++{
++    SnLauncherContext *context;
++    GError *error = NULL;
++
++    char *bin_name, *desc;
++
++    bin_name = name;
++    desc = name;
++
++    if (!sn_display) {
++	sn_display = sn_display_new (GDK_DISPLAY(), NULL, NULL);
++    }
++
++    context = sn_launcher_context_new (sn_display, DefaultScreen (GDK_DISPLAY()));
++
++    if (name)     sn_launcher_context_set_name (context, name);
++    if (desc)     sn_launcher_context_set_description (context, desc);
++    if (bin_name) sn_launcher_context_set_binary_name (context, bin_name);
++
++    sn_launcher_context_initiate (context, "lxpanel launchbar", bin_name, CurrentTime);
++
++    sn_launcher_context_setup_child_process (context);
++}
++#endif
++
+ /* Deallocate a LaunchButton. */
+ static void launchbutton_free(LaunchButton * btn)
+ {
+@@ -143,8 +180,13 @@
+     {
+         if (b->desktop_id == NULL)	/* The bootstrap button */
+             launchbar_configure(b->plugin, NULL);
+-        else if (b->action != NULL)
++        else if (b->action != NULL) {
++#ifdef USE_LIBSN
++	    if (b->snFlag)
++		sn_exec(b->action);
++#endif
+             lxpanel_launch_app(b->action, NULL, b->use_terminal);
++        }
+     }
+     return TRUE;
+ }
+@@ -189,7 +231,11 @@
+                 s = e+1;
+             }
+ 
+-            g_spawn_command_line_async(str, NULL);
++#ifdef USE_LIBSN
++	    if (b->snFlag)
++		sn_exec(str);
++#endif
++	    g_spawn_command_line_async(str, NULL);
+             g_free(str);
+         }
+     }
+@@ -264,9 +310,19 @@
+ 
+             if ( ! btn->customize_action )
+             {
++                gchar* sn;
+                 gchar * exec = g_key_file_get_string(desktop, desktop_ent, "Exec", NULL);
+                 btn->action = translate_exec_to_cmd(exec, icon, title, desktop_file);
+                 g_free(exec);
++#ifdef USE_LIBSN
++		btn->snFlag = 0;
++                sn = g_key_file_get_string( desktop, desktop_ent, "StartupNotify", NULL);
++		if (sn) {
++		    if ( !g_ascii_strcasecmp(sn, "true") )
++			btn->snFlag = 1;
++		    g_free( sn );
++                }
++#endif
+             }
+ 
+             btn->use_terminal = g_key_file_get_boolean(desktop, desktop_ent, "Terminal", NULL);
+@@ -353,6 +409,18 @@
+                 {
+                     btn->customize_action = TRUE;
+                     btn->action = g_strdup(s.t[1]);
++#ifdef USE_LIBSN
++		    btn->snFlag = 0;
++#endif
++                }
++                else if (!g_ascii_strcasecmp(s.t[0], "actionsn")) {
++                    btn->customize_action = TRUE;
++#ifdef USE_LIBSN
++                    btn->action = g_strdup(s.t[1]);
++                    btn->snFlag = 1;
++#else
++                    btn->action = g_strdup(s.t[1]);
++#endif
+                 }
+                 else
+                     ERR( "launchbar: unknown var %s\n", s.t[0]);
+@@ -793,8 +861,14 @@
+             lxpanel_put_str(fp, "image", btn->image);
+         if(btn->customize_tooltip)
+             lxpanel_put_str(fp, "tooltip", btn->tooltip);
+-        if (btn->customize_action)
+-            lxpanel_put_str(fp, "action", btn->action);
++        if( btn->customize_action ) {
++#ifdef USE_LIBSN
++	    if ( btn->snFlag )
++		lxpanel_put_str( fp, "actionsn", btn->action );
++	    else
++#endif
++		lxpanel_put_str( fp, "action", btn->action );
++	}
+         lxpanel_put_line(fp, "}");
+     }
+ }

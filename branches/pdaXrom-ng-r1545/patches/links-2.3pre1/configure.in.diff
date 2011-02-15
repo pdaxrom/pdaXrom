@@ -1,0 +1,11 @@
+--- s/configure.in-	2010-09-01 10:17:31.150811488 +0300
++++ s/configure.in	2010-09-01 10:16:34.900832334 +0300
+@@ -18,7 +18,7 @@
+ dnl Checks for programs.
+ AC_PROG_CC
+ 
+-#AC_PROG_CXX
++AC_PROG_CXX
+ #AC_PROG_AWK
+ #AM_PROG_LEX
+ #AC_PROG_YACC

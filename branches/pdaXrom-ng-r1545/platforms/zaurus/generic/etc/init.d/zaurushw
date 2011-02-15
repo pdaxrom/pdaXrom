@@ -1,0 +1,27 @@
+#!/bin/sh
+
+. /etc/init.d/functions
+
+NAME=zaurushw
+
+case "$1" in
+  start)
+loadkeys /usr/share/keymaps/spitz.keymap
+
+if [ ! -f /etc/pointercal ]; then
+if [ -f /usr/bin/X ]; then
+     /usr/bin/ts_calibrate
+fi
+fi
+
+;;
+  stop)
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

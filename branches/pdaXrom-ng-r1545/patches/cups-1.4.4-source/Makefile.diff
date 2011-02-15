@@ -1,0 +1,11 @@
+--- cups-1.4rc1/scheduler/Makefile-	2009-08-06 11:22:22.000000000 +0700
++++ cups-1.4rc1/scheduler/Makefile	2009-08-06 11:22:49.000000000 +0700
+@@ -171,7 +171,7 @@
+ install-exec:
+ 	echo Installing programs in $(SBINDIR)...
+ 	$(INSTALL_DIR) -m 755 $(SBINDIR)
+-	$(INSTALL_BIN) -m 500 cupsd $(SBINDIR)
++	$(INSTALL_BIN) -m 700 cupsd $(SBINDIR)
+ 	$(INSTALL_BIN) cupsfilter $(SBINDIR)
+ 	-if test "x`uname`" = xDarwin; then \
+ 		$(INSTALL_DIR) $(BUILDROOT)/System/Library/Printers/Libraries; \

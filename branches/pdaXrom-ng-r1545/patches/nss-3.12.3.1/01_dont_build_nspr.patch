@@ -1,0 +1,30 @@
+---
+ mozilla/security/nss/Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: nss-trunk-3.12.0~alpha1b/mozilla/security/nss/Makefile
+===================================================================
+--- nss-trunk-3.12.0~alpha1b.orig/mozilla/security/nss/Makefile	2007-08-17 20:12:17.000000000 +0000
++++ nss-trunk-3.12.0~alpha1b/mozilla/security/nss/Makefile	2007-08-17 20:12:38.000000000 +0000
+@@ -73,19 +73,19 @@
+ #######################################################################
+ 
+ 
+ 
+ #######################################################################
+ # (7) Execute "local" rules. (OPTIONAL).                              #
+ #######################################################################
+ 
+-nss_build_all: build_coreconf build_nspr build_dbm all
++nss_build_all: build_coreconf build_dbm all
+ 
+-nss_clean_all: clobber_coreconf clobber_nspr clobber_dbm clobber
++nss_clean_all: clobber_coreconf clobber_dbm clobber
+ 
+ build_coreconf:
+ 	cd $(CORE_DEPTH)/coreconf ;  $(MAKE)
+ 
+ clobber_coreconf:
+ 	cd $(CORE_DEPTH)/coreconf ;  $(MAKE) clobber
+ 
+ NSPR_CONFIG_STATUS = $(CORE_DEPTH)/../nsprpub/$(OBJDIR_NAME)/config.status

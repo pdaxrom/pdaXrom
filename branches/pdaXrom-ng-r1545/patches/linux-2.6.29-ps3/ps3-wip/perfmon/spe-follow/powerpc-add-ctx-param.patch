@@ -1,0 +1,372 @@
+Add pfm_context parameter to the powerpc arch depened routines.
+(write_pmc(), write_pmd(), read_pmd(), restore_pmcs(), resotre_pmds()).
+
+Signed-off-by: Takashi Yamamoto <TakashiA.Yamamoto@jp.sony.com>
+---
+ arch/powerpc/perfmon/perfmon.c        |    4 ++--
+ arch/powerpc/perfmon/perfmon_cell.c   |   19 ++++++++++++-------
+ arch/powerpc/perfmon/perfmon_power4.c |   13 ++++++++-----
+ arch/powerpc/perfmon/perfmon_power5.c |   13 ++++++++-----
+ arch/powerpc/perfmon/perfmon_power6.c |   13 ++++++++-----
+ arch/powerpc/perfmon/perfmon_ppc32.c  |   15 +++++++++------
+ include/asm-powerpc/perfmon_kern.h    |   21 +++++++++++++--------
+ 7 files changed, 60 insertions(+), 38 deletions(-)
+
+--- a/arch/powerpc/perfmon/perfmon.c
++++ b/arch/powerpc/perfmon/perfmon.c
+@@ -172,7 +172,7 @@ void pfm_arch_restore_pmds(struct pfm_co
+ 	 * restore-PMD method.
+ 	 */
+ 	if (arch_info->restore_pmds)
+-		return arch_info->restore_pmds(set);
++		return arch_info->restore_pmds(ctx, set);
+ 
+ 	num = set->nused_pmds;
+ 	used_pmds = set->used_pmds;
+@@ -204,7 +204,7 @@ void pfm_arch_restore_pmcs(struct pfm_co
+ 	 * restore-PMC method.
+ 	 */
+ 	if (arch_info->restore_pmcs)
+-		return arch_info->restore_pmcs(set);
++		return arch_info->restore_pmcs(ctx, set);
+ 
+ 	/* The "common" powerpc model's enable the counters simply by writing
+ 	 * all the control registers. Therefore, if we're masked or stopped we
+--- a/arch/powerpc/perfmon/perfmon_cell.c
++++ b/arch/powerpc/perfmon/perfmon_cell.c
+@@ -638,7 +638,8 @@ static int pfm_cell_probe_pmu(void)
+ /**
+  * pfm_cell_write_pmc
+  **/
+-static void pfm_cell_write_pmc(unsigned int cnum, u64 value)
++static void pfm_cell_write_pmc(struct pfm_context *ctx,
++			       unsigned int cnum, u64 value)
+ {
+ 	int cpu = smp_processor_id();
+ 	struct pfm_cell_platform_pmu_info *info =
+@@ -668,7 +669,8 @@ static void pfm_cell_write_pmc(unsigned 
+ /**
+  * pfm_cell_write_pmd
+  **/
+-static void pfm_cell_write_pmd(unsigned int cnum, u64 value)
++static void pfm_cell_write_pmd(struct pfm_context *ctx,
++			       unsigned int cnum, u64 value)
+ {
+ 	int cpu = smp_processor_id();
+ 	struct pfm_cell_platform_pmu_info *info =
+@@ -682,7 +684,8 @@ static void pfm_cell_write_pmd(unsigned 
+ /**
+  * pfm_cell_read_pmd
+  **/
+-static u64 pfm_cell_read_pmd(unsigned int cnum)
++static u64 pfm_cell_read_pmd(struct pfm_context *ctx,
++			     unsigned int cnum)
+ {
+ 	int cpu = smp_processor_id();
+ 	struct pfm_cell_platform_pmu_info *info =
+@@ -812,7 +815,8 @@ static int get_ppu_signal_groups(struct 
+  * The counter enable bit of the pmX_control PMC is enabled while the target
+  * task runs on the target HW thread.
+  **/
+-void pfm_cell_restore_pmcs(struct pfm_event_set *set)
++void pfm_cell_restore_pmcs(struct pfm_context *ctx,
++			   struct pfm_event_set *set)
+ {
+ 	u64 ctr_ctrl;
+ 	u64 *used_pmcs = set->used_pmcs;
+@@ -865,7 +869,7 @@ void pfm_cell_restore_pmcs(struct pfm_ev
+ 	 * pm_status register.
+ 	 */
+ 	for (i *= 2; i < PFM_PM_NUM_PMCS; i++)
+-		pfm_cell_write_pmc(i, set->pmcs[i]);
++		pfm_cell_write_pmc(ctx, i, set->pmcs[i]);
+ }
+ 
+ /**
+@@ -874,7 +878,8 @@ void pfm_cell_restore_pmcs(struct pfm_ev
+  * Write to pm_control register before writing to counter registers
+  * so that we can decide the counter width berfore writing to the couters.
+  **/
+-void pfm_cell_restore_pmds(struct pfm_event_set *set)
++void pfm_cell_restore_pmds(struct pfm_context *ctx,
++			   struct pfm_event_set *set)
+ {
+ 	u64 *used_pmds;
+ 	unsigned int i, max_pmd;
+@@ -898,7 +903,7 @@ void pfm_cell_restore_pmds(struct pfm_ev
+ 	for (i = 0; i < max_pmd; i++)
+ 		if (test_bit(i, used_pmds) &&
+ 		    !(pfm_pmu_conf->pmd_desc[i].type & PFM_REG_RO))
+-			pfm_cell_write_pmd(i, set->pmds[i].value);
++			pfm_cell_write_pmd(ctx, i, set->pmds[i].value);
+ }
+ 
+ /**
+--- a/arch/powerpc/perfmon/perfmon_power4.c
++++ b/arch/powerpc/perfmon/perfmon_power4.c
+@@ -63,7 +63,8 @@ static int pfm_power4_probe_pmu(void)
+ 	return -1;
+ }
+ 
+-static void pfm_power4_write_pmc(unsigned int cnum, u64 value)
++static void pfm_power4_write_pmc(struct pfm_context *ctx,
++				 unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmc_desc[cnum].hw_addr) {
+ 	case SPRN_MMCR0:
+@@ -80,7 +81,8 @@ static void pfm_power4_write_pmc(unsigne
+ 	}
+ }
+ 
+-static void pfm_power4_write_pmd(unsigned int cnum, u64 value)
++static void pfm_power4_write_pmd(struct pfm_context *ctx,
++				 unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -116,7 +118,8 @@ static void pfm_power4_write_pmd(unsigne
+ 	}
+ }
+ 
+-static u64 pfm_power4_read_pmd(unsigned int cnum)
++static u64 pfm_power4_read_pmd(struct pfm_context *ctx,
++			       unsigned int cnum)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -170,7 +173,7 @@ static void pfm_power4_enable_counters(s
+ 	   the registers in the reverse order */
+ 	for (i = max_pmc; i != 0; i--)
+ 		if (test_bit(i - 1, set->used_pmcs))
+-			pfm_power4_write_pmc(i - 1, set->pmcs[i - 1]);
++			pfm_power4_write_pmc(ctx, i - 1, set->pmcs[i - 1]);
+ }
+ 
+ /**
+@@ -206,7 +209,7 @@ static void pfm_power4_get_ovfl_pmds(str
+ 
+ 	for (i = 0; i < max_pmd; i++) {
+ 		if (test_bit(i, mask)) {
+-			new_val = pfm_power4_read_pmd(i);
++			new_val = pfm_power4_read_pmd(ctx, i);
+ 			if (new_val & width_mask) {
+ 				set_bit(i, set->povfl_pmds);
+ 				set->npend_ovfls++;
+--- a/arch/powerpc/perfmon/perfmon_power5.c
++++ b/arch/powerpc/perfmon/perfmon_power5.c
+@@ -71,7 +71,8 @@ static int pfm_power5_probe_pmu(void)
+ 	}
+ }
+ 
+-static void pfm_power5_write_pmc(unsigned int cnum, u64 value)
++static void pfm_power5_write_pmc(struct pfm_context *ctx,
++				 unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmc_desc[cnum].hw_addr) {
+ 	case SPRN_MMCR0:
+@@ -88,7 +89,8 @@ static void pfm_power5_write_pmc(unsigne
+ 	}
+ }
+ 
+-static void pfm_power5_write_pmd(unsigned int cnum, u64 value)
++static void pfm_power5_write_pmd(struct pfm_context *ctx,
++				 unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -124,7 +126,8 @@ static void pfm_power5_write_pmd(unsigne
+ 	}
+ }
+ 
+-static u64 pfm_power5_read_pmd(unsigned int cnum)
++static u64 pfm_power5_read_pmd(struct pfm_context *ctx,
++			       unsigned int cnum)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -179,7 +182,7 @@ static void pfm_power5_enable_counters(s
+ 	 */
+ 	for (i = max_pmc; i != 0; i--)
+ 		if (test_bit(i - 1, set->used_pmcs))
+-			pfm_power5_write_pmc(i - 1, set->pmcs[i - 1]);
++			pfm_power5_write_pmc(ctx, i - 1, set->pmcs[i - 1]);
+ }
+ 
+ /**
+@@ -234,7 +237,7 @@ static void pfm_power5_get_ovfl_pmds(str
+ 
+ 	for (i = 0; i < max; i++) {
+ 		if (test_bit(i, mask)) {
+-			new_val = pfm_power5_read_pmd(i);
++			new_val = pfm_power5_read_pmd(ctx, i);
+ 			if (new_val & width_mask) {
+ 				set_bit(i, set->povfl_pmds);
+ 				set->npend_ovfls++;
+--- a/arch/powerpc/perfmon/perfmon_power6.c
++++ b/arch/powerpc/perfmon/perfmon_power6.c
+@@ -137,7 +137,8 @@ static int pfm_power6_probe_pmu(void)
+ 	}
+ }
+ 
+-static void pfm_power6_write_pmc(unsigned int cnum, u64 value)
++static void pfm_power6_write_pmc(struct pfm_context *ctx,
++				 unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmc_desc[cnum].hw_addr) {
+ 	case SPRN_MMCR0:
+@@ -154,7 +155,8 @@ static void pfm_power6_write_pmc(unsigne
+ 	}
+ }
+ 
+-static void pfm_power6_write_pmd(unsigned int cnum, u64 value)
++static void pfm_power6_write_pmd(struct pfm_context *ctx,
++				 unsigned int cnum, u64 value)
+ {
+ 	/* On POWER 6 PMC5 and PMC6 are implemented as
+ 	 * virtual counters.  See comment in pfm_power6_pmd_desc
+@@ -251,7 +253,8 @@ void pfm_power6_swrite(struct pfm_contex
+ 	}
+ }
+ 
+-static u64 pfm_power6_read_pmd(unsigned int cnum)
++static u64 pfm_power6_read_pmd(struct pfm_context *ctx,
++			       unsigned int cnum)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -304,7 +307,7 @@ static void pfm_power6_enable_counters(s
+ 	   the registers in the reverse order */
+ 	for (i = max_pmc; i != 0; i--)
+ 		if (test_bit(i - 1, set->used_pmcs))
+-			pfm_power6_write_pmc(i - 1, set->pmcs[i - 1]);
++			pfm_power6_write_pmc(ctx, i - 1, set->pmcs[i - 1]);
+ 
+ 	/* save current free running HW event count */
+ 	pmc5_start_save[cpu_num] = mfspr(SPRN_PMC5);
+@@ -391,7 +394,7 @@ static void pfm_power6_get_ovfl_pmds(str
+ 	/* max_intr_pmd is actually the last interrupting pmd register + 1 */
+ 	for (i = first_intr_pmd; i < max_intr_pmd; i++) {
+ 		if (test_bit(i, mask)) {
+-			new_val = pfm_power6_read_pmd(i);
++			new_val = pfm_power6_read_pmd(ctx, i);
+ 			if (new_val & width_mask) {
+ 				set_bit(i, set->povfl_pmds);
+ 				set->npend_ovfls++;
+--- a/arch/powerpc/perfmon/perfmon_ppc32.c
++++ b/arch/powerpc/perfmon/perfmon_ppc32.c
+@@ -177,7 +177,8 @@ static int pfm_ppc32_probe_pmu(void)
+ 	return reserve_pmc_hardware(perfmon_perf_irq);
+ }
+ 
+-static void pfm_ppc32_write_pmc(unsigned int cnum, u64 value)
++static void pfm_ppc32_write_pmc(struct pfm_context *ctx,
++				unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmc_desc[cnum].hw_addr) {
+ 	case SPRN_MMCR0:
+@@ -194,7 +195,8 @@ static void pfm_ppc32_write_pmc(unsigned
+ 	}
+ }
+ 
+-static void pfm_ppc32_write_pmd(unsigned int cnum, u64 value)
++static void pfm_ppc32_write_pmd(struct pfm_context *ctx,
++				unsigned int cnum, u64 value)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -220,7 +222,8 @@ static void pfm_ppc32_write_pmd(unsigned
+ 	}
+ }
+ 
+-static u64 pfm_ppc32_read_pmd(unsigned int cnum)
++static u64 pfm_ppc32_read_pmd(struct pfm_context *ctx,
++			      unsigned int cnum)
+ {
+ 	switch (pfm_pmu_conf->pmd_desc[cnum].hw_addr) {
+ 	case SPRN_PMC1:
+@@ -254,7 +257,7 @@ static void pfm_ppc32_enable_counters(st
+ 
+ 	for (i = 0; i < max_pmc; i++)
+ 		if (test_bit(i, set->used_pmcs))
+-			pfm_ppc32_write_pmc(i, set->pmcs[i]);
++			pfm_ppc32_write_pmc(ctx, i, set->pmcs[i]);
+ }
+ 
+ /**
+@@ -271,7 +274,7 @@ static void pfm_ppc32_disable_counters(s
+ 
+ 	for (i = 0; i < max; i++)
+ 		if (test_bit(i, set->used_pmcs))
+-			pfm_ppc32_write_pmc(ctx, 0);
++			pfm_ppc32_write_pmc(ctx, i, 0);
+ }
+ 
+ /**
+@@ -295,7 +298,7 @@ static void pfm_ppc32_get_ovfl_pmds(stru
+ 
+ 	for (i = 0; i < max_pmd; i++) {
+ 		if (test_bit(i, mask)) {
+-			new_val = pfm_ppc32_read_pmd(i);
++			new_val = pfm_ppc32_read_pmd(ctx, i);
+ 			if (new_val & width_mask) {
+ 				set_bit(i, set->povfl_pmds);
+ 				set->npend_ovfls++;
+--- a/include/asm-powerpc/perfmon_kern.h
++++ b/include/asm-powerpc/perfmon_kern.h
+@@ -51,10 +51,13 @@ enum powerpc_pmu_type {
+ struct pfm_arch_pmu_info {
+ 	enum powerpc_pmu_type pmu_style;
+ 
+-	void (*write_pmc)(unsigned int cnum, u64 value);
+-	void (*write_pmd)(unsigned int cnum, u64 value);
++	void (*write_pmc)(struct pfm_context *ctx,
++			  unsigned int cnum, u64 value);
++	void (*write_pmd)(struct pfm_context *ctx,
++			  unsigned int cnum, u64 value);
+ 
+-	u64 (*read_pmd)(unsigned int cnum);
++	u64 (*read_pmd)(struct pfm_context *ctx,
++			unsigned int cnum);
+ 
+ 	void (*enable_counters)(struct pfm_context *ctx,
+ 				struct pfm_event_set *set);
+@@ -66,8 +69,10 @@ struct pfm_arch_pmu_info {
+ 			      struct pfm_event_set *set);
+ 
+ 	/* The following routines are optional. */
+-	void (*restore_pmcs)(struct pfm_event_set *set);
+-	void (*restore_pmds)(struct pfm_event_set *set);
++	void (*restore_pmcs)(struct pfm_context *ctx,
++			     struct pfm_event_set *set);
++	void (*restore_pmds)(struct pfm_context *ctx,
++			     struct pfm_event_set *set);
+ 
+ 	int  (*ctxswout_thread)(struct task_struct *task,
+ 				struct pfm_context *ctx,
+@@ -123,7 +128,7 @@ static inline void pfm_arch_write_pmc(st
+ 
+ 	BUG_ON(!arch_info->write_pmc);
+ 
+-	arch_info->write_pmc(cnum, value);
++	arch_info->write_pmc(ctx, cnum, value);
+ }
+ 
+ static inline void pfm_arch_write_pmd(struct pfm_context *ctx,
+@@ -137,7 +142,7 @@ static inline void pfm_arch_write_pmd(st
+ 
+ 	BUG_ON(!arch_info->write_pmd);
+ 
+-	arch_info->write_pmd(cnum, value);
++	arch_info->write_pmd(ctx, cnum, value);
+ }
+ 
+ static inline u64 pfm_arch_read_pmd(struct pfm_context *ctx, unsigned int cnum)
+@@ -148,7 +153,7 @@ static inline u64 pfm_arch_read_pmd(stru
+ 
+ 	BUG_ON(!arch_info->read_pmd);
+ 
+-	return arch_info->read_pmd(cnum);
++	return arch_info->read_pmd(ctx, cnum);
+ }
+ 
+ /*

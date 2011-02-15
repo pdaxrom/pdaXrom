@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# /etc/init.d/rcS
+#
+
+. /etc/init.d/functions
+
+mount /proc 2>/dev/null
+
+splash_start
+
+if [ -e /usr/bin/figlet ]; then
+    figlet -t -c "pdaXrom-NG"
+    figlet -t -c `uname -sm`
+    echo -ne "\n\n"
+fi
+
+log_begin_msg -n "Mounting filesystems..."
+mount /sys 2>/dev/null
+mount /tmp 2>/dev/null
+mount /var/tmp 2>/dev/null
+log_end_msg $?
+
+if mount | grep ' / ' | grep -q 'squashfs' ; then
+    for d in /etc /home /media /var ; do
+	log_begin_msg -n "Moving $d to ram"
+	tar c $d 2>/dev/null | tar x -C /tmp && mount -o bind /tmp$d $d
+	log_end_msg $?
+    done
+else
+    log_begin_msg -n "Remounting rootfs for read/write"
+    mount -o remount,rw /
+    log_end_msg $?
+fi
+
+# Disable kernel log to console
+echo "0 0 0 0" >/proc/sys/kernel/printk
+
+# set hostname
+test -e /etc/hostname && hostname -F /etc/hostname
+
+for i in /etc/rc.d/S*; do 
+    $i start
+done
+
+if [ -x /etc/rc.local ]; then
+    /etc/rc.local
+fi
+
+splash_finish

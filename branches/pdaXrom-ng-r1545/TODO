@@ -1,0 +1,14 @@
+Network Manager
+pcmanfm startup notification
+libsamplerate - check endianess
+
+libXrender,libXp,libXTrap,libXdamage,libXevie,libXxf86dga,libXxf86misc,libxkbui,startup-notification,imlib2,libdrm - autoreconf -i before uclibc build
+
+host_usplash needs libgd2-xpm-dev
+host_mame needs libsdl1.2-dev
+
+
+*InSearchOf*
+update u-boot version
+add init scripts for zaurus
+Fix mtd-utils.sh (works, but horrible workaround)

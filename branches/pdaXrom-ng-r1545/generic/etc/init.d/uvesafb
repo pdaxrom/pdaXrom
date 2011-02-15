@@ -1,0 +1,26 @@
+#!/bin/sh
+
+. /etc/init.d/functions
+
+NAME="uvesafb"
+APP="/usr/sbin/915resolution"
+
+test -e $APP || exit 0
+
+case "${1}" in
+        start)
+                log_begin_msg -n "Starting $NAME"
+                /usr/sbin/915resolution 5c 800 480 32 && modprobe uvesafb mode_option=800x480-32@60
+                log_end_msg $?
+                ;;
+
+        stop)
+                log_begin_msg -n "Stopping $NAME"
+                log_end_msg $?
+                ;;
+
+        *)
+                echo "Usage: ${0} {start|stop}"
+                exit 1
+                ;;
+esac

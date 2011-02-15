@@ -1,0 +1,12 @@
+#!/bin/sh
+
+APP=$(basename $0)
+CFGDIR="/etc/default/applications"
+CFG="${CFGDIR}/${APP}"
+if [ -e $CFG ]; then
+    . $CFG
+else
+    . ${CFGDIR}/default
+fi
+
+exec $XTERMINAL $@

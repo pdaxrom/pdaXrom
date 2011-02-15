@@ -1,0 +1,22 @@
+--- cairo-dock-2.1.0/src/cairo-dock-themes-manager.c-	2009-12-14 21:55:10.176507290 +0600
++++ cairo-dock-2.1.0/src/cairo-dock-themes-manager.c	2009-12-14 21:55:36.467061899 +0600
+@@ -219,7 +219,7 @@
+ 		}
+ 	}
+ 	gchar *cResultPath;
+-	gchar *cCommand = g_strdup_printf ("tar xf%c \"%s\" -C \"%s\"", (g_str_has_suffix (cArchivePath, "bz2") ? 'j' : 'z'), cArchivePath, cExtractTo);
++	gchar *cCommand = g_strdup_printf ("tar %cxf \"%s\" -C \"%s\"", (g_str_has_suffix (cArchivePath, "bz2") ? 'j' : 'z'), cArchivePath, cExtractTo);
+ 	g_print ("tar : %s\n", cCommand);
+ 	int r = system (cCommand);
+ 	if (r != 0)
+--- cairo-dock-2.1.0/cairo-dock-package-theme-	2009-12-14 21:57:49.256193456 +0600
++++ cairo-dock-2.1.0/cairo-dock-package-theme	2009-12-14 21:58:43.616030956 +0600
+@@ -394,7 +394,7 @@
+ 
+ cd ..
+ echo "building of the tarball ..."
+-tar cfz "${THEME_NAME}.tar.gz" "${THEME_NAME}"
++tar zcf "${THEME_NAME}.tar.gz" "${THEME_NAME}"
+ mv "${THEME_NAME}.tar.gz" ~
+ rm -rf "$CURRENT_WORKING_DIR"
+ 

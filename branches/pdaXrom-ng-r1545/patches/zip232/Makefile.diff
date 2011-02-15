@@ -1,0 +1,11 @@
+--- zip-2.32/unix/Makefile-	2009-01-03 14:28:11.000000000 +0600
++++ zip-2.32/unix/Makefile	2009-01-03 14:28:21.000000000 +0600
+@@ -20,7 +20,7 @@
+ CC = cc
+ BIND = $(CC)
+ AS = $(CC) -c
+-CPP = /lib/cpp
++CPP = $(CPP)
+ EXE =
+ 
+ # probably can change this to 'install' if you have it

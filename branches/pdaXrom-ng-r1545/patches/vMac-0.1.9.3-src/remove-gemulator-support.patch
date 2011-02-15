@@ -1,0 +1,79 @@
+--- s/gemulator.c-	2010-08-13 19:58:59.695663592 +0300
++++ s/gemulator.c	2010-08-13 19:59:38.335659721 +0300
+@@ -11,11 +11,11 @@
+ #define SLOW_IO
+ 
+ #include <stdio.h>
+-#include <asm/io.h>
++//#include <asm/io.h>
+ #include <unistd.h>
+ #include <errno.h>
+ #include <string.h>
+-#include <sys/io.h>
++//#include <sys/io.h>
+ 
+ /* Define TEST to make a linkable ROM dumper */
+ #ifdef TEST
+@@ -55,61 +55,7 @@
+ 
+ int Gemulator_LoadROM(UBYTE * NewROM, UWORD Base, UBYTE Socket, UBYTE Length)
+ {
+-	int i;
+-	int rgsize[countSocket];
+-
+-	--Socket; //Our socket 1 is really socket 0
+-	
+-	/* Give I/O Permissions to the Base address */
+-	if(ioperm(GEM_BASE, 1, 1) == -1) {
+-		fprintf(stderr, "Cannot get IO permissions: %s\n", 
+-				strerror(errno));
+-		return 0;
+-	}
+-
+-#ifdef SLOW_IO
+-	if(ioperm(0x80, 1, 1) == -1) {
+-		fprintf(stderr, "Cannot get IO permissions: %s\n",
+-				strerror(errno));
+-		return 0;
+-	}
+-	outb_p(0, GEM_BASE);
+-#else
+-	outb(0, GEM_BASE);
+-#endif
+-	for (i = 0; i < (Socket+Length)*cbSocket; i++) {
+-#ifdef SLOW_IO
+-		bigbuf[i] = inb_p(GEM_BASE);
+-#else
+-		bigbuf[i] = inb(GEM_BASE);
+-#endif
+-	}
+-
+-	/* Drop I/O permissions, now that we're done */
+-	ioperm(GEM_BASE, 1, 0);
+-#ifdef SLOW_IO
+-	ioperm(0x80, 1, 0);
+-#endif
+-	for (i = 0; i < countSocket; i++) {
+-		unsigned char *pb = &bigbuf[i * cbSocket];
+-		int size = cbSocket/1024;
+-		while ((size > 32) && !memcmp(pb, pb+(size*512), size*512)) {
+-			size /= 2;
+-		}
+-		rgsize[i] = size;
+-	}
+-
+-	// scramble the bytes from socket order to byte order
+-	memmove(bigbuf + countSocket * cbSocket, bigbuf + Socket * cbSocket,
+-			Length * cbSocket);
+-
+-	for (i = 0; i < countSocket * cbSocket; i++) {
+-	        bigbuf[i] = bigbuf[(countSocket + (i%Length)) *
+-				cbSocket + (i/Length)];
+-	}
+-	memcpy(NewROM, bigbuf, 1024 * rgsize[Socket] * Length);
+-
+-	return(1024 * rgsize[Socket] * Length); //Return size
++	return 0;
+ }
+ 
+ #ifdef TEST

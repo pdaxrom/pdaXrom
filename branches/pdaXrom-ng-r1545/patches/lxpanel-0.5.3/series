@@ -1,0 +1,5 @@
+configure.ac.diff
+launchbar.c.diff
+menu.c.diff
+netstatus.patch
+netstatus-inet_ntop.patch

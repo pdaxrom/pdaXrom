@@ -1,0 +1,11 @@
+--- linux-2.6.34/init/do_mounts.c~	2010-05-30 08:33:51.936775562 -0400
++++ linux-2.6.34/init/do_mounts.c	2010-05-30 08:36:08.960775480 -0400
+@@ -147,7 +147,8 @@
+ 
+ static int __init root_dev_setup(char *line)
+ {
+-	strlcpy(saved_root_name, line, sizeof(saved_root_name));
++	//strlcpy(saved_root_name, line, sizeof(saved_root_name));
++	*saved_root_name = 0;
+ 	return 1;
+ }

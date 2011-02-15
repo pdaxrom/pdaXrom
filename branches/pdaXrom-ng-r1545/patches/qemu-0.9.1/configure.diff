@@ -1,0 +1,34 @@
+--- s/configure-orig	2008-01-07 01:38:42.000000000 +0600
++++ s/configure	2009-01-11 13:51:23.000000000 +0600
+@@ -29,7 +29,7 @@
+ make="make"
+ install="install"
+ strip="strip"
+-cpu=`uname -m`
++#cpu=`uname -m`
+ target_list=""
+ case "$cpu" in
+   i386|i486|i586|i686|i86pc|BePC)
+@@ -107,7 +107,7 @@
+ uname_release=""
+ 
+ # OS specific
+-targetos=`uname -s`
++#targetos=`uname -s`
+ case $targetos in
+ CYGWIN*)
+ mingw32="yes"
+@@ -593,6 +593,13 @@
+     # win32 cross compilation case
+         sdl_config="i386-mingw32msvc-sdl-config"
+         sdl=yes
++        if [ "$static" != "no" ]; then
++    	    sdl_static=yes
++            sdl_static_libs=`$sdl_config --static-libs 2>/dev/null`
++            if [ "$aa" = "yes" ] ; then
++                sdl_static_libs="$sdl_static_libs `aalib-config --static-libs`"
++            fi
++        fi
+     else
+         # normal SDL probe
+ cat > $TMPC << EOF

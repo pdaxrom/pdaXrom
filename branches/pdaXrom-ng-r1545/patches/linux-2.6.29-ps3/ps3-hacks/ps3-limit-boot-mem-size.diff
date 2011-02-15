@@ -1,0 +1,54 @@
+For debugging only.
+
+This is a debug option used for memory stress testing.  Enter
+a value in units of MiB to limit available boot memory.
+
+---
+ arch/powerpc/platforms/ps3/Kconfig |   16 ++++++++++++++++
+ arch/powerpc/platforms/ps3/mm.c    |   12 ++++++++++++
+ 2 files changed, 28 insertions(+)
+
+--- a/arch/powerpc/platforms/ps3/Kconfig
++++ b/arch/powerpc/platforms/ps3/Kconfig
+@@ -153,4 +153,20 @@ config OPROFILE_PS3
+ 	depends on PPC_PS3 && (OPROFILE = m || OPROFILE = y)
+ 	select PS3_LPM
+ 
++config PS3_DEBUG_BOOT_MEM_LIMIT
++	depends on PPC_PS3
++	int  "PS3 Limit available boot memory"
++	range -1 1024
++	default -1
++	help
++	  This is a debug option used for memory stress testing.  Enter
++	  a value in units of MiB to limit available boot memory.
++
++	  If unsure, choose the default to disable this option.
++
++	  A negative value will disable this option.  A value of zero (0)
++	  will have maximum effect and the system can not boot.  The
++	  retail console reports 128 MiB of boot memory, this option
++	  will have no effect with a value of 128 or greater.
++
+ endmenu
+--- a/arch/powerpc/platforms/ps3/mm.c
++++ b/arch/powerpc/platforms/ps3/mm.c
+@@ -1214,6 +1214,18 @@ void __init ps3_mm_init(void)
+ 	BUG_ON(map.rm.base);
+ 	BUG_ON(!map.rm.size);
+ 
++#if defined(CONFIG_PS3_DEBUG_BOOT_MEM_LIMIT) \
++	&& ((CONFIG_PS3_DEBUG_BOOT_MEM_LIMIT) >= 0)
++{
++	u64 orig_size = map.rm.size;
++
++	map.rm.size = min(map.rm.size,
++		(CONFIG_PS3_DEBUG_BOOT_MEM_LIMIT) * 1024 * 1024);
++	map.total -= orig_size - map.rm.size;
++	pr_info("Limiting boot RAM to 0x%llx (%llu MiB)\n", map.rm.size,
++		map.rm.size / (1024 * 1024));
++}
++#endif
+ 
+ 	/* arrange to do this in ps3_mm_add_memory */
+ 	ps3_mm_region_create(&map.r1, map.total - map.rm.size);

@@ -1,0 +1,33 @@
+--- survive-1.1.0/nandlogical.c~	2009-12-16 06:43:20.000000000 -0500
++++ survive-1.1.0/nandlogical.c	2009-12-16 06:45:03.000000000 -0500
+@@ -276,9 +276,9 @@
+ 	}
+ 
+ 	/* Make sure device page sizes are valid */
+-	if (!(meminfo.oobsize == 64 && meminfo.oobblock == 2048) &&
+-	    !(meminfo.oobsize == 16 && meminfo.oobblock == 512) &&
+-	    !(meminfo.oobsize == 8 && meminfo.oobblock == 256)) {
++	if (!(meminfo.oobsize == 64 && meminfo.writesize == 2048) &&
++	    !(meminfo.oobsize == 16 && meminfo.writesize == 512) &&
++	    !(meminfo.oobsize == 8 && meminfo.writesize == 256)) {
+ 	    fprintf(stderr, "Unknown flash (not normal NAND)\n");
+ 	    close(fd);
+ 	    exit(1);
+@@ -289,7 +289,7 @@
+ 	blocks = NAND_LOGICAL_SIZE / meminfo.erasesize;
+ 	log2phy = (unsigned long *) malloc(blocks * sizeof(unsigned long));
+ 	readbuf = (char *)malloc(meminfo.erasesize);
+-	oobbuf = (char *)malloc(meminfo.oobblock);	
++	oobbuf = (char *)malloc(meminfo.writesize);	
+ 	oob.ptr = oobbuf;
+ 
+ 	scan_logical(blocks, meminfo.erasesize);
+@@ -297,7 +297,7 @@
+ 	//printf("Start: %x\nEnd: %x\n", start_addr, length);
+ 	
+ 	end_addr = start_addr + length;
+-	bs = meminfo.oobblock;
++	bs = meminfo.writesize;
+ 
+ 	for (ofs = start_addr; ofs < end_addr ; ofs+=bs) {
+ 	    int new_logical_added = 0;

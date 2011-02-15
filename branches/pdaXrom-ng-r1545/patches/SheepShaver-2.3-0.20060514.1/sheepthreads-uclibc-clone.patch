@@ -1,0 +1,11 @@
+--- s/src/Unix/Linux/sheepthreads.c-	2010-08-18 14:17:12.465286886 +0300
++++ s/src/Unix/Linux/sheepthreads.c	2010-08-18 14:17:15.575292061 +0300
+@@ -125,7 +125,7 @@
+ 	nt->arg = arg;
+ 	stack = malloc(STACK_SIZE);
+ 
+-	pid = __clone(start_thread, (char *)stack + STACK_SIZE - 16, CLONE_VM | CLONE_FS | CLONE_FILES, nt);
++	pid = clone(start_thread, (char *)stack + STACK_SIZE - 16, CLONE_VM | CLONE_FS | CLONE_FILES, nt);
+ 	if (pid == -1) {
+ 		free(stack);
+ 		free(nt);

@@ -1,0 +1,68 @@
+diff -Nur SheepShaver-2.3/src/kpx_cpu/src/cpu/ppc/ppc-cpu.hpp SheepShaver-2.3-gcc4.3/src/kpx_cpu/src/cpu/ppc/ppc-cpu.hpp
+--- SheepShaver-2.3/src/kpx_cpu/src/cpu/ppc/ppc-cpu.hpp	2006-05-06 10:19:39.000000000 +0300
++++ SheepShaver-2.3-gcc4.3/src/kpx_cpu/src/cpu/ppc/ppc-cpu.hpp	2010-08-17 14:16:47.568682785 +0300
+@@ -360,7 +360,7 @@
+ 
+ 	// Block lookup table
+ 	typedef powerpc_block_info block_info;
+-	block_cache< block_info, lazy_allocator > block_cache;
++	class block_cache< block_info, lazy_allocator > block_cache;
+ 
+ #if PPC_DECODE_CACHE
+ 	// Decode Cache
+diff -Nur SheepShaver-2.3/src/kpx_cpu/src/cpu/ppc/ppc-dyngen-ops.cpp SheepShaver-2.3-gcc4.3/src/kpx_cpu/src/cpu/ppc/ppc-dyngen-ops.cpp
+--- SheepShaver-2.3/src/kpx_cpu/src/cpu/ppc/ppc-dyngen-ops.cpp	2006-04-02 00:41:19.000000000 +0300
++++ SheepShaver-2.3-gcc4.3/src/kpx_cpu/src/cpu/ppc/ppc-dyngen-ops.cpp	2010-08-17 14:13:58.927620927 +0300
+@@ -1268,13 +1268,13 @@
+ }
+ 
+ template<>
+-static inline void do_lmw<31>(void)
++inline void do_lmw<31>(void)
+ {
+ 	CPU->gpr(31) = vm_read_memory_4(T0);
+ }
+ 
+ template<>
+-static inline void do_lmw<32>(void)
++inline void do_lmw<32>(void)
+ {
+ 	for (uint32 r = PARAM1, ad = T0; r <= 31; r++, ad += 4)
+ 		CPU->gpr(r) = vm_read_memory_4(ad);
+@@ -1282,7 +1282,7 @@
+ }
+ 
+ template< int N >
+-static inline void do_stmw(void)
++inline void do_stmw(void)
+ {
+ 	vm_write_memory_4(T0, CPU->gpr(N));
+ 	T0 += 4;
+@@ -1290,13 +1290,13 @@
+ }
+ 
+ template<>
+-static inline void do_stmw<31>(void)
++inline void do_stmw<31>(void)
+ {
+ 	vm_write_memory_4(T0, CPU->gpr(31));
+ }
+ 
+ template<>
+-static inline void do_stmw<32>(void)
++inline void do_stmw<32>(void)
+ {
+ 	for (uint32 r = PARAM1, ad = T0; r <= 31; r++, ad += 4)
+ 		vm_write_memory_4(ad, CPU->gpr(r));
+diff -Nur SheepShaver-2.3/src/Unix/sys_unix.cpp SheepShaver-2.3-gcc4.3/src/Unix/sys_unix.cpp
+--- SheepShaver-2.3/src/Unix/sys_unix.cpp	2006-05-08 15:15:58.000000000 +0300
++++ SheepShaver-2.3-gcc4.3/src/Unix/sys_unix.cpp	2010-08-17 14:09:07.027634304 +0300
+@@ -24,6 +24,8 @@
+ #include <sys/stat.h>
+ #include <errno.h>
+ 
++#include <climits>
++
+ #ifdef HAVE_AVAILABILITYMACROS_H
+ #include <AvailabilityMacros.h>
+ #endif

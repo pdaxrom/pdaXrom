@@ -1,0 +1,19 @@
+Compile ps3 uclibc crosscompiler:
+sudo ./build.sh ps3/build-crosstools-ps3boot.sh
+
+Clean working directory:
+sudo ./build.sh ps3/build-crosstools-ps3boot.sh clean
+
+Compile ps3boot bootloader:
+./build.sh ps3/build-ps3boot-bt.sh
+
+Compile ps3 powerpc crosscompiler:
+sudo ./build.sh ps3/build-crosstools-ps3.sh
+
+Clean working directory:
+sudo ./build.sh ps3/build-crosstools-ps3.sh clean
+
+Compile pdaXrom-ng-ps3 distro:
+./build.sh ps3/build-linux-ps3.sh
+
+To add bootloader to distro image, it must placed in ../ps3-ps3boot-distro/images/ directory.
