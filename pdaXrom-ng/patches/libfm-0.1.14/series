@@ -1,4 +1,0 @@
-01-lxde-conf.patch
-02-libfm-0.1.14-API-changes.patch
-03_disable_deprecated_gio_module.patch
-90_add_gobject_link.patch
