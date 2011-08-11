@@ -103,6 +103,8 @@ int main(int argc, char *argv[])
     int fullscreen = 0;
     int rundaemon = 0;
     int shmid = -1;
+    int ret = 0;
+
     dance_connector *connector;
 
     wallp_name[0] = 0;
@@ -158,12 +160,16 @@ int main(int argc, char *argv[])
 
 #ifdef USE_X11
     if (fullscreen)
-	db_ui_create();
+	ret = db_ui_create();
     else
-	db_ui_create_window(480, 480);
+	ret = db_ui_create_window(480, 480);
 #else
-    db_ui_create();
+    ret = db_ui_create();
 #endif
+    if (ret) {
+	fprintf(stderr, "Can't open framebuffer!\n");
+	return 1;
+    }
 
     if (db_readconf(config_name, "fontsize", conf_val)) {
 	font_size = atoi(conf_val);
