@@ -1,0 +1,9 @@
+Source: dancesplash
+Section: console
+Priority: extra
+Maintainer: Alexander Chukov <sash@pdaXrom.org>
+
+Package: dancesplashfb
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Simple framebuffer splash utility

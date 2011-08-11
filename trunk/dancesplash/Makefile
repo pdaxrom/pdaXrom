@@ -1,5 +1,9 @@
 .PHONY: libdance
 
+VERSION=$(shell LANG=en_US svn info 2>&1 | grep Revision | awk '{print $$2}')
+
+DATE=$(shell LANG=en_US date -R)
+
 SYSTEM	:=x11
 ifeq (linuxfb, $(SYSTEM))
 TARGET	= dancesplashfb
@@ -39,7 +43,15 @@ install:
 	$(INSTALL) -D -m 755 $(TARGET) $(DESTDIR)/usr/bin/$(TARGET)
 	$(INSTALL) -D -m 644 fonts/Vera.ttf $(DESTDIR)/$(DATADIR)/fonts/Vera.ttf
 	find artwork -type f -exec $(INSTALL) -D -m 644 {} $(DESTDIR)/$(DATADIR)/{} \;
+	find $(DESTDIR)/$(DATADIR) -type d -name ".svn" | xargs rm -rf
 
+deb:
+	cp debian/changelog.in debian/changelog
+	sed -i -e "s|@VERSION@|1.0.0-${VERSION}|" debian/changelog
+	sed -i -e "s|@DATE@|${DATE}|" debian/changelog
+	dpkg-buildpackage -rfakeroot -b -tc || true
+	rm -f debian/changelog debian/files debian/dancesplashfb.debhelper.log debian/dancesplashfb.substvars
+	rm -rf debian/dancesplashfb
 
 clean:
 	make -C libdance clean
