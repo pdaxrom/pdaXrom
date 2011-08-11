@@ -1,0 +1,5 @@
+dancesplash (@VERSION@) ubuntu; urgency=low
+
+  * Build package for dancesplash
+
+ -- Alexander Chukov <sash@pdaXrom.org>  @DATE@
