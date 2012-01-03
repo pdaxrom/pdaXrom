@@ -73,7 +73,7 @@ static void exitfunc(int sig) {
 }
 
 static char *ba_str(const bdaddr_t * a) {
-  static char str[2 * 6 + 5];
+  static char str[2 * 6 + 6];
 
   sprintf(str, "%02X:%02X:%02X:%02X:%02X:%02X",
           a->b[5], a->b[4], a->b[3], a->b[2], a->b[1], a->b[0]);
@@ -164,7 +164,7 @@ static int newclient(int psm, int s, struct hidfd *client) {
     client[i].data = fd;
     client->out = uinput_open(mouse_emulation);
     if (client->out == -1)
-      err(1, "uinput_open(): %s", client->outfname);
+      fprintf(stderr, "uinput_open(): %s\n", client->outfname);
     memset(client->lastmsg, 0xff, sizeof(client->lastmsg));
   }
   else
@@ -296,18 +296,15 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, exitfunc);
   signal(SIGTERM, exitfunc);
 
-  if (mouse_emulation) {
-    int i;
-    for (i = 0; i < 2; i++)
-	rep_evs[i].fd = -1;
-  }
+  for (i = 0; i < 2; i++)
+    rep_evs[i].fd = -1;
 
   server.ctrl = l2listen(BTCTRL);
   if (server.ctrl < 0)
-    err(1, "can't bind to psm %d", BTCTRL);
+    fprintf(stderr, "can't bind to psm %d\n", BTCTRL);
   server.data = l2listen(BTDATA);
   if (server.data < 0)
-    err(1, "can't bind to psm %d", BTDATA);
+    fprintf(stderr, "can't bind to psm %d\n", BTDATA);
 
   for (i = 0; i < MAX_CLIENTS; i++) {
     client[i].ctrl = client[i].data = -1;
@@ -338,7 +335,7 @@ int main(int argc, char *argv[]) {
 
     /* Wait for events */
     if (poll(pfd, nfd, -1) < 0)
-      err(1, "poll");
+      fprintf(stderr, "poll\n");
     timer_handler(0);
 
 //    int retval = 0;
@@ -352,10 +349,10 @@ int main(int argc, char *argv[]) {
     /* Accept new connections */
     if (pfd[0].revents & POLLIN)
       if (newclient(BTCTRL, server.ctrl, client) == -1)
-        warn("can't accept new ctrl client");
+        fprintf(stderr, "can't accept new ctrl client\n");
     if (pfd[1].revents & POLLIN)
       if (newclient(BTDATA, server.data, client) == -1)
-        warn("can't accept new data client");
+        fprintf(stderr, "can't accept new data client\n");
 
     /* Check clients */
     for (i = 2; i < nfd; i++) {
