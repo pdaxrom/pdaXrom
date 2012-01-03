@@ -63,6 +63,9 @@ int uinput_open(int mode)
 
     dev.id.version = 1;
     dev.id.bustype = BUS_BLUETOOTH;
+    dev.id.vendor  = 0x054c;
+    dev.id.product = 0x0268;
+    dev.id.version = 1;
 
     for(i = 0; i < 64 /*ABS_MAX*/;++i) {
 	dev.absmax[i] =  32767;
