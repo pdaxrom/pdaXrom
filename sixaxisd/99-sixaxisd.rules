@@ -1,0 +1,2 @@
+SUBSYSTEM=="input", ATTRS{name}=="sixaxis ps3", MODE="0664", SYMLINK+="input/js0"
+SUBSYSTEM=="input", ATTRS{name}=="sixaxis ps3 (mouse emulation)", MODE="0664", SYMLINK+="input/mouse0"
