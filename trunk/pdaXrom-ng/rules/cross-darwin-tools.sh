@@ -105,14 +105,14 @@ ODCCTOOLS_ENV="$CROSS_ENV_AC"
 case "$BUILD_ARCH" in
 x86_64-*|amd64-*|ppc64-*|mips64*)
     ODCCTOOLS_ENV="$ODCCTOOLS_ENV \
-	CXXFLAGS='-O2 -m32 -I${HOST_BIN_DIR}/32/include' \
-	CFLAGS='-O2 -m32 -I${HOST_BIN_DIR}/32/include' \
+	CXXFLAGS='-m32 -I${HOST_BIN_DIR}/32/include' \
+	CFLAGS='-m32 -I${HOST_BIN_DIR}/32/include' \
 	LDFLAGS='-m32 -L${HOST_BIN_DIR}/32/lib'"
     ;;
 *)
     ODCCTOOLS_ENV="$ODCCTOOLS_ENV \
-	CXXFLAGS='-O2 -I${HOST_BIN_DIR}/32/include' \
-	CFLAGS='-O2 -I${HOST_BIN_DIR}/32/include' \
+	CXXFLAGS='-I${HOST_BIN_DIR}/32/include' \
+	CFLAGS='-I${HOST_BIN_DIR}/32/include' \
 	LDFLAGS='-L${HOST_BIN_DIR}/32/lib'"
     ;;
 esac
@@ -139,6 +139,8 @@ build_odcctools() {
 	    || error
     ) || error "configure"
 
+    sed -i -e "s|ld64||" Makefile
+
     make $MAKEARGS || error
 
     make $MAKEARGS install || error
@@ -148,6 +150,52 @@ build_odcctools() {
 }
 
 build_odcctools
+
+ODCCTOOLSLD_VERSION=9.2
+ODCCTOOLSLD=odcctools-${ODCCTOOLSLD_VERSION}-ld.tar.bz2
+ODCCTOOLSLD_MIRROR=http://mail.pdaxrom.org/downloads/src
+ODCCTOOLSLD_DIR=$BUILD_DIR/odcctools-${ODCCTOOLSLD_VERSION}-ld
+ODCCTOOLSLD_ENV="$CROSS_ENV_AC"
+build_odcctools_ld() {
+    test -e "$STATE_DIR/odcctools_ld.installed" && return
+    banner "Build odcctools_ld"
+    download $ODCCTOOLSLD_MIRROR $ODCCTOOLSLD
+    extract $ODCCTOOLSLD
+    apply_patches $ODCCTOOLSLD_DIR $ODCCTOOLSLD
+    pushd $TOP_DIR
+    cd $ODCCTOOLSLD_DIR
+
+    CFLAGS="-m32" LDFLAGS="-m32" ./configure \
+	    --target=$TARGET_ARCH \
+	    --prefix=$TOOLCHAIN_PREFIX \
+	    --libexecdir=$TOOLCHAIN_PREFIX/lib \
+	    --with-sysroot=$TOOLCHAIN_SYSROOT \
+	     --enable-ld64 || error "configure"
+    cd libstuff
+    make || error "make"
+    cd ../ld64
+    make || error "make"
+    make install || error "install"
+    ln -sf ${TARGET_ARCH}-ld64 ${TOOLCHAIN_PREFIX}/bin/${TARGET_ARCH}-ld
+
+    popd
+    touch "$STATE_DIR/odcctools_ld.installed"
+}
+
+build_odcctools_ld
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 GCC_VERSION=5646
 GCC="gcc-${GCC_VERSION}.tar.gz"
