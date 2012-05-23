@@ -10,7 +10,7 @@
 #
 
 MINGW32_QEMU=qemu-0.9.1.tar.gz
-MINGW32_QEMU_MIRROR=http://bellard.org/qemu
+MINGW32_QEMU_MIRROR=http://wiki.qemu.org/download
 MINGW32_QEMU_DIR=$BUILD_DIR/qemu-0.9.1
 MINGW32_QEMU_ENV="$CROSS_ENV_AC"
 

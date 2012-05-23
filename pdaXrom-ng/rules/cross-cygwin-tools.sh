@@ -1,5 +1,5 @@
 BINUTILS="binutils-20080624-2-src.tar.bz2"
-BINUTILS_MIRROR="http://mirrors.dotsrc.org/cygwin/release/binutils"
+BINUTILS_MIRROR="http://mirrors.dotsrc.org/cygwin/release-legacy/binutils"
 BINUTILS_DIR="$HOST_BUILD_DIR/binutils-20080624-2"
 
 GCC="gcc-core-3.4.4-3-src.tar.bz2"
@@ -35,7 +35,7 @@ build_binutils() {
     touch "$STATE_DIR/host-binutils-cygwin"
 }
 
-SYSROOT_FILES_MIRROR="http://mirrors.dotsrc.org/cygwin/release"
+SYSROOT_FILES_MIRROR="http://mirrors.dotsrc.org/cygwin/release-legacy"
 SYSROOT_FILES=" \
 bzip2/bzip2-1.0.5-2.tar.bz2 \
 bzip2/libbz2-devel/libbz2-devel-1.0.5-2.tar.bz2 \

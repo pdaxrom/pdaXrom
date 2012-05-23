@@ -9,7 +9,7 @@
 # see the README file.
 #
 
-MINGW32_FLTK_2_0_X_VERSION=r6525
+MINGW32_FLTK_2_0_X_VERSION=r6970
 MINGW32_FLTK_2_0_X=fltk-2.0.x-${MINGW32_FLTK_2_0_X_VERSION}.tar.bz2
 MINGW32_FLTK_2_0_X_MIRROR=http://ftp.rz.tu-bs.de/pub/mirror/ftp.easysw.com/ftp/pub/fltk/snapshots
 MINGW32_FLTK_2_0_X_DIR=$BUILD_DIR/fltk-2.0.x-${MINGW32_FLTK_2_0_X_VERSION}
