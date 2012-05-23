@@ -232,7 +232,7 @@ build_gcc() {
 	--libexecdir=$TOOLCHAIN_PREFIX/lib \
 	--with-gxx-include-dir=${TOOLCHAIN_SYSROOT}/usr/include/c++/4.2.1 \
 	--disable-checking \
-	--enable-languages=c,c++ \
+	--enable-languages=c,objc,c++,obj-c++ \
 	--with-as=${TOOLCHAIN_PREFIX}/bin/${CROSS}as \
 	--with-ld=${TOOLCHAIN_PREFIX}/bin/${CROSS}ld \
 	--with-nm=${TOOLCHAIN_PREFIX}/bin/${CROSS}nm \
