@@ -23,6 +23,9 @@ build_clearlooks() {
     apply_patches $CLEARLOOKS_DIR $CLEARLOOKS
     pushd $TOP_DIR
     cd $CLEARLOOKS_DIR
+
+    autoreconf -i
+
     (
     eval \
 	$CROSS_CONF_ENV \

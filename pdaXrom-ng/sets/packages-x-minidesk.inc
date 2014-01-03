@@ -3,6 +3,7 @@
 #. $RULES_DIR/bmpanel.sh
 
 #. $RULES_DIR/gamin.sh
+. $RULES_DIR/host_expat.sh
 . $RULES_DIR/host_dbus.sh
 . $RULES_DIR/host_dbus-glib.sh
 . $RULES_DIR/dbus.sh
