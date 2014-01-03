@@ -104,7 +104,7 @@ create_initramfs() {
     $DEPMOD -a -b $INITRAMFS_DIR $K_V
 
     if [ "x$INITRAMFS_MODULES_SEQUENCE" = "x" ]; then
-	MODULES="ps3vram usb-storage ohci-hcd ehci-hcd sg vfat isofs udf sr_mod sd_mod scsi_mod"
+	MODULES="ps3vram usb-storage ohci-hcd ehci-hcd sg vfat isofs udf sr_mod sd_mod scsi_mod ahci"
     else
 	MODULES="$INITRAMFS_MODULES_SEQUENCE"
     fi
