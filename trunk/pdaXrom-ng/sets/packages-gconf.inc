@@ -2,6 +2,7 @@
 . $RULES_DIR/host_glib2.sh
 . $RULES_DIR/host_libIDL.sh
 . $RULES_DIR/libIDL.sh
+. $RULES_DIR/host_expat.sh
 . $RULES_DIR/host_dbus.sh
 . $RULES_DIR/host_dbus-glib.sh
 . $RULES_DIR/dbus.sh

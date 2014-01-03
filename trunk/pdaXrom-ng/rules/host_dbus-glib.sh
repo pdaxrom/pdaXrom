@@ -27,7 +27,8 @@ build_host_dbus_glib() {
     (
     unset PKG_CONFIG_PATH
     eval $HOST_DBUS_GLIB_ENV \
-	./configure --prefix=$HOST_BIN_DIR
+	./configure --prefix=$HOST_BIN_DIR \
+	--enable-bash-completion=no
     ) || error
     make -C dbus $MAKEARGS || error
     make -C dbus $MAKEARGS install || error
